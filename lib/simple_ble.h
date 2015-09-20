@@ -16,7 +16,6 @@ typedef struct simple_ble_config_s {
     uint16_t    adv_interval;
     uint16_t    min_conn_interval;
     uint16_t    max_conn_interval;
-    uint8_t     error_pin;          // driven low on error (connect to LED)
 } simple_ble_config_t;
 
 
@@ -27,6 +26,7 @@ typedef struct simple_ble_config_s {
 extern void __attribute__((weak)) ble_evt_connected(ble_evt_t* p_ble_evt);
 extern void __attribute__((weak)) ble_evt_disconnected(ble_evt_t* p_ble_evt);
 extern void __attribute__((weak)) ble_evt_write(ble_evt_t* p_ble_evt);
+extern void __attribute__((weak)) ble_error(uint32_t error_code);
 
 // overwrite to change functionality
 void __attribute__((weak)) ble_stack_init (void);

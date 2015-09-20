@@ -82,7 +82,10 @@ void app_error_handler(uint32_t error_code, uint32_t line_num, const uint8_t * p
     // On assert, the system can only recover with a reset.
     //NVIC_SystemReset();
 
-    led_on(ble_config->error_pin);
+    // callback for user
+    if (ble_error) {
+        ble_error(error_code);
+    }
     while(1);
 }
 
