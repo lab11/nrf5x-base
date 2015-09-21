@@ -29,7 +29,6 @@
 #include "app_timer.h"
 
 // Configurations
-#include "nrf_drv_config.h"
 #include "simple_ble.h"
 #include "led.h"
 
