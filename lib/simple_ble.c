@@ -38,7 +38,7 @@
  ******************************************************************************/
 static const simple_ble_config_t* ble_config;
 
-ble_app_t app;
+simple_ble_app_t app;
 ble_gap_adv_params_t m_adv_params;
 ble_gap_sec_params_t m_sec_params = {
     SEC_PARAM_BOND,
@@ -295,7 +295,7 @@ void __attribute__((weak)) power_manage(void) {
     APP_ERROR_CHECK(err_code);
 }
 
-void simple_ble_init(const simple_ble_config_t* conf) {
+simple_ble_app_t* simple_ble_init(const simple_ble_config_t* conf) {
     ble_config = conf;
 
     // Setup BLE and services
@@ -304,6 +304,8 @@ void simple_ble_init(const simple_ble_config_t* conf) {
     advertising_init();
     services_init();
     conn_params_init();
+
+    // Return a reference to the application state so that the user of this
+    // module has a pointer to the connection handle.
+    return &app;
 }
-
-

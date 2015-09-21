@@ -4,11 +4,9 @@
 /*******************************************************************************
  *   TYPE DEFINITIONS
  ******************************************************************************/
-typedef struct ble_app_s {
+typedef struct simple_ble_app_s {
     uint16_t    conn_handle;           // Handle of the current connection. This will be BLE_CONN_HANDLE_INVALID when not in a connection.
-    uint16_t    service_handle;
-    uint8_t     uuid_type;
-} ble_app_t;
+} simple_ble_app_t;
 
 typedef struct simple_ble_config_s {
     uint8_t     platform_id;        // used as 4th octet in device BLE address
@@ -39,7 +37,7 @@ void __attribute__((weak)) advertising_stop(void);
 void __attribute__((weak)) power_manage(void);
 
 // call to initialize
-void simple_ble_init(const simple_ble_config_t* conf);
+simple_ble_app_t* simple_ble_init(const simple_ble_config_t* conf);
 
 /*******************************************************************************
  *   DEFINES
