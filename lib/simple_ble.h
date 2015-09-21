@@ -5,7 +5,7 @@
  *   TYPE DEFINITIONS
  ******************************************************************************/
 typedef struct simple_ble_app_s {
-    uint16_t    conn_handle;           // Handle of the current connection. This will be BLE_CONN_HANDLE_INVALID when not in a connection.
+    uint16_t    conn_handle; // Handle of the current connection. This will be BLE_CONN_HANDLE_INVALID when not in a connection.
 } simple_ble_app_t;
 
 typedef struct simple_ble_config_s {

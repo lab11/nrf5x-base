@@ -263,11 +263,11 @@ void __attribute__((weak)) gap_params_init (void) {
 
 void __attribute__((weak)) advertising_init(void) {
     memset(&m_adv_params, 0, sizeof(m_adv_params));
-    m_adv_params.type               = BLE_GAP_ADV_TYPE_ADV_IND;
-    m_adv_params.p_peer_addr        = NULL;
-    m_adv_params.fp                 = BLE_GAP_ADV_FP_ANY;
-    m_adv_params.interval           = ble_config->adv_interval;
-    m_adv_params.timeout            = APP_ADV_TIMEOUT_IN_SECONDS;
+    m_adv_params.type        = BLE_GAP_ADV_TYPE_ADV_IND;
+    m_adv_params.p_peer_addr = NULL;
+    m_adv_params.fp          = BLE_GAP_ADV_FP_ANY;
+    m_adv_params.interval    = ble_config->adv_interval;
+    m_adv_params.timeout     = APP_ADV_TIMEOUT_IN_SECONDS;
 }
 
 void __attribute__((weak)) conn_params_init(void) {
