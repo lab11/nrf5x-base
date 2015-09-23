@@ -294,6 +294,10 @@ void __attribute__((weak)) power_manage(void) {
     APP_ERROR_CHECK(err_code);
 }
 
+/*******************************************************************************
+ *   SIMPLE BLE API
+ ******************************************************************************/
+
 simple_ble_app_t* simple_ble_init(const simple_ble_config_t* conf) {
     ble_config = conf;
 
@@ -307,4 +311,83 @@ simple_ble_app_t* simple_ble_init(const simple_ble_config_t* conf) {
     // Return a reference to the application state so that the user of this
     // module has a pointer to the connection handle.
     return &app;
+}
+
+uint16_t simple_ble_add_service (const ble_uuid128_t* uuid128,
+                                 ble_uuid_t* uuid,
+                                 uint16_t short_uuid) {
+    volatile uint32_t err_code;
+    uint16_t service_handle;
+
+    // Setup our long UUID so that nRF recognizes it. This is done by
+    // storing the full UUID and essentially using `uuid`
+    // as a handle.
+    uuid->uuid = short_uuid;
+    err_code = sd_ble_uuid_vs_add(uuid128, &(uuid->type));
+    APP_ERROR_CHECK(err_code);
+
+    // Add the custom service to the system
+    err_code = sd_ble_gatts_service_add(BLE_GATTS_SRVC_TYPE_PRIMARY, uuid, &service_handle);
+    APP_ERROR_CHECK(err_code);
+
+    return service_handle;
+}
+
+void simple_ble_add_characteristic (uint8_t read,
+                                    uint8_t write,
+                                    uint8_t notify,
+                                    uint8_t uuid_type,
+                                    uint16_t uuid,
+                                    uint16_t len,
+                                    uint8_t* buf,
+                                    uint16_t service_handle,
+                                    ble_gatts_char_handles_t* char_handle) {
+    volatile uint32_t err_code;
+    ble_gatts_char_md_t char_md;
+    ble_gatts_attr_t    attr_char_value;
+    ble_uuid_t          char_uuid;
+    ble_gatts_attr_md_t attr_md;
+
+    memset(&char_md, 0, sizeof(char_md));
+
+    // The characteristic properties
+    char_md.char_props.read          = read;
+    char_md.char_props.write         = write;
+    char_md.char_props.notify        = notify;
+    char_md.p_char_user_desc         = NULL;
+    char_md.p_char_pf                = NULL;
+    char_md.p_user_desc_md           = NULL;
+    char_md.p_cccd_md                = NULL;
+    char_md.p_sccd_md                = NULL;
+
+    char_uuid.type = uuid_type;
+    char_uuid.uuid = uuid;
+
+    memset(&attr_md, 0, sizeof(attr_md));
+
+    if (read) BLE_GAP_CONN_SEC_MODE_SET_OPEN(&attr_md.read_perm);
+    if (write) BLE_GAP_CONN_SEC_MODE_SET_OPEN(&attr_md.write_perm);
+
+    attr_md.vloc    = BLE_GATTS_VLOC_USER;
+    attr_md.rd_auth = 0;
+    attr_md.wr_auth = 0;
+    attr_md.vlen    = 0;
+
+    memset(&attr_char_value, 0, sizeof(attr_char_value));
+
+    attr_char_value.p_uuid    = &char_uuid;
+    attr_char_value.p_attr_md = &attr_md;
+    attr_char_value.init_len  = len;
+    attr_char_value.init_offs = 0;
+
+    // When this is 512 we get a data size error?
+    // It seems unlikely we are actually out of memory though
+    attr_char_value.max_len   = len;
+    attr_char_value.p_value   = buf;
+
+    err_code = sd_ble_gatts_characteristic_add(service_handle,
+                                               &char_md,
+                                               &attr_char_value,
+                                               char_handle);
+    APP_ERROR_CHECK(err_code);
 }

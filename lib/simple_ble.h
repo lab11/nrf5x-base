@@ -39,6 +39,20 @@ void __attribute__((weak)) power_manage(void);
 // call to initialize
 simple_ble_app_t* simple_ble_init(const simple_ble_config_t* conf);
 
+uint16_t simple_ble_add_service (const ble_uuid128_t* uuid128,
+                                 ble_uuid_t* uuid,
+                                 uint16_t short_uuid);
+
+void simple_ble_add_characteristic (uint8_t read,
+                                    uint8_t write,
+                                    uint8_t notify,
+                                    uint8_t uuid_type,
+                                    uint16_t uuid,
+                                    uint16_t len,
+                                    uint8_t* buf,
+                                    uint16_t service_handle,
+                                    ble_gatts_char_handles_t* char_handle);
+
 /*******************************************************************************
  *   DEFINES
  ******************************************************************************/
