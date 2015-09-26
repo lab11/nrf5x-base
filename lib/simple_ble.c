@@ -215,18 +215,26 @@ void __attribute__((weak)) ble_stack_init (void) {
     {
         ble_gap_addr_t gap_addr;
 
-        // Get the current original address
-        sd_ble_gap_address_get(&gap_addr);
-
         // New address is a combination of Michigan OUI and Platform ID
         uint8_t new_mac_addr[6] = {0x00, 0x00, ble_config->platform_id, 0xe5, 0x98, 0xc0};
 
-        // Set the new BLE address with the Michigan OUI, Platform ID, and
-        //  bottom two octets from the original gap address
+        // Check if we should use the Nordic assigned random value for the
+        // lower two bytes or use a user configured value.
+        if (ble_config->device_id != DEVICE_ID_DEFAULT) {
+            new_mac_addr[0] = ble_config->device_id & 0xFF;
+            new_mac_addr[1] = (ble_config->device_id >> 8) & 0xFF;
+            memcpy(gap_addr.addr, new_mac_addr, sizeof(gap_addr.addr));
+
+        } else {
+            // Set the new BLE address with the Michigan OUI, Platform ID, and
+            //  bottom two octets from the original gap address
+            // Get the current original address
+            sd_ble_gap_address_get(&gap_addr);
+            memcpy(gap_addr.addr+2, new_mac_addr+2, sizeof(gap_addr.addr)-2);
+        }
+
         gap_addr.addr_type = BLE_GAP_ADDR_TYPE_PUBLIC;
-        memcpy(gap_addr.addr+2, new_mac_addr+2, sizeof(gap_addr.addr)-2);
-        err_code = sd_ble_gap_address_set(BLE_GAP_ADDR_CYCLE_MODE_NONE,
-                &gap_addr);
+        err_code = sd_ble_gap_address_set(BLE_GAP_ADDR_CYCLE_MODE_NONE, &gap_addr);
         APP_ERROR_CHECK(err_code);
     }
 }

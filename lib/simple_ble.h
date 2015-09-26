@@ -10,6 +10,7 @@ typedef struct simple_ble_app_s {
 
 typedef struct simple_ble_config_s {
     uint8_t     platform_id;        // used as 4th octet in device BLE address
+    uint16_t    device_id;          // set the lower 16 bits of the device id. Set to DEVICE_ID_DEFAULT to use random.
     char*       adv_name;           // used in advertisements if there is room
     uint16_t    adv_interval;
     uint16_t    min_conn_interval;
@@ -65,6 +66,8 @@ void simple_ble_add_characteristic (uint8_t read,
 #define MODEL_NUMBER 					DEVICE_NAME
 #define HARDWARE_REVISION 				"A"
 #define FIRMWARE_REVISION 				"0.1"
+
+#define DEVICE_ID_DEFAULT               0xFFFF
 
 //advertising timeout sec
 #define APP_ADV_TIMEOUT_IN_SECONDS      0
