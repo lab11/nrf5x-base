@@ -3,5 +3,6 @@
 
 // Functions
 void simple_adv_only_name ();
+void simple_adv_service (ble_uuid_t* service_uuid);
 
 #endif
