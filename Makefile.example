@@ -1,0 +1,52 @@
+PROJECT_NAME = $(shell basename "$(realpath ./)")
+
+APPLICATION_SRCS = $(notdir $(wildcard ./*.c))
+# Various C libraries that need to be included
+APPLICATION_SRCS += softdevice_handler.c
+APPLICATION_SRCS += ble_advdata.c
+APPLICATION_SRCS += ble_conn_params.c
+APPLICATION_SRCS += app_timer.c
+APPLICATION_SRCS += ble_srv_common.c
+APPLICATION_SRCS += app_util_platform.c
+APPLICATION_SRCS += nrf_drv_common.c
+APPLICATION_SRCS += nrf_delay.c
+APPLICATION_SRCS += led.c
+APPLICATION_SRCS += simple_ble.c
+APPLICATION_SRCS += simple_adv.c
+# Add other libraries here!
+
+# Target used as default device name and for including source files
+ifndef TARGET
+	TARGET = EXAMPLE # Change me!
+endif
+TARGET_UPPER = $(shell echo $(TARGET) | tr a-z A-Z)
+TARGET_LOWER = $(shell echo $(TARGET) | tr A-Z a-z)
+BOARD = BOARD_$(TARGET_UPPER)
+APPLICATION_SRCS += $(TARGET_LOWER).c
+
+# platform-level headers and source files
+LIBRARY_PATHS += ../../include
+SOURCE_PATHS += ../../src
+
+# nrf5x-base libraries and nrf51-pure-gcc-setup makefiles
+NRF_BASE_PATH ?= ../../nrf5x-base/
+TEMPLATE_PATH ?= ../../nrf5x-base/nrf51-pure-gcc-setup/template/
+
+# Device flag used for gcc
+DEVICE = NRF51
+
+# softdevice version
+USE_SOFTDEVICE = s110
+SOFTDEVICE ?= ../../nrf5x-base/softdevice/s110_nrf51_8.0.0_softdevice.hex
+
+# sdk version
+SDK_VERSION = 9
+SDK_PATH ?= ../../nrf5x-base/sdk/nrf51_sdk_9.0.0/
+
+# build for minimal size
+CFLAGS = -Os
+GDB_PORT_NUMBER = 2331
+
+# include other Makefiles to actually build the target
+include $(NRF_BASE_PATH)/Makefile.include
+include $(TEMPLATE_PATH)Makefile
