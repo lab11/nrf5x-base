@@ -32,7 +32,7 @@ An example Makefile is included in this repo as Makefile.example. Copy to your
 own application directory and modify as desired.
 
 An example of this project in use can be found
-(here)[https://github.com/helena-project/squall/tree/master/software/apps/beacon].
+[here](https://github.com/helena-project/squall/tree/master/software/apps/beacon).
 
 
 If you're using submodules in your project, you may want to use this to make
