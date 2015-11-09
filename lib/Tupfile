@@ -1,6 +1,6 @@
 
-: foreach tests/*.c  |> gcc -c %f -o %o |> %B.o {tests_obj}
-: mbramfs.c          |> gcc -c %f -o %o |> %B.o {mbramfs_obj}
+: foreach tests/*.c  |> gcc -c %f -o %o -std=c99 |> %B.o {tests_obj}
+: mbramfs.c          |> gcc -c %f -o %o -std=c99 |> %B.o {mbramfs_obj}
 
 : foreach {tests_obj}                 |> gcc %f -o %B_known          |> %B_known {known}
 : foreach {tests_obj} | {mbramfs_obj} |> gcc %f mbramfs.o -o %B_test |> %B_test  {test}
