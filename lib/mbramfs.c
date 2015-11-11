@@ -1,35 +1,66 @@
 // Most Basic RAM Filesystem
-//
-// Supports 1 file
 
+#include <stdint.h>
+
+#define __FILE_defined 0
+#define _F_READ 1
+#define _F_WRIT 2
+
+typedef struct {
+	uint32_t fpos;
+	uint8_t flags;
+	uint32_t handle;
+	uint32_t index;
+} FILE;
 
 #include <stdio.h>
-#include <stdint.h>
 #include <stdbool.h>
 #include <string.h>
 
-#define MBRAMFS_FILESIZE_IN_BYTES 10000
+#define MBRAMFS_MAX_FILENAME_LEN  128
+#define MBRAMFS_FILESIZE_IN_BYTES 5000
+#define MBRAMFS_NUM_FILE_POINTERS 10
+#define MBRAMFS_NUM_FILES         2
 
-FILE onefile;
-
-static uint8_t  fexists = 0;
-static uint8_t  fisopen = 0;
-static uint32_t fptr = 0;
-static uint8_t  filebuf[MBRAMFS_FILESIZE_IN_BYTES] = {0};
-static uint32_t flen = 0;
-
-static uint8_t  read_enabled = 0;
-static uint8_t  write_enabled = 0;
+typedef struct {
+	char name[MBRAMFS_MAX_FILENAME_LEN];
+	uint8_t buf[MBRAMFS_FILESIZE_IN_BYTES];
+	uint32_t len;
+} file_buf_t;
 
 
-FILE* fopen (const char* restrict fname, const char* restrict flags) {
+// Allocate all files and FILE objects here.
+FILE              file_ptrs[MBRAMFS_NUM_FILE_POINTERS] = {{0, 0, 0}};
+static file_buf_t files[MBRAMFS_NUM_FILES] = {{{0}, {0}, 0}};
+
+static unsigned short handle_cnt = 1;
+
+
+FILE* fopen (const char* fname, const char* flags) {
 	uint8_t read = 0;
 	uint8_t write = 0;
 	uint8_t append = 0;
 
-	int i = 0;
+	int file_ptr_index;
+	int i;
+
+	// Find an open file handle
+	file_ptr_index = -1;
+	for (i=0; i<MBRAMFS_NUM_FILE_POINTERS; i++) {
+		if (file_ptrs[i].handle == 0) {
+			// Found one
+			file_ptr_index = i;
+			break;
+		}
+	}
+
+	if (file_ptr_index == -1) {
+		// No room
+		return NULL;
+	}
 
 	// Parse the flags
+	i = 0;
 	while (flags[i]) {
 		if      (flags[i] == 'w') write = 1;
 		else if (flags[i] == 'r') read = 1;
@@ -43,61 +74,102 @@ FILE* fopen (const char* restrict fname, const char* restrict flags) {
 		append = 0;
 	}
 
+	// Determine if this file exists
+	int file_index = -1;
+	for (i=0; i<MBRAMFS_NUM_FILES; i++) {
+		if (strncmp(fname, files[i].name, MBRAMFS_MAX_FILENAME_LEN) == 0) {
+			file_index = i;
+			break;
+		}
+	}
+
 	// Cannot read from a file that does not exist
-	if (read && !fexists) return NULL;
+	if (read && file_index == -1) {
+		return NULL;
+	}
+
+	// May need to create new file
+	if (file_index == -1) {
+		// Find space for it
+		for (i=0; i<MBRAMFS_NUM_FILES; i++) {
+			if (files[i].name[0] == '\0') {
+				// This is free
+				file_index = i;
+				strncpy(files[i].name, fname, MBRAMFS_MAX_FILENAME_LEN);
+				break;
+			}
+		}
+	}
+
+	// If we couldn't find this file or create it, error
+	if (file_index == -1) {
+		return NULL;
+	}
+
+	FILE*       file_ptr = &file_ptrs[file_ptr_index];
+	file_buf_t* file = &files[file_index];
+
+	// Save which file this points to
+	file_ptr->index = file_index;
 
 	// Writing a file makes it exist
 	if (read) {
-		fptr = 0;
+		file_ptr->fpos = 0;
+		file_ptr->flags = _F_READ;
 	} else if (write) {
-		fexists = 1;
-		flen = 0;
-		fptr = 0;
+		file->len = 0;
+		file_ptr->fpos = 0;
+		file_ptr->flags = _F_WRIT;
 	} else if (append) {
-		fexists = 1;
-		fptr = flen;
+		file_ptr->fpos = file->len;
+		file_ptr->flags = _F_WRIT;
 	}
 
-	read_enabled = read;
-	write_enabled = write | append;
-
-	fisopen = 1;
-	return &onefile;
+	file_ptr->handle = handle_cnt;
+	handle_cnt++;
+	return file_ptr;
 }
 
 size_t fread (void* ptr, size_t size, size_t count, FILE* stream) {
 	uint32_t copy_len = size*count;
+	uint32_t fptr = (uint32_t) stream->fpos;
+	file_buf_t* file = &files[stream->index];
 
-	if (!fisopen || !read_enabled) return 0;
+	if (!(stream->flags & _F_READ)) return 0;
 
 	// Make sure we don't read past the end of the file
-	if (fptr + copy_len > flen) {
-		copy_len = flen - fptr;
+	if (fptr + copy_len > file->len) {
+		copy_len = ((file->len - fptr) / size) * size;
 	}
 
 	// memcpy the "file" to the user buffer and return how much we copied
-	memcpy(ptr, filebuf+fptr, copy_len);
-	fptr += copy_len;
-	return copy_len;
+	memcpy(ptr, file->buf+fptr, copy_len);
+
+	stream->fpos += copy_len;
+	return copy_len / size;
 }
 
 size_t fwrite (const void* ptr, size_t size, size_t count, FILE* stream) {
 	uint32_t write_len = size*count;
+	uint32_t fptr = (uint32_t) stream->fpos;
+	file_buf_t* file = &files[stream->index];
 
-	if (!fisopen || !write_enabled) return 0;
+	if (!(stream->flags & _F_WRIT)) return 0;
 
 	// Make sure we don't read off the end of the array
 	if (fptr + write_len > MBRAMFS_FILESIZE_IN_BYTES) {
-		write_len = MBRAMFS_FILESIZE_IN_BYTES - fptr;
+		write_len = ((MBRAMFS_FILESIZE_IN_BYTES - fptr) / size) * size;
 	}
 
-	memcpy(filebuf+fptr, ptr, write_len);
-	fptr += write_len;
-	flen += write_len;
-	return write_len;
+	memcpy(file->buf+fptr, ptr, write_len);
+	stream->fpos += write_len;
+	file->len += write_len;
+	return write_len / size;
 }
 
 int fseek (FILE* f, long int offset, int origin) {
+	uint32_t fptr = (uint32_t) f->fpos;
+	file_buf_t* file = &files[f->index];
 	uint32_t new_position = 0;
 	if (origin == SEEK_SET) {
 		// Offset from beginning of file
@@ -107,31 +179,35 @@ int fseek (FILE* f, long int offset, int origin) {
 		new_position = offset + fptr;
 	}
 
-	if (new_position > flen) {
+	if (new_position > file->len) {
 		// Seek too far, past the end of the "file"
 		return -1;
 	}
 
 	// Update internal pointer
-	fptr = new_position;
+	f->fpos = new_position;
 	return 0;
 }
 
 void rewind (FILE* f) {
 	// Just need to reset our array index into the file buffer
-	fptr = 0;
+	f->fpos = 0;
 }
 
 int fclose (FILE* stream) {
-	fisopen = 0;
+	stream->handle = 0;
 	return 0;
 }
 
-// "delete" file by clearing it
+// "delete" file by adding it to the allocatable pool
 int remove (const char* filename) {
-	memset(filebuf, 0, MBRAMFS_FILESIZE_IN_BYTES);
-	fptr = 0;
-	flen = 0;
-	fexists = 0;
+	int i;
+	for (i=0; i<MBRAMFS_NUM_FILES; i++) {
+		if (strncmp(files[i].name, filename, MBRAMFS_MAX_FILENAME_LEN) == 0) {
+			memset(files[i].name, 0, MBRAMFS_MAX_FILENAME_LEN);
+			files[i].len = 0;
+			break;
+		}
+	}
 	return 0;
 }
