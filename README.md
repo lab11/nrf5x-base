@@ -50,6 +50,8 @@ SOFTDEVICE_MODEL = s110
 NRF_BASE_PATH ?= ../../nrf5x-base
 include $(NRF_BASE_PATH)/make/Makefile
 ```
+An example Makefile is included in this repo as Makefile.example. Copy to your
+own application directory and modify as desired.
 
 Generally, the expected directory structure for your project is:
 ```
@@ -65,9 +67,6 @@ Generally, the expected directory structure for your project is:
         various platform-level headers (e.g. platform pin mappings)
     /nrf5x-base (submodule)
 ```
-
-An example Makefile is included in this repo as Makefile.example. Copy to your
-own application directory and modify as desired.
 
 An example of this project in use can be found
 [here](https://github.com/helena-project/squall/tree/master/software/apps/beacon).
