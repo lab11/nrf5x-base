@@ -110,6 +110,9 @@ SOFTDEVICE ?= $(BASE_DIR)/softdevice/$(SOFTDEVICE_MODEL)_$(NRF_MODEL)_$(SOFTDEVI
 # Need some common options for interacting with the chip over JTAG
 JLINK_OPTIONS = -device $(NRF_IC) -if swd -speed 1000
 
+# If not set in app makefile, lets optimize for size
+CFLAGS ?= -Os
+
 # Add useful paths from nRF5x-base
 LIBRARY_PATHS += $(BASE_DIR)/advertisement/
 LIBRARY_PATHS += $(BASE_DIR)/devices/
@@ -268,7 +271,6 @@ VPATH = $(SOURCE_PATHS)
 OUTPUT_PATH = _build/
 
 CPUFLAGS = -mthumb -mcpu=cortex-m0 -march=armv6-m
-CFLAGS ?= -Os
 CFLAGS += -std=gnu99 -c $(CPUFLAGS) -Wall -D$(DEVICE) -D$(BOARD)
 CFLAGS += -s -ffunction-sections -fdata-sections
 CFLAGS += $(CMSIS_INCLUDE) $(LIBRARY_INCLUDES) -MD
