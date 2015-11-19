@@ -12,8 +12,46 @@ The currently supported Softdevice versions are: s110_7.3.0, s110_8.0.0, s120_2.
 
 Usage
 -----
-Submodule this project within your own repo, and point to it in your Makefile.
-The expected directory structure is:
+
+First, add this project as a submodule inside of your repo with your
+nRF5x code.
+
+    git submodule add https://github.com/lab11/nrf5x-base
+    
+Then write an application for the nRF5x SoC you are using and include
+a Makefile that looks like this:
+
+```make
+PROJECT_NAME = $(shell basename "$(realpath ./)")
+
+APPLICATION_SRCS = $(notdir $(wildcard ./*.c))
+# Various C libraries that need to be included
+APPLICATION_SRCS += softdevice_handler.c
+APPLICATION_SRCS += ble_advdata.c
+APPLICATION_SRCS += ble_conn_params.c
+APPLICATION_SRCS += app_timer.c
+APPLICATION_SRCS += ble_srv_common.c
+APPLICATION_SRCS += app_util_platform.c
+APPLICATION_SRCS += nrf_drv_common.c
+APPLICATION_SRCS += nrf_delay.c
+APPLICATION_SRCS += led.c
+APPLICATION_SRCS += simple_ble.c
+APPLICATION_SRCS += simple_adv.c
+# Add other libraries here!
+
+# platform-level headers and source files
+LIBRARY_PATHS += ../../include
+SOURCE_PATHS += ../../src
+
+# Set the softdevice needed for the application
+SOFTDEVICE_MODEL = s110
+
+# Include the main Makefile
+NRF_BASE_PATH ?= ../../nrf5x-base
+include $(NRF_BASE_PATH)/make/Makefile
+```
+
+Generally, the expected directory structure for your project is:
 ```
     /apps
         /<my app name>
