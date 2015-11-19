@@ -1,6 +1,8 @@
 #ifndef __EDDYSTONE_H
 #define __EDDYSTONE_H
 
+#include "ble_advdata.h"
+
 // Functions
 void eddystone_adv(char*, const ble_advdata_t*);
 

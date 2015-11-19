@@ -17,7 +17,6 @@
 #include "ble_db_discovery.h"
 #include "app_util.h"
 #include "app_error.h"
-#include "ble_advdata_parser.h"
 #include "ble_conn_params.h"
 #include "ble_hci.h"
 #include "nrf_gpio.h"

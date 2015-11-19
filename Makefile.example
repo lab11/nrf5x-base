@@ -28,25 +28,9 @@ APPLICATION_SRCS += $(TARGET_LOWER).c
 LIBRARY_PATHS += ../../include
 SOURCE_PATHS += ../../src
 
-# nrf5x-base libraries and nrf51-pure-gcc-setup makefiles
-NRF_BASE_PATH ?= ../../nrf5x-base/
-TEMPLATE_PATH ?= ../../nrf5x-base/nrf51-pure-gcc-setup/template/
+# Set the softdevice needed for the application
+SOFTDEVICE_MODEL = s110
 
-# Device flag used for gcc
-DEVICE = NRF51
-
-# softdevice version
-USE_SOFTDEVICE = s110
-SOFTDEVICE ?= ../../nrf5x-base/softdevice/s110_nrf51_8.0.0_softdevice.hex
-
-# sdk version
-SDK_VERSION = 9
-SDK_PATH ?= ../../nrf5x-base/sdk/nrf51_sdk_9.0.0/
-
-# build for minimal size
-CFLAGS = -Os
-GDB_PORT_NUMBER = 2331
-
-# include other Makefiles to actually build the target
-include $(NRF_BASE_PATH)/Makefile.include
-include $(TEMPLATE_PATH)Makefile
+# Include the main Makefile
+NRF_BASE_PATH ?= ../../nrf5x-base
+include $(NRF_BASE_PATH)/make/Makefile

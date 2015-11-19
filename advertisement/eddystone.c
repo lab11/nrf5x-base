@@ -17,7 +17,7 @@
 #include "ble_db_discovery.h"
 #include "app_util.h"
 #include "app_error.h"
-#include "ble_advdata_parser.h"
+#include "ble_advdata.h"
 #include "ble_conn_params.h"
 #include "ble_hci.h"
 #include "app_trace.h"
@@ -45,7 +45,7 @@ void eddystone_adv(char* url_str, const ble_advdata_t* scan_response_data) {
         m_url_frame[i+3] = url_str[i];
     }
     //m_url_frame[url_frame_length-1] = PHYSWEB_URLEND_COMSLASH; // Remember to change url_frame_length
-    
+
     // Physical web service
     ble_advdata_service_data_t service_data;
     service_data.service_uuid   = PHYSWEB_SERVICE_ID;
