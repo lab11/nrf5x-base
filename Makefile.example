@@ -15,15 +15,6 @@ APPLICATION_SRCS += simple_ble.c
 APPLICATION_SRCS += simple_adv.c
 # Add other libraries here!
 
-# Target used as default device name and for including source files
-ifndef TARGET
-	TARGET = EXAMPLE # Change me!
-endif
-TARGET_UPPER = $(shell echo $(TARGET) | tr a-z A-Z)
-TARGET_LOWER = $(shell echo $(TARGET) | tr A-Z a-z)
-BOARD = BOARD_$(TARGET_UPPER)
-APPLICATION_SRCS += $(TARGET_LOWER).c
-
 # platform-level headers and source files
 LIBRARY_PATHS += ../../include
 SOURCE_PATHS += ../../src
