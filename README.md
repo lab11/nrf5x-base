@@ -1,7 +1,7 @@
-nrf5x-base Files
-================
+Nordic nRF5x Support Files
+==========================
 
-Starting point and shared code for Nordic nRF5x BLE platforms. This repo is
+This repository is a starting point and shared code for Nordic nRF5x BLE platforms. This repo is
 a collection of libraries, SDKs, Softdevices, and Makefiles to be included
 within other projects using the Nordic platfroms. Pull requests welcome.
 
