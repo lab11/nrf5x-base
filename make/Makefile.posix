@@ -45,6 +45,7 @@ ID_BYTES = $(subst :, ,$(ID))
 ID_FIRST = $(word 1,$(ID_BYTES))$(word 2,$(ID_BYTES))
 ID_SECON = $(word 3,$(ID_BYTES))$(word 4,$(ID_BYTES))$(word 5,$(ID_BYTES))$(word 6,$(ID_BYTES))
 flash.jlink:
+	$(MAKE_BUILD_FOLDER)
 	printf "r\n" > $(OUTPUT_PATH)flash.jlink
 	printf "w4 0x0003fff8, 0x$(ID_SECON) 0x$(ID_FIRST)\n" >> $(OUTPUT_PATH)flash.jlink
 	printf "loadbin $(BIN) $(FLASH_START_ADDRESS)\nr\ng\nexit\n" >> $(OUTPUT_PATH)flash.jlink
@@ -54,6 +55,7 @@ flash.jlink:
 DEVICE_PAGE_NUM_ADDR  = 0x10000014
 FLASH_SIZE_BIN = $(OUTPUT_PATH)flash_size.bin
 test-flash_size.jlink:
+	$(MAKE_BUILD_FOLDER)
 	printf "r\nsavebin $(FLASH_SIZE_BIN) $(DEVICE_PAGE_NUM_ADDR) 4\nexit\n" > $(OUTPUT_PATH)test-flash_size.jlink
 
 test-flash_size: flash.jlink test-flash_size.jlink
@@ -63,6 +65,7 @@ test-flash_size: flash.jlink test-flash_size.jlink
 	@od -d -Anone $(OUTPUT_PATH)flash_size.bin | awk '{print $1;}' | grep -q 256 || $(MAKE) small_flash_id
 
 small_flash_id: flash.jlink
+	$(MAKE_BUILD_FOLDER)
 	@rm $(OUTPUT_PATH)flash.jlink
 	@printf "r\n" > $(OUTPUT_PATH)flash.jlink
 	@printf "w4 0x0001fff8, 0x$(ID_SECON) 0x$(ID_FIRST)\n" >> $(OUTPUT_PATH)flash.jlink
@@ -86,6 +89,7 @@ SOFTDEVICE_TEST_LEN = 0x10
 SOFTDEVICE_TEST_BIN = $(OUTPUT_PATH)softdevice_test.bin
 SOFTDEVICE_TEST_FLASH = $(OUTPUT_PATH)downloaded_test.bin
 test-softdevice.jlink:
+	$(MAKE_BUILD_FOLDER)
 	printf "r\nsavebin $(SOFTDEVICE_TEST_FLASH) $(SOFTDEVICE_TEST_ADDR) $(SOFTDEVICE_TEST_LEN)\nexit\n" > $(OUTPUT_PATH)test-softdevice.jlink
 
 flash-softdevice: erase-all flash-softdevice.jlink
@@ -98,36 +102,46 @@ endif
 
 flash-softdevice.jlink:
 	# Write to NVMC to enable write. Write mainpart, write UICR. Assumes device is erased.
+	$(MAKE_BUILD_FOLDER)
 	printf "w4 4001e504 1\nloadbin \"$(SOFTDEVICE_OUTPUT:.hex=.bin)\" 0\nr\ng\nexit\n" > $(OUTPUT_PATH)flash-softdevice.jlink
 
 recover: recover.jlink erase-all.jlink pin-reset.jlink
+	$(MAKE_BUILD_FOLDER)
 	$(JLINK) $(OUTPUT_PATH)recover.jlink
 	$(JLINK) $(OUTPUT_PATH)erase-all.jlink
 	$(JLINK) $(OUTPUT_PATH)pin-reset.jlink
 
 recover.jlink:
+	$(MAKE_BUILD_FOLDER)
 	printf "si 0\nt0\nsleep 1\ntck1\nsleep 1\nt1\nsleep 2\nt0\nsleep 2\nt1\nsleep 2\nt0\nsleep 2\nt1\nsleep 2\nt0\nsleep 2\nt1\nsleep 2\nt0\nsleep 2\nt1\nsleep 2\nt0\nsleep 2\nt1\nsleep 2\nt0\nsleep 2\nt1\nsleep 2\ntck0\nsleep 100\nsi 1\nr\nexit\n" > $(OUTPUT_PATH)recover.jlink
 
 pin-reset.jlink:
+	$(MAKE_BUILD_FOLDER)
 	printf "w4 40000544 1\nr\nexit\n" > $(OUTPUT_PATH)pin-reset.jlink
 
 pin-reset: pin-reset.jlink
+	$(MAKE_BUILD_FOLDER)
 	$(JLINK) $(OUTPUT_PATH)pin-reset.jlink
 
 reset: reset.jlink
+	$(MAKE_BUILD_FOLDER)
 	$(JLINK) $(OUTPUT_PATH)reset.jlink
 
 reset.jlink:
+	$(MAKE_BUILD_FOLDER)
 	printf "r\ng\nexit\n" > $(OUTPUT_PATH)reset.jlink
 
 erase-all: erase-all.jlink
+	$(MAKE_BUILD_FOLDER)
 	$(JLINK) $(OUTPUT_PATH)erase-all.jlink
 
 erase-all.jlink:
 	# Write to NVMC to enable erase, do erase all, wait for completion. reset
+	$(MAKE_BUILD_FOLDER)
 	printf "w4 4001e504 2\nw4 4001e50c 1\nsleep 100\nr\nexit\n" > $(OUTPUT_PATH)erase-all.jlink
 
 from-scratch: all flash.jlink flash-softdevice
+	$(MAKE_BUILD_FOLDER)
 	$(JLINK) $(OUTPUT_PATH)flash.jlink
 
 startdebug: debug-gdbinit
