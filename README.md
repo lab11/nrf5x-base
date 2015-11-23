@@ -84,8 +84,8 @@ When developing a BLE application, several tools exist to make your life easier.
 The easiest option, if you have access to an android phone, is [nRF Master Control Panel](https://play.google.com/store/apps/details?id=no.nordicsemi.android.mcp&hl=en).
 On iOS, [LightBlue Explorer](https://itunes.apple.com/us/app/lightblue-explorer-bluetooth/id557428110?mt=8)
 has similar or better functionality. Alternatively,
-[noble](https://github.com/sandeepmistry/noble) is a NodeJS library for interacting with BLE. We
-do not have a recommended iOS app, but feel free to suggest one and we'll update this readme.
+[noble](https://github.com/sandeepmistry/noble) is a NodeJS library for interacting with BLE that can run from
+a Linux or Mac computer.
 
 
 
