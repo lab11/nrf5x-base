@@ -5,7 +5,7 @@ This repository is a starting point and shared code for Nordic nRF5x BLE platfor
 a collection of libraries, SDKs, Softdevices, and Makefiles to be included
 within other projects using the Nordic platfroms. Pull requests welcome.
 
-The currently supported SDK versions are: 9.0.0
+The currently supported SDK versions are: 9.0.0, 10.0.0
 
 The currently supported Softdevice versions are: s110_7.3.0, s110_8.0.0, s120_2.1.0, and s130_1.0.0
 
