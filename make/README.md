@@ -57,45 +57,60 @@ Targets
 Most of the targets provided should be self explanatory, but some may use some
 extra explanation:
 
-###### flash:
-Build project and flash onto a chip. Also checks that the correct softdevice is
-already on the chip, and automatically runs flash-softdevice if not.
+- `flash`
 
-###### flash ID=XX:XX:XX:XX:XX:XX
-Sets the Bluetooth ID for the chip to whatever replaces XX:XX:XX:XX:XX:XX (must
-be valid hex digits). Bluetooth ID is written to the top of flash and persists
-across future flashes (but not erase-alls). Application code needs to read the
-value from flash and actually set it as the Bluetooth ID.
+    Build project and flash onto a chip. Also checks that the correct softdevice is
+    already on the chip, and automatically runs flash-softdevice if not.
 
-###### erase-all:
-Does an erase all of a chip.
+- `flash ID=XX:XX:XX:XX:XX:XX`
 
-###### flash-softdevice
-Used to flash a softdevice to a chip. (Note, this is done automatically by
-make flash). Flashes softdevice as specified in the project Makefile.
+    Sets the Bluetooth ID for the chip to whatever replaces XX:XX:XX:XX:XX:XX (must
+    be valid hex digits). Bluetooth ID is written to the top of flash and persists
+    across future flashes (but not erase-alls). Application code needs to read the
+    value from flash and actually set it as the Bluetooth ID.
 
-###### flash-softdevice SOFTDEVICE=$(PATH_TO_SOFTDEVICE_WITHOUT_SPACES)
-Flashes a specific version of the softdevice. The path to the softdevice hex
-needs to be without spaces, due to Make limitations.
+- `erase-all`
 
-###### debug:
-Makes with debug symbols. Use before startdebug.
+    Does an erase all of a chip.
 
-###### startdebug:
-Starts a J-Link GDB Server in a separate terminal window, and then GDB
-also in a separate window. If you change the code, you can then make directly
-from gdb, and do load to run the new code.
+- `flash-softdevice`
 
-To use this feature you must enable the working path as safe! you can also
-enable all paths by adding 'set auto-load safe-path /' to ~/.gdbinit.
+    Used to flash a softdevice to a chip. (Note, this is done automatically by
+    make flash). Flashes softdevice as specified in the project Makefile.
 
-###### recover:
-Provides equal functionality to that of nrfjprog / nRFgo Studio on Windows.
+- `flash-softdevice SOFTDEVICE=<PATH_TO_SOFTDEVICE_WITHOUT_SPACES>`
+
+    Flashes a specific version of the softdevice. The path to the softdevice hex
+    needs to be without spaces, due to Make limitations.
+
+- `debug`
+
+    Makes with debug symbols. Use before startdebug.
+
+- `startdebug`
+
+    Starts a J-Link GDB Server in a separate terminal window, and then GDB
+    also in a separate window. If you change the code, you can then make directly
+    from gdb, and do load to run the new code.
+
+    To use this feature you must enable the working path as safe! you can also
+    enable all paths by adding 'set auto-load safe-path /' to ~/.gdbinit.
+
+- `recover`
+
+    Provides equal functionality to that of nrfjprog / nRFgo Studio on Windows.
 
 
 If you have multiple J-Links connected to your system, you should
-set the SEGGER_SERIAL variable to the serial number of your J-Link, so that
+set the `SEGGER_SERIAL` variable to the serial number of your J-Link, so that
 the programming Just Works (tm). It seems Segger on Linux isn't capable of
 giving you a selection of J-Links, as on Windows.
 
+
+Verbose Output
+--------------
+
+To see the full commands that are being run by make, do:
+
+    make V=1
 
