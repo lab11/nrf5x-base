@@ -26,7 +26,7 @@ void simple_timer_init () {
 
 uint32_t simple_timer_start (uint32_t milliseconds,
                              app_timer_timeout_handler_t callback) {
-	app_timer_id_t* timer;
+	const app_timer_id_t* timer;
 	uint32_t err_code;
 
 	// Make sure we have a timer left
