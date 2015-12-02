@@ -211,8 +211,15 @@ void __attribute__((weak)) ble_stack_init (void) {
     APP_ERROR_CHECK(err_code);
 
     // Set the MAC address of the device
-    {
-        ble_gap_addr_t gap_addr;
+    // Highest priority is address from flash if available
+    // Next is is the address supplied by user in ble_config
+    // Finally, Nordic assigned random value is used as last choice
+    ble_gap_addr_t gap_addr;
+
+    // get BLE address from Flash
+    uint8_t* _ble_address = (uint8_t*)BLEADDR_FLASH_LOCATION;
+    if (_ble_address[1] == 0xFF && _ble_address[0] == 0xFF) {
+        // No user-defined address stored in flash
 
         // New address is a combination of Michigan OUI and Platform ID
         uint8_t new_mac_addr[6] = {0x00, 0x00, ble_config->platform_id, 0xe5, 0x98, 0xc0};
@@ -231,11 +238,16 @@ void __attribute__((weak)) ble_stack_init (void) {
             sd_ble_gap_address_get(&gap_addr);
             memcpy(gap_addr.addr+2, new_mac_addr+2, sizeof(gap_addr.addr)-2);
         }
+    } else {
+        // User-defined address stored in flash
 
-        gap_addr.addr_type = BLE_GAP_ADDR_TYPE_PUBLIC;
-        err_code = sd_ble_gap_address_set(BLE_GAP_ADDR_CYCLE_MODE_NONE, &gap_addr);
-        APP_ERROR_CHECK(err_code);
+        // Set the new BLE address with the user-defined address
+        memcpy(gap_addr.addr, _ble_address, 6);
     }
+
+    gap_addr.addr_type = BLE_GAP_ADDR_TYPE_PUBLIC;
+    err_code = sd_ble_gap_address_set(BLE_GAP_ADDR_CYCLE_MODE_NONE, &gap_addr);
+    APP_ERROR_CHECK(err_code);
 }
 
 void __attribute__((weak)) gap_params_init (void) {

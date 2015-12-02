@@ -276,6 +276,14 @@ ifeq ($(SOFTDEVICE_MODEL), blank)
     SOFTDEVICE_VERSION = 0
 endif
 
+# Location for BLE Address if stored in Flash
+ifeq ($(FLASH_KB), 256)
+	# 256 KB Flash
+	CFLAGS += -DBLEADDR_FLASH_LOCATION=0x0003FFF8
+else
+	# Assume 128 KB Flash
+	CFLAGS += -DBLEADDR_FLASH_LOCATION=0x0001FFF8
+endif
 
 print-% : ; @echo $* = $($*)
 
