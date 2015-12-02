@@ -305,6 +305,29 @@ DEPS = $(addprefix $(OUTPUT_PATH), $(SRCS:.c=.d))
 SRCS_AS = $(START_CODE)
 OBJS_AS = $(addprefix $(OUTPUT_PATH), $(SRCS_AS:.s=.os))
 
+### Verbosity control. Use  make V=1  to get verbose builds.
+
+ifeq ($(V),1)
+  PRINT_CC  =
+  PRINT_LD  =
+  PRINT_AR  =
+  PRINT_AS  =
+  PRINT_HEX =
+  PRINT_BIN =
+  PRINT_SIZ =
+  Q=
+else
+  PRINT_CC  = @echo "  CC       " $<
+  PRINT_LD  = @echo "  LD       " $(ELF)
+  PRINT_AR  = @echo "  AR       " $@
+  PRINT_AS  = @echo "  AS       " $<
+  PRINT_HEX = @echo "  HEX      " $(HEX)
+  PRINT_BIN = @echo "  BIN      " $(BIN)
+  PRINT_SIZ = @echo "  SIZE     " $(ELF)
+  Q=@
+endif
+
+
 all: $(OBJS) $(OBJS_AS) $(HEX)
 
 debug: CFLAGS += -g
@@ -320,21 +343,27 @@ include $(BASE_DIR)/make/Makefile.posix
 endif
 
 $(HEX): $(OBJS) $(OBJS_AS)
-	$(LD) $(LDFLAGS) $(OBJS_AS) $(OBJS) -o $(ELF)
-	$(OBJCOPY) -Oihex $(ELF) $(HEX)
-	$(OBJCOPY) -Obinary $(ELF) $(BIN)
-	$(SIZE) $(ELF)
+	$(PRINT_LD)
+	$(Q)$(LD) $(LDFLAGS) $(OBJS_AS) $(OBJS) -o $(ELF)
+	$(PRINT_HEX)
+	$(Q)$(OBJCOPY) -Oihex $(ELF) $(HEX)
+	$(PRINT_BIN)
+	$(Q)$(OBJCOPY) -Obinary $(ELF) $(BIN)
+	$(PRINT_SIZ)
+	$(Q)$(SIZE) $(ELF)
 
 size: $(ELF)
 	$(SIZE) $(ELF)
 
 $(OUTPUT_PATH)%.o: %.c
-	$(MAKE_BUILD_FOLDER)
-	$(CC) $(LDFLAGS) $(CFLAGS) $< -o $@
+	@$(MAKE_BUILD_FOLDER)
+	$(PRINT_CC)
+	$(Q)$(CC) $(LDFLAGS) $(CFLAGS) $< -o $@
 
 $(OUTPUT_PATH)%.os: %.s
-	$(MAKE_BUILD_FOLDER)
-	$(AS) $< -o $@
+	@$(MAKE_BUILD_FOLDER)
+	$(PRINT_AS)
+	$(Q)$(AS) $< -o $@
 
 -include $(DEPS)
 
