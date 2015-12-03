@@ -300,7 +300,10 @@ void __attribute__((weak)) services_init (void) {
  ******************************************************************************/
 void __attribute__((weak)) advertising_start(void) {
     uint32_t err_code = sd_ble_gap_adv_start(&m_adv_params);
-    APP_ERROR_CHECK(err_code);
+    if (err_code != NRF_ERROR_INVALID_STATE) {
+        // Ignore Invalid State responses. Occurs when start is called twice
+        APP_ERROR_CHECK(err_code);
+    }
 }
 
 void __attribute__((weak)) advertising_stop(void) {
