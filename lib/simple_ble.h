@@ -55,6 +55,17 @@ void simple_ble_add_characteristic (uint8_t read,
                                     uint8_t* buf,
                                     uint16_t service_handle,
                                     ble_gatts_char_handles_t* char_handle);
+void simple_ble_add_vlen_characteristic (uint8_t read,
+                                    uint8_t write,
+                                    uint8_t notify,
+                                    uint8_t uuid_type,
+                                    uint16_t uuid,
+                                    uint16_t len,
+                                    uint8_t* buf,
+                                    uint16_t service_handle,
+                                    ble_gatts_char_handles_t* char_handle);
+void simple_ble_update_char_len (ble_gatts_char_handles_t* char_handle, uint16_t len);
+void simple_ble_notify_char (ble_gatts_char_handles_t* char_handle, uint16_t len);
 
 /*******************************************************************************
  *   DEFINES

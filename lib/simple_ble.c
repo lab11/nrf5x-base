@@ -57,6 +57,9 @@ static void ble_evt_dispatch(ble_evt_t * p_ble_evt);
 static void sys_evt_dispatch(uint32_t sys_evt);
 static void on_conn_params_evt(ble_conn_params_evt_t * p_evt);
 static void on_ble_evt(ble_evt_t * p_ble_evt);
+static void create_characteristic (uint8_t read, uint8_t write, uint8_t notify,
+        uint8_t uuid_type, uint16_t uuid, uint16_t len, uint8_t* buf, uint8_t vlen,
+        uint16_t service_handle, ble_gatts_char_handles_t* char_handle);
 
 void app_error_handler(uint32_t error_code, uint32_t line_num, const uint8_t * p_file_name);
 void assert_nrf_callback(uint16_t line_num, const uint8_t * p_file_name);
@@ -131,6 +134,9 @@ static void on_ble_evt(ble_evt_t * p_ble_evt) {
             // continue advertising, but nonconnectably
             m_adv_params.type = BLE_GAP_ADV_TYPE_ADV_NONCONN_IND;
             advertising_start();
+            // connected to device. Set initial CCCD attributes to NULL
+            err_code = sd_ble_gatts_sys_attr_set(app.conn_handle, NULL, 0, 0);
+            APP_ERROR_CHECK(err_code);
             break;
 
         case BLE_GAP_EVT_DISCONNECTED:
@@ -330,6 +336,9 @@ simple_ble_app_t* simple_ble_init(const simple_ble_config_t* conf) {
     services_init();
     conn_params_init();
 
+    // initialize our connection state to "not in a connection"
+    app.conn_handle = BLE_CONN_HANDLE_INVALID;
+
     // Return a reference to the application state so that the user of this
     // module has a pointer to the connection handle.
     return &app;
@@ -364,6 +373,33 @@ void simple_ble_add_characteristic (uint8_t read,
                                     uint8_t* buf,
                                     uint16_t service_handle,
                                     ble_gatts_char_handles_t* char_handle) {
+    uint8_t vlen = 0;
+    create_characteristic(read, write, notify, uuid_type, uuid, len, buf, vlen, service_handle, char_handle);
+}
+
+void simple_ble_add_vlen_characteristic (uint8_t read,
+                                    uint8_t write,
+                                    uint8_t notify,
+                                    uint8_t uuid_type,
+                                    uint16_t uuid,
+                                    uint16_t len,
+                                    uint8_t* buf,
+                                    uint16_t service_handle,
+                                    ble_gatts_char_handles_t* char_handle) {
+    uint8_t vlen = 1;
+    create_characteristic(read, write, notify, uuid_type, uuid, len, buf, vlen, service_handle, char_handle);
+}
+
+static void create_characteristic (uint8_t read,
+                                    uint8_t write,
+                                    uint8_t notify,
+                                    uint8_t uuid_type,
+                                    uint16_t uuid,
+                                    uint16_t len,
+                                    uint8_t* buf,
+                                    uint8_t vlen,
+                                    uint16_t service_handle,
+                                    ble_gatts_char_handles_t* char_handle) {
     volatile uint32_t err_code;
     ble_gatts_char_md_t char_md;
     ble_gatts_attr_t    attr_char_value;
@@ -393,7 +429,7 @@ void simple_ble_add_characteristic (uint8_t read,
     attr_md.vloc    = BLE_GATTS_VLOC_USER;
     attr_md.rd_auth = 0;
     attr_md.wr_auth = 0;
-    attr_md.vlen    = 0;
+    attr_md.vlen    = vlen;
 
     memset(&attr_char_value, 0, sizeof(attr_char_value));
 
@@ -402,8 +438,7 @@ void simple_ble_add_characteristic (uint8_t read,
     attr_char_value.init_len  = len;
     attr_char_value.init_offs = 0;
 
-    // When this is 512 we get a data size error?
-    // It seems unlikely we are actually out of memory though
+    // max len can be up to BLE_GATTS_FIX_ATTR_LEN_MAX (510)
     attr_char_value.max_len   = len;
     attr_char_value.p_value   = buf;
 
@@ -413,3 +448,45 @@ void simple_ble_add_characteristic (uint8_t read,
                                                char_handle);
     APP_ERROR_CHECK(err_code);
 }
+
+void simple_ble_update_char_len (ble_gatts_char_handles_t* char_handle, uint16_t len) {
+    volatile uint32_t err_code;
+
+    ble_gatts_value_t value_config;
+    value_config.len = len;
+    value_config.offset = 0;
+    value_config.p_value = NULL;
+
+    // Update length for vlen variable stored in user-space (VLOC_USER)
+    err_code = sd_ble_gatts_value_set(BLE_CONN_HANDLE_INVALID, char_handle->value_handle, &value_config);
+    APP_ERROR_CHECK(err_code);
+}
+
+void simple_ble_notify_char (ble_gatts_char_handles_t* char_handle, uint16_t len) {
+    static uint16_t p_len_val = 0;
+    volatile uint32_t err_code;
+
+    // can't notify if we aren't in a connection
+    if (app.conn_handle == BLE_CONN_HANDLE_INVALID) {
+        return;
+    }
+
+    // length needs to be in a variable so the written length can be reported to
+    //  the user. We don't care about this. Hide the annoyance
+    p_len_val = len;
+
+    ble_gatts_hvx_params_t hvx_params;
+    hvx_params.handle = char_handle->value_handle;
+    hvx_params.type = BLE_GATT_HVX_NOTIFICATION;
+    hvx_params.offset = 0;
+    hvx_params.p_len = &p_len_val;
+    hvx_params.p_data = NULL;
+
+    err_code = sd_ble_gatts_hvx(app.conn_handle, &hvx_params);
+    if (err_code == NRF_ERROR_INVALID_STATE) {
+        // error means Notify is not enabled by the client. IGNORE
+        return;
+    }
+    APP_ERROR_CHECK(err_code);
+}
+

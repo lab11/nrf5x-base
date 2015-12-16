@@ -76,4 +76,39 @@ to just setup some services, this is a much better starting point.
                                       app.service_handle,
                                       &app.char_handle);
 
+- `void simple_ble_add_vlen_characteristic (...)`
+
+        void simple_ble_add_vlen_characteristic (uint8_t read,
+                                            uint8_t write,
+                                            uint8_t notify,
+                                            uint8_t uuid_type,
+                                            uint16_t uuid,
+                                            uint16_t len,
+                                            uint8_t* buf,
+                                            uint16_t service_handle,
+                                            ble_gatts_char_handles_t* char_handle);
+
+    Add a variable-length characteristic to a service.
+
+        #define CHAR_SHORT_UUID 0x1235
+        simple_ble_add_vlen_characteristic(1, 0, 1,  // read, write, notify
+                                      my_uuid.type,
+                                      CHAR_SHORT_UUID,
+                                      1, app.char_memory,
+                                      app.service_handle,
+                                      &app.char_handle);
+
+- `void simple_ble_update_char_len (ble_gatts_handles_t* char_handle, uint16_t len)`
+
+    This updates the length of a variable-length characteristic
+
+        simple_ble_update_char_len(&app.char_handle, 5);
+
+- `void simple_ble_notify_char (ble_gatts_char_handles_t* char_handle, uint16_t len)`
+
+    This sends a BLE notification with an updated value for a notify-enabled characteristic.
+    `len` is the length of data to send to the user
+
+        app.my_notify_value = 10;
+        simple_ble_notify_char(&app.my_notify_char_handle, 1);
 
