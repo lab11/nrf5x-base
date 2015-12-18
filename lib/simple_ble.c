@@ -57,9 +57,6 @@ static void ble_evt_dispatch(ble_evt_t * p_ble_evt);
 static void sys_evt_dispatch(uint32_t sys_evt);
 static void on_conn_params_evt(ble_conn_params_evt_t * p_evt);
 static void on_ble_evt(ble_evt_t * p_ble_evt);
-static void create_characteristic (uint8_t read, uint8_t write, uint8_t notify,
-        uint8_t uuid_type, uint16_t uuid, uint16_t len, uint8_t* buf, uint8_t vlen,
-        uint16_t service_handle, ble_gatts_char_handles_t* char_handle);
 
 void app_error_handler(uint32_t error_code, uint32_t line_num, const uint8_t * p_file_name);
 void assert_nrf_callback(uint16_t line_num, const uint8_t * p_file_name);
@@ -362,112 +359,75 @@ simple_ble_app_t* simple_ble_init(const simple_ble_config_t* conf) {
     return &app;
 }
 
-uint16_t simple_ble_add_service (const ble_uuid128_t* uuid128,
-                                 ble_uuid_t* uuid,
-                                 uint16_t short_uuid) {
-    volatile uint32_t err_code;
-    uint16_t service_handle;
+void simple_ble_add_service (simple_ble_service_t* service_handle) {
+    uint32_t err_code;
 
-    // Setup our long UUID so that nRF recognizes it. This is done by
-    // storing the full UUID and essentially using `uuid`
-    // as a handle.
-    uuid->uuid = short_uuid;
-    err_code = sd_ble_uuid_vs_add(uuid128, &(uuid->type));
+    // Setup our long UUID so that nRF recognizes it. This is done by storing
+    //  the full 128-bit UUID and using 16 bits of it as a handle
+    uint16_t uuid16 = (service_handle->uuid128.uuid128[12] << 8) |(service_handle->uuid128.uuid128[13]);
+    service_handle->uuid_handle.uuid = uuid16;
+    err_code = sd_ble_uuid_vs_add(&(service_handle->uuid128), &(service_handle->uuid_handle.type));
     APP_ERROR_CHECK(err_code);
 
     // Add the custom service to the system
-    err_code = sd_ble_gatts_service_add(BLE_GATTS_SRVC_TYPE_PRIMARY, uuid, &service_handle);
+    err_code = sd_ble_gatts_service_add(BLE_GATTS_SRVC_TYPE_PRIMARY,
+            &(service_handle->uuid_handle), &(service_handle->service_handle));
     APP_ERROR_CHECK(err_code);
-
-    return service_handle;
 }
 
 void simple_ble_add_characteristic (uint8_t read,
                                     uint8_t write,
                                     uint8_t notify,
-                                    uint8_t uuid_type,
-                                    uint16_t uuid,
-                                    uint16_t len,
-                                    uint8_t* buf,
-                                    uint16_t service_handle,
-                                    ble_gatts_char_handles_t* char_handle) {
-    uint8_t vlen = 0;
-    create_characteristic(read, write, notify, uuid_type, uuid, len, buf, vlen, service_handle, char_handle);
-}
-
-void simple_ble_add_vlen_characteristic (uint8_t read,
-                                    uint8_t write,
-                                    uint8_t notify,
-                                    uint8_t uuid_type,
-                                    uint16_t uuid,
-                                    uint16_t len,
-                                    uint8_t* buf,
-                                    uint16_t service_handle,
-                                    ble_gatts_char_handles_t* char_handle) {
-    uint8_t vlen = 1;
-    create_characteristic(read, write, notify, uuid_type, uuid, len, buf, vlen, service_handle, char_handle);
-}
-
-static void create_characteristic (uint8_t read,
-                                    uint8_t write,
-                                    uint8_t notify,
-                                    uint8_t uuid_type,
-                                    uint16_t uuid,
-                                    uint16_t len,
-                                    uint8_t* buf,
                                     uint8_t vlen,
-                                    uint16_t service_handle,
-                                    ble_gatts_char_handles_t* char_handle) {
+                                    uint16_t len,
+                                    uint8_t* buf,
+                                    simple_ble_service_t* service_handle,
+                                    simple_ble_char_t* char_handle) {
     volatile uint32_t err_code;
     ble_gatts_char_md_t char_md;
     ble_gatts_attr_t    attr_char_value;
     ble_uuid_t          char_uuid;
     ble_gatts_attr_md_t attr_md;
 
+    // set characteristic metadata
     memset(&char_md, 0, sizeof(char_md));
+    char_md.char_props.read   = read;
+    char_md.char_props.write  = write;
+    char_md.char_props.notify = notify;
+    char_md.p_char_user_desc  = NULL;
+    char_md.p_char_pf         = NULL;
+    char_md.p_user_desc_md    = NULL;
+    char_md.p_cccd_md         = NULL;
+    char_md.p_sccd_md         = NULL;
 
-    // The characteristic properties
-    char_md.char_props.read          = read;
-    char_md.char_props.write         = write;
-    char_md.char_props.notify        = notify;
-    char_md.p_char_user_desc         = NULL;
-    char_md.p_char_pf                = NULL;
-    char_md.p_user_desc_md           = NULL;
-    char_md.p_cccd_md                = NULL;
-    char_md.p_sccd_md                = NULL;
+    // set characteristic uuid
+    char_uuid.type = service_handle->uuid_handle.type;
+    char_uuid.uuid = char_handle->uuid16;
 
-    char_uuid.type = uuid_type;
-    char_uuid.uuid = uuid;
-
+    // set attribute metadata
     memset(&attr_md, 0, sizeof(attr_md));
-
     if (read) BLE_GAP_CONN_SEC_MODE_SET_OPEN(&attr_md.read_perm);
     if (write) BLE_GAP_CONN_SEC_MODE_SET_OPEN(&attr_md.write_perm);
-
     attr_md.vloc    = BLE_GATTS_VLOC_USER;
     attr_md.rd_auth = 0;
     attr_md.wr_auth = 0;
     attr_md.vlen    = vlen;
 
+    // set attribute data
     memset(&attr_char_value, 0, sizeof(attr_char_value));
-
     attr_char_value.p_uuid    = &char_uuid;
     attr_char_value.p_attr_md = &attr_md;
     attr_char_value.init_len  = len;
     attr_char_value.init_offs = 0;
-
-    // max len can be up to BLE_GATTS_FIX_ATTR_LEN_MAX (510)
-    attr_char_value.max_len   = len;
+    attr_char_value.max_len   = len; // max len can be up to BLE_GATTS_FIX_ATTR_LEN_MAX (510)
     attr_char_value.p_value   = buf;
 
-    err_code = sd_ble_gatts_characteristic_add(service_handle,
-                                               &char_md,
-                                               &attr_char_value,
-                                               char_handle);
+    err_code = sd_ble_gatts_characteristic_add((service_handle->service_handle),
+            &char_md, &attr_char_value, &(char_handle->char_handle));
     APP_ERROR_CHECK(err_code);
 }
 
-void simple_ble_update_char_len (ble_gatts_char_handles_t* char_handle, uint16_t len) {
+void simple_ble_update_char_len (simple_ble_char_t* char_handle, uint16_t len) {
     volatile uint32_t err_code;
 
     ble_gatts_value_t value_config;
@@ -476,12 +436,11 @@ void simple_ble_update_char_len (ble_gatts_char_handles_t* char_handle, uint16_t
     value_config.p_value = NULL;
 
     // Update length for vlen variable stored in user-space (VLOC_USER)
-    err_code = sd_ble_gatts_value_set(BLE_CONN_HANDLE_INVALID, char_handle->value_handle, &value_config);
+    err_code = sd_ble_gatts_value_set(BLE_CONN_HANDLE_INVALID, char_handle->char_handle.value_handle, &value_config);
     APP_ERROR_CHECK(err_code);
 }
 
-void simple_ble_notify_char (ble_gatts_char_handles_t* char_handle, uint16_t len) {
-    static uint16_t p_len_val = 0;
+void simple_ble_notify_char (simple_ble_char_t* char_handle) {
     volatile uint32_t err_code;
 
     // can't notify if we aren't in a connection
@@ -489,22 +448,24 @@ void simple_ble_notify_char (ble_gatts_char_handles_t* char_handle, uint16_t len
         return;
     }
 
-    // length needs to be in a variable so the written length can be reported to
-    //  the user. We don't care about this. Hide the annoyance
-    p_len_val = len;
-
     ble_gatts_hvx_params_t hvx_params;
-    hvx_params.handle = char_handle->value_handle;
+    hvx_params.handle = char_handle->char_handle.value_handle;
     hvx_params.type = BLE_GATT_HVX_NOTIFICATION;
     hvx_params.offset = 0;
-    hvx_params.p_len = &p_len_val;
-    hvx_params.p_data = NULL;
+    hvx_params.p_len = NULL; // notify full length. No response wanted
+    hvx_params.p_data = NULL; // use existing value
 
     err_code = sd_ble_gatts_hvx(app.conn_handle, &hvx_params);
     if (err_code == NRF_ERROR_INVALID_STATE) {
-        // error means Notify is not enabled by the client. IGNORE
+        // error means notify is not enabled by the client. IGNORE
         return;
     }
     APP_ERROR_CHECK(err_code);
+}
+
+bool simple_ble_is_char_event (ble_evt_t* p_ble_evt, simple_ble_char_t* char_handle) {
+    ble_gatts_evt_write_t* p_evt_write = &(p_ble_evt->evt.gatts_evt.params.write);
+
+    return (bool)(p_evt_write->handle == char_handle->char_handle.value_handle);
 }
 

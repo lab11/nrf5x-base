@@ -19,6 +19,16 @@ typedef struct simple_ble_config_s {
     uint16_t    max_conn_interval;
 } simple_ble_config_t;
 
+typedef struct simple_ble_service_s {
+    const ble_uuid128_t uuid128;
+    ble_uuid_t uuid_handle;
+    uint16_t service_handle;
+} simple_ble_service_t;
+
+typedef struct simple_ble_char_s {
+    uint16_t uuid16;
+    ble_gatts_char_handles_t char_handle;
+} simple_ble_char_t;
 
 /*******************************************************************************
  *   FUNCTION PROTOTYPES
@@ -42,30 +52,16 @@ void __attribute__((weak)) power_manage(void);
 // call to initialize
 simple_ble_app_t* simple_ble_init(const simple_ble_config_t* conf);
 
-uint16_t simple_ble_add_service (const ble_uuid128_t* uuid128,
-                                 ble_uuid_t* uuid,
-                                 uint16_t short_uuid);
+void simple_ble_add_service (simple_ble_service_t* service);
 
-void simple_ble_add_characteristic (uint8_t read,
-                                    uint8_t write,
-                                    uint8_t notify,
-                                    uint8_t uuid_type,
-                                    uint16_t uuid,
-                                    uint16_t len,
-                                    uint8_t* buf,
-                                    uint16_t service_handle,
-                                    ble_gatts_char_handles_t* char_handle);
-void simple_ble_add_vlen_characteristic (uint8_t read,
-                                    uint8_t write,
-                                    uint8_t notify,
-                                    uint8_t uuid_type,
-                                    uint16_t uuid,
-                                    uint16_t len,
-                                    uint8_t* buf,
-                                    uint16_t service_handle,
-                                    ble_gatts_char_handles_t* char_handle);
-void simple_ble_update_char_len (ble_gatts_char_handles_t* char_handle, uint16_t len);
-void simple_ble_notify_char (ble_gatts_char_handles_t* char_handle, uint16_t len);
+void simple_ble_add_characteristic (uint8_t read, uint8_t write, uint8_t notify, uint8_t vlen,
+                                    uint16_t len, uint8_t* buf,
+                                    simple_ble_service_t* service_handle,
+                                    simple_ble_char_t* char_handle);
+
+void simple_ble_update_char_len (simple_ble_char_t* char_handle, uint16_t len);
+void simple_ble_notify_char (simple_ble_char_t* char_handle);
+bool simple_ble_is_char_event (ble_evt_t* p_ble_evt, simple_ble_char_t* char_handle);
 
 /*******************************************************************************
  *   DEFINES
