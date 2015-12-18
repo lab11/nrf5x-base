@@ -100,7 +100,7 @@ void simple_ble_notify_char (ble_gatts_char_handles_t* char_handle, uint16_t len
 
 //time from initiating event(conn or notify start) to first time param_update c
 //called
-#define FIRST_CONN_PARAMS_UPDATE_DELAY  APP_TIMER_TICKS(5000, APP_TIMER_PRESCALER)
+#define FIRST_CONN_PARAMS_UPDATE_DELAY  APP_TIMER_TICKS(1000, APP_TIMER_PRESCALER)
 
 #define NEXT_CONN_PARAMS_UPDATE_DELAY   APP_TIMER_TICKS(30000, APP_TIMER_PRESCALER)
 

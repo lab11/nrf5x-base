@@ -259,7 +259,6 @@ void __attribute__((weak)) ble_stack_init (void) {
 void __attribute__((weak)) gap_params_init (void) {
     uint32_t                err_code;
     ble_gap_conn_sec_mode_t sec_mode;
-    ble_gap_conn_params_t   gap_conn_params;
 
     // Full strength signal
     sd_ble_gap_tx_power_set(4);
@@ -273,16 +272,6 @@ void __attribute__((weak)) gap_params_init (void) {
     // Not sure what this is useful for, but why not set it
     err_code = sd_ble_gap_appearance_set(BLE_APPEARANCE_GENERIC_COMPUTER);
     APP_ERROR_CHECK(err_code);
-
-    // Specify parameters for a connection
-    memset(&gap_conn_params, 0, sizeof(gap_conn_params));
-    gap_conn_params.min_conn_interval = ble_config->min_conn_interval;
-    gap_conn_params.max_conn_interval = ble_config->max_conn_interval;
-    gap_conn_params.slave_latency     = SLAVE_LATENCY;
-    gap_conn_params.conn_sup_timeout  = CONN_SUP_TIMEOUT;
-
-    err_code = sd_ble_gap_ppcp_set(&gap_conn_params);
-    APP_ERROR_CHECK(err_code);
 }
 
 void __attribute__((weak)) advertising_init(void) {
@@ -295,6 +284,33 @@ void __attribute__((weak)) advertising_init(void) {
 }
 
 void __attribute__((weak)) conn_params_init(void) {
+    uint32_t               err_code;
+    ble_conn_params_init_t cp_init;
+    ble_gap_conn_params_t  conn_params;
+
+    // Specify parameters for a connection
+    memset(&conn_params, 0, sizeof(conn_params));
+    conn_params.min_conn_interval = ble_config->min_conn_interval;
+    conn_params.max_conn_interval = ble_config->max_conn_interval;
+    conn_params.slave_latency     = SLAVE_LATENCY;
+    conn_params.conn_sup_timeout  = CONN_SUP_TIMEOUT;
+
+    err_code = sd_ble_gap_ppcp_set(&conn_params);
+    APP_ERROR_CHECK(err_code);
+
+    // setup connection parameter negotiation
+    memset(&cp_init, 0, sizeof(cp_init));
+    cp_init.p_conn_params = NULL;
+    cp_init.first_conn_params_update_delay = FIRST_CONN_PARAMS_UPDATE_DELAY;
+    cp_init.next_conn_params_update_delay = NEXT_CONN_PARAMS_UPDATE_DELAY;
+    cp_init.max_conn_params_update_count = MAX_CONN_PARAMS_UPDATE_COUNT;
+    cp_init.start_on_notify_cccd_handle = BLE_GATT_HANDLE_INVALID;
+    cp_init.disconnect_on_fail = false;
+    cp_init.evt_handler = on_conn_params_evt;
+    cp_init.error_handler = conn_params_error_handler;
+
+    err_code = ble_conn_params_init(&cp_init);
+    APP_ERROR_CHECK(err_code);
 }
 
 void __attribute__((weak)) services_init (void) {
@@ -334,7 +350,9 @@ simple_ble_app_t* simple_ble_init(const simple_ble_config_t* conf) {
     gap_params_init();
     advertising_init();
     services_init();
-    conn_params_init();
+
+    // Cannot call this for the user as it MUST be called after APP_TIMER_INIT(...)
+    //conn_params_init();
 
     // initialize our connection state to "not in a connection"
     app.conn_handle = BLE_CONN_HANDLE_INVALID;
