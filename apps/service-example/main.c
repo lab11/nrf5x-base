@@ -1,6 +1,6 @@
 /*
- * Advertise a URL according to the Eddystone protocol.
- * https://github.com/google/eddystone/blob/master/protocol-specification.md
+ * Create an example service for controlling an LED
+ *  Demonstrates reading, writing, and notifications
  */
 
 // Global libraries
@@ -35,11 +35,11 @@ static simple_ble_config_t ble_config = {
 //  16-bit short uuid is 0x890f (bytes 12 and 13 of 128-bit UUID)
 simple_ble_service_t led_service = {
     .uuid128 = {{0x87, 0xa4, 0xde, 0xa0, 0x96, 0xea, 0x4e, 0xe6,
-                 0x87, 0x45, 0x83, 0x28, 0x89, 0x0f, 0xad, 0x7b}},
+                 0x87, 0x45, 0x83, 0x28, 0x89, 0x0f, 0xad, 0x7b}}
 };
-static simple_ble_char_t led_on_char = {.uuid16 = 0x8910,};
-static simple_ble_char_t led_off_char = {.uuid16 = 0x8911,};
-static simple_ble_char_t led_state_char = {.uuid16 = 0x8912,};
+static simple_ble_char_t led_on_char = {.uuid16 = 0x8910};
+static simple_ble_char_t led_off_char = {.uuid16 = 0x8911};
+static simple_ble_char_t led_state_char = {.uuid16 = 0x8912};
 static uint8_t led_on_value = 0;
 static uint8_t led_off_value = 0;
 static uint8_t led_state_value = 0;
@@ -67,7 +67,7 @@ void services_init (void) {
 
 void ble_evt_write(ble_evt_t* p_ble_evt) {
 
-    if(simple_ble_is_char_event(p_ble_evt, &led_on_char)) {
+    if (simple_ble_is_char_event(p_ble_evt, &led_on_char)) {
         // user wrote to led_on characteristic
         led_on(LED0);
 
@@ -75,7 +75,7 @@ void ble_evt_write(ble_evt_t* p_ble_evt) {
         led_state_value = 1;
         simple_ble_notify_char(&led_state_char);
 
-    } else if(simple_ble_is_char_event(p_ble_evt, &led_off_char)) {
+    } else if (simple_ble_is_char_event(p_ble_evt, &led_off_char)) {
         // user wrote to led_off characteristic
         led_off(LED0);
 
