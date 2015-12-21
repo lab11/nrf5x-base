@@ -33,7 +33,7 @@ static simple_ble_config_t ble_config = {
 // service and characteristic handles
 //  UUID created by `uuidgen -r`
 //  16-bit short uuid is 0x890f (bytes 12 and 13 of 128-bit UUID)
-simple_ble_service_t led_service = {
+static simple_ble_service_t led_service = {
     .uuid128 = {{0x87, 0xa4, 0xde, 0xa0, 0x96, 0xea, 0x4e, 0xe6,
                  0x87, 0x45, 0x83, 0x28, 0x89, 0x0f, 0xad, 0x7b}}
 };

@@ -52,7 +52,7 @@ void __attribute__((weak)) power_manage(void);
 // call to initialize
 simple_ble_app_t* simple_ble_init(const simple_ble_config_t* conf);
 
-void simple_ble_add_service (simple_ble_service_t* service);
+void simple_ble_add_service (simple_ble_service_t* service_char);
 
 void simple_ble_add_characteristic (uint8_t read, uint8_t write, uint8_t notify, uint8_t vlen,
                                     uint16_t len, uint8_t* buf,
@@ -83,8 +83,6 @@ bool simple_ble_is_char_event (ble_evt_t* p_ble_evt, simple_ble_char_t* char_han
 
 //RTC1_Prescale
 #define APP_TIMER_PRESCALER             0
-
-#define APP_TIMER_MAX_TIMERS            6
 
 //size of op queues
 #define APP_TIMER_OP_QUEUE_SIZE         5
