@@ -348,8 +348,9 @@ simple_ble_app_t* simple_ble_init(const simple_ble_config_t* conf) {
     advertising_init();
     services_init();
 
-    // Cannot call this for the user as it MUST be called after APP_TIMER_INIT(...)
-    //conn_params_init();
+    // APP_TIMER_INIT must be called before conn_params_init since it uses timers
+    APP_TIMER_INIT(APP_TIMER_PRESCALER, APP_TIMER_OP_QUEUE_SIZE, false);
+    conn_params_init();
 
     // initialize our connection state to "not in a connection"
     app.conn_handle = BLE_CONN_HANDLE_INVALID;

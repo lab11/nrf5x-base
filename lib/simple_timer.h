@@ -20,6 +20,7 @@
 
 
 // Call this once to init the timer subsystem
+//  Only call this if you are NOT using simple_ble
 void simple_timer_init ();
 
 // Call this to create and start a timer at the given period
