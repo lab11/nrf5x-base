@@ -20,7 +20,7 @@
 
 // Intervals for advertising and connections
 static simple_ble_config_t ble_config = {
-    .platform_id       = 0x4D,              // used as 4th octect in device BLE address
+    .platform_id       = 0x00,              // used as 4th octect in device BLE address
     .device_id         = DEVICE_ID_DEFAULT,
     .adv_name          = DEVICE_NAME,       // used in advertisements if there is room
     .adv_interval      = MSEC_TO_UNITS(500, UNIT_0_625_MS),
