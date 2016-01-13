@@ -40,6 +40,7 @@ to just setup some services, this is a much better starting point.
             .min_conn_interval = MSEC_TO_UNITS(500, UNIT_1_25_MS),
             .max_conn_interval = MSEC_TO_UNITS(1000, UNIT_1_25_MS)
         };
+        simple_ble_app_t* simple_ble_app = simple_ble_init(&ble_config);
 
 - `void simple_ble_add_service (simple_ble_service_t* service_handle)`
 
@@ -95,4 +96,31 @@ to just setup some services, this is a much better starting point.
                 // ...
             }
         }
+
+
+## `simple_timer.c`
+
+`simple_timer` allows for easy default use of timers. It allows periodic
+callbacks to be created using a single function call. Up to four callbacks can
+be created in this way. If you want non-repeating timers or more than four, you
+should use the app_timer library directly instead.
+
+### API
+
+- `void simple_timer_init(void)`
+
+    Initializes timer system if `simple_ble` is not in use
+
+    Note: if you are using the `simple_ble` library you do NOT need to call
+    this function. Doing so will waste about 500 bytes of RAM space (although
+    the timers will still work).
+
+- `void simple_timer_start (uint32_t milliseconds, app_timer_timeout_handler_t callback)`
+
+    Creates a timer to call a function at the given period
+
+        void toggle_led (void);
+
+        // toggle led every second
+        simple_timer_start(1000, toggle_led);
 

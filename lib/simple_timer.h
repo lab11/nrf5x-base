@@ -20,7 +20,9 @@
 
 
 // Call this once to init the timer subsystem
-//  Only call this if you are NOT using simple_ble
+// This only needs to be called if you are NOT calling simple_ble_init If you
+//  are using simple_ble, calling this again will still work, but wastes ~500
+//  bytes of RAM
 void simple_timer_init ();
 
 // Call this to create and start a timer at the given period

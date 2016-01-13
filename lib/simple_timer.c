@@ -17,8 +17,9 @@ APP_TIMER_DEF(timer03);
 
 static uint8_t _in_use = 0;
 
-// This only needs to be called if you are NOT calling simple_ble_init
-//  If you are using simple_ble, do not call it
+// This only needs to be called if you are NOT calling simple_ble_init If you
+//  are using simple_ble, calling this again will still work, but wastes ~500
+//  bytes of RAM
 void simple_timer_init () {
 	APP_TIMER_INIT(SIMPLE_TIMER_PRESCALER,
                    SIMPLE_TIMER_OP_QUEUE_SIZE,
