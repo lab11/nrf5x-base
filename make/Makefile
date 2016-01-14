@@ -300,7 +300,7 @@ VPATH = $(SOURCE_PATHS)
 OUTPUT_PATH = _build/
 
 CPUFLAGS = -mthumb -mcpu=cortex-m0 -march=armv6-m
-CFLAGS += -std=gnu99 -c $(CPUFLAGS) -Wall -D$(DEVICE) -D$(BOARD)
+CFLAGS += -std=gnu99 -c $(CPUFLAGS) -Wall -D$(DEVICE) -D$(BOARD) -DSDK_VERSION_$(SDK_VERSION)
 CFLAGS += -s -ffunction-sections -fdata-sections
 CFLAGS += $(CMSIS_INCLUDE) $(LIBRARY_INCLUDES) -MD
 LDFLAGS += $(CPUFLAGS) -L $(BASE_DIR)/make/ld -T $(LINKER_SCRIPT) -Wl,--gc-sections -Wl,-Map=$(OUTPUT_PATH)$(OUTPUT_NAME).Map

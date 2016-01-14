@@ -313,6 +313,16 @@ void __attribute__((weak)) conn_params_init(void) {
 void __attribute__((weak)) services_init (void) {
 }
 
+void __attribute__((weak)) initialize_app_timer (void) {
+    // allow user to overwrite if they want to change timer parameters
+#ifdef SDK_VERSION_9
+    // old version of the API specifying maximum number of timers
+    APP_TIMER_INIT(APP_TIMER_PRESCALER, APP_TIMER_MAX_TIMERS, APP_TIMER_OP_QUEUE_SIZE, false);
+#else
+    APP_TIMER_INIT(APP_TIMER_PRESCALER, APP_TIMER_OP_QUEUE_SIZE, false);
+#endif
+}
+
 
 /*******************************************************************************
  *   HELPER FUNCTIONS
@@ -349,7 +359,7 @@ simple_ble_app_t* simple_ble_init(const simple_ble_config_t* conf) {
     services_init();
 
     // APP_TIMER_INIT must be called before conn_params_init since it uses timers
-    APP_TIMER_INIT(APP_TIMER_PRESCALER, APP_TIMER_OP_QUEUE_SIZE, false);
+    initialize_app_timer();
     conn_params_init();
 
     // initialize our connection state to "not in a connection"
