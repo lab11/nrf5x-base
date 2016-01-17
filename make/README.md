@@ -38,6 +38,7 @@ These are required:
 These are optional
 - `SOFTDEVICE_VERSION` : Full version number of the softdevice.
 - `SOFTDEVICE`         : Path to the softdevice to use
+- `SERIALIZATION_MODE` : "connectivity" or "application" (only define if using serialization module)
 - `START_CODE`         : .s file to execute first
 - `SYSTEM_FILE`        : Base nRF .c file.
 - `NRF_MODEL`          : nrf51 | nrf52  : Set by the softdevice used
