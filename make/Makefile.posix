@@ -125,8 +125,8 @@ startdebug: debug-gdbinit
 	sleep 1
 	$(TERMINAL) "$(GDB) $(ELF)"
 
-startrtt:
-	$(TERMINAL) "JLinkExe -device nrf51822 -if swd -speed 1000"
+startrtt: 
+	$(TERMINAL) "JLinkExe -device nrf51822 -if swd -speed 1000 -AutoConnect 1"
 	sleep 1
 	$(TERMINAL) "$(JLINKRTTCLIENT)"
 
