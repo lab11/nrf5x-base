@@ -12,12 +12,14 @@ FLASH_START_ADDRESS = $(shell $(OBJDUMP) -h $(ELF) -j .text | grep .text | awk '
 ifdef SEGGER_SERIAL
 JLINKEXE_OPTION = -SelectEmuBySn $(SEGGER_SERIAL)
 JLINKGDBSERVER_OPTION = -select USB=$(SEGGER_SERIAL)
+JLINKRTTCLIENT_OPTION = -select USB=$(SEGGER_SERIAL)
 endif
 
 MAKE_BUILD_FOLDER = mkdir -p $(OUTPUT_PATH)
 
 JLINK = -JLinkExe $(JLINK_OPTIONS) $(JLINKEXE_OPTION)
 JLINKGDBSERVER = JLinkGDBServer $(JLINK_OPTIONS) $(JLINKGDBSERVER_OPTION)
+JLINKRTTCLIENT = JLinkRTTClient $(JLINK_OPTIONS) $(JLINKRTTCLIENT_OPTION)
 
 SOFTDEVICE_OUTPUT = $(OUTPUT_PATH)$(notdir $(SOFTDEVICE))
 
@@ -122,6 +124,11 @@ startdebug: debug-gdbinit
 	$(TERMINAL) "$(JLINKGDBSERVER) -port $(GDB_PORT_NUMBER)"
 	sleep 1
 	$(TERMINAL) "$(GDB) $(ELF)"
+
+startrtt:
+	$(TERMINAL) "JLinkExe -device nrf51822 -if swd -speed 1000"
+	sleep 1
+	$(TERMINAL) "$(JLINKRTTCLIENT)"
 
 debug-gdbinit:
 	printf "target remote localhost:$(GDB_PORT_NUMBER)\nload\nmon reset\nbreak main\n" > .gdbinit
