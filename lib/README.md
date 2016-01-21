@@ -8,8 +8,8 @@ nRF5x BLE SoCs.
 
 `simple_ble` sets up the Nordic BLE stack with reasonable defaults. This
 removes a lot of the copy-pasting that used to be necessary to create new BLE apps.
-It picks reasonable defaults for most paramters and exposes a few settings
-that are more appication-specific. If you are looking to make a very specific
+It picks reasonable defaults for most parameters and exposes a few settings
+that are more application-specific. If you are looking to make a very specific
 BLE app you may want to use the Nordic APIs directly. However, if you want
 to just setup some services, this is a much better starting point.
 
@@ -40,75 +40,87 @@ to just setup some services, this is a much better starting point.
             .min_conn_interval = MSEC_TO_UNITS(500, UNIT_1_25_MS),
             .max_conn_interval = MSEC_TO_UNITS(1000, UNIT_1_25_MS)
         };
+        simple_ble_app_t* simple_ble_app = simple_ble_init(&ble_config);
 
-- `uint16_t simple_ble_add_service (const ble_uuid128_t* uuid128, ble_uuid_t* uuid, uint16_t short_uuid)`
+- `void simple_ble_add_service (simple_ble_service_t* service_handle)`
 
     This adds a BLE service to the node.
 
-
-        #define SHORT_UUID 0x1234
-        const ble_uuid128_t my_uuid128 = {
-            {0xaa, 0xbb, 0x5e, 0x39, 0x31, 0x52, 0x45, 0x0c,
-             0x90, 0xee, 0x3f, 0xa2, 0x9c, 0x86, 0x8c, 0xd6}
+        //  UUID created by `uuidgen -r`
+        //  16-bit short uuid is 0x890f (bytes 12 and 13 of 128-bit UUID)
+        simple_ble_service_t my_service = {
+            .uuid128 = {{0x87, 0xa4, 0xde, 0xa0, 0x96, 0xea, 0x4e, 0xe6,
+                         0x87, 0x45, 0x83, 0x28, 0x89, 0x0f, 0xad, 0x7b}}
         };
-        ble_uuid_t my_uuid;
-        app.service_handle = simple_ble_add_service(&my_uuid128, &my_uuid, SHORT_UUID);
+        simple_ble_add_service(&my_service);
 
 - `void simple_ble_add_characteristic (...)`
 
-        void simple_ble_add_characteristic (uint8_t read,
-                                            uint8_t write,
-                                            uint8_t notify,
-                                            uint8_t uuid_type,
-                                            uint16_t uuid,
-                                            uint16_t len,
-                                            uint8_t* buf,
-                                            uint16_t service_handle,
-                                            ble_gatts_char_handles_t* char_handle);
+        void simple_ble_add_characteristic (uint8_t read, uint8_t write, uint8_t notify, uint8_t vlen,
+                                            uint16_t len, uint8_t* buf,
+                                            simple_ble_service_t* service_handle,
+                                            simple_ble_char_t* char_handle);
 
     Add a characteristic to a service.
 
-        #define CHAR_SHORT_UUID 0x1235
-        simple_ble_add_characteristic(1, 0, 1,  // read, write, notify
-                                      my_uuid.type,
-                                      CHAR_SHORT_UUID,
-                                      1, app.char_memory,
-                                      app.service_handle,
-                                      &app.char_handle);
+        simple_ble_char_t my_char = {.uuid16 = 0x8910};
+        simple_ble_add_characteristic(0, 1, 0, 0, // read, write, notify, vlen
+                                      1, &app.my_char_value,
+                                      &my_service,
+                                      &my_char);
 
-- `void simple_ble_add_vlen_characteristic (...)`
+- `void simple_ble_update_char_len (simple_ble_char_t* char_handle, uint16_t len)`
 
-        void simple_ble_add_vlen_characteristic (uint8_t read,
-                                            uint8_t write,
-                                            uint8_t notify,
-                                            uint8_t uuid_type,
-                                            uint16_t uuid,
-                                            uint16_t len,
-                                            uint8_t* buf,
-                                            uint16_t service_handle,
-                                            ble_gatts_char_handles_t* char_handle);
+    This updates the length of a variable-length characteristic. This can only
+    be used on a characteristic that was created with vlen set to 1
 
-    Add a variable-length characteristic to a service.
+        simple_ble_update_char_len(&my_vlen_char, 5);
 
-        #define CHAR_SHORT_UUID 0x1235
-        simple_ble_add_vlen_characteristic(1, 0, 1,  // read, write, notify
-                                      my_uuid.type,
-                                      CHAR_SHORT_UUID,
-                                      1, app.char_memory,
-                                      app.service_handle,
-                                      &app.char_handle);
+- `void simple_ble_notify_char (simple_ble_char_t* char_handle)`
 
-- `void simple_ble_update_char_len (ble_gatts_handles_t* char_handle, uint16_t len)`
+    This sends a BLE notification with an updated value for a notify-enabled
+    characteristic. This function can be safely used even if there is no
+    connection or if the central has not requested notification.
 
-    This updates the length of a variable-length characteristic
+        app.my_notify_char_value = 10;
+        simple_ble_notify_char(&my_notify_char);
 
-        simple_ble_update_char_len(&app.char_handle, 5);
+- `void simple_ble_is_char_event (ble_evt_t* p_ble_evt, simple_ble_char_t* char_handle)`
 
-- `void simple_ble_notify_char (ble_gatts_char_handles_t* char_handle, uint16_t len)`
+    This checks if a BLE write event corresponds to the given characteristic
 
-    This sends a BLE notification with an updated value for a notify-enabled characteristic.
-    `len` is the length of data to send to the user
+        void ble_evt_write(ble_evt_t* p_ble_evt) {
+            
+            if (simple_ble_is_char_event(p_ble_evt, &my_char)) {
+                // code to be run on a write event here
+                // ...
+            }
+        }
 
-        app.my_notify_value = 10;
-        simple_ble_notify_char(&app.my_notify_char_handle, 1);
+
+## `simple_timer.c`
+
+`simple_timer` allows for easy default use of timers. It allows periodic
+callbacks to be created using a single function call. Up to four callbacks can
+be created in this way. If you want non-repeating timers or more than four, you
+should use the app_timer library directly instead.
+
+### API
+
+- `void simple_timer_init(void)`
+
+    Initializes timer system if `simple_ble` is not in use
+
+    Note: if you are using the `simple_ble` library you do NOT need to call
+    this function. Doing so will waste about 500 bytes of RAM space (although
+    the timers will still work).
+
+- `void simple_timer_start (uint32_t milliseconds, app_timer_timeout_handler_t callback)`
+
+    Creates a timer to call a function at the given period
+
+        void toggle_led (void);
+
+        // toggle led every second
+        simple_timer_start(1000, toggle_led);
 
