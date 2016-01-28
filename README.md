@@ -56,10 +56,8 @@ own application directory and modify as desired.
 Generally, the expected directory structure for your project is:
 ```
     /apps
-        /<my app name>
-            Various .c and .h files for your application
-            Makefile (copy from Makefile.example and modify as needed)
-        /<my other app name>
+        /<application 1>
+        /<application 2>
         ...
     /src
         various platform-level code (e.g. functions shared between applications)
@@ -68,9 +66,32 @@ Generally, the expected directory structure for your project is:
     /nrf5x-base (submodule)
 ```
 
-An example of this project in use can be found
-[here](https://github.com/helena-project/squall/tree/master/software/apps/beacon).
+Example Applications
+--------------------
 
+This repo has several example and test applications. See the
+[apps](https://github.com/lab11/nrf5x-base/tree/master/apps)
+folder.
+
+Supported Features
+--------------
+
+There are libraries for many common BLE functions in this repo:
+
+- `simple_ble`: Quick interface to most common BLE functions
+  - BLE Advertisements
+    - Device name only
+    - Manufacturer data
+    - Eddystone
+    - Rotating multiple advertisements
+  - BLE Services
+- SQL style database ([LittleD](https://github.com/graemedouglas/LittleD))
+- [RTT Debugging](https://www.segger.com/pr-j-link-real-time.html)
+- Nordic [BLE Serialization](http://infocenter.nordicsemi.com/index.jsp?topic=%2Fcom.nordic.infocenter.sdk51.v10.0.0%2Fble_serialization_s110_events.html)
+
+
+Git Submodules
+--------------
 
 If you're using submodules in your project, you may want to use this to make
 git automatically update them:
@@ -86,7 +107,3 @@ On iOS, [LightBlue Explorer](https://itunes.apple.com/us/app/lightblue-explorer-
 has similar or better functionality. Alternatively,
 [noble](https://github.com/sandeepmistry/noble) is a NodeJS library for interacting with BLE that can run from
 a Linux or Mac computer.
-
-
-
-

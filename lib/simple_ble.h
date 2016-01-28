@@ -41,11 +41,12 @@ extern void __attribute__((weak)) ble_evt_rw_auth(ble_evt_t* p_ble_evt);
 extern void __attribute__((weak)) ble_error(uint32_t error_code);
 
 // overwrite to change functionality
-void __attribute__((weak)) ble_stack_init (void);
-void __attribute__((weak)) gap_params_init (void);
+void __attribute__((weak)) ble_stack_init(void);
+void __attribute__((weak)) gap_params_init(void);
 void __attribute__((weak)) advertising_init(void);
 void __attribute__((weak)) conn_params_init(void);
-void __attribute__((weak)) services_init (void);
+void __attribute__((weak)) services_init(void);
+void __attribute__((weak)) initialize_app_timer(void);
 void __attribute__((weak)) advertising_start(void);
 void __attribute__((weak)) advertising_stop(void);
 void __attribute__((weak)) power_manage(void);
@@ -106,6 +107,8 @@ extern __attribute__((weak)) const int FIRST_CONN_PARAMS_UPDATE_DELAY;
 
 //RTC1_Prescale
 #define APP_TIMER_PRESCALER             0
+
+#define APP_TIMER_MAX_TIMERS            6
 
 //size of op queues
 #define APP_TIMER_OP_QUEUE_SIZE         5
