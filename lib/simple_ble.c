@@ -47,6 +47,12 @@ ble_gap_sec_params_t m_sec_params = {
     SEC_PARAM_MAX_KEY_SIZE,
 };
 
+// configuration settings that can be redefined by application
+__attribute__((weak)) const int SLAVE_LATENCY = 0;
+__attribute__((weak)) const int APP_TIMER_MAX_TIMERS = 6;
+__attribute__((weak)) const int CONN_SUP_TIMEOUT = MSEC_TO_UNITS(4000, UNIT_10_MS);
+__attribute__((weak)) const int FIRST_CONN_PARAMS_UPDATE_DELAY = APP_TIMER_TICKS(1000, APP_TIMER_PRESCALER);
+
 
 /*******************************************************************************
  *   FUNCTION PROTOTYPES
@@ -124,34 +130,43 @@ static void on_ble_evt(ble_evt_t * p_ble_evt) {
     switch (p_ble_evt->header.evt_id) {
         case BLE_GAP_EVT_CONNECTED:
             app.conn_handle = p_ble_evt->evt.gap_evt.conn_handle;
-            // callback for user. Weak reference, so check validity first
-            if (ble_evt_connected) {
-                ble_evt_connected(p_ble_evt);
-            }
             // continue advertising, but nonconnectably
             m_adv_params.type = BLE_GAP_ADV_TYPE_ADV_NONCONN_IND;
             advertising_start();
             // connected to device. Set initial CCCD attributes to NULL
             err_code = sd_ble_gatts_sys_attr_set(app.conn_handle, NULL, 0, 0);
             APP_ERROR_CHECK(err_code);
+
+            // callback for user. Weak reference, so check validity first
+            if (ble_evt_connected) {
+                ble_evt_connected(p_ble_evt);
+            }
             break;
 
         case BLE_GAP_EVT_DISCONNECTED:
             app.conn_handle = BLE_CONN_HANDLE_INVALID;
-            // callback for user. Weak reference, so check validity first
-            if (ble_evt_disconnected) {
-                ble_evt_disconnected(p_ble_evt);
-            }
             // go back to advertising connectably
             advertising_stop();
             m_adv_params.type = BLE_GAP_ADV_TYPE_ADV_IND;
             advertising_start();
+
+            // callback for user. Weak reference, so check validity first
+            if (ble_evt_disconnected) {
+                ble_evt_disconnected(p_ble_evt);
+            }
             break;
 
         case BLE_GATTS_EVT_WRITE:
             // callback for user. Weak reference, so check validity first
             if (ble_evt_write) {
                 ble_evt_write(p_ble_evt);
+            }
+            break;
+
+        case BLE_GATTS_EVT_RW_AUTHORIZE_REQUEST:
+            // callback for user. Weak reference, so check validity first
+            if (ble_evt_rw_auth) {
+                ble_evt_rw_auth(p_ble_evt);
             }
             break;
 
@@ -320,14 +335,18 @@ void __attribute__((weak)) services_init (void) {
 void __attribute__((weak)) advertising_start(void) {
     uint32_t err_code = sd_ble_gap_adv_start(&m_adv_params);
     if (err_code != NRF_ERROR_INVALID_STATE) {
-        // Ignore Invalid State responses. Occurs when start is called twice
+        // ignore Invalid State responses. Occurs when start is called twice
         APP_ERROR_CHECK(err_code);
     }
 }
 
 void __attribute__((weak)) advertising_stop(void) {
     uint32_t err_code = sd_ble_gap_adv_stop();
-    APP_ERROR_CHECK(err_code);
+    if (err_code != NRF_ERROR_INVALID_STATE) {
+        // ignore Invalid State responses. Occurs when stop is called although
+        //  advertising is not running
+        APP_ERROR_CHECK(err_code);
+    }
 }
 
 void __attribute__((weak)) power_manage(void) {
@@ -428,7 +447,7 @@ void simple_ble_add_characteristic (uint8_t read,
     APP_ERROR_CHECK(err_code);
 }
 
-void simple_ble_update_char_len (simple_ble_char_t* char_handle, uint16_t len) {
+uint32_t simple_ble_update_char_len (simple_ble_char_t* char_handle, uint16_t len) {
     volatile uint32_t err_code;
 
     ble_gatts_value_t value_config;
@@ -438,15 +457,19 @@ void simple_ble_update_char_len (simple_ble_char_t* char_handle, uint16_t len) {
 
     // Update length for vlen variable stored in user-space (VLOC_USER)
     err_code = sd_ble_gatts_value_set(BLE_CONN_HANDLE_INVALID, char_handle->char_handle.value_handle, &value_config);
-    APP_ERROR_CHECK(err_code);
+    // since this isn't a configuration-time call, actually return the error
+    //  code to the user for handling rather than checking it ourselves and
+    //  possibly crashing the app
+    return err_code;
 }
 
-void simple_ble_notify_char (simple_ble_char_t* char_handle) {
+uint32_t simple_ble_notify_char (simple_ble_char_t* char_handle) {
     volatile uint32_t err_code;
 
     // can't notify if we aren't in a connection
     if (app.conn_handle == BLE_CONN_HANDLE_INVALID) {
-        return;
+        // not an error though
+        return NRF_SUCCESS;
     }
 
     ble_gatts_hvx_params_t hvx_params;
@@ -459,14 +482,41 @@ void simple_ble_notify_char (simple_ble_char_t* char_handle) {
     err_code = sd_ble_gatts_hvx(app.conn_handle, &hvx_params);
     if (err_code == NRF_ERROR_INVALID_STATE) {
         // error means notify is not enabled by the client. IGNORE
-        return;
+        return NRF_SUCCESS;
     }
-    APP_ERROR_CHECK(err_code);
+
+    // since this isn't a configuration-time call, actually return the error
+    //  code to the user for handling rather than checking it ourselves and
+    //  possibly crashing the app
+    return err_code;
 }
 
 bool simple_ble_is_char_event (ble_evt_t* p_ble_evt, simple_ble_char_t* char_handle) {
     ble_gatts_evt_write_t* p_evt_write = &(p_ble_evt->evt.gatts_evt.params.write);
 
     return (bool)(p_evt_write->handle == char_handle->char_handle.value_handle);
+}
+
+uint32_t simple_ble_grant_auth (ble_evt_t* p_ble_evt) {
+    ble_gatts_evt_rw_authorize_request_t* p_auth_req = &(p_ble_evt->evt.gatts_evt.params.authorize_request);
+
+    // initialize response
+    ble_gatts_rw_authorize_reply_params_t auth_resp;
+    memset(&auth_resp, 0, sizeof(auth_resp));
+    auth_resp.params.read.gatt_status = BLE_GATT_STATUS_SUCCESS;
+
+    // add proper response type
+    if (p_auth_req->type == BLE_GATTS_AUTHORIZE_TYPE_READ) {
+        // read request
+        auth_resp.type = BLE_GATTS_AUTHORIZE_TYPE_READ;
+    } else if (p_auth_req->type == BLE_GATTS_AUTHORIZE_TYPE_WRITE) {
+        // write request
+        auth_resp.type = BLE_GATTS_AUTHORIZE_TYPE_WRITE;
+    } else {
+        // type is invalid, why are we here?
+        auth_resp.type = BLE_GATTS_AUTHORIZE_TYPE_INVALID;
+    }
+
+    return sd_ble_gatts_rw_authorize_reply(app.conn_handle, &auth_resp);
 }
 
