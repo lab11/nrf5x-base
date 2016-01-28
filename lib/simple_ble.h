@@ -53,6 +53,7 @@ void __attribute__((weak)) power_manage(void);
 // call to initialize
 simple_ble_app_t* simple_ble_init(const simple_ble_config_t* conf);
 
+// standard service and characteristic creation
 void simple_ble_add_service (simple_ble_service_t* service_char);
 
 void simple_ble_add_characteristic (uint8_t read, uint8_t write, uint8_t notify, uint8_t vlen,
@@ -63,6 +64,19 @@ void simple_ble_add_characteristic (uint8_t read, uint8_t write, uint8_t notify,
 uint32_t simple_ble_update_char_len (simple_ble_char_t* char_handle, uint16_t len);
 uint32_t simple_ble_notify_char (simple_ble_char_t* char_handle);
 bool simple_ble_is_char_event (ble_evt_t* p_ble_evt, simple_ble_char_t* char_handle);
+
+// enable read/write authorization on a characteristic
+void simple_ble_add_auth_characteristic (uint8_t read, uint8_t write, uint8_t notify, uint8_t vlen,
+                                        bool read_auth, bool write_auth,
+                                        uint16_t len, uint8_t* buf,
+                                        simple_ble_service_t* service_handle,
+                                        simple_ble_char_t* char_handle);
+
+bool simple_ble_is_read_auth_event (ble_evt_t* p_ble_evt, simple_ble_char_t* char_handle);
+bool simple_ble_is_write_auth_event (ble_evt_t* p_ble_evt, simple_ble_char_t* char_handle);
+uint32_t simple_ble_grant_auth (ble_evt_t* p_ble_evt);
+
+
 
 /*******************************************************************************
  *   GLOBAL CONFIGURATIONS
