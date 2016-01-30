@@ -108,8 +108,6 @@ extern __attribute__((weak)) const int FIRST_CONN_PARAMS_UPDATE_DELAY;
 //RTC1_Prescale
 #define APP_TIMER_PRESCALER             0
 
-#define APP_TIMER_MAX_TIMERS            6
-
 //size of op queues
 #define APP_TIMER_OP_QUEUE_SIZE         5
 
