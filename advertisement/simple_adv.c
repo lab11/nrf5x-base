@@ -29,70 +29,59 @@
 #include "simple_ble.h"
 #include "simple_adv.h"
 
-void simple_adv_only_name () {
+static void full_adv (bool name, // if true, name goes in original packet
+                      ble_uuid_t* service_uuid,
+                      ble_advdata_manuf_data_t* manuf_specific_data) {
     uint32_t      err_code;
     ble_advdata_t advdata;
+    ble_advdata_t srdata;
 
     // Build and set advertising data
     memset(&advdata, 0, sizeof(advdata));
+    memset(&srdata, 0, sizeof(srdata));
 
-    advdata.name_type          = BLE_ADVDATA_FULL_NAME;
-    advdata.include_appearance = true;
-    advdata.flags              = BLE_GAP_ADV_FLAGS_LE_ONLY_GENERAL_DISC_MODE;
+    // Common
+    advdata.include_appearance      = true;
+    advdata.flags                   = BLE_GAP_ADV_FLAGS_LE_ONLY_GENERAL_DISC_MODE;
 
-    err_code = ble_advdata_set(&advdata, NULL);
+    // Put name in main packet or in the scan response
+    if (name) {
+        advdata.name_type           = BLE_ADVDATA_FULL_NAME;
+    } else {
+        srdata.name_type            = BLE_ADVDATA_FULL_NAME;
+    }
+
+    // Handle service UUIDs
+    if (service_uuid != NULL) {
+        advdata.uuids_complete.uuid_cnt = 1;
+        advdata.uuids_complete.p_uuids  = service_uuid;
+    }
+
+    // Handle manufacturer data
+    if (manuf_specific_data != NULL) {
+        advdata.p_manuf_specific_data   = manuf_specific_data;
+    }
+
+    err_code = ble_advdata_set(&advdata, &srdata);
     APP_ERROR_CHECK(err_code);
 
     // Start the advertisement
     advertising_start();
+}
+
+void simple_adv_only_name () {
+    full_adv(true, NULL, NULL);
 }
 
 void simple_adv_service (ble_uuid_t* service_uuid) {
-    uint32_t      err_code;
-    ble_advdata_t advdata;
-    ble_advdata_t srdata;
-
-    // Build and set advertising data
-    memset(&advdata, 0, sizeof(advdata));
-    memset(&srdata, 0, sizeof(srdata));
-
-    advdata.name_type               = BLE_ADVDATA_NO_NAME;
-    advdata.include_appearance      = true;
-    advdata.flags                   = BLE_GAP_ADV_FLAGS_LE_ONLY_GENERAL_DISC_MODE;
-    advdata.uuids_complete.uuid_cnt = 1;
-    advdata.uuids_complete.p_uuids  = service_uuid;
-
-    // Put the name in the SCAN RESPONSE data
-    srdata.name_type                = BLE_ADVDATA_FULL_NAME;
-
-    err_code = ble_advdata_set(&advdata, &srdata);
-    APP_ERROR_CHECK(err_code);
-
-    // Start the advertisement
-    advertising_start();
+    full_adv(false, service_uuid, NULL);
 }
 
 void simple_adv_manuf_data (ble_advdata_manuf_data_t* manuf_specific_data) {
-    uint32_t      err_code;
-    ble_advdata_t advdata;
-    ble_advdata_t srdata;
-
-    // Build and set advertising data
-    memset(&advdata, 0, sizeof(advdata));
-    memset(&srdata, 0, sizeof(srdata));
-
-    advdata.name_type               = BLE_ADVDATA_NO_NAME;
-    advdata.include_appearance      = false;
-    advdata.flags                   = BLE_GAP_ADV_FLAGS_LE_ONLY_GENERAL_DISC_MODE;
-    advdata.p_manuf_specific_data   = manuf_specific_data;
-
-    // Put the name in the SCAN RESPONSE data
-    srdata.name_type                = BLE_ADVDATA_FULL_NAME;
-
-    err_code = ble_advdata_set(&advdata, &srdata);
-    APP_ERROR_CHECK(err_code);
-
-    // Start the advertisement
-    advertising_start();
+    full_adv(true, NULL, manuf_specific_data);
 }
 
+void simple_adv_service_manuf_data (ble_uuid_t* service_uuid,
+                                    ble_advdata_manuf_data_t* manuf_specific_data) {
+    full_adv(true, service_uuid, manuf_specific_data);
+}
