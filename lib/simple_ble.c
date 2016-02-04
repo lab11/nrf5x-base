@@ -131,7 +131,7 @@ static void on_ble_evt(ble_evt_t * p_ble_evt) {
         case BLE_GAP_EVT_CONNECTED:
             app.conn_handle = p_ble_evt->evt.gap_evt.conn_handle;
             // continue advertising, but nonconnectably
-            m_adv_params.type = BLE_GAP_ADV_TYPE_ADV_NONCONN_IND;
+            m_adv_params.type = BLE_GAP_ADV_TYPE_ADV_SCAN_IND;
             advertising_start();
             // connected to device. Set initial CCCD attributes to NULL
             err_code = sd_ble_gatts_sys_attr_set(app.conn_handle, NULL, 0, 0);
