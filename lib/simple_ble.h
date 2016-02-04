@@ -38,6 +38,7 @@ extern void __attribute__((weak)) ble_evt_connected(ble_evt_t* p_ble_evt);
 extern void __attribute__((weak)) ble_evt_disconnected(ble_evt_t* p_ble_evt);
 extern void __attribute__((weak)) ble_evt_write(ble_evt_t* p_ble_evt);
 extern void __attribute__((weak)) ble_evt_rw_auth(ble_evt_t* p_ble_evt);
+extern void __attribute__((weak)) ble_evt_user_handler(ble_evt_t* p_ble_evt);
 extern void __attribute__((weak)) ble_error(uint32_t error_code);
 
 // overwrite to change functionality
@@ -109,7 +110,7 @@ extern __attribute__((weak)) const int FIRST_CONN_PARAMS_UPDATE_DELAY;
 #define APP_TIMER_PRESCALER             0
 
 //size of op queues
-#define APP_TIMER_OP_QUEUE_SIZE         5
+#define APP_TIMER_OP_QUEUE_SIZE         8
 
 #define NEXT_CONN_PARAMS_UPDATE_DELAY   APP_TIMER_TICKS(30000, APP_TIMER_PRESCALER)
 
