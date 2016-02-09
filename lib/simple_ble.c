@@ -49,7 +49,6 @@ ble_gap_sec_params_t m_sec_params = {
 
 // configuration settings that can be redefined by application
 __attribute__((weak)) const int SLAVE_LATENCY = 0;
-__attribute__((weak)) const int APP_TIMER_MAX_TIMERS = 6;
 __attribute__((weak)) const int CONN_SUP_TIMEOUT = MSEC_TO_UNITS(4000, UNIT_10_MS);
 __attribute__((weak)) const int FIRST_CONN_PARAMS_UPDATE_DELAY = APP_TIMER_TICKS(1000, APP_TIMER_PRESCALER);
 
