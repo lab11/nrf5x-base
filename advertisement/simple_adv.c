@@ -41,7 +41,7 @@ static void full_adv (bool name, // if true, name goes in original packet
     memset(&srdata, 0, sizeof(srdata));
 
     // Common
-    advdata.include_appearance      = true;
+    advdata.include_appearance      = false;
     advdata.flags                   = BLE_GAP_ADV_FLAGS_LE_ONLY_GENERAL_DISC_MODE;
 
     // Put name in main packet or in the scan response
