@@ -39,6 +39,7 @@ extern void __attribute__((weak)) ble_evt_disconnected(ble_evt_t* p_ble_evt);
 extern void __attribute__((weak)) ble_evt_write(ble_evt_t* p_ble_evt);
 extern void __attribute__((weak)) ble_evt_rw_auth(ble_evt_t* p_ble_evt);
 extern void __attribute__((weak)) ble_evt_user_handler(ble_evt_t* p_ble_evt);
+extern void __attribute__((weak)) ble_evt_adv_report(ble_evt_t* p_ble_evt);
 extern void __attribute__((weak)) ble_error(uint32_t error_code);
 
 // overwrite to change functionality
@@ -87,6 +88,11 @@ void simple_ble_add_stack_characteristic (uint8_t read, uint8_t write, uint8_t n
                                     simple_ble_char_t* char_handle);
 uint32_t simple_ble_stack_char_get(simple_ble_char_t* char_handle, uint16_t* len, uint8_t* buf);
 uint32_t simple_ble_stack_char_set(simple_ble_char_t* char_handle, uint16_t len, uint8_t* buf);
+
+#ifdef SOFTDEVICE_s130
+// For S130 with central role support
+void simple_ble_scan_start ();
+#endif
 
 
 /*******************************************************************************

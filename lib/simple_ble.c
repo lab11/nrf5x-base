@@ -66,6 +66,7 @@ void assert_nrf_callback(uint16_t line_num, const uint8_t * p_file_name);
 /*******************************************************************************
  *   HANDLERS AND CALLBACKS
  ******************************************************************************/
+#ifndef SOFTDEVICE_s130 // This function is included in the SDK 11
 void app_error_handler(uint32_t error_code, uint32_t line_num, const uint8_t * p_file_name) {
     // APPL_LOG("[APPL]: ASSERT: %s, %d, error 0x%08x\r\n", p_file_name, line_num, error_code);
 
@@ -87,6 +88,7 @@ void app_error_handler(uint32_t error_code, uint32_t line_num, const uint8_t * p
     }
     while(1);
 }
+#endif
 
 void assert_nrf_callback(uint16_t line_num, const uint8_t * p_file_name) {
     app_error_handler(0xDEADBEEF, line_num, p_file_name);
@@ -196,6 +198,12 @@ static void on_ble_evt(ble_evt_t * p_ble_evt) {
             if (p_ble_evt->evt.gatts_evt.params.timeout.src == BLE_GATT_TIMEOUT_SRC_PROTOCOL) {
                 err_code = sd_ble_gap_disconnect(app.conn_handle, BLE_HCI_REMOTE_USER_TERMINATED_CONNECTION);
                 APP_ERROR_CHECK(err_code);
+            }
+            break;
+
+        case BLE_GAP_EVT_ADV_REPORT:
+            if (ble_evt_adv_report) {
+                ble_evt_adv_report(p_ble_evt);
             }
             break;
 
@@ -746,3 +754,25 @@ uint32_t simple_ble_stack_char_set (simple_ble_char_t* char_handle, uint16_t len
     return sd_ble_gatts_value_set(app.conn_handle, char_handle->char_handle.value_handle, &value);
 }
 
+#ifdef SOFTDEVICE_s130
+static const ble_gap_scan_params_t m_scan_param = {
+    .active = 0,                   // Active scanning not set.
+    .selective = 0,                // Selective scanning not set.
+    .p_whitelist = NULL,           // No whitelist provided.
+    .interval = 0x00A0,
+    .window = 0x0050,
+    .timeout = 0x0000              // No timeout.
+};
+
+void simple_ble_scan_start () {
+    ret_code_t err_code;
+
+    err_code = sd_ble_gap_scan_stop();
+
+    err_code = sd_ble_gap_scan_start(&m_scan_param);
+    // It is okay to ignore this error since we are stopping the scan anyway.
+    if (err_code != NRF_ERROR_INVALID_STATE) {
+        APP_ERROR_CHECK(err_code);
+    }
+}
+#endif
