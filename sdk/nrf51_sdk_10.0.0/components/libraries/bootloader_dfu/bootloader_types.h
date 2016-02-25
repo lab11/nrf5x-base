@@ -52,6 +52,7 @@ typedef struct
     uint32_t               bl_image_size;   /**< Size of Bootloader image in bank0 if bank_0 code is BANK_VALID_SD. */
     uint32_t               app_image_size;  /**< Size of Application image in bank0 if bank_0 code is BANK_VALID_SD. */
     uint32_t               sd_image_start;  /**< Location in flash where SoftDevice image is stored for SoftDevice update. */
+    uint8_t                bl_ble_addr[6];  /**< Application defined BLE addr. */ 
 } bootloader_settings_t;
 
 #endif // BOOTLOADER_TYPES_H__ 
