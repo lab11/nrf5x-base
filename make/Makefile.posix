@@ -12,12 +12,14 @@ FLASH_START_ADDRESS = $(shell $(OBJDUMP) -h $(ELF) -j .text | grep .text | awk '
 ifdef SEGGER_SERIAL
 JLINKEXE_OPTION = -SelectEmuBySn $(SEGGER_SERIAL)
 JLINKGDBSERVER_OPTION = -select USB=$(SEGGER_SERIAL)
+JLINKRTTCLIENT_OPTION = -select USB=$(SEGGER_SERIAL)
 endif
 
 MAKE_BUILD_FOLDER = mkdir -p $(OUTPUT_PATH)
 
 JLINK = -JLinkExe $(JLINK_OPTIONS) $(JLINKEXE_OPTION)
 JLINKGDBSERVER = JLinkGDBServer $(JLINK_OPTIONS) $(JLINKGDBSERVER_OPTION)
+JLINKRTTCLIENT = JLinkRTTClient $(JLINK_OPTIONS) $(JLINKRTTCLIENT_OPTION)
 
 SOFTDEVICE_OUTPUT = $(OUTPUT_PATH)$(notdir $(SOFTDEVICE))
 
@@ -37,6 +39,10 @@ flash.jlink:
 else
 # Write the ID to flash as well
 ID_BYTES = $(subst :, ,$(ID))
+NUM_ID_BYTES = $(words $(ID_BYTES))
+ifneq ($(NUM_ID_BYTES),6)
+$(error "Invalid number of bytes in ID string (expecting 6)")
+endif
 ID_FIRST = $(word 1,$(ID_BYTES))$(word 2,$(ID_BYTES))
 ID_SECON = $(word 3,$(ID_BYTES))$(word 4,$(ID_BYTES))$(word 5,$(ID_BYTES))$(word 6,$(ID_BYTES))
 flash.jlink:
@@ -122,6 +128,11 @@ startdebug: debug-gdbinit
 	$(TERMINAL) "$(JLINKGDBSERVER) -port $(GDB_PORT_NUMBER)"
 	sleep 1
 	$(TERMINAL) "$(GDB) $(ELF)"
+
+startrtt: 
+	$(TERMINAL) "JLinkExe -device nrf51822 -if swd -speed 1000 -AutoConnect 1"
+	sleep 1
+	$(TERMINAL) "$(JLINKRTTCLIENT)"
 
 debug-gdbinit:
 	printf "target remote localhost:$(GDB_PORT_NUMBER)\nload\nmon reset\nbreak main\n" > .gdbinit

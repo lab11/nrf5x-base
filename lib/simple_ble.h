@@ -37,6 +37,8 @@ typedef struct simple_ble_char_s {
 extern void __attribute__((weak)) ble_evt_connected(ble_evt_t* p_ble_evt);
 extern void __attribute__((weak)) ble_evt_disconnected(ble_evt_t* p_ble_evt);
 extern void __attribute__((weak)) ble_evt_write(ble_evt_t* p_ble_evt);
+extern void __attribute__((weak)) ble_evt_rw_auth(ble_evt_t* p_ble_evt);
+extern void __attribute__((weak)) ble_evt_user_handler(ble_evt_t* p_ble_evt);
 extern void __attribute__((weak)) ble_error(uint32_t error_code);
 
 // overwrite to change functionality
@@ -53,6 +55,7 @@ void __attribute__((weak)) power_manage(void);
 // call to initialize
 simple_ble_app_t* simple_ble_init(const simple_ble_config_t* conf);
 
+// standard service and characteristic creation
 void simple_ble_add_service (simple_ble_service_t* service_char);
 
 void simple_ble_add_characteristic (uint8_t read, uint8_t write, uint8_t notify, uint8_t vlen,
@@ -60,9 +63,30 @@ void simple_ble_add_characteristic (uint8_t read, uint8_t write, uint8_t notify,
                                     simple_ble_service_t* service_handle,
                                     simple_ble_char_t* char_handle);
 
-void simple_ble_update_char_len (simple_ble_char_t* char_handle, uint16_t len);
-void simple_ble_notify_char (simple_ble_char_t* char_handle);
+uint32_t simple_ble_update_char_len (simple_ble_char_t* char_handle, uint16_t len);
+uint32_t simple_ble_notify_char (simple_ble_char_t* char_handle);
 bool simple_ble_is_char_event (ble_evt_t* p_ble_evt, simple_ble_char_t* char_handle);
+
+// enable read/write authorization on a characteristic
+void simple_ble_add_auth_characteristic (uint8_t read, uint8_t write, uint8_t notify, uint8_t vlen,
+                                        bool read_auth, bool write_auth,
+                                        uint16_t len, uint8_t* buf,
+                                        simple_ble_service_t* service_handle,
+                                        simple_ble_char_t* char_handle);
+
+bool simple_ble_is_read_auth_event (ble_evt_t* p_ble_evt, simple_ble_char_t* char_handle);
+bool simple_ble_is_write_auth_event (ble_evt_t* p_ble_evt, simple_ble_char_t* char_handle);
+uint32_t simple_ble_grant_auth (ble_evt_t* p_ble_evt);
+
+
+
+/*******************************************************************************
+ *   GLOBAL CONFIGURATIONS
+ *******************************************************************************/
+extern __attribute__((weak)) const int SLAVE_LATENCY;
+extern __attribute__((weak)) const int APP_TIMER_MAX_TIMERS;
+extern __attribute__((weak)) const int CONN_SUP_TIMEOUT;
+extern __attribute__((weak)) const int FIRST_CONN_PARAMS_UPDATE_DELAY;
 
 /*******************************************************************************
  *   DEFINES
@@ -88,16 +112,7 @@ bool simple_ble_is_char_event (ble_evt_t* p_ble_evt, simple_ble_char_t* char_han
 #define APP_TIMER_MAX_TIMERS            6
 
 //size of op queues
-#define APP_TIMER_OP_QUEUE_SIZE         5
-
-#define SLAVE_LATENCY                   0
-
-//supervisory timeout 4s
-#define CONN_SUP_TIMEOUT                MSEC_TO_UNITS(4000, UNIT_10_MS)
-
-//time from initiating event(conn or notify start) to first time param_update c
-//called
-#define FIRST_CONN_PARAMS_UPDATE_DELAY  APP_TIMER_TICKS(1000, APP_TIMER_PRESCALER)
+#define APP_TIMER_OP_QUEUE_SIZE         8
 
 #define NEXT_CONN_PARAMS_UPDATE_DELAY   APP_TIMER_TICKS(30000, APP_TIMER_PRESCALER)
 

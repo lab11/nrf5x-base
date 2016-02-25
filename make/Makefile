@@ -164,6 +164,7 @@ ifeq ($(SDK_VERSION), 10)
 	LIBRARY_PATHS += $(wildcard $(SDK_INCLUDE_PATH)drivers_nrf/twi_master/)
 	LIBRARY_PATHS += $(wildcard $(SDK_INCLUDE_PATH)drivers_nrf/uart/)
 	LIBRARY_PATHS += $(wildcard $(SDK_INCLUDE_PATH)drivers_nrf/wdt/)
+	LIBRARY_PATHS += $(wildcard $(SDK_INCLUDE_PATH)drivers_nrf/validation/)
 	LIBRARY_PATHS += $(wildcard $(SDK_INCLUDE_PATH)drivers_ext/*/)
 	LIBRARY_PATHS += $(wildcard $(SDK_INCLUDE_PATH)device/)
 	LIBRARY_PATHS += $(SDK_INCLUDE_PATH)toolchain/gcc/
