@@ -49,7 +49,7 @@ flash.jlink:
 	$(MAKE_BUILD_FOLDER)
 	printf "r\n" > $(OUTPUT_PATH)flash.jlink
 	printf "w4 $(BLEADDR_FLASH_LOCATION), 0x$(ID_SECON) 0x$(ID_FIRST)\n" >> $(OUTPUT_PATH)flash.jlink
-	printf "loadbin $(BIN) $(FLASH_START_ADDRESS)\nr\ng\nexit\n" >> $(OUTPUT_PATH)flash.jlink
+	printf "loadfile $(HEX) \nr\ng\nexit\n" >> $(OUTPUT_PATH)flash.jlink
 endif
 
 test-softdevice: test-softdevice.jlink
