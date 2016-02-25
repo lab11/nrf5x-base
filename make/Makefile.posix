@@ -32,7 +32,7 @@ flash: all flash.jlink test-softdevice
 
 ifndef ID
 flash.jlink:
-	printf "r\nloadbin $(BIN) $(FLASH_START_ADDRESS)\nr\ng\nexit\n" > $(OUTPUT_PATH)flash.jlink
+	printf "r\nloadfile $(HEX) \nr\ng\nexit\n" > $(OUTPUT_PATH)flash.jlink
 
 else
 # Write the ID to flash as well
