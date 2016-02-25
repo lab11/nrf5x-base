@@ -1069,7 +1069,7 @@ uint32_t dfu_transport_update_start(void)
         APP_ERROR_CHECK(err_code);
 
         // Increase the BLE address by one when advertising openly.
-        addr.addr[0] += 1;
+        //addr.addr[0] += 1;
 
         err_code = sd_ble_gap_address_set(BLE_GAP_ADDR_CYCLE_MODE_NONE, &addr);
         APP_ERROR_CHECK(err_code);
