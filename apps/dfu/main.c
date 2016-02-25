@@ -29,6 +29,7 @@
  */
 #include "bootloader.h"
 #include "bootloader_util.h"
+#include "bootloader_settings.h"
 #include <stdint.h>
 #include <string.h>
 #include <stddef.h>
@@ -45,10 +46,10 @@
 #include "app_scheduler.h"
 #include "app_timer_appsh.h"
 #include "nrf_error.h"
-// #include "bsp.h"
 #include "softdevice_handler_appsh.h"
 #include "pstorage_platform.h"
 #include "nrf_mbr.h"
+#include "boards.h"
 
 // #if BUTTONS_NUMBER < 1
 // #error "Not enough buttons on board"
@@ -61,7 +62,7 @@
 #define IS_SRVC_CHANGED_CHARACT_PRESENT 1                                                       /**< Include the service_changed characteristic. For DFU this should normally be the case. */
 
 // #define BOOTLOADER_BUTTON               BSP_BUTTON_3                                         /**< Button used to enter SW update mode. */
-#define UPDATE_IN_PROGRESS_LED          13                                                      /**< Led used to indicate that DFU is active. */
+#define UPDATE_IN_PROGRESS_LED          ERROR_LED                                                      /**< Led used to indicate that DFU is active. */
 
 #define APP_TIMER_PRESCALER             0                                                       /**< Value of the RTC1 PRESCALER register. */
 
@@ -153,6 +154,7 @@ static void sys_evt_dispatch(uint32_t event)
 static void ble_stack_init(bool init_softdevice)
 {
     uint32_t         err_code;
+    const uint8_t*   _ble_address;
     sd_mbr_command_t com = {SD_MBR_COMMAND_INIT_SD, };
 
     if (init_softdevice)
@@ -176,6 +178,45 @@ static void ble_stack_init(bool init_softdevice)
     APP_ERROR_CHECK(err_code);
 
     err_code = softdevice_sys_evt_handler_set(sys_evt_dispatch);
+    APP_ERROR_CHECK(err_code);
+    
+    // Set the MAC address of the device
+    // Highest priority is address set by application in bootloader_settings
+    // Next is address from flash if available
+    // Nordic assigned random value is used as last choice
+    ble_gap_addr_t gap_addr;
+    const bootloader_settings_t * p_bootloader_settings;
+    // get BLE address from bootloader_settings
+    bootloader_util_settings_get(&p_bootloader_settings);
+    _ble_address = p_bootloader_settings->bl_ble_addr;
+    if (_ble_address[1] == 0x00 && _ble_address[0] == 0x00) {
+      // No application-defined address stored in bootloader_settings
+      // get BLE address from Flash
+      _ble_address = (uint8_t*)BLEADDR_FLASH_LOCATION;
+      if (_ble_address[1] == 0xFF && _ble_address[0] == 0xFF) {
+          // No user-defined address stored in flash
+
+          // New address is a combination of Michigan OUI and Platform ID
+          uint8_t new_mac_addr[6] = {0x00, 0x00, PLATFORM_ID_BYTE, 0xe5, 0x98, 0xc0};
+
+          // Set the new BLE address with the Michigan OUI, Platform ID, and
+          //  bottom two octets from the original gap address
+          // Get the current original address
+          sd_ble_gap_address_get(&gap_addr);
+          memcpy(gap_addr.addr+2, new_mac_addr+2, sizeof(gap_addr.addr)-2);
+      } else {
+          // User-defined address stored in flash
+
+          // Set the new BLE address with the user-defined address
+          memcpy(gap_addr.addr, _ble_address, 6);
+      }
+    } else {
+      // Application-defined address stored in bootloader-settings
+      
+      memcpy(gap_addr.addr, _ble_address, 6);
+    }
+    gap_addr.addr_type = BLE_GAP_ADDR_TYPE_PUBLIC;
+    err_code = sd_ble_gap_address_set(BLE_GAP_ADDR_CYCLE_MODE_NONE, &gap_addr);
     APP_ERROR_CHECK(err_code);
 }
 
