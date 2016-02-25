@@ -1055,7 +1055,8 @@ uint32_t dfu_transport_update_start(void)
         return err_code;
     }
 
-    err_code = dfu_ble_peer_data_get(&m_ble_peer_data);
+    //err_code = dfu_ble_peer_data_get(&m_ble_peer_data);
+    err_code = 1;
     if (err_code == NRF_SUCCESS)
     {
         m_ble_peer_data_valid = true;
