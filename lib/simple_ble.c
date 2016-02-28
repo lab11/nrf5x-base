@@ -21,14 +21,8 @@
 #include "ble_bas_c.h"
 #include "app_util.h"
 #include "app_timer.h"
-
-#ifdef SOFTDEVICE_PRESENT
-// Only include these headers if we are compiling for a target
-// with a softdevice. This allows us to support serialized applications
-// that ship all of the BLE calls to a separate nRF51822.
 #include "softdevice_handler.h"
 #include "nrf_sdm.h"
-#endif
 
 // Configurations
 #include "simple_ble.h"
@@ -268,10 +262,6 @@ void __attribute__((weak)) ble_address_set () {
 
 // Init the crystal and softdevice, plus configure the device address
 void __attribute__((weak)) ble_stack_init (void) {
-// We only include this code if there is a local softdevice to configure.
-// In the case of serialization, for instance, we do not want to run
-// these functions.
-#ifdef SOFTDEVICE_PRESENT
     uint32_t err_code;
 
     // Initialize the SoftDevice handler module.
@@ -292,7 +282,6 @@ void __attribute__((weak)) ble_stack_init (void) {
     // Register with the SoftDevice handler module for BLE events.
     err_code = softdevice_sys_evt_handler_set(sys_evt_dispatch);
     APP_ERROR_CHECK(err_code);
-#endif
 
     // And set the MAC address in the init phase
     ble_address_set();
