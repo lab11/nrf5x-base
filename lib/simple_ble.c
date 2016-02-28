@@ -10,26 +10,28 @@
 
 // Nordic Libraries
 #include "nordic_common.h"
-#include "softdevice_handler.h"
-#include "nrf.h"
-#include "nrf_sdm.h"
 #include "ble.h"
 #include "ble_db_discovery.h"
 #include "app_util.h"
 #include "app_error.h"
 #include "ble_conn_params.h"
 #include "ble_hci.h"
-#include "nrf_gpio.h"
-#include "pstorage.h"
 #include "app_trace.h"
 #include "ble_hrs_c.h"
 #include "ble_bas_c.h"
 #include "app_util.h"
 #include "app_timer.h"
 
+#ifdef SOFTDEVICE_PRESENT
+// Only include these headers if we are compiling for a target
+// with a softdevice. This allows us to support serialized applications
+// that ship all of the BLE calls to a separate nRF51822.
+#include "softdevice_handler.h"
+#include "nrf_sdm.h"
+#endif
+
 // Configurations
 #include "simple_ble.h"
-#include "led.h"
 
 /*******************************************************************************
  *   STATIC AND GLOBAL VARIABLES
