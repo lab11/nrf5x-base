@@ -29,11 +29,15 @@
 #include "simple_ble.h"
 #include "eddystone.h"
 
-static ble_uuid_t PHYSWEB_SERVICE_UUID[] = {{PHYSWEB_SERVICE_ID, BLE_UUID_TYPE_BLE}};
-static ble_advdata_uuid_list_t PHYSWEB_SERVICE_LIST = {1, PHYSWEB_SERVICE_UUID};
 
 void eddystone_adv(char* url_str, const ble_advdata_t* scan_response_data) {
     uint32_t err_code;
+
+    // These have been moved into this function to fix a bleeding-edge
+    // issue with compiling this for Tock. They should be moved back to global
+    // static at some point.
+    ble_uuid_t PHYSWEB_SERVICE_UUID[] = {{PHYSWEB_SERVICE_ID, BLE_UUID_TYPE_BLE}};
+    ble_advdata_uuid_list_t PHYSWEB_SERVICE_LIST = {1, PHYSWEB_SERVICE_UUID};
 
     // Physical Web data
     uint8_t url_frame_length = 3 + strlen((char*)url_str); // Change to 4 if URLEND is applied
@@ -68,3 +72,12 @@ void eddystone_adv(char* url_str, const ble_advdata_t* scan_response_data) {
     advertising_start();
 }
 
+void eddystone_with_manuf_adv (char* url_str, ble_advdata_manuf_data_t* manuf_specific_data) {
+    ble_advdata_t srdata;
+    memset(&srdata, 0, sizeof(srdata));
+
+    srdata.name_type = BLE_ADVDATA_FULL_NAME;
+    srdata.p_manuf_specific_data = manuf_specific_data;
+
+    eddystone_adv(url_str, &srdata);
+}

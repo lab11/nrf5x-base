@@ -5,6 +5,7 @@
 
 // Functions
 void eddystone_adv(char*, const ble_advdata_t*);
+void eddystone_with_manuf_adv (char* url_str, ble_advdata_manuf_data_t* manuf_specific_data);
 
 // Physical Web
 #define PHYSWEB_SERVICE_ID  0xFEAA
