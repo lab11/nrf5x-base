@@ -1,6 +1,9 @@
 #ifndef __SIMPLE_ADV_H
 #define __SIMPLE_ADV_H
 
+#include "ble_advdata.h"
+#include "ble_types.h"
+
 // Functions
 void simple_adv_only_name();
 void simple_adv_service(ble_uuid_t* service_uuid);

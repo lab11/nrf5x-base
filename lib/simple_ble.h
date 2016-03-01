@@ -43,6 +43,7 @@ extern void __attribute__((weak)) ble_error(uint32_t error_code);
 
 // overwrite to change functionality
 void __attribute__((weak)) ble_stack_init(void);
+void __attribute__((weak)) ble_address_set ();
 void __attribute__((weak)) gap_params_init(void);
 void __attribute__((weak)) advertising_init(void);
 void __attribute__((weak)) conn_params_init(void);

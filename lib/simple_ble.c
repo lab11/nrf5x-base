@@ -10,26 +10,22 @@
 
 // Nordic Libraries
 #include "nordic_common.h"
-#include "softdevice_handler.h"
-#include "nrf.h"
-#include "nrf_sdm.h"
 #include "ble.h"
 #include "ble_db_discovery.h"
 #include "app_util.h"
 #include "app_error.h"
 #include "ble_conn_params.h"
 #include "ble_hci.h"
-#include "nrf_gpio.h"
-#include "pstorage.h"
 #include "app_trace.h"
 #include "ble_hrs_c.h"
 #include "ble_bas_c.h"
 #include "app_util.h"
 #include "app_timer.h"
+#include "softdevice_handler.h"
+#include "nrf_sdm.h"
 
 // Configurations
 #include "simple_ble.h"
-#include "led.h"
 
 /*******************************************************************************
  *   STATIC AND GLOBAL VARIABLES
@@ -218,27 +214,11 @@ static void on_ble_evt(ble_evt_t * p_ble_evt) {
 /*******************************************************************************
  *   INIT FUNCTIONS
  ******************************************************************************/
-void __attribute__((weak)) ble_stack_init (void) {
+
+// Configure the MAC address of the device based on the config values and
+// what is stored in the flash.
+void __attribute__((weak)) ble_address_set () {
     uint32_t err_code;
-
-    // Initialize the SoftDevice handler module.
-    SOFTDEVICE_HANDLER_INIT(NRF_CLOCK_LFCLKSRC_RC_250_PPM_8000MS_CALIBRATION,
-            false);
-
-    // Enable BLE stack
-    ble_enable_params_t ble_enable_params;
-    memset(&ble_enable_params, 0, sizeof(ble_enable_params));
-    ble_enable_params.gatts_enable_params.service_changed = IS_SRVC_CHANGED_CHARACT_PRESENT;
-    err_code = sd_ble_enable(&ble_enable_params);
-    APP_ERROR_CHECK(err_code);
-
-    //Register with the SoftDevice handler module for BLE events.
-    err_code = softdevice_ble_evt_handler_set(ble_evt_dispatch);
-    APP_ERROR_CHECK(err_code);
-
-    // Register with the SoftDevice handler module for BLE events.
-    err_code = softdevice_sys_evt_handler_set(sys_evt_dispatch);
-    APP_ERROR_CHECK(err_code);
 
     // Set the MAC address of the device
     // Highest priority is address from flash if available
@@ -278,6 +258,33 @@ void __attribute__((weak)) ble_stack_init (void) {
     gap_addr.addr_type = BLE_GAP_ADDR_TYPE_PUBLIC;
     err_code = sd_ble_gap_address_set(BLE_GAP_ADDR_CYCLE_MODE_NONE, &gap_addr);
     APP_ERROR_CHECK(err_code);
+}
+
+// Init the crystal and softdevice, plus configure the device address
+void __attribute__((weak)) ble_stack_init (void) {
+    uint32_t err_code;
+
+    // Initialize the SoftDevice handler module.
+    SOFTDEVICE_HANDLER_INIT(NRF_CLOCK_LFCLKSRC_RC_250_PPM_8000MS_CALIBRATION,
+            false);
+
+    // Enable BLE stack
+    ble_enable_params_t ble_enable_params;
+    memset(&ble_enable_params, 0, sizeof(ble_enable_params));
+    ble_enable_params.gatts_enable_params.service_changed = IS_SRVC_CHANGED_CHARACT_PRESENT;
+    err_code = sd_ble_enable(&ble_enable_params);
+    APP_ERROR_CHECK(err_code);
+
+    //Register with the SoftDevice handler module for BLE events.
+    err_code = softdevice_ble_evt_handler_set(ble_evt_dispatch);
+    APP_ERROR_CHECK(err_code);
+
+    // Register with the SoftDevice handler module for BLE events.
+    err_code = softdevice_sys_evt_handler_set(sys_evt_dispatch);
+    APP_ERROR_CHECK(err_code);
+
+    // And set the MAC address in the init phase
+    ble_address_set();
 }
 
 void __attribute__((weak)) gap_params_init (void) {

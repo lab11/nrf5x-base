@@ -10,9 +10,6 @@
 
 // Nordic Libraries
 #include "nordic_common.h"
-#include "softdevice_handler.h"
-#include "nrf.h"
-#include "nrf_sdm.h"
 #include "ble.h"
 #include "ble_db_discovery.h"
 #include "app_util.h"
