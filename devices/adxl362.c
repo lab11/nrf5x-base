@@ -364,6 +364,7 @@ void adxl362_accelerometer_init (nrf_drv_spi_t* spi,
     //wait for device to be reset
     for (int i = 0; i < 100; i++);
 
+    data[0] = 0;
     if (measure) {
     	data[0] = MEASUREMENT_MODE;
     }
