@@ -90,6 +90,25 @@ There are libraries for many common BLE functions in this repo:
 - Nordic [BLE Serialization](http://infocenter.nordicsemi.com/index.jsp?topic=%2Fcom.nordic.infocenter.sdk51.v10.0.0%2Fble_serialization_s110_events.html)
 
 
+
+Program a nRF51822
+------------------
+
+To flash an application to a nRF51822 BLE chip, there is some setup
+you must do.
+
+1. Install the [`arm-none-eabi-gcc`](https://launchpad.net/gcc-arm-embedded) compiler.
+
+    On Ubuntu:
+    
+        sudo add-apt-repository ppa:team-gcc-arm-embedded/ppa
+        sudo apt-get update
+        sudo apt-get install gcc-arm-embedded
+
+2. Install the JLink [software](https://www.segger.com/jlink-software.html)
+for your platform. You want the "Software and documentation pack".
+
+
 Git Submodules
 --------------
 
