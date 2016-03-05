@@ -81,3 +81,50 @@ Example:
     manuf_specific_data.data.size   = my_data_buf_len;
     simple_adv_manuf_data(&manuf_specific_data);
 
+
+## `multi_adv.c`
+
+`multi_adv` allows you to cycle through multiple advertisements.
+
+API:
+
+```c
+uint32_t multi_adv_init (uint32_t switch_interval_ms);
+uint32_t multi_adv_register_config (multi_adv_configure_f config_function);
+uint32_t multi_adv_start ();
+uint32_t multi_adv_stop ();
+```
+
+Example:
+
+```c
+#include "multi_adv.h"
+
+// Init the module and set how often the advertisement
+// should change in milliseconds.
+multi_adv_init(1000);
+
+// Define callbacks that will configure the current
+// advertisement.
+void adv1 () {
+    simple_adv_only_name();
+}
+
+void adv2 () {
+    eddystone_adv("goo.gl/abc123", NULL);
+}
+
+// Register those callbacks as advertisements we want
+// to switch between.
+multi_adv_register_config(adv1);
+multi_adv_register_config(adv2);
+
+// Start advertising.
+multi_adv_start();
+```
+
+By default, the module supports up to three advertisements. To
+permit more, set the `MULTI_ADV_MAX_CONFIG_FUNCTIONS` #define.
+
+Also, see the [multi-adv-test](https://github.com/lab11/nrf5x-base/tree/master/apps/multi-adv-test)
+app for a full example.
