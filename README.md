@@ -108,6 +108,21 @@ you must do.
 2. Install the JLink [software](https://www.segger.com/jlink-software.html)
 for your platform. You want the "Software and documentation pack".
 
+3. Acquire a [JLink JTAG programmer](https://www.segger.com/jlink-general-info.html).
+The "EDU" edition works fine.
+
+4. Program an app! With the JLink box attached to the target board:
+
+        make flash
+        
+    will write the app and softdevice to the nRF51822. You can erase
+    a chip with:
+    
+        make erase-all
+    
+    See the [make](https://github.com/lab11/nrf5x-base/tree/master/make) folder
+    for a complete list of commands.
+
 
 Git Submodules
 --------------
