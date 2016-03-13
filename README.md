@@ -142,3 +142,12 @@ On iOS, [LightBlue Explorer](https://itunes.apple.com/us/app/lightblue-explorer-
 has similar or better functionality. Alternatively,
 [noble](https://github.com/sandeepmistry/noble) is a NodeJS library for interacting with BLE that can run from
 a Linux or Mac computer.
+
+Example Platforms Using nRF5x-base
+----------------------------------
+
+- [Squall](https://github.com/helena-project/squall)
+- [BLEES](https://github.com/lab11/blees)
+- [Nucleum](https://github.com/lab11/nucleum)
+- [PolyPoint](https://github.com/lab11/polypoint)
+- [PowerBlade](https://github.com/lab11/powerblade)
