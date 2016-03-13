@@ -264,6 +264,38 @@ void __attribute__((weak)) ble_address_set () {
 void __attribute__((weak)) ble_stack_init (void) {
     uint32_t err_code;
 
+#ifdef SOFTDEVICE_s130
+    // Softdevice 130 2.0.0 changes how the softdevice init procedure works.
+    nrf_clock_lf_cfg_t clock_lf_cfg = {
+        .source        = NRF_CLOCK_LF_SRC_RC,
+        .rc_ctiv       = 16, // bradjc: I mostly made these up based on docs. May be not great.
+        .rc_temp_ctiv  = 2,
+        .xtal_accuracy = NRF_CLOCK_LF_XTAL_ACCURACY_250_PPM};
+
+    // Initialize the SoftDevice handler module.
+    SOFTDEVICE_HANDLER_INIT(&clock_lf_cfg, NULL);
+
+    // Initialize the SoftDevice handler module.
+    // SOFTDEVICE_HANDLER_INIT(NRF_CLOCK_LFCLKSRC_RC_250_PPM_TEMP_4000MS_CALIBRATION, NULL);
+
+    ble_enable_params_t ble_enable_params;
+    // Need these #defines. C is the worst.
+    #define CENTRAL_LINK_COUNT    1
+    #define PERIPHERAL_LINK_COUNT 1
+    err_code = softdevice_enable_get_default_config(1, // central link count
+                                                    1, // peripheral link count
+                                                    &ble_enable_params);
+    APP_ERROR_CHECK(err_code);
+
+    //Check the ram settings against the used number of links
+    CHECK_RAM_START_ADDR(CENTRAL_LINK_COUNT, PERIPHERAL_LINK_COUNT);
+
+    // Enable BLE stack.
+    err_code = softdevice_enable(&ble_enable_params);
+    APP_ERROR_CHECK(err_code);
+
+#else // softdevice s110 and possibly others
+
     // Initialize the SoftDevice handler module.
     SOFTDEVICE_HANDLER_INIT(NRF_CLOCK_LFCLKSRC_RC_250_PPM_8000MS_CALIBRATION,
             false);
@@ -274,6 +306,7 @@ void __attribute__((weak)) ble_stack_init (void) {
     ble_enable_params.gatts_enable_params.service_changed = IS_SRVC_CHANGED_CHARACT_PRESENT;
     err_code = sd_ble_enable(&ble_enable_params);
     APP_ERROR_CHECK(err_code);
+#endif
 
     //Register with the SoftDevice handler module for BLE events.
     err_code = softdevice_ble_evt_handler_set(ble_evt_dispatch);

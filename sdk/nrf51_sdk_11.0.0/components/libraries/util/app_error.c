@@ -27,7 +27,8 @@
 #include "nrf_log.h"
 
 #ifdef DEBUG
-#include "bsp.h"
+// We don't have this
+//#include "bsp.h"
 #endif
 
 
