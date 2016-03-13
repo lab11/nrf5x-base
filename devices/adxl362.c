@@ -66,7 +66,7 @@
 //Power_Ctl defines
 #define STANDBY_MODE      0x00
 #define MEASUREMENT_MODE  0x02
-#define AUTOSLEEP_MODE_EN 0x03
+#define AUTOSLEEP_MODE_EN 0x04
 #define WAKEUP_MODE_EN    0x08
 
 #define WRITE_REG 0x0A
@@ -189,9 +189,10 @@ void adxl362_set_activity_threshold (uint16_t act_threshold) {
 	spi_write_reg(THRESH_ACT_L, data, 1);
 
 	// Write the next three bits in the upper register.
-	spi_read_reg(THRESH_ACT_H, data, 1);
-	data[0] = data[0] & 0xF8;
-	data[0] = (data[0] | ((act_threshold & 0x0700) >> 8));
+	// spi_read_reg(THRESH_ACT_H, data, 1);
+	// data[0] = data[0] & 0xF8;
+	// data[0] = (data[0] | ((act_threshold & 0x0700) >> 8));
+	data[0] = ((act_threshold & 0x0700) >> 8);
 	spi_write_reg(THRESH_ACT_H, data, 1);
 }
 
@@ -376,6 +377,22 @@ void adxl362_accelerometer_init (nrf_drv_spi_t* spi,
     }
 
     data[0] |= (n_mode << 4);
+    spi_write_reg(POWER_CTL, data, 1);
+}
+
+void adxl362_autosleep () {
+    uint8_t data[1] = {0};
+
+    spi_read_reg(POWER_CTL, data, 1);
+    data[0] |= AUTOSLEEP_MODE_EN;
+    spi_write_reg(POWER_CTL, data, 1);
+}
+
+void adxl362_measurement_mode () {
+    uint8_t data[1] = {0};
+
+    spi_read_reg(POWER_CTL, data, 1);
+    data[0] |= MEASUREMENT_MODE;
     spi_write_reg(POWER_CTL, data, 1);
 }
 
