@@ -26,6 +26,8 @@
 #include "ble_bas_c.h"
 #include "app_util.h"
 #include "app_timer.h"
+#include "ble_dfu.h"
+#include "bootloader_types.h"
 
 // Configurations
 #include "simple_ble.h"
@@ -52,6 +54,12 @@ __attribute__((weak)) const int SLAVE_LATENCY = 0;
 __attribute__((weak)) const int CONN_SUP_TIMEOUT = MSEC_TO_UNITS(4000, UNIT_10_MS);
 __attribute__((weak)) const int FIRST_CONN_PARAMS_UPDATE_DELAY = APP_TIMER_TICKS(1000, APP_TIMER_PRESCALER);
 
+
+static simple_ble_service_t dfu_service = {
+    .uuid128 =  {{0x23, 0xD1, 0xBC, 0xEA, 0x5F, 0x78, 0x23, 0x15,
+                  0xDE, 0xEF, 0x12, 0x12, 0x00, 0x00, 0x00, 0x00}}};
+
+static simple_ble_char_t    dfu_ctrlpt_char = {.uuid16 = BLE_DFU_CTRL_PT_UUID};
 
 /*******************************************************************************
  *   FUNCTION PROTOTYPES
@@ -144,8 +152,12 @@ static void on_ble_evt(ble_evt_t * p_ble_evt) {
 
         case BLE_GAP_EVT_DISCONNECTED:
             app.conn_handle = BLE_CONN_HANDLE_INVALID;
-            // go back to advertising connectably
             advertising_stop();
+            // if we are pending a restart to dfu
+            if(NRF_POWER->GPREGRET == BOOTLOADER_DFU_START) {
+              NVIC_SystemReset();
+            }
+            // go back to advertising connectably
             m_adv_params.type = BLE_GAP_ADV_TYPE_ADV_IND;
             advertising_start();
 
@@ -156,8 +168,17 @@ static void on_ble_evt(ble_evt_t * p_ble_evt) {
             break;
 
         case BLE_GATTS_EVT_WRITE:
+            // if written to dfu ctrl pt
+            if (simple_ble_is_char_event(p_ble_evt, &dfu_ctrlpt_char)) {
+                // set flag for bootloader to enter dfu  
+                err_code = sd_power_gpregret_set(BOOTLOADER_DFU_START);
+                APP_ERROR_CHECK(err_code);
+                // disconnect and then reset to bootloader 
+                err_code = sd_ble_gap_disconnect(app.conn_handle, BLE_HCI_REMOTE_USER_TERMINATED_CONNECTION); 
+                APP_ERROR_CHECK(err_code);
+            }
             // callback for user. Weak reference, so check validity first
-            if (ble_evt_write) {
+            else if (ble_evt_write) {
                 ble_evt_write(p_ble_evt);
             }
             break;
@@ -340,6 +361,15 @@ void __attribute__((weak)) conn_params_init(void) {
 void __attribute__((weak)) services_init (void) {
 }
 
+void __attribute__((weak)) dfu_init (void) {
+
+    simple_ble_add_service(&dfu_service);
+    // Add ctrl pt characteristic
+    simple_ble_add_characteristic(0,1,1,1,
+        BLE_L2CAP_MTU_DEF, NULL,
+        &dfu_service,&dfu_ctrlpt_char); 
+}
+
 void __attribute__((weak)) initialize_app_timer (void) {
     // allow user to overwrite if they want to change timer parameters
 #ifdef SDK_VERSION_9
@@ -388,6 +418,7 @@ simple_ble_app_t* simple_ble_init(const simple_ble_config_t* conf) {
     gap_params_init();
     advertising_init();
     services_init();
+    dfu_init();
 
     // APP_TIMER_INIT must be called before conn_params_init since it uses timers
     initialize_app_timer();
