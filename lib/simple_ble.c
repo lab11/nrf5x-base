@@ -57,7 +57,8 @@ __attribute__((weak)) const int FIRST_CONN_PARAMS_UPDATE_DELAY = APP_TIMER_TICKS
 
 static simple_ble_service_t dfu_service = {
     .uuid128 =  {{0x23, 0xD1, 0xBC, 0xEA, 0x5F, 0x78, 0x23, 0x15,
-                  0xDE, 0xEF, 0x12, 0x12, 0x00, 0x00, 0x00, 0x00}}};
+                  0xDE, 0xEF, 0x12, 0x12, 0x00, 0x00, 0x00, 0x00}},
+    .uuid_handle.uuid = BLE_DFU_SERVICE_UUID};
 
 static simple_ble_char_t    dfu_ctrlpt_char = {.uuid16 = BLE_DFU_CTRL_PT_UUID};
 
@@ -438,7 +439,9 @@ void simple_ble_add_service (simple_ble_service_t* service_handle) {
     // Setup our long UUID so that nRF recognizes it. This is done by storing
     //  the full 128-bit UUID and using 16 bits of it as a handle
     uint16_t uuid16 = (service_handle->uuid128.uuid128[12] << 8) |(service_handle->uuid128.uuid128[13]);
-    service_handle->uuid_handle.uuid = uuid16;
+    if (!service_handle->uuid_handle.uuid) {
+      service_handle->uuid_handle.uuid = uuid16;
+    }
     err_code = sd_ble_uuid_vs_add(&(service_handle->uuid128), &(service_handle->uuid_handle.type));
     APP_ERROR_CHECK(err_code);
 
