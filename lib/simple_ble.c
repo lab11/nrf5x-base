@@ -28,10 +28,16 @@
 #include "app_timer.h"
 #include "ble_dfu.h"
 #include "bootloader_types.h"
+#include "bootloader_util.h"
+#include "bootloader_util.h"
 
 // Configurations
 #include "simple_ble.h"
 #include "led.h"
+
+// Defines
+#define IRQ_ENABLED           0x01
+#define MAX_NUMBER_INTERRUPTS 32
 
 /*******************************************************************************
  *   STATIC AND GLOBAL VARIABLES
@@ -132,8 +138,26 @@ static void on_conn_params_evt(ble_conn_params_evt_t * p_evt) {
     }
 }
 
+static void interrupts_disable(void)
+{
+    uint32_t interrupt_setting_mask;
+    uint32_t irq = 0; // We start from first interrupt, i.e. interrupt 0.
+
+    // Fetch the current interrupt settings.
+    interrupt_setting_mask = NVIC->ISER[0];
+
+    for (; irq < MAX_NUMBER_INTERRUPTS; irq++)
+    {
+        if (interrupt_setting_mask & (IRQ_ENABLED << irq))
+        {
+            // The interrupt was enabled, and hence disable it.
+            NVIC_DisableIRQ((IRQn_Type)irq);
+        }
+    }
+}
+
 static void on_ble_evt(ble_evt_t * p_ble_evt) {
-    uint32_t err_code;
+    uint32_t err_code, gpregret;
 
     switch (p_ble_evt->header.evt_id) {
         case BLE_GAP_EVT_CONNECTED:
@@ -154,9 +178,19 @@ static void on_ble_evt(ble_evt_t * p_ble_evt) {
         case BLE_GAP_EVT_DISCONNECTED:
             app.conn_handle = BLE_CONN_HANDLE_INVALID;
             advertising_stop();
-            // if we are pending a restart to dfu
-            if(NRF_POWER->GPREGRET == BOOTLOADER_DFU_START) {
-              NVIC_SystemReset();
+           
+            // if flag is set, restart in bootloader 
+            sd_power_gpregret_get(&gpregret);
+            if (gpregret == BOOTLOADER_DFU_START) { 
+                err_code = sd_softdevice_disable();
+                APP_ERROR_CHECK(err_code);
+
+                err_code = sd_softdevice_vector_table_base_set(NRF_UICR->BOOTLOADERADDR);
+                APP_ERROR_CHECK(err_code);
+
+                NVIC_ClearPendingIRQ(SWI2_IRQn);
+                interrupts_disable();
+                bootloader_util_app_start(NRF_UICR->BOOTLOADERADDR);
             }
             // go back to advertising connectably
             m_adv_params.type = BLE_GAP_ADV_TYPE_ADV_IND;
@@ -172,11 +206,14 @@ static void on_ble_evt(ble_evt_t * p_ble_evt) {
             // if written to dfu ctrl pt
             if (simple_ble_is_char_event(p_ble_evt, &dfu_ctrlpt_char)) {
                 // set flag for bootloader to enter dfu  
+                err_code = sd_power_gpregret_clr(0xFF);
+                APP_ERROR_CHECK(err_code);
                 err_code = sd_power_gpregret_set(BOOTLOADER_DFU_START);
                 APP_ERROR_CHECK(err_code);
-                // disconnect and then reset to bootloader 
+                // disconnect, wait for disconnect event to reset
                 err_code = sd_ble_gap_disconnect(app.conn_handle, BLE_HCI_REMOTE_USER_TERMINATED_CONNECTION); 
                 APP_ERROR_CHECK(err_code);
+
             }
             // callback for user. Weak reference, so check validity first
             else if (ble_evt_write) {
