@@ -216,6 +216,10 @@ ifdef USE_ANT
     CFLAGS += -DANT_STACK_SUPPORT_REQD
 endif
 
+ifdef USE_BOOTLOADER
+    CFLAGS += -DBOOTLOADER
+endif
+
 ifdef SOFTDEVICE_MODEL
     LIBRARY_PATHS += $(SDK_INCLUDE_PATH)softdevice/common/softdevice_handler/
     LIBRARY_PATHS += $(SDK_INCLUDE_PATH)softdevice/$(SOFTDEVICE_MODEL)/headers/
@@ -296,6 +300,10 @@ endif
 
 ifdef USE_ANT
     CFLAGS += -DANT_STACK_SUPPORT_REQD
+endif
+
+ifdef USE_BOOTLOADER
+    CFLAGS += -DBOOTLOADER
 endif
 
 ifdef SOFTDEVICE_MODEL

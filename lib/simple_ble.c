@@ -26,19 +26,23 @@
 #include "ble_bas_c.h"
 #include "app_util.h"
 #include "app_timer.h"
+#ifdef BOOTLOADER
 #include "ble_dfu.h"
 #include "bootloader_types.h"
 #include "bootloader_util.h"
 #include "bootloader.h"
+#endif
 
 // Configurations
 #include "simple_ble.h"
 #include "led.h"
 
+#ifdef BOOTLOADER
 // Defines
 #define IRQ_ENABLED               0x01
 #define MAX_NUMBER_INTERRUPTS     32
 #define BOOTLOADER_BLE_ADDR_START 0x20007F80
+#endif
 
 /*******************************************************************************
  *   STATIC AND GLOBAL VARIABLES
@@ -61,7 +65,7 @@ __attribute__((weak)) const int SLAVE_LATENCY = 0;
 __attribute__((weak)) const int CONN_SUP_TIMEOUT = MSEC_TO_UNITS(4000, UNIT_10_MS);
 __attribute__((weak)) const int FIRST_CONN_PARAMS_UPDATE_DELAY = APP_TIMER_TICKS(1000, APP_TIMER_PRESCALER);
 
-
+#ifdef BOOTLOADER
 static simple_ble_service_t dfu_service = {
     .uuid128 =  {{0x23, 0xD1, 0xBC, 0xEA, 0x5F, 0x78, 0x23, 0x15,
                   0xDE, 0xEF, 0x12, 0x12, 0x00, 0x00, 0x00, 0x00}},
@@ -70,6 +74,7 @@ static simple_ble_service_t dfu_service = {
 static simple_ble_char_t    dfu_ctrlpt_char = {.uuid16 = BLE_DFU_CTRL_PT_UUID};
 
 static bool pending_dfu = 0;
+#endif
 
 /*******************************************************************************
  *   FUNCTION PROTOTYPES
@@ -141,6 +146,7 @@ static void on_conn_params_evt(ble_conn_params_evt_t * p_evt) {
     }
 }
 
+#ifdef BOOTLOADER
 static void interrupts_disable(void)
 {
     uint32_t interrupt_setting_mask;
@@ -158,6 +164,7 @@ static void interrupts_disable(void)
         }
     }
 }
+#endif
 
 static void on_ble_evt(ble_evt_t * p_ble_evt) {
     uint32_t err_code;
@@ -181,7 +188,7 @@ static void on_ble_evt(ble_evt_t * p_ble_evt) {
         case BLE_GAP_EVT_DISCONNECTED:
             app.conn_handle = BLE_CONN_HANDLE_INVALID;
             advertising_stop();
-           
+#ifdef BOOTLOADER      
             // if pending dfu, clear and disable irq and then reset to bootloader
             if (pending_dfu) {
                 pending_dfu = 0;
@@ -195,7 +202,7 @@ static void on_ble_evt(ble_evt_t * p_ble_evt) {
                 interrupts_disable();
                 bootloader_util_app_start(NRF_UICR->BOOTLOADERADDR);
             }
-
+#endif
             // go back to advertising connectably
             m_adv_params.type = BLE_GAP_ADV_TYPE_ADV_IND;
             advertising_start();
@@ -207,6 +214,7 @@ static void on_ble_evt(ble_evt_t * p_ble_evt) {
             break;
 
         case BLE_GATTS_EVT_WRITE:
+#ifdef BOOTLOADER            
             // if written to dfu ctrl pt
             if (simple_ble_is_char_event(p_ble_evt, &dfu_ctrlpt_char)) {
                 pending_dfu = 1;
@@ -218,9 +226,11 @@ static void on_ble_evt(ble_evt_t * p_ble_evt) {
                 // disconnect, wait for event. 
                 err_code = sd_ble_gap_disconnect(app.conn_handle, BLE_HCI_REMOTE_USER_TERMINATED_CONNECTION); 
                 APP_ERROR_CHECK(err_code);
+                break;
             }
+#endif            
             // callback for user. Weak reference, so check validity first
-            else if (ble_evt_write) {
+            if (ble_evt_write) {
                 ble_evt_write(p_ble_evt);
             }
             break;
@@ -337,10 +347,11 @@ void __attribute__((weak)) ble_stack_init (void) {
         // Set the new BLE address with the user-defined address
         memcpy(gap_addr.addr, _ble_address, 6);
     }
-  
+ 
+#ifdef BOOTLOADER 
     // write ble address to memory to share with bootloader
     memcpy((uint8_t*)BOOTLOADER_BLE_ADDR_START, gap_addr.addr, 6);
-
+#endif
     gap_addr.addr_type = BLE_GAP_ADDR_TYPE_PUBLIC;
     err_code = sd_ble_gap_address_set(BLE_GAP_ADDR_CYCLE_MODE_NONE, &gap_addr);
     APP_ERROR_CHECK(err_code);
@@ -406,6 +417,7 @@ void __attribute__((weak)) conn_params_init(void) {
 void __attribute__((weak)) services_init (void) {
 }
 
+#ifdef BOOTLOADER
 void __attribute__((weak)) dfu_init (void) {
 
     simple_ble_add_service(&dfu_service);
@@ -414,6 +426,7 @@ void __attribute__((weak)) dfu_init (void) {
         BLE_L2CAP_MTU_DEF, NULL,
         &dfu_service,&dfu_ctrlpt_char); 
 }
+#endif
 
 void __attribute__((weak)) initialize_app_timer (void) {
     // allow user to overwrite if they want to change timer parameters
@@ -463,8 +476,9 @@ simple_ble_app_t* simple_ble_init(const simple_ble_config_t* conf) {
     gap_params_init();
     advertising_init();
     services_init();
+#ifdef BOOTLOADER    
     dfu_init();
-
+#endif
     // APP_TIMER_INIT must be called before conn_params_init since it uses timers
     initialize_app_timer();
     conn_params_init();
