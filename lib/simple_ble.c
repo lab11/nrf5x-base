@@ -29,15 +29,16 @@
 #include "ble_dfu.h"
 #include "bootloader_types.h"
 #include "bootloader_util.h"
-#include "bootloader_util.h"
+#include "bootloader.h"
 
 // Configurations
 #include "simple_ble.h"
 #include "led.h"
 
 // Defines
-#define IRQ_ENABLED           0x01
-#define MAX_NUMBER_INTERRUPTS 32
+#define IRQ_ENABLED               0x01
+#define MAX_NUMBER_INTERRUPTS     32
+#define BOOTLOADER_BLE_ADDR_START 0x20007F80
 
 /*******************************************************************************
  *   STATIC AND GLOBAL VARIABLES
@@ -67,6 +68,8 @@ static simple_ble_service_t dfu_service = {
     .uuid_handle.uuid = BLE_DFU_SERVICE_UUID};
 
 static simple_ble_char_t    dfu_ctrlpt_char = {.uuid16 = BLE_DFU_CTRL_PT_UUID};
+
+static bool pending_dfu = 0;
 
 /*******************************************************************************
  *   FUNCTION PROTOTYPES
@@ -157,7 +160,7 @@ static void interrupts_disable(void)
 }
 
 static void on_ble_evt(ble_evt_t * p_ble_evt) {
-    uint32_t err_code, gpregret;
+    uint32_t err_code;
 
     switch (p_ble_evt->header.evt_id) {
         case BLE_GAP_EVT_CONNECTED:
@@ -179,9 +182,9 @@ static void on_ble_evt(ble_evt_t * p_ble_evt) {
             app.conn_handle = BLE_CONN_HANDLE_INVALID;
             advertising_stop();
            
-            // if flag is set, restart in bootloader 
-            sd_power_gpregret_get(&gpregret);
-            if (gpregret == BOOTLOADER_DFU_START) { 
+            // if pending dfu, clear and disable irq and then reset to bootloader
+            if (pending_dfu) {
+                pending_dfu = 0;
                 err_code = sd_softdevice_disable();
                 APP_ERROR_CHECK(err_code);
 
@@ -192,6 +195,7 @@ static void on_ble_evt(ble_evt_t * p_ble_evt) {
                 interrupts_disable();
                 bootloader_util_app_start(NRF_UICR->BOOTLOADERADDR);
             }
+
             // go back to advertising connectably
             m_adv_params.type = BLE_GAP_ADV_TYPE_ADV_IND;
             advertising_start();
@@ -205,15 +209,15 @@ static void on_ble_evt(ble_evt_t * p_ble_evt) {
         case BLE_GATTS_EVT_WRITE:
             // if written to dfu ctrl pt
             if (simple_ble_is_char_event(p_ble_evt, &dfu_ctrlpt_char)) {
+                pending_dfu = 1;
                 // set flag for bootloader to enter dfu  
                 err_code = sd_power_gpregret_clr(0xFF);
                 APP_ERROR_CHECK(err_code);
                 err_code = sd_power_gpregret_set(BOOTLOADER_DFU_START);
                 APP_ERROR_CHECK(err_code);
-                // disconnect, wait for disconnect event to reset
+                // disconnect, wait for event. 
                 err_code = sd_ble_gap_disconnect(app.conn_handle, BLE_HCI_REMOTE_USER_TERMINATED_CONNECTION); 
                 APP_ERROR_CHECK(err_code);
-
             }
             // callback for user. Weak reference, so check validity first
             else if (ble_evt_write) {
@@ -333,6 +337,9 @@ void __attribute__((weak)) ble_stack_init (void) {
         // Set the new BLE address with the user-defined address
         memcpy(gap_addr.addr, _ble_address, 6);
     }
+  
+    // write ble address to memory to share with bootloader
+    memcpy((uint8_t*)BOOTLOADER_BLE_ADDR_START, gap_addr.addr, 6);
 
     gap_addr.addr_type = BLE_GAP_ADDR_TYPE_PUBLIC;
     err_code = sd_ble_gap_address_set(BLE_GAP_ADDR_CYCLE_MODE_NONE, &gap_addr);

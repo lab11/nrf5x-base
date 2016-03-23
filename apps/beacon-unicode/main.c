@@ -15,10 +15,7 @@
 #include "simple_adv.h"
 
 // Custom UTF-8 name. Flash this app and scan to see it!
-char name[20] = {0xE2, 0x9D, 0x84, 0xE2, 0x9D,
-                 0x85, 0xE2, 0x9D, 0x86, 0xE2,
-                 0x9C, 0x8B, 0xE2, 0x87, 0x92,
-                 0xF0, 0x9F, 0x8D, 0xBB, 0x00};
+char name[20] = "hello there!"; 
 
 
 // Intervals for advertising and connections
@@ -33,7 +30,6 @@ static simple_ble_config_t ble_config = {
 
 
 int main(void) {
-    uint32_t err_code;
 
     // Setup BLE
     simple_ble_init(&ble_config);

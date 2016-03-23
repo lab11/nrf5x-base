@@ -74,6 +74,9 @@
 
 #define SCHED_QUEUE_SIZE                20                                                      /**< Maximum number of events in the scheduler queue. */
 
+//static const uint8_t ble_addr[6] __attribute__ ((section(".noInit")));
+#define BOOTLOADER_BLE_ADDR_START 0x20007F80
+
 void app_error_handler(uint32_t error_code, uint32_t line_num, const uint8_t * p_file_name) {
   nrf_gpio_pin_clear(UPDATE_IN_PROGRESS_LED);
   while(1) {
@@ -154,7 +157,7 @@ static void sys_evt_dispatch(uint32_t event)
 static void ble_stack_init(bool init_softdevice)
 {
     uint32_t         err_code;
-    const uint8_t*   _ble_address;
+    const uint8_t*   _ble_addr;
     sd_mbr_command_t com = {SD_MBR_COMMAND_INIT_SD, };
 
     if (init_softdevice)
@@ -185,15 +188,13 @@ static void ble_stack_init(bool init_softdevice)
     // Next is address from flash if available
     // Nordic assigned random value is used as last choice
     ble_gap_addr_t gap_addr;
-    const bootloader_settings_t * p_bootloader_settings;
-    // get BLE address from bootloader_settings
-    bootloader_util_settings_get(&p_bootloader_settings);
-    _ble_address = p_bootloader_settings->bl_ble_addr;
-    if (_ble_address[1] == 0x00 && _ble_address[0] == 0x00) {
+    // get BLE address from shared RAM 
+    _ble_addr = (uint8_t*)BOOTLOADER_BLE_ADDR_START;
+    if (init_softdevice) {
       // No application-defined address stored in bootloader_settings
       // get BLE address from Flash
-      _ble_address = (uint8_t*)BLEADDR_FLASH_LOCATION;
-      if (_ble_address[1] == 0xFF && _ble_address[0] == 0xFF) {
+      _ble_addr = (uint8_t*)BLEADDR_FLASH_LOCATION;
+      if (_ble_addr[1] == 0xFF && _ble_addr[0] == 0xFF) {
           // No user-defined address stored in flash
 
           // New address is a combination of Michigan OUI and Platform ID
@@ -208,12 +209,12 @@ static void ble_stack_init(bool init_softdevice)
           // User-defined address stored in flash
 
           // Set the new BLE address with the user-defined address
-          memcpy(gap_addr.addr, _ble_address, 6);
+          memcpy(gap_addr.addr, _ble_addr, 6);
       }
     } else {
       // Application-defined address stored in bootloader-settings
       
-      memcpy(gap_addr.addr, _ble_address, 6);
+      memcpy(gap_addr.addr, _ble_addr, 6);
     }
     gap_addr.addr_type = BLE_GAP_ADDR_TYPE_PUBLIC;
     err_code = sd_ble_gap_address_set(BLE_GAP_ADDR_CYCLE_MODE_NONE, &gap_addr);
