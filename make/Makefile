@@ -218,6 +218,7 @@ endif
 
 ifdef USE_BOOTLOADER
     CFLAGS += -DBOOTLOADER
+    APPLICATION_SRCS += bootloader_util.c
 endif
 
 ifdef SOFTDEVICE_MODEL
@@ -304,6 +305,7 @@ endif
 
 ifdef USE_BOOTLOADER
     CFLAGS += -DBOOTLOADER
+    APPLICATION_SRCS += bootloader_util.c
 endif
 
 ifdef SOFTDEVICE_MODEL
