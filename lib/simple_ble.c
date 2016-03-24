@@ -192,6 +192,7 @@ static void on_ble_evt(ble_evt_t * p_ble_evt) {
             // if pending dfu, clear and disable irq and then reset to bootloader
             if (pending_dfu) {
                 pending_dfu = 0;
+                dfu_reset_prepare();
                 err_code = sd_softdevice_disable();
                 APP_ERROR_CHECK(err_code);
 
@@ -425,6 +426,9 @@ void __attribute__((weak)) dfu_init (void) {
     simple_ble_add_characteristic(0,1,1,1,
         BLE_L2CAP_MTU_DEF, NULL,
         &dfu_service,&dfu_ctrlpt_char); 
+}
+
+void __attribute__((weak)) dfu_reset_prepare (void) {
 }
 #endif
 

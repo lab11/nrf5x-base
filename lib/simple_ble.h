@@ -47,7 +47,10 @@ void __attribute__((weak)) gap_params_init(void);
 void __attribute__((weak)) advertising_init(void);
 void __attribute__((weak)) conn_params_init(void);
 void __attribute__((weak)) services_init(void);
+#ifdef BOOTLOADER
 void __attribute__((weak)) dfu_init (void);
+void __attribute__((weak)) dfu_reset_prepare (void);
+#endif
 void __attribute__((weak)) initialize_app_timer(void);
 void __attribute__((weak)) advertising_start(void);
 void __attribute__((weak)) advertising_stop(void);
