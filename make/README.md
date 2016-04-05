@@ -15,7 +15,7 @@ The currently supported Softdevice versions are: s110_8.0.0, s120_2.1.0, and s13
 
 Things to Install
 -----------------
-1. gcc-arm-none-eabi
+1. `gcc-arm-none-eabi`: https://launchpad.net/gcc-arm-embedded
 2. gdb-arm-none-eabi
 3. The jlink tools for linux
 4. The jlink debuger for linux
