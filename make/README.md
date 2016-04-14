@@ -9,13 +9,13 @@ We develop on Linux. Original files still exist for Windows, but have not been
 tested in some time. Feel free to submit a pull request if you find something
 that doesn't work.
 
-The currently supported SDK versions are: 9, 10
+The currently supported SDK versions are: 9, 10, 11
 
-The currently supported Softdevice versions are: s110_8.0.0, s120_2.1.0, and s130_1.0.0
+The currently supported Softdevice versions are: s110_8.0.0, s120_2.1.0, and s130_2.0.0
 
 Things to Install
 -----------------
-1. gcc-arm-none-eabi
+1. `gcc-arm-none-eabi`: https://launchpad.net/gcc-arm-embedded
 2. gdb-arm-none-eabi
 3. The jlink tools for linux
 4. The jlink debuger for linux
@@ -114,4 +114,3 @@ Verbose Output
 To see the full commands that are being run by make, do:
 
     make V=1
-

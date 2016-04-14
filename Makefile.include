@@ -1,4 +1,0 @@
-CURR_DIR := $(dir $(lastword $(MAKEFILE_LIST)))
-LIBRARY_PATHS += $(CURR_DIR)/advertisement/ $(CURR_DIR)/devices/ $(CURR_DIR)/lib/ $(CURR_DIR)/peripherals/ $(CURR_DIR)/services/
-SOURCE_PATHS += $(CURR_DIR)/advertisement/ $(CURR_DIR)/devices/ $(CURR_DIR)/lib/ $(CURR_DIR)/peripherals/ $(CURR_DIR)/services/
-

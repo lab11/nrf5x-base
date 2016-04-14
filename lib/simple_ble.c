@@ -10,22 +10,19 @@
 
 // Nordic Libraries
 #include "nordic_common.h"
-#include "softdevice_handler.h"
-#include "nrf.h"
-#include "nrf_sdm.h"
 #include "ble.h"
 #include "ble_db_discovery.h"
 #include "app_util.h"
 #include "app_error.h"
 #include "ble_conn_params.h"
 #include "ble_hci.h"
-#include "nrf_gpio.h"
-#include "pstorage.h"
 #include "app_trace.h"
 #include "ble_hrs_c.h"
 #include "ble_bas_c.h"
 #include "app_util.h"
 #include "app_timer.h"
+#include "softdevice_handler.h"
+#include "nrf_sdm.h"
 #ifdef BOOTLOADER
 #include "ble_dfu.h"
 #include "bootloader_types.h"
@@ -35,7 +32,6 @@
 
 // Configurations
 #include "simple_ble.h"
-#include "led.h"
 
 #ifdef BOOTLOADER
 // Defines
@@ -93,6 +89,7 @@ void assert_nrf_callback(uint16_t line_num, const uint8_t * p_file_name);
 /*******************************************************************************
  *   HANDLERS AND CALLBACKS
  ******************************************************************************/
+#ifndef SOFTDEVICE_s130 // This function is included in the SDK 11
 void app_error_handler(uint32_t error_code, uint32_t line_num, const uint8_t * p_file_name) {
     // APPL_LOG("[APPL]: ASSERT: %s, %d, error 0x%08x\r\n", p_file_name, line_num, error_code);
 
@@ -114,6 +111,7 @@ void app_error_handler(uint32_t error_code, uint32_t line_num, const uint8_t * p
     }
     while(1);
 }
+#endif
 
 void assert_nrf_callback(uint16_t line_num, const uint8_t * p_file_name) {
     app_error_handler(0xDEADBEEF, line_num, p_file_name);
@@ -147,8 +145,7 @@ static void on_conn_params_evt(ble_conn_params_evt_t * p_evt) {
 }
 
 #ifdef BOOTLOADER
-static void interrupts_disable(void)
-{
+static void interrupts_disable(void) {
     uint32_t interrupt_setting_mask;
     uint32_t irq = 0; // We start from first interrupt, i.e. interrupt 0.
 
@@ -277,6 +274,12 @@ static void on_ble_evt(ble_evt_t * p_ble_evt) {
             }
             break;
 
+        case BLE_GAP_EVT_ADV_REPORT:
+            if (ble_evt_adv_report) {
+                ble_evt_adv_report(p_ble_evt);
+            }
+            break;
+
         default:
             break;
     }
@@ -292,27 +295,11 @@ static void on_ble_evt(ble_evt_t * p_ble_evt) {
 /*******************************************************************************
  *   INIT FUNCTIONS
  ******************************************************************************/
-void __attribute__((weak)) ble_stack_init (void) {
+
+// Configure the MAC address of the device based on the config values and
+// what is stored in the flash.
+void __attribute__((weak)) ble_address_set () {
     uint32_t err_code;
-
-    // Initialize the SoftDevice handler module.
-    SOFTDEVICE_HANDLER_INIT(NRF_CLOCK_LFCLKSRC_RC_250_PPM_8000MS_CALIBRATION,
-            false);
-
-    // Enable BLE stack
-    ble_enable_params_t ble_enable_params;
-    memset(&ble_enable_params, 0, sizeof(ble_enable_params));
-    ble_enable_params.gatts_enable_params.service_changed = IS_SRVC_CHANGED_CHARACT_PRESENT;
-    err_code = sd_ble_enable(&ble_enable_params);
-    APP_ERROR_CHECK(err_code);
-
-    //Register with the SoftDevice handler module for BLE events.
-    err_code = softdevice_ble_evt_handler_set(ble_evt_dispatch);
-    APP_ERROR_CHECK(err_code);
-
-    // Register with the SoftDevice handler module for BLE events.
-    err_code = softdevice_sys_evt_handler_set(sys_evt_dispatch);
-    APP_ERROR_CHECK(err_code);
 
     // Set the MAC address of the device
     // Highest priority is address from flash if available
@@ -356,6 +343,66 @@ void __attribute__((weak)) ble_stack_init (void) {
     gap_addr.addr_type = BLE_GAP_ADDR_TYPE_PUBLIC;
     err_code = sd_ble_gap_address_set(BLE_GAP_ADDR_CYCLE_MODE_NONE, &gap_addr);
     APP_ERROR_CHECK(err_code);
+}
+
+// Init the crystal and softdevice, plus configure the device address
+void __attribute__((weak)) ble_stack_init (void) {
+    uint32_t err_code;
+
+#ifdef SOFTDEVICE_s130
+    // Softdevice 130 2.0.0 changes how the softdevice init procedure works.
+    nrf_clock_lf_cfg_t clock_lf_cfg = {
+        .source        = NRF_CLOCK_LF_SRC_RC,
+        .rc_ctiv       = 16, // bradjc: I mostly made these up based on docs. May be not great.
+        .rc_temp_ctiv  = 2,
+        .xtal_accuracy = NRF_CLOCK_LF_XTAL_ACCURACY_250_PPM};
+
+    // Initialize the SoftDevice handler module.
+    SOFTDEVICE_HANDLER_INIT(&clock_lf_cfg, NULL);
+
+    // Initialize the SoftDevice handler module.
+    // SOFTDEVICE_HANDLER_INIT(NRF_CLOCK_LFCLKSRC_RC_250_PPM_TEMP_4000MS_CALIBRATION, NULL);
+
+    ble_enable_params_t ble_enable_params;
+    // Need these #defines. C is the worst.
+    #define CENTRAL_LINK_COUNT    1
+    #define PERIPHERAL_LINK_COUNT 1
+    err_code = softdevice_enable_get_default_config(1, // central link count
+                                                    1, // peripheral link count
+                                                    &ble_enable_params);
+    APP_ERROR_CHECK(err_code);
+
+    //Check the ram settings against the used number of links
+    CHECK_RAM_START_ADDR(CENTRAL_LINK_COUNT, PERIPHERAL_LINK_COUNT);
+
+    // Enable BLE stack.
+    err_code = softdevice_enable(&ble_enable_params);
+    APP_ERROR_CHECK(err_code);
+
+#else // softdevice s110 and possibly others
+
+    // Initialize the SoftDevice handler module.
+    SOFTDEVICE_HANDLER_INIT(NRF_CLOCK_LFCLKSRC_RC_250_PPM_8000MS_CALIBRATION,
+            false);
+
+    // Enable BLE stack
+    ble_enable_params_t ble_enable_params;
+    memset(&ble_enable_params, 0, sizeof(ble_enable_params));
+    ble_enable_params.gatts_enable_params.service_changed = IS_SRVC_CHANGED_CHARACT_PRESENT;
+    err_code = sd_ble_enable(&ble_enable_params);
+    APP_ERROR_CHECK(err_code);
+#endif
+
+    //Register with the SoftDevice handler module for BLE events.
+    err_code = softdevice_ble_evt_handler_set(ble_evt_dispatch);
+    APP_ERROR_CHECK(err_code);
+
+    // Register with the SoftDevice handler module for BLE events.
+    err_code = softdevice_sys_evt_handler_set(sys_evt_dispatch);
+    APP_ERROR_CHECK(err_code);
+
+    // And set the MAC address in the init phase
+    ble_address_set();
 }
 
 void __attribute__((weak)) gap_params_init (void) {
@@ -726,3 +773,101 @@ uint32_t simple_ble_grant_auth (ble_evt_t* p_ble_evt) {
     return sd_ble_gatts_rw_authorize_reply(app.conn_handle, &auth_resp);
 }
 
+void simple_ble_add_stack_characteristic (uint8_t read,
+                                    uint8_t write,
+                                    uint8_t notify,
+                                    uint8_t vlen,
+                                    uint16_t len,
+                                    uint8_t* buf,
+                                    simple_ble_service_t* service_handle,
+                                    simple_ble_char_t* char_handle) {
+    volatile uint32_t err_code;
+    ble_gatts_char_md_t char_md;
+    ble_gatts_attr_t    attr_char_value;
+    ble_uuid_t          char_uuid;
+    ble_gatts_attr_md_t attr_md;
+
+    // set characteristic metadata
+    memset(&char_md, 0, sizeof(char_md));
+    char_md.char_props.read   = read;
+    char_md.char_props.write  = write;
+    char_md.char_props.notify = notify;
+    char_md.p_char_user_desc  = NULL;
+    char_md.p_char_pf         = NULL;
+    char_md.p_user_desc_md    = NULL;
+    char_md.p_cccd_md         = NULL;
+    char_md.p_sccd_md         = NULL;
+
+    // set characteristic uuid
+    char_uuid.type = service_handle->uuid_handle.type;
+    char_uuid.uuid = char_handle->uuid16;
+
+    // set attribute metadata
+    memset(&attr_md, 0, sizeof(attr_md));
+    if (read) BLE_GAP_CONN_SEC_MODE_SET_OPEN(&attr_md.read_perm);
+    if (write) BLE_GAP_CONN_SEC_MODE_SET_OPEN(&attr_md.write_perm);
+    attr_md.vloc    = BLE_GATTS_VLOC_STACK;
+    attr_md.rd_auth = 0;
+    attr_md.wr_auth = 0;
+    attr_md.vlen    = vlen;
+
+    // set attribute data
+    memset(&attr_char_value, 0, sizeof(attr_char_value));
+    attr_char_value.p_uuid    = &char_uuid;
+    attr_char_value.p_attr_md = &attr_md;
+    attr_char_value.init_len  = len;
+    attr_char_value.init_offs = 0;
+    attr_char_value.max_len   = len; // max len can be up to BLE_GATTS_FIX_ATTR_LEN_MAX (510)
+    attr_char_value.p_value   = buf;
+
+    err_code = sd_ble_gatts_characteristic_add((service_handle->service_handle),
+            &char_md, &attr_char_value, &(char_handle->char_handle));
+    APP_ERROR_CHECK(err_code);
+}
+
+uint32_t simple_ble_stack_char_get (simple_ble_char_t* char_handle, uint16_t* len, uint8_t* buf) {
+    uint32_t err_code;
+    ble_gatts_value_t value = {0};
+
+    err_code = sd_ble_gatts_value_get(app.conn_handle, char_handle->char_handle.value_handle, &value);
+    if (err_code != NRF_SUCCESS) {
+        return err_code;
+    }
+
+    // no error
+    len = value.len;
+    buf = value.p_value;
+    return NRF_SUCCESS;
+}
+
+uint32_t simple_ble_stack_char_set (simple_ble_char_t* char_handle, uint16_t len, uint8_t* buf) {
+    ble_gatts_value_t value = {
+        .len = len,
+        .offset = 0,
+        .p_value = buf,
+    };
+    return sd_ble_gatts_value_set(app.conn_handle, char_handle->char_handle.value_handle, &value);
+}
+
+#ifdef SOFTDEVICE_s130
+static const ble_gap_scan_params_t m_scan_param = {
+    .active = 0,                   // Active scanning not set.
+    .selective = 0,                // Selective scanning not set.
+    .p_whitelist = NULL,           // No whitelist provided.
+    .interval = 0x00A0,
+    .window = 0x0050,
+    .timeout = 0x0000              // No timeout.
+};
+
+void simple_ble_scan_start () {
+    ret_code_t err_code;
+
+    err_code = sd_ble_gap_scan_stop();
+
+    err_code = sd_ble_gap_scan_start(&m_scan_param);
+    // It is okay to ignore this error since we are stopping the scan anyway.
+    if (err_code != NRF_ERROR_INVALID_STATE) {
+        APP_ERROR_CHECK(err_code);
+    }
+}
+#endif

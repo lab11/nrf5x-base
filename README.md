@@ -5,9 +5,10 @@ This repository is a starting point and shared code for Nordic nRF5x BLE platfor
 a collection of libraries, SDKs, Softdevices, and Makefiles to be included
 within other projects using the Nordic platfroms. Pull requests welcome.
 
-The currently supported SDK versions are: 9.0.0, 10.0.0
+The currently supported SDK versions are: 9.0.0, 10.0.0, 11.0.0.
 
-The currently supported Softdevice versions are: s110_7.3.0, s110_8.0.0, s120_2.1.0, and s130_1.0.0
+The currently supported Softdevice versions are:
+s110_7.3.0, s110_8.0.0, s120_2.1.0, s130_1.0.0, s130 2.0.0.
 
 
 Usage
@@ -90,6 +91,40 @@ There are libraries for many common BLE functions in this repo:
 - Nordic [BLE Serialization](http://infocenter.nordicsemi.com/index.jsp?topic=%2Fcom.nordic.infocenter.sdk51.v10.0.0%2Fble_serialization_s110_events.html)
 
 
+
+Program a nRF51822
+------------------
+
+To flash an application to a nRF51822 BLE chip, there is some setup
+you must do.
+
+1. Install the [`arm-none-eabi-gcc`](https://launchpad.net/gcc-arm-embedded) compiler.
+
+    On Ubuntu:
+    
+        sudo add-apt-repository ppa:team-gcc-arm-embedded/ppa
+        sudo apt-get update
+        sudo apt-get install gcc-arm-embedded
+
+2. Install the JLink [software](https://www.segger.com/jlink-software.html)
+for your platform. You want the "Software and documentation pack".
+
+3. Acquire a [JLink JTAG programmer](https://www.segger.com/jlink-general-info.html).
+The "EDU" edition works fine.
+
+4. Program an app! With the JLink box attached to the target board:
+
+        make flash
+        
+    will write the app and softdevice to the nRF51822. You can erase
+    a chip with:
+    
+        make erase-all
+    
+    See the [make](https://github.com/lab11/nrf5x-base/tree/master/make) folder
+    for a complete list of commands.
+
+
 Git Submodules
 --------------
 
@@ -107,3 +142,12 @@ On iOS, [LightBlue Explorer](https://itunes.apple.com/us/app/lightblue-explorer-
 has similar or better functionality. Alternatively,
 [noble](https://github.com/sandeepmistry/noble) is a NodeJS library for interacting with BLE that can run from
 a Linux or Mac computer.
+
+Example Platforms Using nRF5x-base
+----------------------------------
+
+- [Squall](https://github.com/helena-project/squall)
+- [BLEES](https://github.com/lab11/blees)
+- [Nucleum](https://github.com/lab11/nucleum)
+- [PolyPoint](https://github.com/lab11/polypoint)
+- [PowerBlade](https://github.com/lab11/powerblade)
