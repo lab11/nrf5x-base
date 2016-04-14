@@ -14,11 +14,8 @@
 #include "simple_ble.h"
 #include "simple_adv.h"
 
-// Custom UTF-8 name. Flash this app and scan to see it!
-char name[20] = {0xE2, 0x9D, 0x84, 0xE2, 0x9D,
-                 0x85, 0xE2, 0x9D, 0x86, 0xE2,
-                 0x9C, 0x8B, 0xE2, 0x87, 0x92,
-                 0xF0, 0x9F, 0x8D, 0xBB, 0x00};
+// Name is maximum length that fits in an advertisement
+char name[40] = "abcdefghijklmnopqrstuvwxyzABCD"; 
 
 
 // Intervals for advertising and connections
@@ -26,14 +23,17 @@ static simple_ble_config_t ble_config = {
     .platform_id       = 0x00,              // used as 4th octect in device BLE address
     .device_id         = DEVICE_ID_DEFAULT,
     .adv_name          = name,
-    .adv_interval      = MSEC_TO_UNITS(500, UNIT_0_625_MS),
+    .adv_interval      = MSEC_TO_UNITS(20, UNIT_0_625_MS),
     .min_conn_interval = MSEC_TO_UNITS(500, UNIT_1_25_MS),
     .max_conn_interval = MSEC_TO_UNITS(1000, UNIT_1_25_MS)
 };
 
+void ble_error(uint32_t error_code) {
+    led_init(13);
+    led_on(13);
+}
 
 int main(void) {
-    uint32_t err_code;
 
     // Setup BLE
     simple_ble_init(&ble_config);
