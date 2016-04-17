@@ -825,6 +825,7 @@ void simple_ble_add_stack_characteristic (uint8_t read,
     APP_ERROR_CHECK(err_code);
 }
 
+// assuming that the buffer sent in there will be long enough
 uint32_t simple_ble_stack_char_get (simple_ble_char_t* char_handle, uint16_t* len, uint8_t* buf) {
     uint32_t err_code;
     ble_gatts_value_t value = {0};
@@ -835,8 +836,10 @@ uint32_t simple_ble_stack_char_get (simple_ble_char_t* char_handle, uint16_t* le
     }
 
     // no error
-    len = value.len;
-    buf = value.p_value;
+    *len = value.len;
+    for (int i=0; i<value.len; i++) {
+        buf[i] = value.p_value[i];
+    }
     return NRF_SUCCESS;
 }
 
