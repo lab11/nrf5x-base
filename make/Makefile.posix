@@ -28,11 +28,11 @@ clean:
 	rm -f *.jlink
 	rm -f JLink.log
 	rm -f .gdbinit
-ifdef USE_BOOTLOADER
+ifdef ENABLE_WIRELESS_DFU
 	rm -rf $(BASE_DIR)/dfu/_build
 endif
 
-ifndef USE_BOOTLOADER
+ifndef ENABLE_WIRELESS_DFU
 flash: all flash.jlink test-softdevice
 	$(JLINK) $(OUTPUT_PATH)flash.jlink
 else
@@ -44,7 +44,7 @@ endif
 ifndef ID
 flash.jlink:
 	printf "r\n" > $(OUTPUT_PATH)flash.jlink
-ifdef USE_BOOTLOADER
+ifdef ENABLE_WIRELESS_DFU
 	printf "w4 0x3f800, 0x01, 0x00\n" >> $(OUTPUT_PATH)flash.jlink
 endif
 	printf "loadfile $(HEX) \nr\ng\nexit\n" >> $(OUTPUT_PATH)flash.jlink
@@ -60,7 +60,7 @@ ID_SECON = $(word 3,$(ID_BYTES))$(word 4,$(ID_BYTES))$(word 5,$(ID_BYTES))$(word
 flash.jlink:
 	$(MAKE_BUILD_FOLDER)
 	printf "r\n" > $(OUTPUT_PATH)flash.jlink
-ifdef USE_BOOTLOADER
+ifdef ENABLE_WIRELESS_DFU
 	printf "w4 0x3f800, 0x01, 0x00\n" >> $(OUTPUT_PATH)flash.jlink
 endif
 	printf "w4 $(BLEADDR_FLASH_LOCATION), 0x$(ID_SECON) 0x$(ID_FIRST)\n" >> $(OUTPUT_PATH)flash.jlink
