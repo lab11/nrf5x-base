@@ -331,8 +331,8 @@ ifdef USE_ANT
     CFLAGS += -DANT_STACK_SUPPORT_REQD
 endif
 
-ifdef USE_BOOTLOADER
-    CFLAGS += -DBOOTLOADER
+ifdef ENABLE_WIRELESS_DFU
+    CFLAGS += -DENABLE_DFU
     APPLICATION_SRCS += bootloader_util.c
 endif
 
@@ -418,8 +418,8 @@ ifdef USE_ANT
     CFLAGS += -DANT_STACK_SUPPORT_REQD
 endif
 
-ifdef USE_BOOTLOADER
-    CFLAGS += -DBOOTLOADER
+ifdef ENABLE_WIRELESS_DFU
+    CFLAGS += -DENABLE_DFU
     APPLICATION_SRCS += bootloader_util.c
 endif
 

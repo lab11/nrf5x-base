@@ -49,7 +49,7 @@ void __attribute__((weak)) gap_params_init(void);
 void __attribute__((weak)) advertising_init(void);
 void __attribute__((weak)) conn_params_init(void);
 void __attribute__((weak)) services_init(void);
-#ifdef BOOTLOADER
+#ifdef ENABLE_DFU
 void __attribute__((weak)) dfu_init (void);
 void __attribute__((weak)) dfu_reset_prepare (void);
 #endif
