@@ -41,7 +41,10 @@ typedef enum
 } dfu_state_t;
 
 #define APP_TIMER_PRESCALER         0                                               /**< Value of the RTC1 PRESCALER register. */
-#define DFU_TIMEOUT_INTERVAL        APP_TIMER_TICKS(120000, APP_TIMER_PRESCALER)    /**< DFU timeout interval in units of timer ticks. */     
+/* Changed DFU timeout from 2 minutes to 10 seconds in order to conserve
+ * battery and reduce time spent out of application
+ */
+#define DFU_TIMEOUT_INTERVAL        APP_TIMER_TICKS(10000, APP_TIMER_PRESCALER)    /**< DFU timeout interval in units of timer ticks. */     
 
 #define IS_UPDATING_SD(START_PKT)   ((START_PKT).dfu_update_mode & DFU_UPDATE_SD)   /**< Macro for determining if a SoftDevice update is ongoing. */
 #define IS_UPDATING_BL(START_PKT)   ((START_PKT).dfu_update_mode & DFU_UPDATE_BL)   /**< Macro for determining if a Bootloader update is ongoing. */
