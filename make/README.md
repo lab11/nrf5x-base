@@ -114,3 +114,12 @@ Verbose Output
 To see the full commands that are being run by make, do:
 
     make V=1
+
+
+License
+-------
+
+These files are modified from
+[hlnd/nrf51-pure-gcc-setup](https://github.com/hlnd/nrf51-pure-gcc-setup) and
+are licensed separately from the rest of the repository.
+

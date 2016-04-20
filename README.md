@@ -151,3 +151,11 @@ Example Platforms Using nRF5x-base
 - [Nucleum](https://github.com/lab11/nucleum)
 - [PolyPoint](https://github.com/lab11/polypoint)
 - [PowerBlade](https://github.com/lab11/powerblade)
+
+
+License
+-------
+
+The files in this repository are licensed under the [MIT License](LICENSE)
+unless otherwise noted by the local directory's README and license files.
+
