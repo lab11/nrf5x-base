@@ -29,18 +29,15 @@ APPLICATION_SRCS += nrf_delay.c
 APPLICATION_SRCS += led.c
 APPLICATION_SRCS += nrf_drv_uart.c 
 
-#APPLICATION_SRCS += simple_ble.c
-#APPLICATION_SRCS += simple_timer.c
-#APPLICATION_SRCS += simple_adv.c
-
 SOFTDEVICE_MODEL = s110
+RAM_KB = 32
 
 LIBRARY_PATHS += ../include
 LIBRARY_PATHS += .
 
 SOURCE_PATHS += ../src
 
-LINKER_SCRIPT = gcc_nrf51_s110_8.0.0_32_256_bootloader.ld 
+IS_BOOTLOADER = 1
 
 NRF_BASE_PATH ?= ..
 include $(NRF_BASE_PATH)/make/Makefile

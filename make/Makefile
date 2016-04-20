@@ -454,7 +454,12 @@ endif
 
 print-% : ; @echo $* = $($*)
 
+ifdef IS_BOOTLOADER
+	LINKER_SCRIPT = $(BASE_DIR)/make/ld/gcc_$(NRF_MODEL)_$(SOFTDEVICE_MODEL)_$(SOFTDEVICE_VERSION)_$(RAM_KB)_$(FLASH_KB)_bootloader.ld
+endif
+
 LINKER_SCRIPT ?= $(BASE_DIR)/make/ld/gcc_$(NRF_MODEL)_$(SOFTDEVICE_MODEL)_$(SOFTDEVICE_VERSION)_$(RAM_KB)_$(FLASH_KB).ld
+
 OUTPUT_NAME ?= $(addsuffix _$(SOFTDEVICE_MODEL), $(PROJECT_NAME))
 
 LIBRARY_INCLUDES = $(addprefix -I,$(LIBRARY_PATHS))
