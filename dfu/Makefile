@@ -29,12 +29,6 @@ APPLICATION_SRCS += nrf_delay.c
 APPLICATION_SRCS += led.c
 APPLICATION_SRCS += nrf_drv_uart.c 
 
-#APPLICATION_SRCS += simple_ble.c
-#APPLICATION_SRCS += simple_timer.c
-#APPLICATION_SRCS += simple_adv.c
-
-SOFTDEVICE_MODEL = s110
-
 LIBRARY_PATHS += ../include
 LIBRARY_PATHS += .
 
