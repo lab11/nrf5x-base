@@ -41,14 +41,7 @@ flash: all flash.jlink test-softdevice flash-bootloader
 endif
 
 
-ifndef ID
-flash.jlink:
-	printf "r\n" > $(OUTPUT_PATH)flash.jlink
-ifdef ENABLE_WIRELESS_DFU
-	printf "w4 0x3f800, 0x01, 0x00\n" >> $(OUTPUT_PATH)flash.jlink
-endif
-	printf "loadfile $(HEX) \nr\ng\nexit\n" >> $(OUTPUT_PATH)flash.jlink
-else
+ifdef ID
 # Write the ID to flash as well
 ID_BYTES = $(subst :, ,$(ID))
 NUM_ID_BYTES = $(words $(ID_BYTES))
@@ -57,15 +50,19 @@ $(error "Invalid number of bytes in ID string (expecting 6)")
 endif
 ID_FIRST = $(word 1,$(ID_BYTES))$(word 2,$(ID_BYTES))
 ID_SECON = $(word 3,$(ID_BYTES))$(word 4,$(ID_BYTES))$(word 5,$(ID_BYTES))$(word 6,$(ID_BYTES))
+endif
+
 flash.jlink:
 	$(MAKE_BUILD_FOLDER)
 	printf "r\n" > $(OUTPUT_PATH)flash.jlink
 ifdef ENABLE_WIRELESS_DFU
 	printf "w4 0x3f800, 0x01, 0x00\n" >> $(OUTPUT_PATH)flash.jlink
 endif
+ifdef ID
 	printf "w4 $(BLEADDR_FLASH_LOCATION), 0x$(ID_SECON) 0x$(ID_FIRST)\n" >> $(OUTPUT_PATH)flash.jlink
-	printf "loadfile $(HEX) \nr\ng\nexit\n" >> $(OUTPUT_PATH)flash.jlink
 endif
+	printf "loadfile $(HEX) \nr\ng\nexit\n" >> $(OUTPUT_PATH)flash.jlink
+
 
 test-softdevice: test-softdevice.jlink
 ifndef SOFTDEVICE
