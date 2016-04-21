@@ -7,6 +7,6 @@ Currently supports devices using SDK 10, softdevice s110, with 32 KB RAM and
 
 To include bootloader with app, simply add this line to your app Makefile:
     
-    USE_BOOTLOADER = 1
+    ENABLE_WIRELESS_DFU = 1
 
 
