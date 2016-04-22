@@ -94,9 +94,6 @@ int main(void) {
     simple_ble_init(&ble_config);
     led_init(LED0);
 
-    // Add device information service
-    simple_ble_device_info_service("1.2.0", "3.4.5", "1.0.1");
-
     // Advertise name
     simple_adv_only_name();
 

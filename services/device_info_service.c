@@ -20,7 +20,25 @@
 #include "simple_ble.h"
 #include "device_info_service.h"
 
-void simple_ble_device_info_service(char* hw_rev, char* fw_rev, char* sw_rev) {
+// for use by simple_ble
+void simple_ble_device_info_service_automatic () {
+    // get hardware revision defined by makefile
+    char* hw_rev = NULL;
+#if defined(HW_REVISION)
+    hw_rev = HW_REVISION;
+#endif
+
+    // get firmware revision defined by makefile
+    char* fw_rev = NULL;
+#if defined(FW_REVISION)
+    fw_rev = FW_REVISION;
+#endif
+
+    // create device information service
+    simple_ble_device_info_service(hw_rev, fw_rev, NULL);
+}
+
+void simple_ble_device_info_service (char* hw_rev, char* fw_rev, char* sw_rev) {
     uint32_t error_code;
     ble_dis_init_t device_info = {0};
 

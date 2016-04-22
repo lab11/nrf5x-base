@@ -23,6 +23,8 @@
 #include "app_timer.h"
 #include "softdevice_handler.h"
 #include "nrf_sdm.h"
+
+// device firmware update code
 #ifdef ENABLE_DFU
 #include "ble_dfu.h"
 #include "bootloader_types.h"
@@ -30,8 +32,9 @@
 #include "bootloader.h"
 #endif
 
-// Configurations
+// Simple BLE files
 #include "simple_ble.h"
+#include "device_info_service.h"
 
 #ifdef ENABLE_DFU
 // Defines
@@ -527,9 +530,17 @@ simple_ble_app_t* simple_ble_init(const simple_ble_config_t* conf) {
     gap_params_init();
     advertising_init();
     services_init();
+
+    // create device information service
+#if defined(HW_REVISION) || defined(FW_REVISION)
+    simple_ble_device_info_service_automatic();
+#endif
+
+    // enable device firmware updates
 #ifdef ENABLE_DFU
     dfu_init();
 #endif
+
     // APP_TIMER_INIT must be called before conn_params_init since it uses timers
     initialize_app_timer();
     conn_params_init();

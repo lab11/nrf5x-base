@@ -50,3 +50,10 @@ APPLICATION_SRCS += ble_dis.c
 APPLICATION_SRCS += device_info_service.c
 ```
 
+Alternatively, if you are only interested in Hardware and Firmware revisions,
+`simple_ble` automatically creates the device information service if you define
+any of:
+
+`HW_REVISION = ...`
+`FW_REVISION = ...`
+
