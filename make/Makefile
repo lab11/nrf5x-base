@@ -452,6 +452,23 @@ else
 	BLEADDR_FLASH_LOCATION ?= 0x0001FFF8
 endif
 
+# Hardware and Firmware version numbers
+HW_REVISION ?= none
+FW_REVISION ?= none
+ENABLE_DIS ?= false
+ifneq ($(HW_REVISION), none)
+    CFLAGS += -DHW_REVISION=\"$(HW_REVISION)\"
+    ENABLE_DIS = true
+endif
+ifneq ($(FW_REVISION), none)
+    CFLAGS += -DFW_REVISION=\"$(FW_REVISION)\"
+    ENABLE_DIS = true
+endif
+ifeq ($(ENABLE_DIS), true)
+    APPLICATION_SRCS += ble_dis.c
+    APPLICATION_SRCS += device_info_service.c
+endif
+
 print-% : ; @echo $* = $($*)
 
 LINKER_SCRIPT ?= $(BASE_DIR)/make/ld/gcc_$(NRF_MODEL)_$(SOFTDEVICE_MODEL)_$(SOFTDEVICE_VERSION)_$(RAM_KB)_$(FLASH_KB).ld
