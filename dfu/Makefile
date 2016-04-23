@@ -34,7 +34,9 @@ LIBRARY_PATHS += .
 
 SOURCE_PATHS += ../src
 
-LINKER_SCRIPT = gcc_nrf51_s110_8.0.0_32_256_bootloader.ld 
+SDK_VERSION ?= 11
+SOFTDEVICE_MODEL ?= s130
+LINKER_SCRIPT = ../make/ld/gcc_nrf51_s110_8.0.0_32_256_bootloader.ld 
 
 NRF_BASE_PATH ?= ..
 include $(NRF_BASE_PATH)/make/Makefile

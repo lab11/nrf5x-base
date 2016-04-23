@@ -220,9 +220,11 @@ endif
 ifdef SOFTDEVICE_MODEL
     LIBRARY_PATHS += $(SDK_INCLUDE_PATH)softdevice/common/softdevice_handler/
     LIBRARY_PATHS += $(SDK_INCLUDE_PATH)softdevice/$(SOFTDEVICE_MODEL)/headers/
+    LIBRARY_PATHS += $(SDK_INCLUDE_PATH)softdevice/$(SOFTDEVICE_MODEL)/headers/nrf51
 
     SOURCE_PATHS += $(SDK_SOURCE_PATH)softdevice/common/softdevice_handler/
     SOURCE_PATHS += $(SDK_SOURCE_PATH)softdevice/$(SOFTDEVICE_MODEL)/headers/
+    SOURCE_PATHS += $(SDK_SOURCE_PATH)softdevice/$(SOFTDEVICE_MODEL)/headers/nrf51
 
 ifdef SERIALIZATION_MODE
 	# Load the sources from the serialization library
@@ -508,8 +510,11 @@ else
   Q=@
 endif
 
-
+ifdef ENABLE_WIRELESS_DFU
+all: $(OBJS) $(OBJS_AS) $(HEX) bootloader
+else
 all: $(OBJS) $(OBJS_AS) $(HEX)
+endif
 
 debug: CFLAGS += -g
 debug: $(OBJS) $(OBJS_AS) $(HEX)

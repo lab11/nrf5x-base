@@ -1046,24 +1046,31 @@ uint32_t dfu_transport_update_start(void)
     err_code = hci_mem_pool_open();
     VERIFY_SUCCESS(err_code);
 
-    err_code = dfu_ble_peer_data_get(&m_ble_peer_data);
-    if (err_code == NRF_SUCCESS)
-    {
-        m_ble_peer_data_valid = true;
-    }
-    else
-    {
-        ble_gap_addr_t addr;
+    /* We've chosen to use our own scheme:
+     * A variation of the simplified approach described here:
+     * https://devzone.nordicsemi.com/blogs/685/common-faq-on-dfu/
+     * We choose to not bond or share bonding information or force a service
+     * rediscovery by changing the address or a Service Changed indication
+     */
 
-        err_code = sd_ble_gap_address_get(&addr);
-        APP_ERROR_CHECK(err_code);
+    //err_code = dfu_ble_peer_data_get(&m_ble_peer_data);
+    //if (err_code == NRF_SUCCESS)
+    //{
+    //    m_ble_peer_data_valid = true;
+    //}
+    //else
+    //{
+    //    ble_gap_addr_t addr;
 
-        // Increase the BLE address by one when advertising openly.
-        addr.addr[0] += 1;
+    //    err_code = sd_ble_gap_address_get(&addr);
+    //    APP_ERROR_CHECK(err_code);
 
-        err_code = sd_ble_gap_address_set(BLE_GAP_ADDR_CYCLE_MODE_NONE, &addr);
-        APP_ERROR_CHECK(err_code);
-    }
+    //    // Increase the BLE address by one when advertising openly.
+    //    addr.addr[0] += 1;
+
+    //    err_code = sd_ble_gap_address_set(BLE_GAP_ADDR_CYCLE_MODE_NONE, &addr);
+    //    APP_ERROR_CHECK(err_code);
+    //}
 
     gap_params_init();
     services_init();

@@ -102,7 +102,7 @@ flash-bootloader.jlink:
 	printf "loadfile $(DFUHEX) \nr\ng\nexit\n" >> $(OUTPUT_PATH)dfu/flash-bootloader.jlink
 
 bootloader: 
-	$(MAKE) OUTPUT_PATH=$(shell pwd)/$(OUTPUT_PATH)dfu/ SDK_VERSION=$(SDK_VERSION) SOFTDEVICE_MODEL=$(SOFTDEVICE_MODEL) -C $(BASE_DIR)/dfu
+	$(MAKE) OUTPUT_PATH=$(shell pwd)/$(OUTPUT_PATH)dfu/ SDK_VERSION=$(SDK_VERSION) SOFTDEVICE_MODEL=$(SOFTDEVICE_MODEL) LINKER_SCRIPT=$(BASE_DIR)/make/ld/gcc_$(NRF_MODEL)_$(SOFTDEVICE_MODEL)_$(SOFTDEVICE_VERSION)_$(RAM_KB)_$(FLASH_KB)_bootloader.ld -C $(BASE_DIR)/dfu
 
 recover: recover.jlink erase-all.jlink pin-reset.jlink
 	$(MAKE_BUILD_FOLDER)
