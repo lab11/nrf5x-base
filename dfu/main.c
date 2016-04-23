@@ -77,7 +77,11 @@
 //static const uint8_t ble_addr[6] __attribute__ ((section(".noInit")));
 #define BOOTLOADER_BLE_ADDR_START 0x20007F80
 
+#ifndef SOFTDEVICE_s130
 void app_error_handler(uint32_t error_code, uint32_t line_num, const uint8_t * p_file_name) {
+#else
+void app_error_fault_handler(uint32_t error_code, uint32_t line_num, uint32_t info) {
+#endif
   nrf_gpio_pin_clear(UPDATE_IN_PROGRESS_LED);
   while(1) {
     nrf_gpio_pin_clear(UPDATE_IN_PROGRESS_LED);
@@ -100,7 +104,11 @@ void app_error_handler(uint32_t error_code, uint32_t line_num, const uint8_t * p
  */
 void assert_nrf_callback(uint16_t line_num, const uint8_t * p_file_name)
 {
+#ifndef SOFTDEVICE_s130
     app_error_handler(0xDEADBEEF, line_num, p_file_name);
+#else
+    app_error_fault_handler(0xDEADBEEF, line_num, 0);
+#endif
 }
 
 
@@ -169,16 +177,41 @@ static void ble_stack_init(bool init_softdevice)
     err_code = sd_softdevice_vector_table_base_set(BOOTLOADER_REGION_START);
     APP_ERROR_CHECK(err_code);
 
-    /* Those targets don't use an external clock */
-  //  SOFTDEVICE_HANDLER_APPSH_INIT(NRF_CLOCK_LFCLKSRC_RC_250_PPM_250MS_CALIBRATION, true);
-    SOFTDEVICE_HANDLER_APPSH_INIT(NRF_CLOCK_LFCLKSRC_RC_250_PPM_250MS_CALIBRATION, true);
+    
+#ifdef SOFTDEVICE_s130
+    // Softdevice 130 2.0.0 changes how the softdevice init procedure works.
+    nrf_clock_lf_cfg_t clock_lf_cfg = {
+        .source        = NRF_CLOCK_LF_SRC_RC,
+        .rc_ctiv       = 16, // bradjc: I mostly made these up based on docs. May be not great.
+        .rc_temp_ctiv  = 2,
+        .xtal_accuracy = NRF_CLOCK_LF_XTAL_ACCURACY_250_PPM};
 
+    SOFTDEVICE_HANDLER_APPSH_INIT(&clock_lf_cfg, true);
+    
+    ble_enable_params_t ble_enable_params;
+    // Need these #defines. C is the worst.
+    #define CENTRAL_LINK_COUNT    1
+    #define PERIPHERAL_LINK_COUNT 1
+    err_code = softdevice_enable_get_default_config(1, // central link count
+                                                    1, // peripheral link count
+                                                    &ble_enable_params);
+    APP_ERROR_CHECK(err_code);
+
+    //Check the ram settings against the used number of links
+    CHECK_RAM_START_ADDR(CENTRAL_LINK_COUNT, PERIPHERAL_LINK_COUNT);
+
+    // Enable BLE stack.
+    err_code = softdevice_enable(&ble_enable_params);
+    APP_ERROR_CHECK(err_code);
+#else
+    SOFTDEVICE_HANDLER_APPSH_INIT(NRF_CLOCK_LFCLKSRC_RC_250_PPM_250MS_CALIBRATION, true);
     // Enable BLE stack
     ble_enable_params_t ble_enable_params;
     memset(&ble_enable_params, 0, sizeof(ble_enable_params));
     ble_enable_params.gatts_enable_params.service_changed = IS_SRVC_CHANGED_CHARACT_PRESENT;
     err_code = sd_ble_enable(&ble_enable_params);
     APP_ERROR_CHECK(err_code);
+#endif
 
     err_code = softdevice_sys_evt_handler_set(sys_evt_dispatch);
     APP_ERROR_CHECK(err_code);

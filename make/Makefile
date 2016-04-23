@@ -220,9 +220,11 @@ endif
 ifdef SOFTDEVICE_MODEL
     LIBRARY_PATHS += $(SDK_INCLUDE_PATH)softdevice/common/softdevice_handler/
     LIBRARY_PATHS += $(SDK_INCLUDE_PATH)softdevice/$(SOFTDEVICE_MODEL)/headers/
+    LIBRARY_PATHS += $(SDK_INCLUDE_PATH)softdevice/$(SOFTDEVICE_MODEL)/headers/nrf51
 
     SOURCE_PATHS += $(SDK_SOURCE_PATH)softdevice/common/softdevice_handler/
     SOURCE_PATHS += $(SDK_SOURCE_PATH)softdevice/$(SOFTDEVICE_MODEL)/headers/
+    SOURCE_PATHS += $(SDK_SOURCE_PATH)softdevice/$(SOFTDEVICE_MODEL)/headers/nrf51
 
 ifdef SERIALIZATION_MODE
 	# Load the sources from the serialization library
@@ -473,13 +475,14 @@ print-% : ; @echo $* = $($*)
 
 LINKER_SCRIPT ?= $(BASE_DIR)/make/ld/gcc_$(NRF_MODEL)_$(SOFTDEVICE_MODEL)_$(SOFTDEVICE_VERSION)_$(RAM_KB)_$(FLASH_KB).ld
 OUTPUT_NAME ?= $(addsuffix _$(SOFTDEVICE_MODEL), $(PROJECT_NAME))
+DFU_OUTPUT_NAME ?= $(addsuffix _$(SOFTDEVICE_MODEL), dfu)
 
 LIBRARY_INCLUDES = $(addprefix -I,$(LIBRARY_PATHS))
 CMSIS_INCLUDE = $(addprefix -I,$(CMSIS_INCLUDE_PATH))
 
 VPATH = $(SOURCE_PATHS)
 
-OUTPUT_PATH = _build/
+OUTPUT_PATH ?= _build/
 
 CPUFLAGS = -mthumb -mcpu=cortex-m0 -march=armv6-m
 CFLAGS += -std=gnu99 -c $(CPUFLAGS) -Wall -D$(DEVICE) -D$(BOARD) -DSDK_VERSION_$(SDK_VERSION) -DSOFTDEVICE_$(SOFTDEVICE_MODEL)
@@ -487,6 +490,10 @@ CFLAGS += -s -ffunction-sections -fdata-sections
 CFLAGS += -D$(shell echo $(SOFTDEVICE_MODEL) | tr a-z A-Z)
 CFLAGS += $(CMSIS_INCLUDE) $(LIBRARY_INCLUDES) -MD
 LDFLAGS += $(CPUFLAGS) -L $(BASE_DIR)/make/ld -T $(LINKER_SCRIPT) -Wl,--gc-sections -Wl,-Map=$(OUTPUT_PATH)$(OUTPUT_NAME).Map
+
+DFUHEX = $(OUTPUT_PATH)dfu/$(DFU_OUTPUT_NAME).hex
+DFUELF = $(OUTPUT_PATH)dfu/$(DFU_OUTPUT_NAME).elf
+DFUBIN = $(OUTPUT_PATH)dfu/$(DFU_OUTPUT_NAME).bin
 
 HEX = $(OUTPUT_PATH)$(OUTPUT_NAME).hex
 ELF = $(OUTPUT_PATH)$(OUTPUT_NAME).elf
@@ -520,8 +527,11 @@ else
   Q=@
 endif
 
-
+ifdef ENABLE_WIRELESS_DFU
+all: $(OBJS) $(OBJS_AS) $(HEX) bootloader
+else
 all: $(OBJS) $(OBJS_AS) $(HEX)
+endif
 
 debug: CFLAGS += -g
 debug: $(OBJS) $(OBJS_AS) $(HEX)
