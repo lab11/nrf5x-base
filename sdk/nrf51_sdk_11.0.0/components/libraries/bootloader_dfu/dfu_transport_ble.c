@@ -61,8 +61,8 @@
 #define APP_ADV_INTERVAL                     MSEC_TO_UNITS(25, UNIT_0_625_MS)                        /**< The advertising interval (25 ms.). */
 #define APP_ADV_TIMEOUT_IN_SECONDS           BLE_GAP_ADV_TIMEOUT_GENERAL_UNLIMITED                   /**< The advertising timeout in units of seconds. This is set to @ref BLE_GAP_ADV_TIMEOUT_GENERAL_UNLIMITED so that the advertisement is done as long as there there is a call to @ref dfu_transport_close function.*/
 #define APP_DIRECTED_ADV_TIMEOUT             50                                                       /**< number of direct advertisement (each lasting 1.28seconds). */
-#define PEER_ADDRESS_TYPE_INVALID            0xFF                                                    /**< Value indicating that no valid peer address exists. This will be the case when a private resolvable address is used in which case there is no address available but instead an IRK is present. */   
-#define PEER_ADDRESS_TYPE_INVALID            0xFF                                                    /**< Value indicating that no valid peer address exists. This will be the case when a private resolvable address is used in which case there is no address available but instead an IRK is present. */   
+#define PEER_ADDRESS_TYPE_INVALID            0xFF                                                    /**< Value indicating that no valid peer address exists. This will be the case when a private resolvable address is used in which case there is no address available but instead an IRK is present. */
+#define PEER_ADDRESS_TYPE_INVALID            0xFF                                                    /**< Value indicating that no valid peer address exists. This will be the case when a private resolvable address is used in which case there is no address available but instead an IRK is present. */
 
 #define SEC_PARAM_TIMEOUT                    30                                                      /**< Timeout for Pairing Request or Security Request (in seconds). */
 #define SEC_PARAM_BOND                       0                                                       /**< Perform bonding. */
@@ -366,7 +366,7 @@ static void init_data_process(ble_dfu_t * p_dfu, ble_dfu_evt_t * p_evt)
         {
             p_evt->evt.ble_dfu_pkt_write.p_data[pkt_length++] = 0;
         }
-        
+
         p_evt->evt.ble_dfu_pkt_write.len = pkt_length;
     }
 
@@ -418,7 +418,7 @@ static void app_data_process(ble_dfu_t * p_dfu, ble_dfu_evt_t * p_evt)
     }
 
     uint8_t * p_data_packet = p_evt->evt.ble_dfu_pkt_write.p_data;
-    
+
     memcpy(mp_rx_buffer, p_data_packet, length);
 
     err_code = hci_mem_pool_rx_data_size_set(length);
@@ -782,13 +782,13 @@ static void on_ble_evt(ble_evt_t * p_ble_evt)
             {
                 uint8_t  sys_attr[128];
                 uint16_t sys_attr_len = 128;
-            
+
                 m_direct_adv_cnt = APP_DIRECTED_ADV_TIMEOUT;
                 nrf_gpio_pin_set(CONNECTED_LED_PIN_NO);
-        
-                err_code = sd_ble_gatts_sys_attr_get(m_conn_handle, 
-                                                     sys_attr, 
-                                                     &sys_attr_len, 
+
+                err_code = sd_ble_gatts_sys_attr_get(m_conn_handle,
+                                                     sys_attr,
+                                                     &sys_attr_len,
                                                      BLE_GATTS_SYS_ATTR_FLAG_SYS_SRVCS);
                 APP_ERROR_CHECK(err_code);
 
@@ -891,7 +891,7 @@ static void on_ble_evt(ble_evt_t * p_ble_evt)
                 ble_gap_enc_info_t * p_enc_info = NULL;
 
                 // If there is a match in diversifier then set the correct keys.
-                if (p_ble_evt->evt.gap_evt.params.sec_info_request.master_id.ediv == 
+                if (p_ble_evt->evt.gap_evt.params.sec_info_request.master_id.ediv ==
                     m_ble_peer_data.enc_key.master_id.ediv)
                 {
                     p_enc_info = &m_ble_peer_data.enc_key.enc_info;
@@ -1088,20 +1088,20 @@ uint32_t dfu_transport_close()
 
     m_tear_down_in_progress = true;
 
-    if (IS_CONNECTED())
-    {
-        // Disconnect from peer.
-        err_code = sd_ble_gap_disconnect(m_conn_handle, BLE_HCI_REMOTE_USER_TERMINATED_CONNECTION);
-        APP_ERROR_CHECK(err_code);
-    }
-    else
-    {
-        // If not connected, then the device will be advertising. Hence stop the advertising.
-        advertising_stop();
-    }
+    // if (IS_CONNECTED())
+    // {
+    //     // Disconnect from peer.
+    //     err_code = sd_ble_gap_disconnect(m_conn_handle, BLE_HCI_REMOTE_USER_TERMINATED_CONNECTION);
+    //     APP_ERROR_CHECK(err_code);
+    // }
+    // else
+    // {
+    //     // If not connected, then the device will be advertising. Hence stop the advertising.
+    //     advertising_stop();
+    // }
 
-    err_code = ble_conn_params_stop();
-    APP_ERROR_CHECK(err_code);
+    // err_code = ble_conn_params_stop();
+    // APP_ERROR_CHECK(err_code);
 
     return NRF_SUCCESS;
 }

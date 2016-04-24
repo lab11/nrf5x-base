@@ -177,7 +177,7 @@ static void ble_stack_init(bool init_softdevice)
     err_code = sd_softdevice_vector_table_base_set(BOOTLOADER_REGION_START);
     APP_ERROR_CHECK(err_code);
 
-    
+
 #ifdef SOFTDEVICE_s130
     // Softdevice 130 2.0.0 changes how the softdevice init procedure works.
     nrf_clock_lf_cfg_t clock_lf_cfg = {
@@ -187,7 +187,7 @@ static void ble_stack_init(bool init_softdevice)
         .xtal_accuracy = NRF_CLOCK_LF_XTAL_ACCURACY_250_PPM};
 
     SOFTDEVICE_HANDLER_APPSH_INIT(&clock_lf_cfg, true);
-    
+
     ble_enable_params_t ble_enable_params;
     // Need these #defines. C is the worst.
     #define CENTRAL_LINK_COUNT    1
@@ -215,7 +215,7 @@ static void ble_stack_init(bool init_softdevice)
 
     err_code = softdevice_sys_evt_handler_set(sys_evt_dispatch);
     APP_ERROR_CHECK(err_code);
-    
+
     // Set the MAC address of the device
     // Highest priority is address set by application in bootloader_settings
     // Next is address from flash if available
@@ -225,7 +225,7 @@ static void ble_stack_init(bool init_softdevice)
       // get BLE address from Flash
       _ble_addr = (uint8_t*)BLEADDR_FLASH_LOCATION;
       if (_ble_addr[1] == 0xFF && _ble_addr[0] == 0xFF) {
-          // get BLE address from shared RAM 
+          // get BLE address from shared RAM
           _ble_addr = (uint8_t*)BOOTLOADER_BLE_ADDR_START;
           if (_ble_addr[1] == 0x00 && _ble_addr[0] == 0x00) {
             // No user-defined address stored in flash or shared RAM
@@ -267,9 +267,15 @@ int main(void)
     uint32_t err_code;
     bool     dfu_start = false;
     bool     app_reset = (NRF_POWER->GPREGRET == BOOTLOADER_DFU_START);
+    bool     second_power_cycle = (NRF_POWER->GPREGRET == (BOOTLOADER_DFU_START+1));
 
     if (app_reset)
     {
+        NRF_POWER->GPREGRET = BOOTLOADER_DFU_START+1;
+        NVIC_SystemReset();
+    }
+
+    if (second_power_cycle) {
         NRF_POWER->GPREGRET = 0;
     }
 
@@ -285,7 +291,7 @@ int main(void)
     leds_init();
 
     (void)bootloader_init();
-    
+
     if (bootloader_dfu_sd_in_progress())
     {
         //nrf_gpio_pin_clear(UPDATE_IN_PROGRESS_LED);
@@ -307,10 +313,11 @@ int main(void)
         ble_stack_init(!app_reset);
         scheduler_init();
     }
-    
-    
 
-    dfu_start  = app_reset; 
+
+
+    // dfu_start  = app_reset;
+    dfu_start  = second_power_cycle;
     // dfu_start |= ((nrf_gpio_pin_read(BOOTLOADER_BUTTON) == 0) ? true: false);
 
     if (dfu_start || (!bootloader_app_is_valid(DFU_BANK_0_REGION_START)))

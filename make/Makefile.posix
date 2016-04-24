@@ -99,9 +99,12 @@ flash-bootloader: bootloader flash-bootloader.jlink test-softdevice
 
 flash-bootloader.jlink:
 	printf "r\n" > $(OUTPUT_PATH)dfu/flash-bootloader.jlink
+ifdef ID
+	printf "w4 $(BLEADDR_FLASH_LOCATION), 0x$(ID_SECON) 0x$(ID_FIRST)\n" >> $(OUTPUT_PATH)dfu/flash-bootloader.jlink
+endif
 	printf "loadfile $(DFUHEX) \nr\ng\nexit\n" >> $(OUTPUT_PATH)dfu/flash-bootloader.jlink
 
-bootloader: 
+bootloader:
 	$(MAKE) OUTPUT_PATH=$(shell pwd)/$(OUTPUT_PATH)dfu/ SDK_VERSION=$(SDK_VERSION) SOFTDEVICE_MODEL=$(SOFTDEVICE_MODEL) LINKER_SCRIPT=$(BASE_DIR)/make/ld/gcc_$(NRF_MODEL)_$(SOFTDEVICE_MODEL)_$(SOFTDEVICE_VERSION)_$(RAM_KB)_$(FLASH_KB)_bootloader.ld -C $(BASE_DIR)/dfu
 
 recover: recover.jlink erase-all.jlink pin-reset.jlink
@@ -148,7 +151,7 @@ startdebug: debug-gdbinit
 	sleep 1
 	$(TERMINAL) "$(GDB) $(ELF)"
 
-startrtt: 
+startrtt:
 	$(TERMINAL) "JLinkExe -device nrf51822 -if swd -speed 1000 -AutoConnect 1"
 	sleep 1
 	$(TERMINAL) "$(JLINKRTTCLIENT)"
