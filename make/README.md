@@ -17,7 +17,7 @@ Things to Install
 -----------------
 1. `gcc-arm-none-eabi`: https://launchpad.net/gcc-arm-embedded
 2. gdb-arm-none-eabi
-3. The [jlink tools]((https://www.segger.com/jlink-software.html)) for linux
+3. The [jlink tools](https://www.segger.com/jlink-software.html) for linux
 4. The jlink debuger for linux
 
 Usage
