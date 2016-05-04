@@ -17,7 +17,7 @@ Things to Install
 -----------------
 1. `gcc-arm-none-eabi`: https://launchpad.net/gcc-arm-embedded
 2. gdb-arm-none-eabi
-3. The jlink tools for linux
+3. The [jlink tools]((https://www.segger.com/jlink-software.html)) for linux
 4. The jlink debuger for linux
 
 Usage
@@ -122,4 +122,3 @@ License
 These files are modified from
 [hlnd/nrf51-pure-gcc-setup](https://github.com/hlnd/nrf51-pure-gcc-setup) and
 are licensed separately from the rest of the repository.
-
