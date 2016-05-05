@@ -16,7 +16,8 @@ APPLICATION_SRCS += simple_ble.c
 LIBRARY_PATHS += . ../../include
 SOURCE_PATHS += ../../src
 
-SOFTDEVICE_MODEL = s110
+SOFTDEVICE_MODEL = s130
+SDK_VERSION = 11
 
 NRF_BASE_PATH ?= ../..
 include $(NRF_BASE_PATH)/make/Makefile
