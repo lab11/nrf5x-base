@@ -363,7 +363,7 @@ void adxl362_accelerometer_init (nrf_drv_spi_t* spi,
     spi_write_reg(SOFT_RESET, data, 1);
 
     //wait for device to be reset
-    for (int i = 0; i < 100; i++);
+    for (volatile int i = 0; i < 1000; i++);
 
     data[0] = 0;
     if (measure) {
@@ -378,6 +378,15 @@ void adxl362_accelerometer_init (nrf_drv_spi_t* spi,
 
     data[0] |= (n_mode << 4);
     spi_write_reg(POWER_CTL, data, 1);
+}
+
+void adxl362_accelerometer_reset () {
+    // send a soft reset to the accelerometer
+    uint8_t data[1] = {RESET_CODE};
+    spi_write_reg(SOFT_RESET, data, 1);
+
+    //wait for device to be reset
+    for (volatile int i = 0; i < 1000; i++);
 }
 
 void adxl362_autosleep () {
