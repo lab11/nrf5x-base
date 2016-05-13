@@ -78,3 +78,7 @@ void adxl362_parse_FIFO(uint8_t * buf_in, int16_t * buf_out, uint16_t num_sample
 
 uint8_t adxl362_read_status_reg();
 void adxl362_read_dev_id(uint8_t *buf);
+
+void adxl362_accelerometer_reset ();
+void adxl362_autosleep ();
+void adxl362_measurement_mode ();
