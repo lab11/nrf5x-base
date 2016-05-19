@@ -15,11 +15,14 @@ SOURCE_PATHS += ../../src
 
 SOFTDEVICE_MODEL = s110
 
+RAM_KB = 32
+FLASH_KB = 256
+
 # Arbitrary values for testing
 HW_REVISION = 2.0.1
 FW_REVISION = 3.4.5
 
-USE_BOOTLOADER = 1
+ENABLE_WIRELESS_DFU = 1
 
 NRF_BASE_PATH ?= ../..
 include $(NRF_BASE_PATH)/make/Makefile
