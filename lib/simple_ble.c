@@ -41,6 +41,8 @@
 #define IRQ_ENABLED               0x01
 #define MAX_NUMBER_INTERRUPTS     32
 #define BOOTLOADER_BLE_ADDR_START 0x20007F80
+#define DFU_ADV_DATA_TYPE         0x16
+#define DFU_ADV_DATA_VERS         0x01
 #endif
 
 /*******************************************************************************
@@ -84,6 +86,9 @@ static void ble_evt_dispatch(ble_evt_t * p_ble_evt);
 static void sys_evt_dispatch(uint32_t sys_evt);
 static void on_conn_params_evt(ble_conn_params_evt_t * p_evt);
 static void on_ble_evt(ble_evt_t * p_ble_evt);
+#ifdef ENABLE_DFU
+static void dfu_reset();
+#endif
 
 void app_error_handler(uint32_t error_code, uint32_t line_num, const uint8_t * p_file_name);
 void assert_nrf_callback(uint16_t line_num, const uint8_t * p_file_name);
@@ -194,16 +199,7 @@ static void on_ble_evt(ble_evt_t * p_ble_evt) {
             // if pending dfu, clear and disable irq and then reset to bootloader
             if (pending_dfu) {
                 pending_dfu = 0;
-                dfu_reset_prepare();
-                err_code = sd_softdevice_disable();
-                APP_ERROR_CHECK(err_code);
-
-                err_code = sd_softdevice_vector_table_base_set(NRF_UICR->BOOTLOADERADDR);
-                APP_ERROR_CHECK(err_code);
-
-                NVIC_ClearPendingIRQ(SWI2_IRQn);
-                interrupts_disable();
-                bootloader_util_app_start(NRF_UICR->BOOTLOADERADDR);
+                dfu_reset();
             }
 #endif
             // go back to advertising connectably
@@ -221,11 +217,6 @@ static void on_ble_evt(ble_evt_t * p_ble_evt) {
             // if written to dfu ctrl pt
             if (simple_ble_is_char_event(p_ble_evt, &dfu_ctrlpt_char)) {
                 pending_dfu = 1;
-                // set flag for bootloader to enter dfu  
-                err_code = sd_power_gpregret_clr(0xFF);
-                APP_ERROR_CHECK(err_code);
-                err_code = sd_power_gpregret_set(BOOTLOADER_DFU_START);
-                APP_ERROR_CHECK(err_code);
                 // disconnect, wait for event. 
                 err_code = sd_ble_gap_disconnect(app.conn_handle, BLE_HCI_REMOTE_USER_TERMINATED_CONNECTION); 
                 APP_ERROR_CHECK(err_code);
@@ -280,10 +271,32 @@ static void on_ble_evt(ble_evt_t * p_ble_evt) {
             break;
 
         case BLE_GAP_EVT_ADV_REPORT:
-            if (ble_evt_adv_report) {
-                ble_evt_adv_report(p_ble_evt);
+            {
+#ifdef ENABLE_DFU
+              // check if DFU advertisement
+              uint8_t data[31];
+              //memset(data, '\0', 31);
+              int len = parse_mfg_data(p_ble_evt, 0x16, data);
+              
+              if (len > 4 && len <= 31 &&
+                  *((short *) data) == 0x02E0 &&
+                  data[2] == DFU_ADV_DATA_TYPE &&
+                  data[3] == DFU_ADV_DATA_VERS) 
+              {
+                ble_gap_addr_t gap_addr;
+                sd_ble_gap_address_get(&gap_addr);
+                
+                if (memcmp(data+4, gap_addr.addr, 6) == 0) {
+                  dfu_reset();
+                }
+              }
+#endif
+              
+              if (ble_evt_adv_report) {
+                  ble_evt_adv_report(p_ble_evt);
+              }
+              break; 
             }
-            break;
 
         default:
             break;
@@ -295,6 +308,7 @@ static void on_ble_evt(ble_evt_t * p_ble_evt) {
         ble_evt_user_handler(p_ble_evt);
     }
 }
+
 
 
 /*******************************************************************************
@@ -481,6 +495,27 @@ void __attribute__((weak)) dfu_init (void) {
 }
 
 void __attribute__((weak)) dfu_reset_prepare (void) {
+}
+
+void dfu_reset() {
+    int err_code = 0;
+                
+    // set flag for bootloader to enter dfu  
+    err_code = sd_power_gpregret_clr(0xFF);
+    APP_ERROR_CHECK(err_code);
+    err_code = sd_power_gpregret_set(BOOTLOADER_DFU_START);
+    APP_ERROR_CHECK(err_code);
+
+    dfu_reset_prepare();
+    err_code = sd_softdevice_disable();
+    APP_ERROR_CHECK(err_code);
+
+    err_code = sd_softdevice_vector_table_base_set(NRF_UICR->BOOTLOADERADDR);
+    APP_ERROR_CHECK(err_code);
+
+    NVIC_ClearPendingIRQ(SWI2_IRQn);
+    interrupts_disable();
+    bootloader_util_app_start(NRF_UICR->BOOTLOADERADDR);
 }
 #endif
 
@@ -885,5 +920,21 @@ void simple_ble_scan_start () {
     if (err_code != NRF_ERROR_INVALID_STATE) {
         APP_ERROR_CHECK(err_code);
     }
+}
+
+int parse_mfg_data(ble_evt_t * p_ble_evt, uint8_t type, uint8_t * data) {
+  unsigned int i = 0;
+  uint8_t * payload = p_ble_evt->evt.gap_evt.params.adv_report.data;
+  while (i < p_ble_evt->evt.gap_evt.params.adv_report.dlen) {
+    unsigned int dlen = payload[i];
+    if (payload[i+1] != 0xFF) {
+      i += dlen+1;
+      continue;
+    }
+    memcpy(data, payload+i+2, dlen-1);
+    return dlen-1;
+  }
+
+  return 0;
 }
 #endif
