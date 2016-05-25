@@ -112,6 +112,7 @@ JLINK_OPTIONS = -device $(NRF_IC) -if swd -speed 1000
 
 # If not set in app makefile, lets optimize for size
 CFLAGS ?= -Os
+CFLAGS += -fomit-frame-pointer
 
 # Add useful paths from nRF5x-base
 LIBRARY_PATHS += $(BASE_DIR)/advertisement/
@@ -539,8 +540,11 @@ all: $(OBJS) $(OBJS_AS) $(HEX)
 endif
 
 debug: CFLAGS += -g
-debug: $(OBJS) $(OBJS_AS) $(HEX)
-
+ifdef ENABLE_WIRELESS_DFU
+debug: $(OBJS) $(OBJS_AS) $(HEX) bootloader
+else
+debug: $(OBJS) $(OBJS_AS) $(HEX) 
+endif
 
 rebuild: clean all
 
