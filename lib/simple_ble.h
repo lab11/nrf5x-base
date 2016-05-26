@@ -96,7 +96,7 @@ uint32_t simple_ble_stack_char_set(simple_ble_char_t* char_handle, uint16_t len,
 #ifdef SOFTDEVICE_s130
 // For S130 with central role support
 void simple_ble_scan_start ();
-int parse_mfg_data(ble_evt_t * p_ble_evt, uint8_t type, uint8_t * data);
+int parse_adata(ble_evt_t * p_ble_evt, uint8_t type, uint8_t * data);
 #endif
 
 

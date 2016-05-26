@@ -275,8 +275,7 @@ static void on_ble_evt(ble_evt_t * p_ble_evt) {
 #ifdef ENABLE_DFU
               // check if DFU advertisement
               uint8_t data[31];
-              //memset(data, '\0', 31);
-              int len = parse_mfg_data(p_ble_evt, 0x16, data);
+              int len = parse_adata(p_ble_evt, 0xFF, data);
               
               if (len > 4 && len <= 31 &&
                   *((short *) data) == 0x02E0 &&
@@ -922,12 +921,12 @@ void simple_ble_scan_start () {
     }
 }
 
-int parse_mfg_data(ble_evt_t * p_ble_evt, uint8_t type, uint8_t * data) {
+int parse_adata(ble_evt_t * p_ble_evt, uint8_t type, uint8_t * data) {
   unsigned int i = 0;
   uint8_t * payload = p_ble_evt->evt.gap_evt.params.adv_report.data;
   while (i < p_ble_evt->evt.gap_evt.params.adv_report.dlen) {
     unsigned int dlen = payload[i];
-    if (payload[i+1] != 0xFF) {
+    if (payload[i+1] != type) {
       i += dlen+1;
       continue;
     }
