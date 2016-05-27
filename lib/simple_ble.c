@@ -273,6 +273,7 @@ static void on_ble_evt(ble_evt_t * p_ble_evt) {
         case BLE_GAP_EVT_ADV_REPORT:
             {
 #ifdef ENABLE_DFU
+#ifdef SOFTDEVICE_s130
               // check if DFU advertisement
               uint8_t data[31];
               int len = parse_adata(p_ble_evt, 0xFF, data);
@@ -289,6 +290,7 @@ static void on_ble_evt(ble_evt_t * p_ble_evt) {
                   dfu_reset();
                 }
               }
+#endif
 #endif
               
               if (ble_evt_adv_report) {
