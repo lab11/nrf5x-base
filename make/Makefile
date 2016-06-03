@@ -211,7 +211,7 @@ ifdef USE_BLE
     LIBRARY_PATHS += $(wildcard $(SDK_INCLUDE_PATH)ble/ble_services/*/)
     SOURCE_PATHS += $(wildcard $(SDK_SOURCE_PATH)ble/*/)
     SOURCE_PATHS += $(wildcard $(SDK_SOURCE_PATH)ble/ble_services/*/)
-    CFLAGS += -DBLE_STACK_SUPPORT_REQD
+    CFLAGS += -DBLE_STACK_SUPPORT_REQD -DSOFTDEVICE_PRESENT
 endif
 
 ifdef USE_ANT
