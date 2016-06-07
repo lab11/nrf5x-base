@@ -1,6 +1,9 @@
 #ifndef __SIMPLE_BLE_H
 #define __SIMPLE_BLE_H
 
+#include <stdint.h>
+#include <stdbool.h>
+
 #include "ble.h"
 
 /*******************************************************************************
