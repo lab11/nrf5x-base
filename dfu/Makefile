@@ -38,5 +38,7 @@ SDK_VERSION ?= 10
 SOFTDEVICE_MODEL ?= s110
 LINKER_SCRIPT = ../make/ld/gcc_nrf51_s110_8.0.0_32_256_bootloader.ld 
 
+LDFLAGS += --specs=nano.specs
+
 NRF_BASE_PATH ?= ..
 include $(NRF_BASE_PATH)/make/Makefile
