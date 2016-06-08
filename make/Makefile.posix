@@ -68,12 +68,15 @@ test-softdevice: test-softdevice.jlink
 ifndef SOFTDEVICE
 	$(error "You need to set the SOFTDEVICE command-line parameter to a path (without spaces) to the softdevice hex-file")
 endif
+
+ifneq ($(SOFTDEVICE_MODEL),blank)
 	$(MAKE_BUILD_FOLDER)
 	@touch $(SOFTDEVICE_TEST_FLASH)
 	@$(OBJCOPY) -Iihex -Obinary $(SOFTDEVICE) $(SOFTDEVICE_OUTPUT:.hex=.bin)
 	@$(JLINK) $(OUTPUT_PATH)test-softdevice.jlink
 	@dd skip=$(shell printf "%d" $(SOFTDEVICE_TEST_ADDR)) count=$(shell printf "%d" $(SOFTDEVICE_TEST_LEN)) if=$(SOFTDEVICE_OUTPUT:.hex=.bin) of=$(SOFTDEVICE_TEST_BIN) bs=1
 	@diff -q $(SOFTDEVICE_TEST_FLASH) $(SOFTDEVICE_TEST_BIN) || $(MAKE) flash-softdevice
+endif
 
 # address and length determined experimentally. Works for s110_7, s110_8, s120_2, and s130_1
 SOFTDEVICE_TEST_ADDR = 0x1000
