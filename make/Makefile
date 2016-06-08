@@ -107,6 +107,9 @@ SYSTEM_FILE ?= system_$(NRF_MODEL).c
 # Set the path to the softdevice
 SOFTDEVICE ?= $(BASE_DIR)/softdevice/$(SOFTDEVICE_MODEL)_$(NRF_MODEL)_$(SOFTDEVICE_VERSION)_softdevice.hex
 
+BOOTLOADER_REGION_START = $(addprefix 0x, $(shell echo "obase=16; (${FLASH_KB}-18)*1024" | bc ))
+BOOTLOADER_SETTINGS_ADDRESS = $(addprefix 0x, $(shell echo "obase=16; (${FLASH_KB}-2)*1024" | bc))
+
 # Need some common options for interacting with the chip over JTAG
 JLINK_OPTIONS = -device $(NRF_IC) -if swd -speed 1000
 
@@ -127,7 +130,6 @@ SOURCE_PATHS += $(BASE_DIR)/lib/
 SOURCE_PATHS += $(BASE_DIR)/peripherals/
 SOURCE_PATHS += $(BASE_DIR)/services/
 SOURCE_PATHS += $(BASE_DIR)/startup/
-
 
 # Add paths for each SDK version
 ifeq ($(NRF_MODEL), nrf51)
@@ -486,7 +488,7 @@ print-% : ; @echo $* = $($*)
 
 LINKER_SCRIPT ?= $(BASE_DIR)/make/ld/gcc_$(NRF_MODEL)_$(SOFTDEVICE_MODEL)_$(SOFTDEVICE_VERSION)_$(RAM_KB)_$(FLASH_KB).ld
 OUTPUT_NAME ?= $(addsuffix _$(SOFTDEVICE_MODEL), $(PROJECT_NAME))
-DFU_OUTPUT_NAME ?= $(addsuffix _$(SOFTDEVICE_MODEL), dfu)
+DFU_OUTPUT_NAME ?= $(addsuffix _$(FLASH_KB), $(addsuffix _$(RAM_KB), $(addsuffix _$(SOFTDEVICE_MODEL), dfu)))
 
 LIBRARY_INCLUDES = $(addprefix -I,$(LIBRARY_PATHS))
 CMSIS_INCLUDE = $(addprefix -I,$(CMSIS_INCLUDE_PATH))
@@ -502,9 +504,9 @@ CFLAGS += -D$(shell echo $(SOFTDEVICE_MODEL) | tr a-z A-Z)
 CFLAGS += $(CMSIS_INCLUDE) $(LIBRARY_INCLUDES) -MD
 LDFLAGS += $(CPUFLAGS) -L $(BASE_DIR)/make/ld -T $(LINKER_SCRIPT) -Wl,--gc-sections -Wl,-Map=$(OUTPUT_PATH)$(OUTPUT_NAME).Map
 
-DFUHEX = $(OUTPUT_PATH)dfu/$(DFU_OUTPUT_NAME).hex
-DFUELF = $(OUTPUT_PATH)dfu/$(DFU_OUTPUT_NAME).elf
-DFUBIN = $(OUTPUT_PATH)dfu/$(DFU_OUTPUT_NAME).bin
+DFUHEX = $(BASE_DIR)/dfu/_build/$(DFU_OUTPUT_NAME).hex
+DFUELF = $(BASE_DIR)/dfu/_build/$(DFU_OUTPUT_NAME).elf
+DFUBIN = $(BASE_DIR)/dfu/_build/$(DFU_OUTPUT_NAME).bin
 
 HEX = $(OUTPUT_PATH)$(OUTPUT_NAME).hex
 ELF = $(OUTPUT_PATH)$(OUTPUT_NAME).elf

@@ -5,21 +5,15 @@ GROUP(-lgcc -lc -lnosys)
 
 MEMORY
 {
-  FLASH (rx): ORIGIN = 0x3b800, LENGTH = 0x4000 
-  RAM (rwx): ORIGIN = 0x20002000, LENGTH = 0x5f80
-  NOINIT (rw): ORIGIN = 0x20007f80, LENGTH = 0x80
-  BOOTLOADER_SETTINGS (rw) : ORIGIN = 0x3f800, LENGTH = 0x0400
+  FLASH (rx): ORIGIN = 256K - 16K - 1K - 1K, LENGTH = 16K /* 1K is taken by flash storage of BLE Address, 16K for Bootloader */
+  BOOTLOADER_SETTINGS (rw) : ORIGIN = 256K - 1K - 1K, LENGTH = 1K /* Right above Bootloader */
+  RAM (rwx) : ORIGIN = 0x20000000 + 8K, LENGTH = 32K - 8K /* 8 kB is taken by S110, 24 kB for app. */
   UICR_BOOTLOADER (r)  : ORIGIN = 0x10001014, LENGTH =  0x04
 }
 
 
 SECTIONS
 {
-    .noInit (NOLOAD):
-    {
-       
-    } > NOINIT
-
     .bootloaderSettings (NOLOAD):
     {
     
