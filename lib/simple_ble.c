@@ -384,11 +384,8 @@ void __attribute__((weak)) ble_stack_init (void) {
     // SOFTDEVICE_HANDLER_INIT(NRF_CLOCK_LFCLKSRC_RC_250_PPM_TEMP_4000MS_CALIBRATION, NULL);
 
     ble_enable_params_t ble_enable_params;
-    // Need these #defines. C is the worst.
-    #define CENTRAL_LINK_COUNT    1
-    #define PERIPHERAL_LINK_COUNT 1
-    err_code = softdevice_enable_get_default_config(1, // central link count
-                                                    1, // peripheral link count
+    err_code = softdevice_enable_get_default_config(CENTRAL_LINK_COUNT, // central link count
+                                                    PERIPHERAL_LINK_COUNT, // peripheral link count
                                                     &ble_enable_params);
     APP_ERROR_CHECK(err_code);
 

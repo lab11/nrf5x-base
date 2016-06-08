@@ -111,7 +111,7 @@ SOFTDEVICE ?= $(BASE_DIR)/softdevice/$(SOFTDEVICE_MODEL)_$(NRF_MODEL)_$(SOFTDEVI
 JLINK_OPTIONS = -device $(NRF_IC) -if swd -speed 1000
 
 # If not set in app makefile, lets optimize for size
-CFLAGS ?= -Os
+CFLAGS += -Os
 CFLAGS += -fomit-frame-pointer
 
 # Add useful paths from nRF5x-base
@@ -207,11 +207,16 @@ endif
 endif
 
 ifdef USE_BLE
+    # How many central/peripherals are defined changes how much memory the
+    # softdevice requires. Change the amount of memory allotted in a custom ld
+    # file if your configuration is different than default.
+    CENTRAL_LINK_COUNT ?= 1
+    PERIPHERAL_LINK_COUNT ?= 1
     LIBRARY_PATHS += $(wildcard $(SDK_INCLUDE_PATH)ble/*/)
     LIBRARY_PATHS += $(wildcard $(SDK_INCLUDE_PATH)ble/ble_services/*/)
     SOURCE_PATHS += $(wildcard $(SDK_SOURCE_PATH)ble/*/)
     SOURCE_PATHS += $(wildcard $(SDK_SOURCE_PATH)ble/ble_services/*/)
-    CFLAGS += -DBLE_STACK_SUPPORT_REQD -DSOFTDEVICE_PRESENT
+    CFLAGS += -DBLE_STACK_SUPPORT_REQD -DSOFTDEVICE_PRESENT -DCENTRAL_LINK_COUNT=$(CENTRAL_LINK_COUNT) -DPERIPHERAL_LINK_COUNT=$(CENTRAL_LINK_COUNT)
 endif
 
 ifdef USE_ANT
