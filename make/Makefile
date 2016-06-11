@@ -212,13 +212,23 @@ ifdef USE_BLE
     # How many central/peripherals are defined changes how much memory the
     # softdevice requires. Change the amount of memory allotted in a custom ld
     # file if your configuration is different than default.
-    CENTRAL_LINK_COUNT ?= 1
-    PERIPHERAL_LINK_COUNT ?= 1
+
+    ifeq ($(RAM_KB), 16)
+      # limit 16 kB RAM nRFs to only act as peripherals. Doing otherwise
+      # requires careful balancing of memory requirements and should be done
+      # manually, not automatically
+      CENTRAL_LINK_COUNT ?= 0
+      PERIPHERAL_LINK_COUNT ?= 1
+    else
+      CENTRAL_LINK_COUNT ?= 1
+      PERIPHERAL_LINK_COUNT ?= 1
+    endif
+
     LIBRARY_PATHS += $(wildcard $(SDK_INCLUDE_PATH)ble/*/)
     LIBRARY_PATHS += $(wildcard $(SDK_INCLUDE_PATH)ble/ble_services/*/)
     SOURCE_PATHS += $(wildcard $(SDK_SOURCE_PATH)ble/*/)
     SOURCE_PATHS += $(wildcard $(SDK_SOURCE_PATH)ble/ble_services/*/)
-    CFLAGS += -DBLE_STACK_SUPPORT_REQD -DSOFTDEVICE_PRESENT -DCENTRAL_LINK_COUNT=$(CENTRAL_LINK_COUNT) -DPERIPHERAL_LINK_COUNT=$(CENTRAL_LINK_COUNT)
+    CFLAGS += -DBLE_STACK_SUPPORT_REQD -DSOFTDEVICE_PRESENT -DCENTRAL_LINK_COUNT=$(CENTRAL_LINK_COUNT) -DPERIPHERAL_LINK_COUNT=$(PERIPHERAL_LINK_COUNT)
 endif
 
 ifdef USE_ANT

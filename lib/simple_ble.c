@@ -533,8 +533,9 @@ void __attribute__((weak)) initialize_app_timer (void) {
  ******************************************************************************/
 void __attribute__((weak)) advertising_start(void) {
     uint32_t err_code = sd_ble_gap_adv_start(&m_adv_params);
-    if (err_code != NRF_ERROR_INVALID_STATE) {
+    if (err_code != NRF_ERROR_INVALID_STATE && err_code != NRF_ERROR_CONN_COUNT) {
         // ignore Invalid State responses. Occurs when start is called twice
+        // ignore Connection Count problems. Connectable advertising seems to work just fine
         APP_ERROR_CHECK(err_code);
     }
 }

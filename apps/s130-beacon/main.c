@@ -24,6 +24,11 @@ static simple_ble_config_t ble_config = {
     .max_conn_interval = MSEC_TO_UNITS(1000, UNIT_1_25_MS)
 };
 
+void ble_error(uint32_t error_code) {
+    led_init(13);
+    led_on(13);
+    while(1);
+}
 
 int main(void) {
     uint32_t err_code;
