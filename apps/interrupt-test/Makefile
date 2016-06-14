@@ -4,6 +4,7 @@ APPLICATION_SRCS = $(notdir $(wildcard ./*.c))
 APPLICATION_SRCS += softdevice_handler.c
 APPLICATION_SRCS += ble_advdata.c
 APPLICATION_SRCS += ble_conn_params.c
+APPLICATION_SRCS += app_error.c
 
 APPLICATION_SRCS += nrf_drv_common.c
 APPLICATION_SRCS += nrf_drv_gpiote.c
