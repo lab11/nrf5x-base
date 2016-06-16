@@ -58,11 +58,12 @@ static void spi_init () {
 
     nrf_drv_spi_config_t spi_config = NRF_DRV_SPI_DEFAULT_CONFIG(SPI_INSTANCE);
     // spi_config.frequency = NRF_DRV_SPI_FREQ_1M;
-    spi_config.frequency = NRF_DRV_SPI_FREQ_2M;
+    spi_config.frequency = NRF_DRV_SPI_FREQ_1M;
     // We do need CS pin
-    spi_config.ss_pin = nTC_CS;
+    // spi_config.ss_pin = nTC_CS;
     // Need CPOL=1 CPHA=1
-    spi_config.mode = NRF_DRV_SPI_MODE_3;
+    // spi_config.mode = NRF_DRV_SPI_MODE_3;
+    spi_config.mode = NRF_DRV_SPI_MODE_2;
 
     // We want blocking mode
     err = nrf_drv_spi_init(&_spi, &spi_config, NULL);
@@ -80,6 +81,9 @@ static void wait_for_not_busy () {
             found_busy_low = 1;
         }
     }
+
+    // Then wait a little longer so we don't violate the T_NS time.
+    nrf_delay_us(5);
 }
 
 int main(void) {
@@ -98,6 +102,9 @@ int main(void) {
     nrf_gpio_cfg_output(nTC_EN);
     nrf_gpio_pin_clear(nTC_EN);
 
+    nrf_gpio_cfg_output(nTC_CS);
+    nrf_gpio_pin_set(nTC_CS);
+
     // Need to wait 6.5 ms per datasheet (section 5.5)
     nrf_delay_ms(10);
 
@@ -108,16 +115,24 @@ int main(void) {
     uint8_t rx[256] = {0};
 
     // Send
+    nrf_gpio_pin_clear(nTC_CS);
     nrf_drv_spi_transfer(&_spi, tx, 4, NULL, 0);
+    nrf_gpio_pin_set(nTC_CS);
 
     // Wait until no longer busy
     wait_for_not_busy();
     // while (nrf_gpio_pin_read(nTC_BUSY) == 0);
 
     // Receive response
-    nrf_drv_spi_transfer(&_spi, NULL, 0, rx, 26);
+    nrf_gpio_pin_clear(nTC_CS);
+    nrf_drv_spi_transfer(&_spi, NULL, 0, rx, 28);
+    nrf_gpio_pin_set(nTC_CS);
 
-    wait_for_not_busy();
+    // wait_for_not_busy();
+
+    // Not sure, sometimes busy signal, sometimes not?
+    // Just wait for a hot sec for now
+    nrf_delay_ms(1);
 
 
     uint8_t pic[255];
@@ -137,7 +152,8 @@ int main(void) {
     pic[7] = 0x01; // 300px
     pic[8] = 0x2c;
     pic[9] = 0x01; // 1 bit
-    pic[10] = 0x02; // image pixel data format type 2
+    // pic[10] = 0x02; // image pixel data format type 2
+    pic[10] = 0x00; // image pixel data format type 0
     pic[11] = 0; // reserved
     pic[12] = 0;
     pic[13] = 0;
@@ -149,30 +165,70 @@ int main(void) {
     pic[19] = 0;
 
     // Send header
+    nrf_gpio_pin_clear(nTC_CS);
     nrf_drv_spi_transfer(&_spi, pic, 20, NULL, 0);
+    nrf_gpio_pin_set(nTC_CS);
     wait_for_not_busy();
     nrf_delay_ms(5);
+    nrf_gpio_pin_clear(nTC_CS);
     nrf_drv_spi_transfer(&_spi, NULL, 0, rx, 2);
+    nrf_gpio_pin_set(nTC_CS);
     wait_for_not_busy();
     nrf_delay_ms(5);
 
     uint8_t i;
 
-    pic[3] = 250;
+    // pic[3] = 250;
+    pic[3] = 150;
     for (i=4; i<254; i++) {
         if (i % 2 == 0) {
-            pic[i] = 0xFF;
+            pic[i] = 0xF0;
         } else {
             pic[i] = 0x00;
         }
     }
 
-    // Display a lot more
-    for (i=0; i<30; i++) {
-        nrf_drv_spi_transfer(&_spi, pic, 254, NULL, 0);
+    // // Display a lot more
+    // for (i=0; i<30; i++) {
+    //     nrf_gpio_pin_clear(nTC_CS);
+    //     // nrf_drv_spi_transfer(&_spi, pic, 254, NULL, 0);
+    //     nrf_drv_spi_transfer(&_spi, pic, 154, NULL, 0);
+    //     nrf_gpio_pin_set(nTC_CS);
+    //     wait_for_not_busy();
+    //     nrf_gpio_pin_clear(nTC_CS);
+    //     nrf_drv_spi_transfer(&_spi, NULL, 0, rx, 2);
+    //     nrf_gpio_pin_set(nTC_CS);
+    //     wait_for_not_busy();
+    // }
+
+    uint8_t j;
+    for (j=0; j<10; j++) {
+
+        // Display a lot more
+        nrf_gpio_pin_clear(nTC_CS);
+
+
+        pic[3] = 250;
+        nrf_drv_spi_transfer(&_spi, pic,   1, NULL, 0);
+        nrf_drv_spi_transfer(&_spi, pic+1, 1, NULL, 0);
+        nrf_drv_spi_transfer(&_spi, pic+2, 1, NULL, 0);
+        nrf_drv_spi_transfer(&_spi, pic+3, 1, NULL, 0);
+
+        for (i=0; i<125; i++) {
+
+            // nrf_drv_spi_transfer(&_spi, pic, 254, NULL, 0);
+            nrf_drv_spi_transfer(&_spi, pic+4, 1, NULL, 0);
+            nrf_drv_spi_transfer(&_spi, pic+5, 1, NULL, 0);
+
+        }
+
+        nrf_gpio_pin_set(nTC_CS);
         wait_for_not_busy();
+        nrf_gpio_pin_clear(nTC_CS);
         nrf_drv_spi_transfer(&_spi, NULL, 0, rx, 2);
+        nrf_gpio_pin_set(nTC_CS);
         wait_for_not_busy();
+
     }
 
 
@@ -181,9 +237,13 @@ int main(void) {
     tx[1] = 0x01;
     tx[2] = 0x00;
 
+    nrf_gpio_pin_clear(nTC_CS);
     nrf_drv_spi_transfer(&_spi, tx, 3, NULL, 0);
+    nrf_gpio_pin_set(nTC_CS);
     wait_for_not_busy();
+    nrf_gpio_pin_clear(nTC_CS);
     nrf_drv_spi_transfer(&_spi, NULL, 0, rx, 2);
+    nrf_gpio_pin_set(nTC_CS);
 
     // adxl362_accelerometer_init(&_spi, adxl362_NOISE_NORMAL, true, false, false);
 
