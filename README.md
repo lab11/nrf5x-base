@@ -89,6 +89,7 @@ There are libraries for many common BLE functions in this repo:
 - SQL style database ([LittleD](https://github.com/graemedouglas/LittleD))
 - [RTT Debugging](https://www.segger.com/pr-j-link-real-time.html)
 - Nordic [BLE Serialization](http://infocenter.nordicsemi.com/index.jsp?topic=%2Fcom.nordic.infocenter.sdk51.v10.0.0%2Fble_serialization_s110_events.html)
+- Nordic DFU over-the-air reprogramming.
 
 
 
@@ -123,6 +124,10 @@ The "EDU" edition works fine.
     
     See the [make](https://github.com/lab11/nrf5x-base/tree/master/make) folder
     for a complete list of commands.
+    
+    Most of our boards use a [TagConnect header](http://www.tag-connect.com/TC2030-IDC-NL)
+    instead of the way-too-large ARM JTAG header. We use [our own](https://github.com/lab11/jtag-tagconnect)
+    adapter, but Segger also makes [one](https://www.segger.com/jlink-6-pin-needle-adapter.html).
 
 
 Git Submodules
@@ -133,7 +138,7 @@ git automatically update them:
 https://gist.github.com/brghena/fc4483a2df83c47660a5
 
 
-Development Tools
+BLE Tools for Other Platforms
 -----------------
 
 When developing a BLE application, several tools exist to make your life easier.
