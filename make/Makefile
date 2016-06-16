@@ -52,7 +52,7 @@ BOARD ?= BOARD_NULL
 RAM_KB   ?= 16
 FLASH_KB ?= 256
 
-# Default to the newest SDK
+# Default to SDK 10
 SDK_VERSION ?= 10
 
 # Set this for using GDB
@@ -75,6 +75,7 @@ ifeq ($(SOFTDEVICE_MODEL), s130)
     USE_BLE = 1
     SOFTDEVICE_VERSION ?= 2.0.0
     NRF_MODEL = nrf51
+    SDK_VERSION = 11
 endif
 
 ifeq ($(SOFTDEVICE_MODEL), s132)
@@ -96,6 +97,18 @@ ifeq ($(SOFTDEVICE_MODEL), s310)
     SOFTDEVICE_VERSION ?= 3.0.0
     NRF_MODEL = nrf51
 endif
+
+# Print some helpful info about what the user is compiling for
+space :=
+space +=
+$(info BUILD OPTIONS:)
+$(info $(space) SoftDevice  $(SOFTDEVICE_MODEL))
+$(info $(space) SDK         $(SDK_VERSION))
+$(info $(space) nRF         $(NRF_IC))
+$(info $(space) RAM         $(RAM_KB) kB)
+$(info $(space) FLASH       $(FLASH_KB) kB)
+$(info $(space) Board       $(BOARD))
+$(info $(space))
 
 # Need capital letters for the device in GCC
 DEVICE ?= $(shell echo $(NRF_MODEL) | tr a-z A-Z)
@@ -560,7 +573,7 @@ debug: CFLAGS += -g
 ifdef ENABLE_WIRELESS_DFU
 debug: $(OBJS) $(OBJS_AS) $(HEX) bootloader
 else
-debug: $(OBJS) $(OBJS_AS) $(HEX) 
+debug: $(OBJS) $(OBJS_AS) $(HEX)
 endif
 
 rebuild: clean all
