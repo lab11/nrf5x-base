@@ -134,12 +134,14 @@ CFLAGS += -fomit-frame-pointer
 LIBRARY_PATHS += $(BASE_DIR)/advertisement/
 LIBRARY_PATHS += $(BASE_DIR)/devices/
 LIBRARY_PATHS += $(BASE_DIR)/lib/
+LIBRARY_PATHS += $(BASE_DIR)/lib/simple_logger/
 LIBRARY_PATHS += $(BASE_DIR)/peripherals/
 LIBRARY_PATHS += $(BASE_DIR)/services/
 
 SOURCE_PATHS += $(BASE_DIR)/advertisement/
 SOURCE_PATHS += $(BASE_DIR)/devices/
 SOURCE_PATHS += $(BASE_DIR)/lib/
+SOURCE_PATHS += $(BASE_DIR)/lib/simple_logger/
 SOURCE_PATHS += $(BASE_DIR)/peripherals/
 SOURCE_PATHS += $(BASE_DIR)/services/
 SOURCE_PATHS += $(BASE_DIR)/startup/
