@@ -371,9 +371,6 @@ uint8_t lab11[15000] = {
 
 
 
-
-
-
 int main(void) {
 
     // Initialize.
@@ -449,6 +446,7 @@ int main(void) {
 
     uint8_t i;
 
+    // // display a pattern
     // pic[3] = 250;
     // // pic[3] = 150;
     // for (i=4; i<254; i++) {
@@ -459,8 +457,8 @@ int main(void) {
     //     }
     //     // pic[i] = i;
     // }
-
-    // Display a lot more
+    //
+    // // Display a lot more
     // for (i=0; i<30; i++) {
     //     nrf_drv_spi_transfer(&_spi, pic, 254, NULL, 0);
     //     wait_for_not_busy();
@@ -468,16 +466,19 @@ int main(void) {
     //     wait_for_not_busy();
     // }
 
-    pic[3] = 250;
 
+    // display an image
+    pic[3] = 250;
     for (i=0; i<60; i++) {
-        memcpy(pic+4, lab11+(i*250), 250);
+        memcpy(pic+4, lab11+(i*250), 250); // Lab11 logo
+        //memset(pic+4, 0xFF, 250); // Black screen
+        //memset(pic+4, 0x00, 250); // White screen
+
         nrf_drv_spi_transfer(&_spi, pic, 254, NULL, 0);
         wait_for_not_busy();
         nrf_drv_spi_transfer(&_spi, NULL, 0, rx, 2);
         wait_for_not_busy();
     }
-
 
 
     // Actually render the image
