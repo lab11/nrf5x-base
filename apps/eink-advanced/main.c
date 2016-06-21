@@ -15,6 +15,9 @@
 
 #include "board.h"
 
+//font
+#include "font8x8_basic.h"
+
 // Need pin number for LED
 #define LED0 18
 #define LED1 19
@@ -401,22 +404,38 @@ void insertPixelGrid(int width, int height, int grid[height][width], int xcoord,
     }
 }
 
+//reverse the bits in the char
+unsigned char reverse(unsigned char b){
+    b = (b & 0xF0) >> 4 | (b & 0x0F) << 4;
+    b = (b & 0xCC) >> 2 | (b & 0x33) << 2;
+    b = (b & 0xAA) >> 1 | (b & 0x55) << 1;
+    return b;
+}
+
+void writeText(char text[])
+{
+    int numberOfCharacters = sizeof(text)/sizeof(text[0]);
+
+    //loop over each character to be written
+    for(int i = 0; i < numberOfCharacters; i++)
+    {
+        char find = text[i];
+
+        char *bitmap = font8x8_basic[find];
+        //write each row of the character pixels into the picture
+        for(int j = 0; j < 8; j++)
+        {
+            int index = (i) + (50 * j);
+            lab11[index] = reverse(bitmap[j]);
+        }
+        
+    }
+}
+
 int main(void) {
     clearScreen();
 
-    int grid[8][8] = {
-    {0, 0, 1, 1, 1, 1, 0, 0},
-    {0, 1, 0, 0, 0, 0, 1, 0},
-    {0, 1, 0, 0, 0, 0, 1, 0},
-    {0, 1, 0, 0, 0, 0, 1, 0},
-    {0, 1, 0, 0, 0, 0, 1, 0},
-    {0, 0, 1, 1, 1, 1, 0, 0},
-    {0, 0, 1, 0, 0, 0, 0, 0},
-    {0, 1, 0, 0, 0, 0, 0, 0},
-    };
-
-    insertPixelGrid(8, 8, grid, 0, 0);
-    insertPixelGrid(8, 8, grid, 9, 0);
+    writeText("PooP");
 
     // Initialize.
     led_init(LED0);
