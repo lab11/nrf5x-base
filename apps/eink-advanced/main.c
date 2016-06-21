@@ -414,18 +414,19 @@ unsigned char reverse(unsigned char b){
 
 void writeText(char text[])
 {
-    int numberOfCharacters = sizeof(text)/sizeof(text[0]);
+    int numberOfCharacters = strlen(text);
 
     //loop over each character to be written
     for(int i = 0; i < numberOfCharacters; i++)
     {
         char find = text[i];
-
         char *bitmap = font8x8_basic[find];
+        uint8_t line =  (i / 50);
+
         //write each row of the character pixels into the picture
         for(int j = 0; j < 8; j++)
         {
-            int index = (i) + (50 * j);
+            int index = (i) + (50 * j) + (line * 50 * 8);
             lab11[index] = reverse(bitmap[j]);
         }
         
@@ -435,7 +436,7 @@ void writeText(char text[])
 int main(void) {
     clearScreen();
 
-    writeText("PooP");
+    writeText("My beard grows to my toes, I never wears no clothes, I wraps my hair Around my bare, And down the road I goes.");
 
     // Initialize.
     led_init(LED0);
