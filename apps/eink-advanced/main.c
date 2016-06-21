@@ -10,6 +10,7 @@
 #include "nrf_delay.h"
 #include "app_gpiote.h"
 #include "app_util_platform.h"
+#include "math.h"
 
 #include "board.h"
 
@@ -363,27 +364,34 @@ uint8_t lab11[15000] = {
 130,144,82,9,40,74,128,74,255,255,239,251,126,251,215,245,255,255,255,255,253,255,222,219,237,255,123,127,239,127,223,255,162,0,64,0,16,2,182,202,148,137,0,0,17,32,8,0,32,0,
 };
 
-
 //set pixel value at x and y coordinate
-static void changePixel(int x, int y, int value){
+static void changePixel(int x, int y, int on/*1 or 0*/){
     int height = 300;
     int width = 400;
 
     int index = (y * 50) + ((50 * x)/400);
-    lab11[index] = value;
+    int bitsIntoByte = 7 - (x % 8);
+
+    //turns the nth bit on or off
+    lab11[index] ^= (-on ^ lab11[index]) & (1 << bitsIntoByte);
 }
 
 
-
 int main(void) {
-    /*
+    //clear screen
     for(int i = 0; i < 15000; i++)
     {
         lab11[i] = 0;
-    }*/
-    
-    //lab11[49] = 255;
-    changePixel(392, 0, 255);
+    }
+
+    //change screen
+    changePixel(0,0,1);
+    changePixel(1,0,1);
+    changePixel(2,0,1);
+    changePixel(3,0,1);
+    changePixel(4,0,1);
+    changePixel(5,0,1);
+    changePixel(350, 200, 1);
 
     // Initialize.
     led_init(LED0);
