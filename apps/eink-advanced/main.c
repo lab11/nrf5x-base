@@ -11,6 +11,7 @@
 #include "app_gpiote.h"
 #include "app_util_platform.h"
 #include "math.h"
+#include <string.h>
 
 #include "board.h"
 
@@ -365,10 +366,11 @@ uint8_t lab11[15000] = {
 };
 
 //set pixel value at x and y coordinate
-static void changePixel(int x, int y, int on/*1 or 0*/){
+void setPixel(int x, int y, int on/*1 or 0*/){
     int height = 300;
     int width = 400;
 
+    //index in lab11 array
     int index = (y * 50) + ((50 * x)/400);
     int bitsIntoByte = 7 - (x % 8);
 
@@ -376,22 +378,45 @@ static void changePixel(int x, int y, int on/*1 or 0*/){
     lab11[index] ^= (-on ^ lab11[index]) & (1 << bitsIntoByte);
 }
 
+void clearScreen(){
+    memset(lab11, 0, 15000 * sizeof(lab11[0]));
+}
+
+//inserts a grid of pixels into the image - NOTE - coordinate is @ uper left
+void insertPixelGrid(int width, int height, int grid[height][width], int xcoord, int ycoord)
+{
+    for(int y = 0; y < height; y++)
+    {
+        for(int x = 0; x < width; x++)
+        {
+            if(grid[y][x] == 1)
+            {
+                setPixel(x + xcoord, y + ycoord, 1);
+            }
+            else
+            {
+                setPixel(x + xcoord, y + ycoord, 0);
+            }
+        }
+    }
+}
 
 int main(void) {
-    //clear screen
-    for(int i = 0; i < 15000; i++)
-    {
-        lab11[i] = 0;
-    }
+    clearScreen();
 
-    //change screen
-    changePixel(0,0,1);
-    changePixel(1,0,1);
-    changePixel(2,0,1);
-    changePixel(3,0,1);
-    changePixel(4,0,1);
-    changePixel(5,0,1);
-    changePixel(350, 200, 1);
+    int grid[8][8] = {
+    {0, 0, 1, 1, 1, 1, 0, 0},
+    {0, 1, 0, 0, 0, 0, 1, 0},
+    {0, 1, 0, 0, 0, 0, 1, 0},
+    {0, 1, 0, 0, 0, 0, 1, 0},
+    {0, 1, 0, 0, 0, 0, 1, 0},
+    {0, 0, 1, 1, 1, 1, 0, 0},
+    {0, 0, 1, 0, 0, 0, 0, 0},
+    {0, 1, 0, 0, 0, 0, 0, 0},
+    };
+
+    insertPixelGrid(8, 8, grid, 0, 0);
+    insertPixelGrid(8, 8, grid, 9, 0);
 
     // Initialize.
     led_init(LED0);
