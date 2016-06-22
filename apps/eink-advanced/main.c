@@ -73,7 +73,7 @@ static void wait_for_not_busy () {
     nrf_delay_us(5);
 }
 
-uint8_t lab11[15000] = {
+uint8_t screen[15000] = {
 255,253,255,255,255,255,255,255,251,127,255,255,127,255,255,253,0,0,9,127,255,127,255,111,127,127,247,191,255,255,255,255,255,255,255,255,255,255,255,191,255,192,0,0,0,0,0,0,0,0,
 255,183,175,91,250,181,106,170,173,182,247,251,171,118,255,190,170,74,164,55,245,213,117,181,213,213,93,106,255,255,251,182,219,109,182,182,182,239,189,245,111,128,0,0,0,0,0,0,0,0,
 253,253,255,255,111,255,255,255,238,255,127,190,223,223,187,253,0,0,18,253,190,182,223,251,110,190,239,219,127,255,111,255,254,254,255,255,239,186,235,111,253,128,0,0,0,0,0,0,0,0,
@@ -376,7 +376,9 @@ uint8_t lab11[15000] = {
 130,144,82,9,40,74,128,74,255,255,239,251,126,251,215,245,255,255,255,255,253,255,222,219,237,255,123,127,239,127,223,255,162,0,64,0,16,2,182,202,148,137,0,0,17,32,8,0,32,0,
 };
 
-//reverse the bits in the char
+//reverse the bits in a char
+//each element of screen is 8 bits, each representing a pixel
+//each set of 8 is written backwards, so they need to be reversed first
 unsigned char reverse(unsigned char b){
     b = (b & 0xF0) >> 4 | (b & 0x0F) << 4;
     b = (b & 0xCC) >> 2 | (b & 0x33) << 2;
@@ -386,143 +388,75 @@ unsigned char reverse(unsigned char b){
 
 //set pixel value at x and y coordinate
 void setPixel(int x, int y, int on/*1 or 0*/){
-    int height = 300;
-    int width = 400;
-
-    //index in lab11 array
+    //index in screen array
     int index = (y * 50) + ((50 * x)/400);
     int bitsIntoByte = 7 - (x % 8);
 
     //turns the nth bit on or off
-    lab11[index] ^= (-on ^ lab11[index]) & (1 << bitsIntoByte); //jeremy ruten stack overflow
+    screen[index] ^= (-on ^ screen[index]) & (1 << bitsIntoByte); //jeremy ruten stack overflow
 }
 
-//sets a block of 8x8 pixels on or off. x < 50 & y < 38
-void setBlock(int x, int y, int on)
-{
-    for(int i = 0; i < 8; i++)
-    {
-        if(on == 1){
-            lab11[x + (50 * i) + (50 * y * 8)] = 255;
-        }else{
-            lab11[x + (50 * i) + (50 * y * 8)] = 0;
-        }
-        
-    }
-}
-
+//clears the screen by setting all elements to 0
 void clearScreen(){
-    memset(lab11, 0, 15000 * sizeof(uint8_t));
+    memset(screen, 0, 15000 * sizeof(uint8_t));
 }
 
 //inserts a grid of pixels into the image - NOTE - coordinate is @ uper left
-void insertPixelGrid(int width, int height, uint8_t grid[height][width], int xcoord, int ycoord)
-{
-    for(int y = 0; y < height; y++)
-    {
-        for(int x = 0; x < width; x++)
-        {
-            if(grid[y][x] == 1)
-            {
-                setPixel(x + xcoord, y + ycoord, 1);
+//the grid of pixels is in the form of 0s and 1s, a 0 representing pixel off and 1 representing pixel on
+void insertPixelGrid(int width, int height, uint8_t grid[height][width], int xcoord, int ycoord){
+    for(int y = 0; y < height; y++){
+        for(int x = 0; x < width; x++){
+            if(grid[y][x] == 1){
+                setPixel(x + xcoord, y + ycoord, 1);//pixel on
             }
-            else
-            {
-                setPixel(x + xcoord, y + ycoord, 0);
+            else{
+                setPixel(x + xcoord, y + ycoord, 0);//pixel off
             }
         }
     }
 }
 
-//inserts a grid of pixels, but much larger
-void insertBigPixelGrid(int width, int height, uint8_t grid[height][width], int xcoord, int ycoord)
-{
-    for(int y = 0; y < height; y++)
-    {
-        for(int x = 0; x <width; x++)
-        {
-            if(grid[y][x] == 1)
-            {
-                setBlock(x, y, 1);
-            }
-            else
-            {
-                setBlock(x, y, 0);
-            }
-        }
-    }
-}
-
-void writeCharacterAtLocation(char character, int xcoord, int ycoord, uint8_t scale)
-{
+//writes a single character at (x,y) with a given scale
+//a scale of 1 produces an 8x8 pixel character
+//each character in font8x8_basic.h is written in 8 lines of 8 hex bytes where each bit of the 8 bytes represents a single pixel
+void writeCharacterAtLocation(char character, int xcoord, int ycoord, uint8_t scale){
+    //convert the 8 hex bytes from font8x8_basic.h into an 8x8 pixel array
     uint8_t grid[8][8];
-    char *bitmap = font8x8_basic[character];
+    char *bitmap = font8x8_basic[character];//selects array of 8 hex bytes from font8x8_basic.h based on character code
 
-    for(int i = 0; i < 8; i++)//loop over each row in the character
-    {
-        uint8_t bits[8];
-        for(int j = 0; j < 8; j++)//loop over each bit in the character
-        {
+    //loop over each row in the character
+    for(int i = 0; i < 8; i++){
+        //loop over each bit in the character
+        for(int j = 0; j < 8; j++){
+            //select the jth bit from the hex byte to add to the 8x8 pixel array
             grid[i][j] = (bitmap[i] & (1 << j)) >> j;
         }
     }
 
     //scale the character by the scale multiplier
-    if(scale != 1)
-    {
-        //uint8_t scaledGraphic[8 * scale][8 * scale];
-
-        for(int y = 0; y < 8 * scale; y++)
-        {
-            for(int x = 0; x < 8 * scale; x++)
-            {
-                //scaledGraphic[y][x] = grid[y/scale][x/scale];
+    if(scale != 1){
+        //loop over a scaled version of the character
+        for(int y = 0; y < 8 * scale; y++){
+            for(int x = 0; x < 8 * scale; x++){
                 setPixel(xcoord + x, ycoord + y, grid[y/scale][x/scale]);
             }
         }
 
-        //insertPixelGrid(8 * scale, 8 * scale, scaledGraphic, x, y);
         return;
     }
 
     insertPixelGrid(8, 8, grid, xcoord, ycoord);
 }
 
-void writeStringAtLocation(char *str, int x, int y, int scale)
-{
-    for(int i = 0; i < strlen(str); i++)
-    {
-        if(x + (8 * i * scale) + 8*scale < 400)
-        {
+//writes a string of ascii characters at an x,y coordinate with a given scale
+void writeStringAtLocation(char *str, int x, int y, int scale){
+    //loop over each character in the string
+    for(int i = 0; i < strlen(str); i++){
+        //if the character won't be written off the edge of the screen
+        if(x + (8 * i * scale) + 8*scale < 400){
+            //write the character that the location after the previous characters
             writeCharacterAtLocation(str[i], x + (8*i * scale), y, scale);
         }
-    }
-}
-
-void writeText(char text[])
-{
-    int numberOfCharacters = strlen(text);
-    //uint8_t offset = 0;//used to prevent word wrapping
-
-    //loop over each character to be written
-    for(int i = 0; i < numberOfCharacters; i++)
-    {
-        char find = text[i];//character to write
-        char *bitmap = font8x8_basic[find];//bitmap of that character
-        uint8_t line =  ((i) / 50);//which line to write it on
-
-        //write each row of the character pixels into the picture
-        for(int j = 0; j < 8; j++)
-        {
-            int index = (i) + (50 * j) + (line * 50 * 8);//index of lab11 to place it
-
-            if(index < 15000)//make sure nothing is written beyond the array in memory
-            {
-                //each chunk of 8 pixels is written right to left, so we need to reverse it first
-                lab11[index] = reverse(bitmap[j]);
-            }
-        }
-        
     }
 }
 
@@ -533,38 +467,7 @@ int main(void)
 
     clearScreen();
 
-    /*
-    writeStringAtLocation("<- umich.edu", 185, 60);
-
-    writeStringAtLocation("YAY IT WORKS!", 130, 200);
-
-    uint8_t qrCode[21][21] = {
-        {1,1,1,1,1,1,1,0,0,0,1,0,0,0,1,1,1,1,1,1,1},
-        {1,0,0,0,0,0,1,0,0,1,0,1,1,0,1,0,0,0,0,0,1},
-        {1,0,1,1,1,0,1,0,0,1,0,0,1,0,1,0,1,1,1,0,1},
-        {1,0,1,1,1,0,1,0,1,0,0,1,1,0,1,0,1,1,1,0,1},
-        {1,0,1,1,1,0,1,0,1,0,1,0,0,0,1,0,1,1,1,0,1},
-        {1,0,0,0,0,0,1,0,0,1,1,1,1,0,1,0,0,0,0,0,1},
-        {1,1,1,1,1,1,1,0,1,0,1,0,1,0,1,1,1,1,1,1,1},
-        {0,0,0,0,0,0,0,0,0,0,0,1,1,0,0,0,0,0,0,0,0},
-        {1,1,0,0,0,1,1,1,0,1,0,1,1,0,0,0,1,1,0,0,0},
-        {0,1,0,1,0,0,0,1,1,1,1,0,0,1,1,1,0,1,1,1,0},
-        {1,0,1,0,0,0,1,1,1,0,0,1,1,1,0,0,0,0,1,1,0},
-        {1,0,0,1,0,1,0,0,0,1,1,0,0,1,0,1,1,1,1,0,0},
-        {1,0,1,1,0,0,1,0,1,1,1,0,0,1,0,0,0,0,0,1,0},
-        {0,0,0,0,0,0,0,0,1,1,0,0,0,1,1,0,1,1,1,0,1},
-        {1,1,1,1,1,1,1,0,1,0,1,0,1,1,0,1,0,0,1,1,0},
-        {1,0,0,0,0,0,1,0,1,0,1,0,1,1,1,1,0,1,1,1,1},
-        {1,0,1,1,1,0,1,0,0,0,1,0,0,0,1,0,1,1,0,0,0},
-        {1,0,1,1,1,0,1,0,0,1,0,0,0,0,1,0,1,0,1,1,0},
-        {1,0,1,1,1,0,1,0,0,1,1,0,1,0,1,1,1,1,1,1,1},
-        {1,0,0,0,0,0,1,0,1,1,0,1,0,1,0,0,1,0,1,0,0},
-        {1,1,1,1,1,1,1,0,1,0,1,0,1,0,1,1,1,1,0,1,0}
-    };
-    
-    insertBigPixelGrid(21, 21, qrCode, 14, 8);
-    */
-
+    //write the string "Hello" at x=0 y=0 and scale of 20x
     writeStringAtLocation("Hello", 0, 0, 20);
 
     // Setup input for busy
@@ -662,7 +565,7 @@ int main(void)
     // display an image
     pic[3] = 250;
     for (i=0; i<60; i++) {
-        memcpy(pic+4, lab11+(i*250), 250); // Lab11 logo
+        memcpy(pic+4, screen+(i*250), 250); // screen logo
         //memset(pic+4, 0xFF, 250); // Black screen
         //memset(pic+4, 0x00, 250); // White screen
 
