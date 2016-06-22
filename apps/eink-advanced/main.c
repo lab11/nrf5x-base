@@ -397,6 +397,20 @@ void setPixel(int x, int y, int on/*1 or 0*/){
     lab11[index] ^= (-on ^ lab11[index]) & (1 << bitsIntoByte); //jeremy ruten stack overflow
 }
 
+//sets a block of 8x8 pixels on or off. x < 50 & y < 38
+void setBlock(int x, int y, int on)
+{
+    for(int i = 0; i < 8; i++)
+    {
+        if(on == 1){
+            lab11[x + (50 * i) + (50 * y * 8)] = 255;
+        }else{
+            lab11[x + (50 * i) + (50 * y * 8)] = 0;
+        }
+        
+    }
+}
+
 void clearScreen(){
     memset(lab11, 0, 15000 * sizeof(uint8_t));
 }
@@ -415,6 +429,25 @@ void insertPixelGrid(int width, int height, uint8_t grid[height][width], int xco
             else
             {
                 setPixel(x + xcoord, y + ycoord, 0);
+            }
+        }
+    }
+}
+
+//inserts a grid of pixels, but much larger
+void insertBigPixelGrid(int width, int height, uint8_t grid[height][width], int xcoord, int ycoord)
+{
+    for(int y = 0; y < height; y++)
+    {
+        for(int x = 0; x <width; x++)
+        {
+            if(grid[y][x] == 1)
+            {
+                setBlock(x, y, 1);
+            }
+            else
+            {
+                setBlock(x, y, 0);
             }
         }
     }
@@ -448,8 +481,6 @@ void writeStringAtLocation(char *str, int x, int y)
     }
 }
 
-uint8_t offset = 5;
-
 void writeText(char text[])
 {
     int numberOfCharacters = strlen(text);
@@ -458,36 +489,14 @@ void writeText(char text[])
     //loop over each character to be written
     for(int i = 0; i < numberOfCharacters; i++)
     {
-        //prevent word wrapping
-        if(text[i] == ' ')
-        {
-            uint8_t wordLength = 0;
-            //find the next word length
-            for(int k = i + 1; k < numberOfCharacters; k++)
-            {
-                if(text[k] == ' ' || k == numberOfCharacters - 1)
-                {
-                    wordLength = k - i;//length of next word
-
-                    if(((i + offset) % 50) + wordLength > 50)//if that word would wrap
-                    {
-                        led_on(LED0);
-                        offset += wordLength;//set the offset to be more
-                        continue;
-                    }
-                }
-            }
-        }
-
-
         char find = text[i];//character to write
         char *bitmap = font8x8_basic[find];//bitmap of that character
-        uint8_t line =  ((i+offset) / 50);//which line to write it on
+        uint8_t line =  ((i) / 50);//which line to write it on
 
         //write each row of the character pixels into the picture
         for(int j = 0; j < 8; j++)
         {
-            int index = (i + offset) + (50 * j) + (line * 50 * 8);//index of lab11 to place it
+            int index = (i) + (50 * j) + (line * 50 * 8);//index of lab11 to place it
 
             if(index < 15000)//make sure nothing is written beyond the array in memory
             {
@@ -506,8 +515,34 @@ int main(void)
 
     clearScreen();
 
-    writeStringAtLocation("hello world! asdfasdfasdfasdfasdfasdfasdfasdfasdfasdfasdf", 90, 90);
+    writeStringAtLocation("<- should be umich.edu", 185, 60);
+
+    uint8_t qrCode[21][21] = {
+        {1,1,1,1,1,1,1,0,0,0,1,0,0,0,1,1,1,1,1,1,1},
+        {1,0,0,0,0,0,1,0,0,1,0,1,1,0,1,0,0,0,0,0,1},
+        {1,0,1,1,1,0,1,0,0,1,0,0,1,0,1,0,1,1,1,0,1},
+        {1,0,1,1,1,0,1,0,1,0,0,1,1,0,1,0,1,1,1,0,1},
+        {1,0,1,1,1,0,1,0,1,0,1,0,0,0,1,0,1,1,1,0,1},
+        {1,0,0,0,0,0,1,0,0,1,1,1,1,0,1,0,0,0,0,0,1},
+        {1,1,1,1,1,1,1,0,1,0,1,0,1,0,1,1,1,1,1,1,1},
+        {0,0,0,0,0,0,0,0,0,0,0,1,1,0,0,0,0,0,0,0,0},
+        {1,1,0,0,0,1,1,1,0,1,0,1,1,0,0,0,1,1,0,0,0},
+        {0,1,0,1,0,0,0,1,1,1,1,0,0,1,1,1,0,1,1,1,0},
+        {1,0,1,0,0,0,1,1,1,0,0,1,1,1,0,0,0,0,1,1,0},
+        {1,0,0,1,0,1,0,0,0,1,1,0,0,1,0,1,1,1,1,0,0},
+        {1,0,1,1,0,0,1,0,1,1,1,0,0,1,0,0,0,0,0,1,0},
+        {0,0,0,0,0,0,0,0,1,1,0,0,0,1,1,0,1,1,1,0,1},
+        {1,1,1,1,1,1,1,0,1,0,1,0,1,1,0,1,0,0,1,1,0},
+        {1,0,0,0,0,0,1,0,1,0,1,0,1,1,1,1,0,1,1,1,1},
+        {1,0,1,1,1,0,1,0,0,0,1,0,0,0,1,0,1,1,0,0,0},
+        {1,0,1,1,1,0,1,0,0,1,0,0,0,0,1,0,1,0,1,1,0},
+        {1,0,1,1,1,0,1,0,0,1,1,0,1,0,1,1,1,1,1,1,1},
+        {1,0,0,0,0,0,1,0,1,1,0,1,0,1,0,0,1,0,1,0,0},
+        {1,1,1,1,1,1,1,0,1,0,1,0,1,0,1,1,1,1,0,1,0}
+    };
     
+    insertBigPixelGrid(21, 21, qrCode, 14, 8);
+
     // Setup input for busy
     nrf_gpio_cfg_input(nTC_BUSY, NRF_GPIO_PIN_NOPULL);
 
