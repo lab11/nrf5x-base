@@ -51,6 +51,7 @@ static void spi_init () {
 
 static void wait_for_not_busy () {
     uint8_t found_busy_low = 0;
+    uint8_t count = 0;
     while (1) {
         uint8_t pin = nrf_gpio_pin_read(nTC_BUSY);
         if (found_busy_low && pin) {
@@ -59,6 +60,13 @@ static void wait_for_not_busy () {
         if (pin == 0) {
             found_busy_low = 1;
         }
+
+        if(count > 1000)
+        {
+            break;
+        }
+
+        count++;
     }
 
     // Then wait a little longer so we don't violate the T_NS time.
@@ -368,6 +376,14 @@ uint8_t lab11[15000] = {
 130,144,82,9,40,74,128,74,255,255,239,251,126,251,215,245,255,255,255,255,253,255,222,219,237,255,123,127,239,127,223,255,162,0,64,0,16,2,182,202,148,137,0,0,17,32,8,0,32,0,
 };
 
+//reverse the bits in the char
+unsigned char reverse(unsigned char b){
+    b = (b & 0xF0) >> 4 | (b & 0x0F) << 4;
+    b = (b & 0xCC) >> 2 | (b & 0x33) << 2;
+    b = (b & 0xAA) >> 1 | (b & 0x55) << 1;
+    return b;
+}
+
 //set pixel value at x and y coordinate
 void setPixel(int x, int y, int on/*1 or 0*/){
     int height = 300;
@@ -378,15 +394,15 @@ void setPixel(int x, int y, int on/*1 or 0*/){
     int bitsIntoByte = 7 - (x % 8);
 
     //turns the nth bit on or off
-    lab11[index] ^= (-on ^ lab11[index]) & (1 << bitsIntoByte);
+    lab11[index] ^= (-on ^ lab11[index]) & (1 << bitsIntoByte); //jeremy ruten stack overflow
 }
 
 void clearScreen(){
-    memset(lab11, 0, 15000 * sizeof(lab11[0]));
+    memset(lab11, 0, 15000 * sizeof(uint8_t));
 }
 
 //inserts a grid of pixels into the image - NOTE - coordinate is @ uper left
-void insertPixelGrid(int width, int height, int grid[height][width], int xcoord, int ycoord)
+void insertPixelGrid(int width, int height, uint8_t grid[height][width], int xcoord, int ycoord)
 {
     for(int y = 0; y < height; y++)
     {
@@ -404,44 +420,94 @@ void insertPixelGrid(int width, int height, int grid[height][width], int xcoord,
     }
 }
 
-//reverse the bits in the char
-unsigned char reverse(unsigned char b){
-    b = (b & 0xF0) >> 4 | (b & 0x0F) << 4;
-    b = (b & 0xCC) >> 2 | (b & 0x33) << 2;
-    b = (b & 0xAA) >> 1 | (b & 0x55) << 1;
-    return b;
+void writeCharacterAtLocation(char character, int x, int y)
+{
+    uint8_t grid[8][8];
+    char *bitmap = font8x8_basic[character];
+
+    for(int i = 0; i < 8; i++)//loop over each row in the character
+    {
+        uint8_t bits[8];
+        for(int j = 0; j < 8; j++)//loop over each bit in the character
+        {
+            grid[i][j] = (bitmap[i] & (1 << j)) >> j;
+        }
+    }
+
+    insertPixelGrid(8, 8, grid, x, y);
 }
+
+void writeStringAtLocation(char *str, int x, int y)
+{
+    for(int i = 0; i < strlen(str); i++)
+    {
+        if(x + (8 * i) + 8 < 400)
+        {
+            writeCharacterAtLocation(str[i], x + (8*i), y);
+        }
+    }
+}
+
+uint8_t offset = 5;
 
 void writeText(char text[])
 {
     int numberOfCharacters = strlen(text);
+    //uint8_t offset = 0;//used to prevent word wrapping
 
     //loop over each character to be written
     for(int i = 0; i < numberOfCharacters; i++)
     {
-        char find = text[i];
-        char *bitmap = font8x8_basic[find];
-        uint8_t line =  (i / 50);
+        //prevent word wrapping
+        if(text[i] == ' ')
+        {
+            uint8_t wordLength = 0;
+            //find the next word length
+            for(int k = i + 1; k < numberOfCharacters; k++)
+            {
+                if(text[k] == ' ' || k == numberOfCharacters - 1)
+                {
+                    wordLength = k - i;//length of next word
+
+                    if(((i + offset) % 50) + wordLength > 50)//if that word would wrap
+                    {
+                        led_on(LED0);
+                        offset += wordLength;//set the offset to be more
+                        continue;
+                    }
+                }
+            }
+        }
+
+
+        char find = text[i];//character to write
+        char *bitmap = font8x8_basic[find];//bitmap of that character
+        uint8_t line =  ((i+offset) / 50);//which line to write it on
 
         //write each row of the character pixels into the picture
         for(int j = 0; j < 8; j++)
         {
-            int index = (i) + (50 * j) + (line * 50 * 8);
-            lab11[index] = reverse(bitmap[j]);
+            int index = (i + offset) + (50 * j) + (line * 50 * 8);//index of lab11 to place it
+
+            if(index < 15000)//make sure nothing is written beyond the array in memory
+            {
+                //each chunk of 8 pixels is written right to left, so we need to reverse it first
+                lab11[index] = reverse(bitmap[j]);
+            }
         }
         
     }
 }
 
-int main(void) {
-    clearScreen();
-
-    writeText("My beard grows to my toes, I never wears no clothes, I wraps my hair Around my bare, And down the road I goes.");
-
-    // Initialize.
+int main(void) 
+{
     led_init(LED0);
     led_off(LED0);
 
+    clearScreen();
+
+    writeStringAtLocation("hello world! asdfasdfasdfasdfasdfasdfasdfasdfasdfasdfasdf", 90, 90);
+    
     // Setup input for busy
     nrf_gpio_cfg_input(nTC_BUSY, NRF_GPIO_PIN_NOPULL);
 
@@ -504,8 +570,10 @@ int main(void) {
     pic[19] = 0;
 
     // Send header
+    //THESE 2 LINES SCREW EVERYTHING UP AND IT FREEZES
     nrf_drv_spi_transfer(&_spi, pic, 20, NULL, 0);
     wait_for_not_busy();
+
     nrf_drv_spi_transfer(&_spi, NULL, 0, rx, 2);
     wait_for_not_busy();
 
@@ -545,7 +613,6 @@ int main(void) {
         wait_for_not_busy();
     }
 
-
     // Actually render the image
     tx[0] = 0x24;
     tx[1] = 0x01;
@@ -558,10 +625,7 @@ int main(void) {
 
 
     nrf_gpio_pin_set(nTC_EN);
-
-    // led_on(LED0);
-
-
+    
     // Enter main loop.
     while (1) {
         sd_app_evt_wait();
