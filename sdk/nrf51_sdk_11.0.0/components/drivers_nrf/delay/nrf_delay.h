@@ -13,7 +13,7 @@
 /*lint --e{438, 522} "Variable not used" "Function lacks side-effects" */
 #if defined ( __CC_ARM   )
 
-static __ASM void __INLINE nrf_delay_us(uint32_t volatile number_of_us)
+__INLINE static __ASM void nrf_delay_us(uint32_t volatile number_of_us)
 {
 loop
         SUBS    R0, R0, #1
@@ -81,7 +81,7 @@ loop
 
 #elif defined ( __ICCARM__ )
 
-static void __INLINE nrf_delay_us(uint32_t volatile number_of_us)
+__INLINE static void nrf_delay_us(uint32_t volatile number_of_us)
 {
 __ASM (
 "loop:\n\t"
@@ -159,8 +159,8 @@ __STATIC_INLINE void nrf_delay_us(uint32_t volatile number_of_us)
 
 #elif defined ( __GNUC__ )
 
-static void __INLINE nrf_delay_us(uint32_t volatile number_of_us) __attribute__((always_inline));
-static void __INLINE nrf_delay_us(uint32_t volatile number_of_us)
+__INLINE static void nrf_delay_us(uint32_t volatile number_of_us) __attribute__((always_inline));
+__INLINE static void nrf_delay_us(uint32_t volatile number_of_us)
 {
 register uint32_t delay __ASM ("r0") = number_of_us;
 __ASM volatile (
