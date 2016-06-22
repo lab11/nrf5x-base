@@ -515,7 +515,10 @@ int main(void)
 
     clearScreen();
 
-    writeStringAtLocation("<- should be umich.edu", 185, 60);
+    /*
+    writeStringAtLocation("<- umich.edu", 185, 60);
+
+    writeStringAtLocation("YAY IT WORKS!", 130, 200);
 
     uint8_t qrCode[21][21] = {
         {1,1,1,1,1,1,1,0,0,0,1,0,0,0,1,1,1,1,1,1,1},
@@ -542,6 +545,43 @@ int main(void)
     };
     
     insertBigPixelGrid(21, 21, qrCode, 14, 8);
+    */
+
+    //try scaling a graphic
+    uint8_t graphic[8][8] = {
+        {0,0,0,0,0,0,0,0},
+        {0,0,1,0,0,1,0,0},
+        {0,0,0,0,0,0,0,0},
+        {0,0,1,1,1,1,0,0},
+        {0,1,0,0,0,0,1,0},
+        {0,0,0,0,0,0,0,0},
+        {0,0,0,0,0,0,0,0},
+        {0,0,0,0,0,0,0,0},
+    };
+
+    uint8_t scaledGraphic[16][16];
+
+    for(int y = 0; y < 16; y++)
+    {
+        for(int x = 0; x < 16; x++)
+        {
+            scaledGraphic[y][x] = graphic[y/2][x/2];
+        }
+    }
+
+    uint8_t biggestGraphic[32][32];
+
+    for(int y = 0; y < 32; y++)
+    {
+        for(int x = 0; x < 32; x++)
+        {
+            biggestGraphic[y][x] = graphic[y/4][x/4];
+        }
+    }
+
+    insertPixelGrid(8, 8, graphic, 0, 0);
+    insertPixelGrid(16, 16, scaledGraphic, 10, 0);
+    insertPixelGrid(32, 32, biggestGraphic, 28, 0);
 
     // Setup input for busy
     nrf_gpio_cfg_input(nTC_BUSY, NRF_GPIO_PIN_NOPULL);
