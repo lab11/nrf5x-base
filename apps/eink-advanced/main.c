@@ -453,7 +453,7 @@ void insertBigPixelGrid(int width, int height, uint8_t grid[height][width], int 
     }
 }
 
-void writeCharacterAtLocation(char character, int x, int y)
+void writeCharacterAtLocation(char character, int xcoord, int ycoord, uint8_t scale)
 {
     uint8_t grid[8][8];
     char *bitmap = font8x8_basic[character];
@@ -467,16 +467,34 @@ void writeCharacterAtLocation(char character, int x, int y)
         }
     }
 
-    insertPixelGrid(8, 8, grid, x, y);
+    //scale the character by the scale multiplier
+    if(scale != 1)
+    {
+        //uint8_t scaledGraphic[8 * scale][8 * scale];
+
+        for(int y = 0; y < 8 * scale; y++)
+        {
+            for(int x = 0; x < 8 * scale; x++)
+            {
+                //scaledGraphic[y][x] = grid[y/scale][x/scale];
+                setPixel(xcoord + x, ycoord + y, grid[y/scale][x/scale]);
+            }
+        }
+
+        //insertPixelGrid(8 * scale, 8 * scale, scaledGraphic, x, y);
+        return;
+    }
+
+    insertPixelGrid(8, 8, grid, xcoord, ycoord);
 }
 
-void writeStringAtLocation(char *str, int x, int y)
+void writeStringAtLocation(char *str, int x, int y, int scale)
 {
     for(int i = 0; i < strlen(str); i++)
     {
-        if(x + (8 * i) + 8 < 400)
+        if(x + (8 * i * scale) + 8*scale < 400)
         {
-            writeCharacterAtLocation(str[i], x + (8*i), y);
+            writeCharacterAtLocation(str[i], x + (8*i * scale), y, scale);
         }
     }
 }
@@ -547,41 +565,7 @@ int main(void)
     insertBigPixelGrid(21, 21, qrCode, 14, 8);
     */
 
-    //try scaling a graphic
-    uint8_t graphic[8][8] = {
-        {0,0,0,0,0,0,0,0},
-        {0,0,1,0,0,1,0,0},
-        {0,0,0,0,0,0,0,0},
-        {0,0,1,1,1,1,0,0},
-        {0,1,0,0,0,0,1,0},
-        {0,0,0,0,0,0,0,0},
-        {0,0,0,0,0,0,0,0},
-        {0,0,0,0,0,0,0,0},
-    };
-
-    uint8_t scaledGraphic[16][16];
-
-    for(int y = 0; y < 16; y++)
-    {
-        for(int x = 0; x < 16; x++)
-        {
-            scaledGraphic[y][x] = graphic[y/2][x/2];
-        }
-    }
-
-    uint8_t biggestGraphic[32][32];
-
-    for(int y = 0; y < 32; y++)
-    {
-        for(int x = 0; x < 32; x++)
-        {
-            biggestGraphic[y][x] = graphic[y/4][x/4];
-        }
-    }
-
-    insertPixelGrid(8, 8, graphic, 0, 0);
-    insertPixelGrid(16, 16, scaledGraphic, 10, 0);
-    insertPixelGrid(32, 32, biggestGraphic, 28, 0);
+    writeStringAtLocation("Hello", 0, 0, 20);
 
     // Setup input for busy
     nrf_gpio_cfg_input(nTC_BUSY, NRF_GPIO_PIN_NOPULL);
