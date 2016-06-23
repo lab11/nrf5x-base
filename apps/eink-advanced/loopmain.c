@@ -1,6 +1,6 @@
 /* Blink with simple timer
  */
-
+/*
 #include <stdbool.h>
 #include <stdint.h>
 #include "led.h"
@@ -12,9 +12,11 @@
 #include "app_util_platform.h"
 #include "math.h"
 #include <string.h>
+
 #include "board.h"
+
+//font
 #include "font8x8_basic.h"
-#include "qrencode.h"
 
 // Need pin number for LED
 #define LED0 18
@@ -49,7 +51,7 @@ static void spi_init () {
 
 static void wait_for_not_busy () {
     uint8_t found_busy_low = 0;
-    uint16_t count = 0;
+    uint8_t count = 0;
     while (1) {
         uint8_t pin = nrf_gpio_pin_read(nTC_BUSY);
         if (found_busy_low && pin) {
@@ -59,21 +61,19 @@ static void wait_for_not_busy () {
             found_busy_low = 1;
         }
 
-        if(!found_busy_low)
+        if(count > 1000)
         {
-            count++;
-            if(count > 1000)
-            {
-                break;
-            }
+            break;
         }
+
+        count++;
     }
 
     // Then wait a little longer so we don't violate the T_NS time.
     nrf_delay_us(5);
 }
 
-uint8_t screen[15000] = {
+uint8_t lab11[15000] = {
 255,253,255,255,255,255,255,255,251,127,255,255,127,255,255,253,0,0,9,127,255,127,255,111,127,127,247,191,255,255,255,255,255,255,255,255,255,255,255,191,255,192,0,0,0,0,0,0,0,0,
 255,183,175,91,250,181,106,170,173,182,247,251,171,118,255,190,170,74,164,55,245,213,117,181,213,213,93,106,255,255,251,182,219,109,182,182,182,239,189,245,111,128,0,0,0,0,0,0,0,0,
 253,253,255,255,111,255,255,255,238,255,127,190,223,223,187,253,0,0,18,253,190,182,223,251,110,190,239,219,127,255,111,255,254,254,255,255,239,186,235,111,253,128,0,0,0,0,0,0,0,0,
@@ -375,10 +375,47 @@ uint8_t screen[15000] = {
 160,161,32,140,192,149,144,5,91,239,247,253,223,189,191,191,223,255,255,255,239,110,255,253,191,187,239,247,255,239,247,255,169,36,8,0,129,2,218,144,64,0,16,128,5,66,66,32,9,2,
 130,144,82,9,40,74,128,74,255,255,239,251,126,251,215,245,255,255,255,255,253,255,222,219,237,255,123,127,239,127,223,255,162,0,64,0,16,2,182,202,148,137,0,0,17,32,8,0,32,0,
 };
+*/
 
-//reverse the bits in a char
-//each element of screen is 8 bits, each representing a pixel
-//each set of 8 is written backwards, so they need to be reversed first
+/*
+//set pixel value at x and y coordinate
+void setPixel(int x, int y, int on){
+    int height = 300;
+    int width = 400;
+
+    //index in lab11 array
+    int index = (y * 50) + ((50 * x)/400);
+    int bitsIntoByte = 7 - (x % 8);
+
+    //turns the nth bit on or off
+    lab11[index] ^= (-on ^ lab11[index]) & (1 << bitsIntoByte);
+}
+
+
+void clearScreen(){
+    memset(lab11, 0, 15000 * sizeof(uint8_t));
+}
+
+//inserts a grid of pixels into the image - NOTE - coordinate is @ uper left
+void insertPixelGrid(int width, int height, int grid[height][width], int xcoord, int ycoord)
+{
+    for(int y = 0; y < height; y++)
+    {
+        for(int x = 0; x < width; x++)
+        {
+            if(grid[y][x] == 1)
+            {
+                setPixel(x + xcoord, y + ycoord, 1);
+            }
+            else
+            {
+                setPixel(x + xcoord, y + ycoord, 0);
+            }
+        }
+    }
+}
+
+//reverse the bits in the char
 unsigned char reverse(unsigned char b){
     b = (b & 0xF0) >> 4 | (b & 0x0F) << 4;
     b = (b & 0xCC) >> 2 | (b & 0x33) << 2;
@@ -386,279 +423,183 @@ unsigned char reverse(unsigned char b){
     return b;
 }
 
-//set pixel value at x and y coordinate
-void setPixel(int x, int y, int on/*1 or 0*/){
-    //index in screen array
-    int index = (y * 50) + ((50 * x)/400);
-    int bitsIntoByte = 7 - (x % 8);
-
-    //turns the nth bit on or off
-    screen[index] ^= (-on ^ screen[index]) & (1 << bitsIntoByte); //jeremy ruten stack overflow
-}
-
-//clears the screen by setting all elements to 0
-void clearScreen(){
-    memset(screen, 0, 15000 * sizeof(uint8_t));
-}
-
-//inserts a grid of pixels into the image - NOTE - coordinate is @ uper left
-//the grid of pixels is in the form of 0s and 1s, a 0 representing pixel off and 1 representing pixel on
-void insertPixelGrid(int width, int height, uint8_t grid[height][width], int xcoord, int ycoord){
-    for(int y = 0; y < height; y++){
-        for(int x = 0; x < width; x++){
-            if(grid[y][x] == 1){
-                setPixel(x + xcoord, y + ycoord, 1);//pixel on
-            }
-            else{
-                setPixel(x + xcoord, y + ycoord, 0);//pixel off
-            }
-        }
-    }
-}
-
-//writes a single character at (x,y) with a given scale
-//a scale of 1 produces an 8x8 pixel character
-//each character in font8x8_basic.h is written in 8 lines of 8 hex bytes where each bit of the 8 bytes represents a single pixel
-void writeCharacterAtLocation(char character, int xcoord, int ycoord, uint8_t scale){
-    //convert the 8 hex bytes from font8x8_basic.h into an 8x8 pixel array
-    uint8_t grid[8][8];
-    char *bitmap = font8x8_basic[character];//selects array of 8 hex bytes from font8x8_basic.h based on character code
-
-    //loop over each row in the character
-    for(int i = 0; i < 8; i++){
-        //loop over each bit in the character
-        for(int j = 0; j < 8; j++){
-            //select the jth bit from the hex byte to add to the 8x8 pixel array
-            grid[i][j] = (bitmap[i] & (1 << j)) >> j;
-        }
-    }
-
-    //scale the character by the scale multiplier
-    if(scale != 1){
-        //loop over a scaled version of the character
-        for(int y = 0; y < 8 * scale; y++){
-            for(int x = 0; x < 8 * scale; x++){
-                setPixel(xcoord + x, ycoord + y, grid[y/scale][x/scale]);
-            }
-        }
-
-        return;
-    }
-
-    insertPixelGrid(8, 8, grid, xcoord, ycoord);
-}
-
-//writes a string of ascii characters at an x,y coordinate with a given scale
-void writeStringAtLocation(char *str, int x, int y, int scale){
-    //loop over each character in the string
-    for(int i = 0; i < strlen(str); i++){
-        //if the character won't be written off the edge of the screen
-        if(x + (8 * i * scale) + 8*scale < 400){
-            //write the character that the location after the previous characters
-            writeCharacterAtLocation(str[i], x + (8*i * scale), y, scale);
-        }
-    }
-}
-
-//sets a block of 8x8 pixels on or off. x < 50 & y < 38
-void setBlock(int x, int y, int on)
+void writeText(char text[])
 {
-    for(int i = 0; i < 8; i++)
+    int numberOfCharacters = strlen(text);
+
+    //loop over each character to be written
+    for(int i = 0; i < numberOfCharacters; i++)
     {
-        if(on == 1){
-            screen[x + (50 * i) + (50 * y * 8)] = 255;
-        }else{
-            screen[x + (50 * i) + (50 * y * 8)] = 0;
+        char find = text[i];
+        char *bitmap = font8x8_basic[find];
+        uint8_t line =  (i / 50);
+
+        //write each row of the character pixels into the picture
+        for(int j = 0; j < 8; j++)
+        {
+            int index = (i) + (50 * j) + (line * 50 * 8);
+            lab11[index] = reverse(bitmap[j]);
         }
         
     }
 }
 
-//inserts a grid of pixels, but much larger
-void insertBigPixelGrid(int width, int height, uint8_t grid[height][width], int xcoord, int ycoord)
-{
-    for(int y = 0; y < height; y++)
-    {
-        for(int x = 0; x <width; x++)
-        {
-            if(grid[y][x] == 1)
-            {
-                setBlock(x, y, 1);
-            }
-            else
-            {
-                setBlock(x, y, 0);
-            }
-        }
-    }
-}
-
-//write a qr code to the screen
-void writeQRcode(char *str)
-{
-    QRcode *qrcode;
-    qrcode = QRcode_encodeString8bit(str, 0, 0);
-    uint8_t width = qrcode->width;
-
-    /*
-    for(int i = 0; i < 17; i++)
-    {
-        char stuff[50];
-
-        sprintf(stuff, "%x", (*qrcode).data[i]);
-        writeStringAtLocation(stuff, 0, i * 8 * 2, 2);
-    }
-    */
-
-    uint8_t grid[width][width];
-
-    for(int i = 0; i < width * width; i++)
-    {
-        int x = i % width;
-        int y = i / width;
-
-        grid[x][y] = (*qrcode).data[i] & 1;
-    }
-    
-    insertBigPixelGrid(width, width, grid, 0, 0);
-
-}
-
 int main(void) 
 {
+    // Initialize.
     led_init(LED0);
-    
-    led_off(LED0);
+    led_on(LED0);
 
     clearScreen();
+    uint8_t iterate = 0;
+    while(1)
+    {
+        char buffer[200];
+        buffer[200] = 0;
 
-    writeQRcode("Branden is dumb");
-    //writeStringAtLocation("Testing", 0, 0, 5);
+        sprintf(buffer, "%d", iterate);
 
-    //write the string "Hello" at x=0 y=0 and scale of 20x
-    //writeStringAtLocation("Yo", 0, 0, 9);
+        writeText(buffer);
 
-    // Setup input for busy
-    nrf_gpio_cfg_input(nTC_BUSY, NRF_GPIO_PIN_NOPULL);
+        
+        //ledinit
+        //ledoff
 
-    // Assert ENABLE
-    nrf_gpio_cfg_output(nTC_EN);
-    nrf_gpio_pin_clear(nTC_EN);
+        // Setup input for busy
+        nrf_gpio_cfg_input(nTC_BUSY, NRF_GPIO_PIN_NOPULL);
 
-    // Need to wait 6.5 ms per datasheet (section 5.5)
-    // Up that a little to be safe and who cares about a couple ms
-    nrf_delay_ms(10);
+        // Assert ENABLE
+        nrf_gpio_cfg_output(nTC_EN);
+        nrf_gpio_pin_clear(nTC_EN);
 
-    // Setup SPI
-    spi_init();
+        // Need to wait 6.5 ms per datasheet (section 5.5)
+        // Up that a little to be safe and who cares about a couple ms
+        nrf_delay_ms(10);
 
-    uint8_t tx[6] = {0x30, 0x01, 0x01, 0x00, 0x00, 0x00};
-    uint8_t rx[256] = {0};
+        // Setup SPI
+        spi_init();
 
-    // Get device id to check that we can comm with this display
-    // Send the command
-    nrf_drv_spi_transfer(&_spi, tx, 4, NULL, 0);
+        uint8_t tx[6] = {0x30, 0x01, 0x01, 0x00, 0x00, 0x00};
+        uint8_t rx[256] = {0};
 
-    // Wait until no longer busy
-    wait_for_not_busy();
+        // Get device id to check that we can comm with this display
+        // Send the command
+        nrf_drv_spi_transfer(&_spi, tx, 4, NULL, 0);
 
-    // Receive response
-    nrf_drv_spi_transfer(&_spi, NULL, 0, rx, 28);
+        // Wait until no longer busy
+        wait_for_not_busy();
 
-    // Not sure, sometimes busy signal, sometimes not?
-    // Just wait for a hot sec for now
-    nrf_delay_ms(1);
+        // Receive response
+        nrf_drv_spi_transfer(&_spi, NULL, 0, rx, 28);
 
-
-    uint8_t pic[255];
-
-    // Setup spi comm header
-    pic[0] = 0x20;
-    pic[1] = 0x01;
-    pic[2] = 0x00;
-
-    // How many bytes we want to send.
-    pic[3] = 16;
-
-    // Pic header
-    pic[4] = 0x33; // 4.41"
-    pic[5] = 0x01; // 400px
-    pic[6] = 0x90;
-    pic[7] = 0x01; // 300px
-    pic[8] = 0x2c;
-    pic[9] = 0x01; // 1 bit
-    // pic[10] = 0x02; // image pixel data format type 2
-    pic[10] = 0x00; // image pixel data format type 0
-    pic[11] = 0; // reserved
-    pic[12] = 0;
-    pic[13] = 0;
-    pic[14] = 0;
-    pic[15] = 0;
-    pic[16] = 0;
-    pic[17] = 0;
-    pic[18] = 0;
-    pic[19] = 0;
-
-    // Send header
-    //THESE 2 LINES SCREW EVERYTHING UP AND IT FREEZES
-    nrf_drv_spi_transfer(&_spi, pic, 20, NULL, 0);
-    wait_for_not_busy();
-
-    nrf_drv_spi_transfer(&_spi, NULL, 0, rx, 2);
-    wait_for_not_busy();
-
-    uint8_t i;
-
-    // // display a pattern
-    // pic[3] = 250;
-    // // pic[3] = 150;
-    // for (i=4; i<254; i++) {
-    //     if (i % 2 == 0) {
-    //         pic[i] = 0x80;
-    //     } else {
-    //         pic[i] = 0x0C;
-    //     }
-    //     // pic[i] = i;
-    // }
-    //
-    // // Display a lot more
-    // for (i=0; i<30; i++) {
-    //     nrf_drv_spi_transfer(&_spi, pic, 254, NULL, 0);
-    //     wait_for_not_busy();
-    //     nrf_drv_spi_transfer(&_spi, NULL, 0, rx, 2);
-    //     wait_for_not_busy();
-    // }
+        // Not sure, sometimes busy signal, sometimes not?
+        // Just wait for a hot sec for now
+        nrf_delay_ms(1);
 
 
-    // display an image
-    pic[3] = 250;
-    for (i=0; i<60; i++) {
-        memcpy(pic+4, screen+(i*250), 250); // screen logo
-        //memset(pic+4, 0xFF, 250); // Black screen
-        //memset(pic+4, 0x00, 250); // White screen
+        uint8_t pic[255];
 
-        nrf_drv_spi_transfer(&_spi, pic, 254, NULL, 0);
+        // Setup spi comm header
+        pic[0] = 0x20;
+        pic[1] = 0x01;
+        pic[2] = 0x00;
+
+        // How many bytes we want to send.
+        pic[3] = 16;
+
+        // Pic header
+        pic[4] = 0x33; // 4.41"
+        pic[5] = 0x01; // 400px
+        pic[6] = 0x90;
+        pic[7] = 0x01; // 300px
+        pic[8] = 0x2c;
+        pic[9] = 0x01; // 1 bit
+        // pic[10] = 0x02; // image pixel data format type 2
+        pic[10] = 0x00; // image pixel data format type 0
+        pic[11] = 0; // reserved
+        pic[12] = 0;
+        pic[13] = 0;
+        pic[14] = 0;
+        pic[15] = 0;
+        pic[16] = 0;
+        pic[17] = 0;
+        pic[18] = 0;
+        pic[19] = 0;
+
+        // Send header
+        //THESE 2 LINES SCREW EVERYTHING UP AND IT FREEZES
+        nrf_drv_spi_transfer(&_spi, pic, 20, NULL, 0);
+        wait_for_not_busy();
+
+        led_off(LED0);//debug
+
+        nrf_drv_spi_transfer(&_spi, NULL, 0, rx, 2);
+        wait_for_not_busy();
+
+        uint8_t i;
+
+        // // display a pattern
+        // pic[3] = 250;
+        // // pic[3] = 150;
+        // for (i=4; i<254; i++) {
+        //     if (i % 2 == 0) {
+        //         pic[i] = 0x80;
+        //     } else {
+        //         pic[i] = 0x0C;
+        //     }
+        //     // pic[i] = i;
+        // }
+        //
+        // // Display a lot more
+        // for (i=0; i<30; i++) {
+        //     nrf_drv_spi_transfer(&_spi, pic, 254, NULL, 0);
+        //     wait_for_not_busy();
+        //     nrf_drv_spi_transfer(&_spi, NULL, 0, rx, 2);
+        //     wait_for_not_busy();
+        // }
+
+
+        // display an image
+        pic[3] = 250;
+        for (i=0; i<60; i++) {
+            memcpy(pic+4, lab11+(i*250), 250); // Lab11 logo
+            //memset(pic+4, 0xFF, 250); // Black screen
+            //memset(pic+4, 0x00, 250); // White screen
+
+            nrf_drv_spi_transfer(&_spi, pic, 254, NULL, 0);
+            wait_for_not_busy();
+            nrf_drv_spi_transfer(&_spi, NULL, 0, rx, 2);
+            wait_for_not_busy();
+        }
+
+        // Actually render the image
+        tx[0] = 0x24;
+        tx[1] = 0x01;
+        tx[2] = 0x00;
+
+        nrf_drv_spi_transfer(&_spi, tx, 3, NULL, 0);
         wait_for_not_busy();
         nrf_drv_spi_transfer(&_spi, NULL, 0, rx, 2);
         wait_for_not_busy();
+
+
+        nrf_gpio_pin_set(nTC_EN);
+
+
+        led_on(LED0);
+
+        // led_on(LED0);
+
+*/
+        /*
+        // Enter main loop.
+        while (1) {
+            sd_app_evt_wait();
+        }
+        */
+/*
+        iterate++;
     }
-
-    // Actually render the image
-    tx[0] = 0x24;
-    tx[1] = 0x01;
-    tx[2] = 0x00;
-
-    nrf_drv_spi_transfer(&_spi, tx, 3, NULL, 0);
-    wait_for_not_busy();
-    nrf_drv_spi_transfer(&_spi, NULL, 0, rx, 2);
-    wait_for_not_busy();
-
-
-    nrf_gpio_pin_set(nTC_EN);
     
-    // Enter main loop.
-    while (1) {
-        sd_app_evt_wait();
-    }
-
 }
+*/

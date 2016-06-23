@@ -56,4 +56,31 @@ void writeText(char text[])
         }
     }
 }
+
+void writeText(char text[])
+{
+    int numberOfCharacters = strlen(text);
+    //uint8_t offset = 0;//used to prevent word wrapping
+
+    //loop over each character to be written
+    for(int i = 0; i < numberOfCharacters; i++)
+    {
+        char find = text[i];//character to write
+        char *bitmap = font8x8_basic[find];//bitmap of that character
+        uint8_t line =  ((i) / 50);//which line to write it on
+
+        //write each row of the character pixels into the picture
+        for(int j = 0; j < 8; j++)
+        {
+            int index = (i) + (50 * j) + (line * 50 * 8);//index of screen to place it
+
+            if(index < 15000)//make sure nothing is written beyond the array in memory
+            {
+                //each chunk of 8 pixels is written right to left, so we need to reverse it first
+                screen[index] = reverse(bitmap[j]);
+            }
+        }
+        
+    }
+}
 */
