@@ -13,11 +13,76 @@
 #include "math.h"
 #include <string.h>
 #include "board.h"
+
+//qrcode + text
 #include "font8x8_basic.h"
 #include "qrencode.h"
 
-// Need pin number for LED
+// Nordic libraries
+#include "ble_advdata.h"
+
+// nrf5x-base libraries
+#include "simple_ble.h"
+#include "simple_adv.h"
+#include "led.h"
+#include "device_info_service.h"
+
+// Define constants about this beacon.
+#define DEVICE_NAME "QRcodedisp"
+
+// LED pin number
 #define LED0 18
+
+// Intervals for advertising and connections
+static simple_ble_config_t ble_config = {
+    .platform_id       = 0x00,              // used as 4th octect in device BLE address
+    .device_id         = DEVICE_ID_DEFAULT,
+    .adv_name          = DEVICE_NAME,       // used in advertisements if there is room
+    .adv_interval      = MSEC_TO_UNITS(500, UNIT_0_625_MS),
+    .min_conn_interval = MSEC_TO_UNITS(500, UNIT_1_25_MS),
+    .max_conn_interval = MSEC_TO_UNITS(1000, UNIT_1_25_MS)
+};
+
+// service and characteristic handles
+//  UUID created by `uuidgen -r`
+//  16-bit short uuid is 0x890f (bytes 12 and 13 of 128-bit UUID)
+static simple_ble_service_t led_service = {
+    .uuid128 = {{0x41, 0xa6, 0xab, 0x05, 0xb5, 0x7c, 0x4f, 0xd4,
+                 0x89, 0x30, 0x4f, 0xff, 0xa4, 0x4a, 0x28, 0xe5}}
+};
+static simple_ble_char_t led_on_char = {.uuid16 = 0xa410};
+static simple_ble_char_t led_off_char = {.uuid16 = 0xa411};
+static simple_ble_char_t led_state_char = {.uuid16 = 0xa412};
+
+
+static uint8_t led_on_value = 0;
+static uint8_t led_off_value = 0;
+static uint8_t led_state_value = 0;
+
+// called automatically by simple_ble_init
+void services_init (void) {
+    // add led service
+    simple_ble_add_service(&led_service);
+
+    // add led_on characteristic
+    simple_ble_add_characteristic(0, 1, 0, 0, // read, write, notify, vlen
+            1, (uint8_t*)&led_on_value,
+            &led_service, &led_on_char);
+
+    // add led_off characteristic
+    simple_ble_add_characteristic(0, 1, 0, 0, // read, write, notify, vlen
+            1, (uint8_t*)&led_off_value,
+            &led_service, &led_off_char);
+
+    // add led_state characteristic
+    simple_ble_add_characteristic(1, 0, 1, 0, // read, write, notify, vlen
+            1, (uint8_t*)&led_state_value,
+            &led_service, &led_state_char);
+}
+
+
+// Need pin number for LED
+//#define LED0 18
 #define LED1 19
 #define LED2 20
 
@@ -26,9 +91,6 @@
 #define nTC_CS   22 // B5 on Atum Breakout
 
 static nrf_drv_spi_t _spi = NRF_DRV_SPI_INSTANCE(SPI_INSTANCE);
-
-
-
 
 static void spi_init () {
     uint32_t err;
@@ -493,7 +555,7 @@ void insertBigPixelGrid(int width, int height, uint8_t grid[height][width], int 
     }
 }
 
-//write a qr code to the screen
+//write a qr code to the screen. Can handle up to 52 characters
 void writeQRcode(char *str)
 {
     QRcode *qrcode;
@@ -524,52 +586,11 @@ void writeQRcode(char *str)
 
 }
 
-int main(void) 
+//update display
+uint8_t tx[6] = {0x30, 0x01, 0x01, 0x00, 0x00, 0x00};
+uint8_t rx[256] = {0};
+void updateDisplay()
 {
-    led_init(LED0);
-    
-    led_off(LED0);
-
-    clearScreen();
-
-    writeQRcode("Branden is dumb");
-    //writeStringAtLocation("Testing", 0, 0, 5);
-
-    //write the string "Hello" at x=0 y=0 and scale of 20x
-    //writeStringAtLocation("Yo", 0, 0, 9);
-
-    // Setup input for busy
-    nrf_gpio_cfg_input(nTC_BUSY, NRF_GPIO_PIN_NOPULL);
-
-    // Assert ENABLE
-    nrf_gpio_cfg_output(nTC_EN);
-    nrf_gpio_pin_clear(nTC_EN);
-
-    // Need to wait 6.5 ms per datasheet (section 5.5)
-    // Up that a little to be safe and who cares about a couple ms
-    nrf_delay_ms(10);
-
-    // Setup SPI
-    spi_init();
-
-    uint8_t tx[6] = {0x30, 0x01, 0x01, 0x00, 0x00, 0x00};
-    uint8_t rx[256] = {0};
-
-    // Get device id to check that we can comm with this display
-    // Send the command
-    nrf_drv_spi_transfer(&_spi, tx, 4, NULL, 0);
-
-    // Wait until no longer busy
-    wait_for_not_busy();
-
-    // Receive response
-    nrf_drv_spi_transfer(&_spi, NULL, 0, rx, 28);
-
-    // Not sure, sometimes busy signal, sometimes not?
-    // Just wait for a hot sec for now
-    nrf_delay_ms(1);
-
-
     uint8_t pic[255];
 
     // Setup spi comm header
@@ -609,27 +630,6 @@ int main(void)
 
     uint8_t i;
 
-    // // display a pattern
-    // pic[3] = 250;
-    // // pic[3] = 150;
-    // for (i=4; i<254; i++) {
-    //     if (i % 2 == 0) {
-    //         pic[i] = 0x80;
-    //     } else {
-    //         pic[i] = 0x0C;
-    //     }
-    //     // pic[i] = i;
-    // }
-    //
-    // // Display a lot more
-    // for (i=0; i<30; i++) {
-    //     nrf_drv_spi_transfer(&_spi, pic, 254, NULL, 0);
-    //     wait_for_not_busy();
-    //     nrf_drv_spi_transfer(&_spi, NULL, 0, rx, 2);
-    //     wait_for_not_busy();
-    // }
-
-
     // display an image
     pic[3] = 250;
     for (i=0; i<60; i++) {
@@ -655,10 +655,88 @@ int main(void)
 
 
     nrf_gpio_pin_set(nTC_EN);
-    
+    nrf_delay_ms(1000);
+}
+
+//set up led and spi
+void init()
+{
+    clearScreen();
+
+    led_init(LED0);
+    led_off(LED0);
+
+    // Setup input for busy
+    nrf_gpio_cfg_input(nTC_BUSY, NRF_GPIO_PIN_NOPULL);
+
+    // Assert ENABLE
+    nrf_gpio_cfg_output(nTC_EN);
+    nrf_gpio_pin_clear(nTC_EN);
+
+    // Need to wait 6.5 ms per datasheet (section 5.5)
+    // Up that a little to be safe and who cares about a couple ms
+    nrf_delay_ms(10);
+
+    // Setup SPI
+    spi_init();
+
+    //uint8_t tx[6] = {0x30, 0x01, 0x01, 0x00, 0x00, 0x00};
+    //uint8_t rx[256] = {0};
+
+    // Get device id to check that we can comm with this display
+    // Send the command
+    nrf_drv_spi_transfer(&_spi, tx, 4, NULL, 0);
+
+    // Wait until no longer busy
+    wait_for_not_busy();
+
+    // Receive response
+    nrf_drv_spi_transfer(&_spi, NULL, 0, rx, 28);
+
+    // Not sure, sometimes busy signal, sometimes not?
+    // Just wait for a hot sec for now
+    nrf_delay_ms(1);
+}
+
+
+void ble_evt_write(ble_evt_t* p_ble_evt) {
+
+    if (simple_ble_is_char_event(p_ble_evt, &led_on_char)) {
+        // user wrote to led_on characteristic
+        led_on(LED0);
+
+        // update led state and notify
+        led_state_value = 1;
+        simple_ble_notify_char(&led_state_char);
+
+        writeStringAtLocation("Successfully received", 0, 0, 2);
+        updateDisplay();
+
+    } else if (simple_ble_is_char_event(p_ble_evt, &led_off_char)) {
+        // user wrote to led_off characteristic
+        led_off(LED0);
+
+        // update led state and notify
+        led_state_value = 0;
+        simple_ble_notify_char(&led_state_char);
+
+        updateDisplay();
+    }
+}
+
+int main(void) 
+{
+    //set up the led, spi, and bluetooth
+    init();
+
+    //write to the screen array and then update the display
+    //writeQRcode("Branden is dumb");
+
+    simple_ble_init(&ble_config);
+    simple_adv_only_name();
+
     // Enter main loop.
     while (1) {
         sd_app_evt_wait();
     }
-
 }

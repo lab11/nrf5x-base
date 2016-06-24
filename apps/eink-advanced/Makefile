@@ -10,6 +10,9 @@ APPLICATION_SRCS += app_error.c
 APPLICATION_SRCS += app_gpiote.c
 APPLICATION_SRCS += led.c
 
+APPLICATION_SRCS += simple_ble.c
+APPLICATION_SRCS += simple_adv.c
+
 APPLICATION_SRCS += nrf_drv_spi.c
 APPLICATION_SRCS += nrf_drv_common.c
 APPLICATION_SRCS += nrf_drv_gpiote.c
