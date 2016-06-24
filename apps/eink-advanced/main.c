@@ -111,7 +111,7 @@ static void spi_init () {
 
 static void wait_for_not_busy () {
     uint8_t found_busy_low = 0;
-    uint16_t count = 0;
+    int count = 0;
     while (1) {
         uint8_t pin = nrf_gpio_pin_read(nTC_BUSY);
         if (found_busy_low && pin) {
@@ -124,7 +124,7 @@ static void wait_for_not_busy () {
         if(!found_busy_low)
         {
             count++;
-            if(count > 1000)
+            if(count > 10)
             {
                 break;
             }
@@ -590,7 +590,15 @@ void writeQRcode(char *str)
 uint8_t tx[6] = {0x30, 0x01, 0x01, 0x00, 0x00, 0x00};
 uint8_t rx[256] = {0};
 void updateDisplay()
-{
+{   
+    memset(rx, 0, 256 * sizeof(uint8_t));
+    tx[0] = 0x30;
+    tx[1] = 0x01;
+    tx[2] = 0x01;
+    tx[3] = 0x00;
+    tx[4] = 0x00;
+    tx[5] = 0x00;
+
     uint8_t pic[255];
 
     // Setup spi comm header
@@ -621,9 +629,8 @@ void updateDisplay()
     pic[19] = 0;
 
     // Send header
-    //THESE 2 LINES SCREW EVERYTHING UP AND IT FREEZES
     nrf_drv_spi_transfer(&_spi, pic, 20, NULL, 0);
-    wait_for_not_busy();
+    wait_for_not_busy();//THIS LINE FRICKEN MESSES EVERYTHING UP
 
     nrf_drv_spi_transfer(&_spi, NULL, 0, rx, 2);
     wait_for_not_busy();
@@ -655,7 +662,6 @@ void updateDisplay()
 
 
     nrf_gpio_pin_set(nTC_EN);
-    nrf_delay_ms(1000);
 }
 
 //set up led and spi
@@ -703,23 +709,24 @@ void ble_evt_write(ble_evt_t* p_ble_evt) {
 
     if (simple_ble_is_char_event(p_ble_evt, &led_on_char)) {
         // user wrote to led_on characteristic
-        led_on(LED0);
+        //led_on(LED0);
 
         // update led state and notify
         led_state_value = 1;
         simple_ble_notify_char(&led_state_char);
 
-        writeStringAtLocation("Successfully received", 0, 0, 2);
+        writeStringAtLocation("LED Success", 0, 0, 2);
         updateDisplay();
 
     } else if (simple_ble_is_char_event(p_ble_evt, &led_off_char)) {
         // user wrote to led_off characteristic
-        led_off(LED0);
+        //led_off(LED0);
 
         // update led state and notify
         led_state_value = 0;
         simple_ble_notify_char(&led_state_char);
 
+        clearScreen();
         updateDisplay();
     }
 }
@@ -730,13 +737,20 @@ int main(void)
     init();
 
     //write to the screen array and then update the display
-    //writeQRcode("Branden is dumb");
+    writeQRcode("http://eecs.umich.edu");
+    updateDisplay();
 
     simple_ble_init(&ble_config);
     simple_adv_only_name();
 
+    //writeStringAtLocation("Booted up", 0, 0, 2);
+    //updateDisplay();
+
+    //led_on(LED0);
+
     // Enter main loop.
     while (1) {
         sd_app_evt_wait();
+        //power_manage();
     }
 }
