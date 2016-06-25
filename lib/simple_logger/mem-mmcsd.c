@@ -865,7 +865,9 @@ void ffs_read_sector_to_buffer (DWORD sector_lba)
 	//If card DO (processor DI) is low then card is busy from previous write operation - wait
 	DO_BUSY_STATE_ACCESS_DELAY;
 	ffs_read_byte();
-	while (FFC_DI == 0)
+
+	ffs_10ms_timer = 20;
+	while (FFC_DI == 0 && ffs_10ms_timer)
 		ffs_read_byte();			//A clock is requried for the busy signal (DO held low) to be cleared
 
 	//----- IF THE BUFFER CONTAINS DATA THAT IS WAITING TO BE WRITTEN THEN WRITE IT FIRST -----
@@ -888,7 +890,7 @@ void ffs_read_sector_to_buffer (DWORD sector_lba)
 		//If card DO (processor DI) is low then card is busy from previous write operation - wait
 		DO_BUSY_STATE_ACCESS_DELAY;
 		ffs_read_byte();
-		while (FFC_DI == 0)
+		while (FFC_DI == 0 && ffs_10ms_timer)
 			ffs_read_byte();			//A clock is requried for the busy signal (DO held low) to be cleared
 
 
@@ -989,7 +991,7 @@ void ffs_write_sector_from_buffer (DWORD sector_lba)
 		//If card DO (processor DI) is low then card is busy from previous write operation - wait
 		DO_BUSY_STATE_ACCESS_DELAY;
 		ffs_read_byte();
-		while (FFC_DI == 0)
+		while (FFC_DI == 0 && ffs_10ms_timer)
 			ffs_read_byte();			//A clock is requried for the busy signal (DO held low) to be cleared
 
 
@@ -1086,8 +1088,7 @@ BYTE ffs_write_byte (BYTE data)
 	FFS_SPI_TX_BYTE(data);
 
 	//Wait for tx to complete
-	while (!FFS_SPI_BUF_FULL)
-		;
+	while (!FFS_SPI_BUF_FULL);
 	
 	//Read the received byte (some SPI peripherals require this)
 	data_rx = FFS_SPI_RX_BYTE_BUFFER;
