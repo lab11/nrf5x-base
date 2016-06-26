@@ -119,7 +119,7 @@ void ffs_process (void)
 		//-----------------------------------------
 
 		//If card is still inserted then exit
-		if (ffs_is_card_present())
+		if (ffs_is_card_present() && ffs_card_ok)
 			return;
 
 		//CARD HAS BEEN REMOVED
@@ -870,6 +870,11 @@ void ffs_read_sector_to_buffer (DWORD sector_lba)
 	while (FFC_DI == 0 && ffs_10ms_timer)
 		ffs_read_byte();			//A clock is requried for the busy signal (DO held low) to be cleared
 
+	if(!ffs_10ms_timer) {
+		ffs_card_ok = 0;
+		goto ffs_read_sector_to_buffer_exit;
+	}
+
 	//----- IF THE BUFFER CONTAINS DATA THAT IS WAITING TO BE WRITTEN THEN WRITE IT FIRST -----
 	if (ffs_buffer_needs_writing_to_card)
 	{
@@ -892,6 +897,11 @@ void ffs_read_sector_to_buffer (DWORD sector_lba)
 		ffs_read_byte();
 		while (FFC_DI == 0 && ffs_10ms_timer)
 			ffs_read_byte();			//A clock is requried for the busy signal (DO held low) to be cleared
+
+		if(!ffs_10ms_timer) {
+			ffs_card_ok = 0;
+			goto ffs_read_sector_to_buffer_exit;
+		}
 
 
 		//----- NEW BLOCK TO BE LOADED -----
@@ -993,6 +1003,11 @@ void ffs_write_sector_from_buffer (DWORD sector_lba)
 		ffs_read_byte();
 		while (FFC_DI == 0 && ffs_10ms_timer)
 			ffs_read_byte();			//A clock is requried for the busy signal (DO held low) to be cleared
+
+		if(!ffs_10ms_timer) {
+			ffs_card_ok = 0;
+			goto ffs_write_sector_from_buffer_exit;
+		}
 
 
 		if (ffs_card_write_protected == 0)					//Don't write if the card is write protected
