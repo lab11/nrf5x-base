@@ -8,7 +8,7 @@
 
 #define CS_HIGH()	nrf_gpio_pin_set(SPI_CS_PIN)
 #define CS_LOW()	nrf_gpio_pin_clear(SPI_CS_PIN)
-#define	MMC_CD		nrf_gpio_pin_read(CD_PIN)
+#define	MMC_CD		!nrf_gpio_pin_read(CD_PIN)
 #define	MMC_WP		0
 
 #define SD_POWER_ON()		nrf_gpio_pin_clear(SD_ENABLE_PIN)
