@@ -63,7 +63,7 @@ static uint8_t logger_init() {
 
 	if(simple_logger_opts && FA_OPEN_ALWAYS) {
 		//we are in append mode and should move to the end
-		res = f_lseek(&simple_logger_fpointer, f_size(&siple_logger_fpoitner));
+		res = f_lseek(&simple_logger_fpointer, f_size(&simple_logger_fpointer));
 	}
 
 	if(header_written && !simple_logger_file_exists) {
@@ -131,15 +131,10 @@ uint8_t simple_logger_log(const char *format, ...) {
 	vsnprintf(buffer, buffer_size, format, argptr);
 	va_end(argptr);
 
-	if(simple_logger_fpointer) {
-		f_puts(buffer, &simple_logger_fpointer);
-		f_sync(&simple_logger_fpointer);
-		busy = 0;
-		return SIMPLE_LOGGER_SUCCESS;
-	} else {
-		busy = 0;
-		return SIMPLE_LOGGER_BAD_FPOINTER;
-	}
+	f_puts(buffer, &simple_logger_fpointer);
+	f_sync(&simple_logger_fpointer);
+	busy = 0;
+	return SIMPLE_LOGGER_SUCCESS;
 }
 
 uint8_t simple_logger_log_header(const char *format, ...) {
@@ -165,15 +160,10 @@ uint8_t simple_logger_log_header(const char *format, ...) {
 	}
 
 	if(!simple_logger_file_exists) {
-		if(simple_logger_fpointer) {
-			f_puts(header_buffer, &simple_logger_fpointer);
-			f_sync(&simple_logger_fpointer);
-			busy = 0;
-			return SIMPLE_LOGGER_SUCCESS;
-		} else {
-			busy = 0;
-			return SIMPLE_LOGGER_BAD_FPOINTER;
-		}
+		f_puts(header_buffer, &simple_logger_fpointer);
+		f_sync(&simple_logger_fpointer);
+		busy = 0;
+		return SIMPLE_LOGGER_SUCCESS;
 	} else {
 		busy = 0;
 		return SIMPLE_LOGGER_FILE_EXISTS;
