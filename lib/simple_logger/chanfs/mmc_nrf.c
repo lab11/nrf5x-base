@@ -1,7 +1,7 @@
 //SPI control module for chan_FS  modified for the NRF58122
 
 
-#define NRF_SPI = NRF_SPI1
+#define NRF_SPI NRF_SPI1
 
 #define FCLK_SLOW() NRF_SPI->FREQUENCY = SPI_FREQUENCY_FREQUENCY_K250
 #define FCLK_FAST() NRF_SPI->FREQUENCY = SPI_FREQUENCY_FREQUENCY_M4
