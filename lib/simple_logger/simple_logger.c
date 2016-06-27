@@ -27,8 +27,9 @@ const char *perm = NULL;
 #endif
 
 
-static FIL* 	simple_logger_fpointer;
+static FIL 	simple_logger_fpointer;
 static FATFS 	simple_logger_fs;
+static uint8_t simple_logger_opts;
 
 static void heartbeat (void* p_context) {
 	disk_timerproc();
@@ -41,33 +42,33 @@ static uint8_t logger_init() {
 
 	f_mount(&simple_logger_fs, "", 1);
 
-	//we must have not timed out and a card is available
-	if((perm[0] != 'w' && perm[0] != 'a') || perm[1] != '\0') {
-		//the person didn't use the right permissions
-		return SIMPLE_LOGGER_BAD_PERMISSIONS;
-	}
+	
 	
 	//see if the file exists already
-	FIL* temp;
-	temp = f_open(file,"r");
-	if(temp) {
-		//the file exists
-		f_close(temp);
-		simple_logger_file_exists = 1;
-	} else {
+	FIL temp;
+	FRESULT res = f_open(&temp,file, FA_READ | FA_OPEN_EXISTING);
+	if(res == FR_NO_FILE) {
+		//the file doesn't exist
 		simple_logger_file_exists = 0;
+	} else {
+		simple_logger_file_exists = 1;
+		f_close(&temp);
 	}
 
-	simple_logger_fpointer = f_open(file,perm);
+	res = f_open(&simple_logger_fpointer,file, simple_logger_opts);
+
 	if(!simple_logger_fpointer) {
 		return SIMPLE_LOGGER_BAD_FPOINTER_INIT; //idk what's up
 	}
 
+	if(simple_logger_opts && FA_OPEN_ALWAYS) {
+		//we are in append mode and should move to the end
+		res = f_lseek(&simple_logger_fpointer, f_size(&siple_logger_fpoitner));
+	}
+
 	if(header_written && !simple_logger_file_exists) {
-		f_puts(header_buffer, simple_logger_fpointer);
-		f_flush(simple_logger_fpointer);
-		if(f_error(simple_logger_fpointer)) 
-			return SIMPLE_LOGGER_FILE_ERROR;
+		res = f_puts(header_buffer, &simple_logger_fpointer);
+		res = f_sync(&simple_logger_fpointer);
 	}
 
 	simple_logger_inited = 1;
@@ -92,7 +93,16 @@ uint8_t simple_logger_init(const char *filename, const char *permissions) {
 	simple_timer_start (1, heartbeat);
 	
 	file = filename;
-	perm = permissions;
+
+	//we must have not timed out and a card is available
+	if((perm[0] != 'w' && perm[0] != 'a') || perm[1] != '\0') {
+		//the person didn't use the right permissions
+		return SIMPLE_LOGGER_BAD_PERMISSIONS;
+	} else if(perm[0] == 'w') {
+		simple_logger_opts = (FA_WRITE | FA_CREATE_ALWAYS);
+	} else {
+		simple_logger_opts = (FA_WRITE | FA_OPEN_ALWAYS);
+	}
 
 	uint8_t err_code = logger_init();
 	busy = 0;
@@ -122,15 +132,10 @@ uint8_t simple_logger_log(const char *format, ...) {
 	va_end(argptr);
 
 	if(simple_logger_fpointer) {
-		f_puts(buffer, simple_logger_fpointer);
-		f_flush(simple_logger_fpointer);
-		if(f_error(simple_logger_fpointer)) {
-			busy = 0;
-			return SIMPLE_LOGGER_FILE_ERROR;
-		} else {
-			busy = 0;
-			return SIMPLE_LOGGER_SUCCESS;
-		}
+		f_puts(buffer, &simple_logger_fpointer);
+		f_sync(&simple_logger_fpointer);
+		busy = 0;
+		return SIMPLE_LOGGER_SUCCESS;
 	} else {
 		busy = 0;
 		return SIMPLE_LOGGER_BAD_FPOINTER;
@@ -161,15 +166,10 @@ uint8_t simple_logger_log_header(const char *format, ...) {
 
 	if(!simple_logger_file_exists) {
 		if(simple_logger_fpointer) {
-			f_puts(header_buffer, simple_logger_fpointer);
-			f_flush(simple_logger_fpointer);
-			if(f_error(simple_logger_fpointer)) {
-				busy = 0;
-				return SIMPLE_LOGGER_FILE_ERROR;
-			} else {
-				busy = 0;
-				return SIMPLE_LOGGER_SUCCESS;
-			}
+			f_puts(header_buffer, &simple_logger_fpointer);
+			f_sync(&simple_logger_fpointer);
+			busy = 0;
+			return SIMPLE_LOGGER_SUCCESS;
 		} else {
 			busy = 0;
 			return SIMPLE_LOGGER_BAD_FPOINTER;
