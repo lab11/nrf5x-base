@@ -42,12 +42,14 @@ CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 #define FFS_INIT_PINS	FFS_INIT_SPI;\
 						FFS_INIT_CS_PIN;\
 						FFS_INIT_CD_PIN;\
+						FFS_INIT_MISO_PIN;\
 						FFS_INIT_ENABLE_PIN
 
 #define FFS_INIT_SPI	SPI_BUS_SET_TO_LOW_SPEED
 
 #define FFS_INIT_CS_PIN 	nrf_gpio_cfg_output(SPI_CS_PIN)
 #define FFS_INIT_CD_PIN 	nrf_gpio_cfg_input(CD_PIN,	NRF_GPIO_PIN_NOPULL)
+#define FFS_INIT_MISO_PIN 	nrf_gpio_cfg_input(SPI_MISO_PIN,	NRF_GPIO_PIN_PULLUP)
 #define FFS_INIT_ENABLE_PIN	nrf_gpio_cfg_output(SD_ENABLE_PIN);\
 							nrf_gpio_pin_clear(SD_ENABLE_PIN);
 

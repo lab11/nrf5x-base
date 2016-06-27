@@ -51,14 +51,14 @@ static uint8_t logger_init() {
 	while(!ffs_is_card_available()) {
 		ffs_process();
 		if(!simple_logger_timer) {
-			return 1; //no card found - timeout - return error
+			return SIMPLE_LOGGER_BAD_CARD_INIT; //no card found - timeout - return error
 		}
 	}
 
 	//we must have not timed out and a card is available
 	if((perm[0] != 'w' && perm[0] != 'a') || perm[1] != '\0') {
 		//the person didn't use the right permissions
-		return 1;
+		return SIMPLE_LOGGER_BAD_PERMISSIONS;
 	}
 	
 	//see if the file exists already
@@ -74,29 +74,31 @@ static uint8_t logger_init() {
 
 	simple_logger_fpointer = ffs_fopen(file,perm);
 	if(!simple_logger_fpointer) {
-		return 1; //idk what's up
+		return SIMPLE_LOGGER_BAD_FPOINTER_INIT; //idk what's up
 	}
 
 	if(header_written && !simple_logger_file_exists) {
 		ffs_fputs(header_buffer, simple_logger_fpointer);
 		ffs_fflush(simple_logger_fpointer);
+		if(ffs_ferror(simple_logger_fpointer)) 
+			return SIMPLE_LOGGER_FILE_ERROR;
 	}
 
 	simple_logger_inited = 1;
-	return 0;
+	return SIMPLE_LOGGER_SUCCESS;
 }
 
 uint8_t simple_logger_init(const char *filename, const char *permissions) {
 
 	if(busy) {
-		return 1;
+		return SIMPLE_LOGGER_BUSY;
 	} else {
 		busy = 1;
 	}
 
 	if(simple_logger_inited) {
 		busy = 0;
-		return 1; //can only initialize once 
+		return SIMPLE_LOGGER_ALREADY_INITIALIZED; //can only initialize once 
 	}
 
 	ffs_init();
@@ -108,14 +110,9 @@ uint8_t simple_logger_init(const char *filename, const char *permissions) {
 	file = filename;
 	perm = permissions;
 
-	if(logger_init()) {
-		busy = 0;
-		return 1;
-	} else {
-		busy = 0;
-		return 0; //we are good - file opened.
-	}
-
+	uint8_t err_code = logger_init();
+	busy = 0;
+	return  err_code;
 }
 
 void simple_logger_update() {
@@ -126,7 +123,7 @@ void simple_logger_update() {
 uint8_t simple_logger_log(const char *format, ...) {
 
 	if(busy) {
-		return 1;
+		return SIMPLE_LOGGER_BUSY;
 	} else {
 		busy = 1;
 	}
@@ -134,7 +131,11 @@ uint8_t simple_logger_log(const char *format, ...) {
 	if(ffs_is_card_available()) {
 
 		if(!simple_logger_inited) {
-			logger_init();
+			uint8_t err_code = logger_init();
+			if(err_code) {
+				busy = 0;
+				return err_code;
+			}
 		}
 
 		va_list argptr;
@@ -145,23 +146,28 @@ uint8_t simple_logger_log(const char *format, ...) {
 		if(simple_logger_fpointer) {
 			ffs_fputs(buffer, simple_logger_fpointer);
 			ffs_fflush(simple_logger_fpointer);
-			busy = 0;
-			return 0;
+			if(ffs_ferror(simple_logger_fpointer)) {
+				busy = 0;
+				return SIMPLE_LOGGER_FILE_ERROR;
+			} else {
+				busy = 0;
+				return SIMPLE_LOGGER_SUCCESS;
+			}
 		} else {
 			busy = 0;
-			return 1;
+			return SIMPLE_LOGGER_BAD_FPOINTER;
 		}
 	} else {
 		simple_logger_inited = 0;
 		busy = 0;
-		return 1;
+		return SIMPLE_LOGGER_BAD_CARD;
 	}
 }
 
 uint8_t simple_logger_log_header(const char *format, ...) {
 
 	if(busy) {
-		return 1;
+		return SIMPLE_LOGGER_BUSY;
 	} else {
 		busy = 1;
 	}
@@ -174,27 +180,36 @@ uint8_t simple_logger_log_header(const char *format, ...) {
 
 	if(ffs_is_card_available()) {
 		if(!simple_logger_inited) {
-			logger_init();
+			uint8_t err_code = logger_init();
+			if(err_code) {
+				busy = 0;
+				return err_code;
+			}
 		}
 
 		if(!simple_logger_file_exists) {
 			if(simple_logger_fpointer) {
 				ffs_fputs(header_buffer, simple_logger_fpointer);
 				ffs_fflush(simple_logger_fpointer);
-				busy = 0;
-				return 0;
+				if(ffs_ferror(simple_logger_fpointer)) {
+					busy = 0;
+					return SIMPLE_LOGGER_FILE_ERROR;
+				} else {
+					busy = 0;
+					return SIMPLE_LOGGER_SUCCESS;
+				}
 			} else {
 				busy = 0;
-				return 1;
+				return SIMPLE_LOGGER_BAD_FPOINTER;
 			}
+		} else {
+			busy = 0;
+			return SIMPLE_LOGGER_FILE_EXISTS;
 		}
 	} else {
 		simple_logger_inited = 0;
 		busy = 0;
-		return 1;
+		return SIMPLE_LOGGER_BAD_CARD;
 	}
-
-	busy = 0;
-	return 1;
 }
 
