@@ -7,7 +7,6 @@
 #include "chanfs/diskio.h"
 #include "stdarg.h"
 
-static uint32_t simple_logger_timer = 0;
 static uint8_t simple_logger_inited = 0;
 static uint8_t simple_logger_file_exists = 0;
 static uint8_t busy = 0;
@@ -30,6 +29,8 @@ const char *perm = NULL;
 static FIL 	simple_logger_fpointer;
 static FATFS 	simple_logger_fs;
 static uint8_t simple_logger_opts;
+
+extern void disk_timerproc(void);
 
 static void heartbeat (void* p_context) {
 	disk_timerproc();
@@ -56,10 +57,6 @@ static uint8_t logger_init() {
 	}
 
 	res = f_open(&simple_logger_fpointer,file, simple_logger_opts);
-
-	if(!simple_logger_fpointer) {
-		return SIMPLE_LOGGER_BAD_FPOINTER_INIT; //idk what's up
-	}
 
 	if(simple_logger_opts && FA_OPEN_ALWAYS) {
 		//we are in append mode and should move to the end
