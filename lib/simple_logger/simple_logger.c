@@ -13,7 +13,6 @@ static uint8_t busy = 0;
 static uint8_t header_written = 0;
 
 const char *file = NULL;
-const char *perm = NULL;
 
 #ifdef SIMPLE_LOGGER_BUFFER_SIZE
 	static char buffer[SIMPLE_LOGGER_BUFFER_SIZE];
@@ -91,10 +90,10 @@ uint8_t simple_logger_init(const char *filename, const char *permissions) {
 	file = filename;
 
 	//we must have not timed out and a card is available
-	if((perm[0] != 'w' && perm[0] != 'a') || perm[1] != '\0') {
+	if((permissions[0] != 'w' && permissions[0] != 'a') || permissions[1] != '\0') {
 		//the person didn't use the right permissions
 		return SIMPLE_LOGGER_BAD_PERMISSIONS;
-	} else if(perm[0] == 'w') {
+	} else if(permissions[0] == 'w') {
 		simple_logger_opts = (FA_WRITE | FA_CREATE_ALWAYS);
 	} else {
 		simple_logger_opts = (FA_WRITE | FA_OPEN_ALWAYS);
