@@ -64,7 +64,7 @@ static uint8_t logger_init() {
 	}
 
 	if(header_written && !simple_logger_file_exists) {
-		res = f_puts(header_buffer, &simple_logger_fpointer);
+		uint8_t err = f_puts(header_buffer, &simple_logger_fpointer);
 		res = f_sync(&simple_logger_fpointer);
 	}
 
