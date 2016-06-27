@@ -1,6 +1,7 @@
 //SPI control module for chan_FS  modified for the NRF58122
 
 
+#define NRF_SPI = NRF_SPI1
 
 #define FCLK_SLOW() NRF_SPI->FREQUENCY = SPI_FREQUENCY_FREQUENCY_K250
 #define FCLK_FAST() NRF_SPI->FREQUENCY = SPI_FREQUENCY_FREQUENCY_M4
@@ -26,7 +27,7 @@
  							(SPI_CONFIG_CPOL_ActiveHigh << SPI_CONFIG_CPOL_Pos) |\
  							(SPI_CONFIG_ORDER_MsbFirst << SPI_CONFIG_ORDER_Pos);\
  	NRF_SPI->ENABLE = (SPI_ENABLE_ENABLE_Enabled << SPI_ENABLE_ENABLE_Pos);\
- 	NRF_SPI->EVENTS_READY = 0
+ 	NRF_SPI->EVENTS_READY = 0;\
 }
 
 
@@ -93,7 +94,7 @@ static void init_spi (void) {
 
 /* Exchange a byte */
 static BYTE xchg_spi (BYTE dat) {
-	NRF_SPI_TXD = dat;
+	NRF_SPI->TXD = dat;
 	while (!NRF_SPI->EVENTS_READY);
 	BYTE data = (BYTE)NRF_SPI->RXD;
 	NRF_SPI->EVENTS_READY = 0;
@@ -559,3 +560,4 @@ void disk_timerproc (void)
 		s |= (STA_NODISK | STA_NOINIT);
 	Stat = s;
 }
+
