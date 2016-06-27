@@ -50,34 +50,21 @@ static simple_ble_service_t led_service = {
     .uuid128 = {{0x41, 0xa6, 0xab, 0x05, 0xb5, 0x7c, 0x4f, 0xd4,
                  0x89, 0x30, 0x4f, 0xff, 0xa4, 0x4a, 0x28, 0xe5}}
 };
-static simple_ble_char_t led_on_char = {.uuid16 = 0xa410};
-static simple_ble_char_t led_off_char = {.uuid16 = 0xa411};
-static simple_ble_char_t led_state_char = {.uuid16 = 0xa412};
 
+static simple_ble_char_t test_string_char = {.uuid16 = 0xa410};
+static char test_string_value[256] = {0};
 
 static uint8_t led_on_value = 0;
-static uint8_t led_off_value = 0;
-static uint8_t led_state_value = 0;
 
 // called automatically by simple_ble_init
 void services_init (void) {
     // add led service
     simple_ble_add_service(&led_service);
 
-    // add led_on characteristic
-    simple_ble_add_characteristic(0, 1, 0, 0, // read, write, notify, vlen
-            1, (uint8_t*)&led_on_value,
-            &led_service, &led_on_char);
-
-    // add led_off characteristic
-    simple_ble_add_characteristic(0, 1, 0, 0, // read, write, notify, vlen
-            1, (uint8_t*)&led_off_value,
-            &led_service, &led_off_char);
-
-    // add led_state characteristic
-    simple_ble_add_characteristic(1, 0, 1, 0, // read, write, notify, vlen
-            1, (uint8_t*)&led_state_value,
-            &led_service, &led_state_char);
+    //add string
+    simple_ble_add_characteristic(0, 1, 0, 0,
+            256, (char*)&test_string_value,
+            &led_service, &test_string_char);
 }
 
 
@@ -582,7 +569,7 @@ void writeQRcode(char *str)
         grid[x][y] = (*qrcode).data[i] & 1;
     }
     
-    insertBigPixelGrid(width, width, grid, 0, 0);
+    insertBigPixelGrid(width, width, grid, 10, 10);
 
 }
 
@@ -707,26 +694,9 @@ void init()
 
 void ble_evt_write(ble_evt_t* p_ble_evt) {
 
-    if (simple_ble_is_char_event(p_ble_evt, &led_on_char)) {
-        // user wrote to led_on characteristic
-        //led_on(LED0);
+    if (simple_ble_is_char_event(p_ble_evt, &test_string_char)) {
 
-        // update led state and notify
-        led_state_value = 1;
-        simple_ble_notify_char(&led_state_char);
-
-        writeStringAtLocation("LED Success", 0, 0, 2);
-        updateDisplay();
-
-    } else if (simple_ble_is_char_event(p_ble_evt, &led_off_char)) {
-        // user wrote to led_off characteristic
-        //led_off(LED0);
-
-        // update led state and notify
-        led_state_value = 0;
-        simple_ble_notify_char(&led_state_char);
-
-        clearScreen();
+        writeStringAtLocation(test_string_value, 0, 0, 2);
         updateDisplay();
     }
 }
@@ -737,8 +707,8 @@ int main(void)
     init();
 
     //write to the screen array and then update the display
-    writeQRcode("http://eecs.umich.edu");
-    updateDisplay();
+    //writeQRcode("http://eecs.umich.edu");
+    //updateDisplay();
 
     simple_ble_init(&ble_config);
     simple_adv_only_name();
