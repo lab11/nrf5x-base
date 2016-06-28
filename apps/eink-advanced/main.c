@@ -28,10 +28,12 @@
 #include "device_info_service.h"
 
 // Define constants about this beacon.
-#define DEVICE_NAME "QRcodedisp"
+#define DEVICE_NAME "E-Ink disp"
 
 // LED pin number
 #define LED0 18
+#define LED1 19
+#define LED2 20
 
 // Intervals for advertising and connections
 static simple_ble_config_t ble_config = {
@@ -51,20 +53,61 @@ static simple_ble_service_t led_service = {
                  0x89, 0x30, 0x4f, 0xff, 0xa4, 0x4a, 0x28, 0xe5}}
 };
 
-static simple_ble_char_t test_string_char = {.uuid16 = 0xa410};
-static char test_string_value[256] = {0};
+//text x coordinate
+static simple_ble_char_t text_x_coordinate_char = {.uuid16 = 0xa411};
+static uint16_t text_x_coordinate_value = 0;
 
-static uint8_t led_on_value = 0;
+//text y coordinate
+static simple_ble_char_t text_y_coordinate_char = {.uuid16 = 0xa412};
+static uint16_t text_y_coordinate_value = 0;
+
+//text scale
+static simple_ble_char_t text_scale_char = {.uuid16 = 0xa413};
+static uint8_t text_scale_value = 1;//default to 1
+
+//text
+static simple_ble_char_t text_char = {.uuid16 = 0xa410};
+static char text_value[30] = {0};
+
+//qr code
+static simple_ble_char_t qrcode_char = {.uuid16 = 0xa414};
+static char qrcode_value[52] = {0};
+
+static volatile uint8_t second=0;
+
+void ble_error(uint32_t err_code) {
+    led_on(LED0);
+}
 
 // called automatically by simple_ble_init
 void services_init (void) {
     // add led service
     simple_ble_add_service(&led_service);
 
+    //add text x coordinate
+    simple_ble_add_characteristic(0, 1, 0, 0,
+            2, (uint16_t*)&text_x_coordinate_value,
+            &led_service, &text_x_coordinate_char);
+
+    //add text y coordinate
+    simple_ble_add_characteristic(0, 1, 0, 0,
+            2, (uint16_t*)&text_y_coordinate_value,
+            &led_service, &text_y_coordinate_char);
+
+    //add text scale
+    simple_ble_add_characteristic(0, 1, 0, 0,
+            1, (uint8_t*)&text_scale_value,
+            &led_service, &text_scale_char);
+
     //add string
     simple_ble_add_characteristic(0, 1, 0, 0,
-            256, (char*)&test_string_value,
-            &led_service, &test_string_char);
+            30, (char*)&text_value,
+            &led_service, &text_char);
+
+    //add qr code
+    simple_ble_add_characteristic(0, 1, 0, 0,
+            52, (char*)&qrcode_value,
+            &led_service, &qrcode_char);
 }
 
 
@@ -98,12 +141,22 @@ static void spi_init () {
 
 static void wait_for_not_busy () {
     uint8_t found_busy_low = 0;
-    int count = 0;
+    volatile int count = 0;
     while (1) {
         uint8_t pin = nrf_gpio_pin_read(nTC_BUSY);
+
+        if (pin) led_on(LED1);
+        if (found_busy_low) led_on(LED2);
+
         if (found_busy_low && pin) {
             break;
+        } else {
+            uint8_t buf = {0xFF, 0xFF, 0xFF, 0xFF};
+            for(int i; i < 100; i++)
+                nrf_drv_spi_transfer(&_spi, buf, 4, NULL, 0);
         }
+
+
         if (pin == 0) {
             found_busy_low = 1;
         }
@@ -111,15 +164,21 @@ static void wait_for_not_busy () {
         if(!found_busy_low)
         {
             count++;
-            if(count > 10)
+            if(count > 1000)
             {
                 break;
             }
         }
+
+        led_off(LED1);
+        led_off(LED2);
     }
+    led_off(LED1);
+    led_off(LED2);
 
     // Then wait a little longer so we don't violate the T_NS time.
     nrf_delay_us(5);
+
 }
 
 uint8_t screen[15000] = {
@@ -649,6 +708,7 @@ void updateDisplay()
 
 
     nrf_gpio_pin_set(nTC_EN);
+    second = 1;
 }
 
 //set up led and spi
@@ -658,6 +718,10 @@ void init()
 
     led_init(LED0);
     led_off(LED0);
+    led_init(LED1);
+    led_off(LED1);
+    led_init(LED2);
+    led_off(LED2);
 
     // Setup input for busy
     nrf_gpio_cfg_input(nTC_BUSY, NRF_GPIO_PIN_NOPULL);
@@ -694,9 +758,19 @@ void init()
 
 void ble_evt_write(ble_evt_t* p_ble_evt) {
 
-    if (simple_ble_is_char_event(p_ble_evt, &test_string_char)) {
+    if (simple_ble_is_char_event(p_ble_evt, &text_char)) {
 
-        writeStringAtLocation(test_string_value, 0, 0, 2);
+        //writeStringAtLocation(text_value, text_x_coordinate_value, 
+        //    text_y_coordinate_value, text_scale_value);
+
+        writeStringAtLocation(text_value, 0, 0, text_scale_value);
+
+        updateDisplay();
+    }
+    else if(simple_ble_is_char_event(p_ble_evt, &qrcode_char))
+    {
+        writeQRcode(qrcode_value);
+
         updateDisplay();
     }
 }
