@@ -10,7 +10,7 @@
 #include "simple_ble.h"
 
 
-// Need pin number for red LED on nucleum
+// Setup LEDs correctly for the platform
 #define LED_RED 18
 #define LED_BLUE 19
 
@@ -18,30 +18,38 @@
 #define INTERRUPT_PIN 23
 
 static void interrupt_handler (nrf_drv_gpiote_pin_t pin, nrf_gpiote_polarity_t action) {
-    if(pin == INTERRUPT_PIN) {led_toggle(LED_BLUE);} // Pin is returned to use as decimal number and not a bitmap. fuck yeah!
-    led_toggle(LED_RED);
+    if (pin == INTERRUPT_PIN) {
+        led_toggle(LED_BLUE);
+    }
 }
 
-int main(void) {
+int main (void) {
+    uint32_t err_code;
 
     // Initialize.
     led_init(LED_RED);
     led_init(LED_BLUE);
+    led_off(LED_RED);
 
     // Initialize GPIOTE driver
     // configuration values can be found in nrf_drv_config.h under GPIOTE_ENABLED
-    uint32_t err_code;
-    if(!nrf_drv_gpiote_is_init()) {
+    if (!nrf_drv_gpiote_is_init()) {
         err_code = nrf_drv_gpiote_init();
-        if(err_code != NRF_SUCCESS) { /* Handle failure case*/ }
+        if (err_code != NRF_SUCCESS) {
+            led_on(LED_RED);
+        }
     }
 
-    // Initialize interrupt on pin 23.
+    // Initialize interrupt on pin INTERRUPT_PIN.
     nrf_drv_gpiote_in_config_t test_config = GPIOTE_CONFIG_IN_SENSE_HITOLO(false);
     test_config.pull = NRF_GPIO_PIN_PULLUP;
-    err_code = nrf_drv_gpiote_in_init(23, &test_config, interrupt_handler);
-    if(err_code != NRF_SUCCESS) { /* Handle failure case */ }
-    nrf_drv_gpiote_in_event_enable(23, true); // enable interrupt
+    err_code = nrf_drv_gpiote_in_init(INTERRUPT_PIN, &test_config, interrupt_handler);
+    if (err_code != NRF_SUCCESS) {
+        led_on(LED_RED);
+    }
+    
+    // And enable the interrupt
+    nrf_drv_gpiote_in_event_enable(INTERRUPT_PIN, true);
 
     // Enter main loop.
     while (1) {

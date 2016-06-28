@@ -26,6 +26,19 @@
 //	#define SIMPLE_LOGGER_BUFFER_SIZE N
 ////////////////////////////////////
 
+enum {
+	SIMPLE_LOGGER_SUCCESS = 0,
+	SIMPLE_LOGGER_BUSY,
+	SIMPLE_LOGGER_BAD_FPOINTER,
+	SIMPLE_LOGGER_BAD_FPOINTER_INIT,
+	SIMPLE_LOGGER_BAD_CARD,
+	SIMPLE_LOGGER_BAD_CARD_INIT,
+	SIMPLE_LOGGER_FILE_EXISTS,
+	SIMPLE_LOGGER_FILE_ERROR,
+	SIMPLE_LOGGER_ALREADY_INITIALIZED,
+	SIMPLE_LOGGER_BAD_PERMISSIONS
+} SIMPLE_LOGGER_ERROR; 
+
 uint8_t simple_logger_init(const char *filename, const char *permissions);
 uint8_t simple_logger_ready(void);
 void simple_logger_update();

@@ -1,4 +1,7 @@
-Example for Responding to an Interrupt
-======================================
+Example Interrupt App
+=====================
 
-By default responds to an interrupt on Pin 10.
+This app waits for an interrupt on a GPIO pin and toggles an LED
+when the interrupt is triggered. It also asserts an LED if an
+error occurs. Be sure to configure the pins correctly for your
+platform.
