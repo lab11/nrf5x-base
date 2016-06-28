@@ -11,7 +11,7 @@
 #define	MMC_CD		!nrf_gpio_pin_read(CD_PIN)
 #define	MMC_WP		0
 
-#define SD_POWER_ON()		nrf_gpio_pin_clear(SD_ENABLE_PIN)
+#define SD_POWER_ON()	nrf_gpio_pin_clear(SD_ENABLE_PIN)
 #define SD_POWER_OFF()	nrf_gpio_pin_set(SD_ENABLE_PIN)
 
 #define SD_PIN_INIT() 	nrf_gpio_cfg_output(SPI_CS_PIN);\
@@ -105,7 +105,7 @@ static BYTE xchg_spi (BYTE dat) {
 /* Receive multiple byte */
 static void rcvr_spi_multi ( BYTE *buff, UINT btr) {
 
-	uint8_t i = 0;
+	uint32_t i = 0;
 	while(btr) {
 		buff[i] = xchg_spi(0xFF);
 		btr--;
@@ -117,7 +117,7 @@ static void rcvr_spi_multi ( BYTE *buff, UINT btr) {
 #if _USE_WRITE
 /* Send multiple byte */
 static void xmit_spi_multi (const BYTE *buff, UINT btx) {
-	uint8_t i = 0;
+	uint32_t i = 0;
 	while(btx) {
 		xchg_spi(buff[i]);
 		btx--;
