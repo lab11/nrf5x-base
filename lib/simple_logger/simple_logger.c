@@ -41,33 +41,33 @@ static void heartbeat (void* p_context) {
 static uint8_t logger_init() {
 
 	volatile FRESULT res;
-	res = f_mount(&simple_logger_fs, "", 1);
+	res |= f_mount(&simple_logger_fs, "", 1);
 
 	//see if the file exists already
 	FIL temp;
-	res = f_open(&temp,file, FA_READ | FA_OPEN_EXISTING);
+	res |= f_open(&temp,file, FA_READ | FA_OPEN_EXISTING);
 	if(res == FR_NO_FILE) {
 		//the file doesn't exist
 		simple_logger_file_exists = 0;
 	} else {
 		simple_logger_file_exists = 1;
-		f_close(&temp);
+		res |= f_close(&temp);
 	}
 
-	res = f_open(&simple_logger_fpointer,file, simple_logger_opts);
+	res |= f_open(&simple_logger_fpointer,file, simple_logger_opts);
 
 	if(simple_logger_opts && FA_OPEN_ALWAYS) {
 		//we are in append mode and should move to the end
-		res = f_lseek(&simple_logger_fpointer, f_size(&simple_logger_fpointer));
+		res |= f_lseek(&simple_logger_fpointer, f_size(&simple_logger_fpointer));
 	}
 
 	if(header_written && !simple_logger_file_exists) {
 		uint8_t err = f_puts(header_buffer, &simple_logger_fpointer);
-		res = f_sync(&simple_logger_fpointer);
+		res |= f_sync(&simple_logger_fpointer);
 	}
 
 	simple_logger_inited = 1;
-	return SIMPLE_LOGGER_SUCCESS;
+	return res;
 }
 
 uint8_t simple_logger_init(const char *filename, const char *permissions) {
@@ -126,10 +126,11 @@ uint8_t simple_logger_log(const char *format, ...) {
 	vsnprintf(buffer, buffer_size, format, argptr);
 	va_end(argptr);
 
+	
 	f_puts(buffer, &simple_logger_fpointer);
-	f_sync(&simple_logger_fpointer);
+	FRESULT res = f_sync(&simple_logger_fpointer);
 	busy = 0;
-	return SIMPLE_LOGGER_SUCCESS;
+	return res;
 }
 
 uint8_t simple_logger_log_header(const char *format, ...) {
@@ -156,9 +157,9 @@ uint8_t simple_logger_log_header(const char *format, ...) {
 
 	if(!simple_logger_file_exists) {
 		f_puts(header_buffer, &simple_logger_fpointer);
-		f_sync(&simple_logger_fpointer);
+		FRESULT res = f_sync(&simple_logger_fpointer);
 		busy = 0;
-		return SIMPLE_LOGGER_SUCCESS;
+		return res;
 	} else {
 		busy = 0;
 		return SIMPLE_LOGGER_FILE_EXISTS;
