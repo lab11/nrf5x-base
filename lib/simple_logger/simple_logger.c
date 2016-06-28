@@ -11,6 +11,7 @@ static uint8_t simple_logger_inited = 0;
 static uint8_t simple_logger_file_exists = 0;
 static uint8_t busy = 0;
 static uint8_t header_written = 0;
+static uint8_t error_count = 0;
 
 const char *file = NULL;
 
@@ -30,6 +31,16 @@ static FATFS 	simple_logger_fs;
 static uint8_t simple_logger_opts;
 
 extern void disk_timerproc(void);
+extern void disk_restart(void);
+
+static void error(void) {
+	error_count++;
+
+	if(error_count > 20) {
+		disk_restart();
+		error_count = 0;
+	}
+}
 
 static void heartbeat (void* p_context) {
 	disk_timerproc();
@@ -103,7 +114,6 @@ uint8_t simple_logger_log(const char *format, ...) {
 	va_start(argptr, format);
 	vsnprintf(buffer, buffer_size, format, argptr);
 	va_end(argptr);
-
 	
 	f_puts(buffer, &simple_logger_fpointer);
 	FRESULT res = f_sync(&simple_logger_fpointer);
@@ -113,6 +123,8 @@ uint8_t simple_logger_log(const char *format, ...) {
 		if(res == FR_OK) {
 			f_puts(buffer, &simple_logger_fpointer);
 			res = f_sync(&simple_logger_fpointer);
+		} else {
+			error();
 		}
 	}
 
@@ -120,6 +132,8 @@ uint8_t simple_logger_log(const char *format, ...) {
 }
 
 uint8_t simple_logger_log_header(const char *format, ...) {
+
+	header_written = 1;
 
 	va_list argptr;
 	va_start(argptr, format);
@@ -129,7 +143,15 @@ uint8_t simple_logger_log_header(const char *format, ...) {
 	if(!simple_logger_file_exists) {
 		f_puts(header_buffer, &simple_logger_fpointer);
 		FRESULT res = f_sync(&simple_logger_fpointer);
-		header_written = 1;
+
+		if(res != FR_OK) {
+			res == logger_init();
+			if(res !== FR_OK) {
+				error();
+			}
+			return res;	
+		} 
+
 		return res;
 	} else {
 		return SIMPLE_LOGGER_FILE_EXISTS;

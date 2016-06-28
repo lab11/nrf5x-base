@@ -538,6 +538,12 @@ DRESULT disk_ioctl (
 /  of 1 ms to generate card control timing.
 */
 
+void disk_restart(void) {
+	SD_POWER_OFF();
+	for(volatile int i = 0; i < 100000; i++);
+	SD_POWER_ON();
+}
+
 void disk_timerproc (void)
 {
 	WORD n;
