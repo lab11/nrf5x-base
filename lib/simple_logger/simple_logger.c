@@ -49,7 +49,7 @@ static uint8_t logger_init() {
 	if(res == FR_NO_FILE) {
 		//the file doesn't exist
 		simple_logger_file_exists = 0;
-	} else {
+	} else if(res == FR_OK) {
 		simple_logger_file_exists = 1;
 		res |= f_close(&temp);
 	}
@@ -62,7 +62,7 @@ static uint8_t logger_init() {
 	}
 
 	if(header_written && !simple_logger_file_exists) {
-		uint8_t err = f_puts(header_buffer, &simple_logger_fpointer);
+		f_puts(header_buffer, &simple_logger_fpointer);
 		res |= f_sync(&simple_logger_fpointer);
 	}
 
@@ -72,14 +72,7 @@ static uint8_t logger_init() {
 
 uint8_t simple_logger_init(const char *filename, const char *permissions) {
 
-	if(busy) {
-		return SIMPLE_LOGGER_BUSY;
-	} else {
-		busy = 1;
-	}
-
 	if(simple_logger_inited) {
-		busy = 0;
 		return SIMPLE_LOGGER_ALREADY_INITIALIZED; //can only initialize once 
 	}
 
@@ -100,19 +93,12 @@ uint8_t simple_logger_init(const char *filename, const char *permissions) {
 	}
 
 	uint8_t err_code = logger_init();
-	busy = 0;
 	return  err_code;
 }
 
 //the function meant to log data
 uint8_t simple_logger_log(const char *format, ...) {
 
-	if(busy) {
-		return SIMPLE_LOGGER_BUSY;
-	} else {
-		busy = 1;
-	}
-	
 	va_list argptr;
 	va_start(argptr, format);
 	vsnprintf(buffer, buffer_size, format, argptr);
@@ -126,43 +112,26 @@ uint8_t simple_logger_log(const char *format, ...) {
 		res = logger_init();
 		if(res == FR_OK) {
 			f_puts(buffer, &simple_logger_fpointer);
-			FRESULT res = f_sync(&simple_logger_fpointer);
+			res = f_sync(&simple_logger_fpointer);
 		}
 	}
 
-	busy = 0;
 	return res;
 }
 
 uint8_t simple_logger_log_header(const char *format, ...) {
 
-	if(busy) {
-		return SIMPLE_LOGGER_BUSY;
-	} else {
-		busy = 1;
-	}
-
-	header_written = 1;
 	va_list argptr;
 	va_start(argptr, format);
 	vsnprintf(header_buffer, buffer_size, format, argptr);
 	va_end(argptr);
 
-	if(!simple_logger_inited) {
-		uint8_t err_code = logger_init();
-		if(err_code) {
-			busy = 0;
-			return err_code;
-		}
-	}
-
 	if(!simple_logger_file_exists) {
 		f_puts(header_buffer, &simple_logger_fpointer);
 		FRESULT res = f_sync(&simple_logger_fpointer);
-		busy = 0;
+		header_written = 1;
 		return res;
 	} else {
-		busy = 0;
 		return SIMPLE_LOGGER_FILE_EXISTS;
 	}
 }
