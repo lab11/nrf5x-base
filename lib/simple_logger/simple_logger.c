@@ -146,7 +146,7 @@ uint8_t simple_logger_log_header(const char *format, ...) {
 
 		if(res != FR_OK) {
 			res == logger_init();
-			if(res !== FR_OK) {
+			if(res != FR_OK) {
 				error();
 			}
 			return res;	
