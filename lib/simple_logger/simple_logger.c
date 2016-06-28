@@ -113,14 +113,6 @@ uint8_t simple_logger_log(const char *format, ...) {
 		busy = 1;
 	}
 	
-	if(!simple_logger_inited) {
-		uint8_t err_code = logger_init();
-		if(err_code) {
-			busy = 0;
-			return err_code;
-		}
-	}
-
 	va_list argptr;
 	va_start(argptr, format);
 	vsnprintf(buffer, buffer_size, format, argptr);
@@ -129,6 +121,15 @@ uint8_t simple_logger_log(const char *format, ...) {
 	
 	f_puts(buffer, &simple_logger_fpointer);
 	FRESULT res = f_sync(&simple_logger_fpointer);
+
+	if(res != FR_OK) {
+		res = logger_init();
+		if(res == FR_OK) {
+			f_puts(buffer, &simple_logger_fpointer);
+			FRESULT res = f_sync(&simple_logger_fpointer);
+		}
+	}
+
 	busy = 0;
 	return res;
 }
