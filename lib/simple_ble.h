@@ -17,7 +17,7 @@ typedef struct simple_ble_config_s {
     uint8_t     platform_id;        // used as 4th octet in device BLE address
     uint16_t    device_id;          // set the lower 16 bits of the device id. Set to DEVICE_ID_DEFAULT to use random.
     char*       adv_name;           // used in advertisements if there is room
-    uint16_t    adv_interval;
+    uint16_t    adv_interval;       // Between 20 ms and 10.24 s
     uint16_t    min_conn_interval;
     uint16_t    max_conn_interval;
 } simple_ble_config_t;
