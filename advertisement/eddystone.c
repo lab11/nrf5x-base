@@ -81,3 +81,12 @@ void eddystone_with_manuf_adv (char* url_str, ble_advdata_manuf_data_t* manuf_sp
 
     eddystone_adv(url_str, &srdata);
 }
+
+void eddystone_with_name (char* url_str) {
+    ble_advdata_t srdata;
+    memset(&srdata, 0, sizeof(srdata));
+
+    srdata.name_type = BLE_ADVDATA_FULL_NAME;
+
+    eddystone_adv(url_str, &srdata);
+}
