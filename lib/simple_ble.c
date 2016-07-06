@@ -80,7 +80,6 @@ static bool pending_dfu = 0;
 /*******************************************************************************
  *   FUNCTION PROTOTYPES
  ******************************************************************************/
-static void service_error_handler(uint32_t nrf_error);
 static void conn_params_error_handler(uint32_t nrf_error);
 static void ble_evt_dispatch(ble_evt_t * p_ble_evt);
 static void sys_evt_dispatch(uint32_t sys_evt);
@@ -125,10 +124,6 @@ void app_error_fault_handler(uint32_t error_code, uint32_t line_num, uint32_t in
 
 void assert_nrf_callback(uint16_t line_num, const uint8_t * p_file_name) {
     app_error_handler(0xDEADBEEF, line_num, p_file_name);
-}
-
-static void service_error_handler(uint32_t nrf_error) {
-    APP_ERROR_HANDLER(nrf_error);
 }
 
 static void conn_params_error_handler(uint32_t nrf_error) {
