@@ -212,12 +212,12 @@ static void on_ble_evt(ble_evt_t * p_ble_evt) {
             // if written to dfu ctrl pt
             if (simple_ble_is_char_event(p_ble_evt, &dfu_ctrlpt_char)) {
                 pending_dfu = 1;
-                // disconnect, wait for event. 
-                err_code = sd_ble_gap_disconnect(app.conn_handle, BLE_HCI_REMOTE_USER_TERMINATED_CONNECTION); 
+                // disconnect, wait for event.
+                err_code = sd_ble_gap_disconnect(app.conn_handle, BLE_HCI_REMOTE_USER_TERMINATED_CONNECTION);
                 APP_ERROR_CHECK(err_code);
                 break;
             }
-#endif            
+#endif
             // callback for user. Weak reference, so check validity first
             if (ble_evt_write) {
                 ble_evt_write(p_ble_evt);
@@ -272,26 +272,26 @@ static void on_ble_evt(ble_evt_t * p_ble_evt) {
               // check if DFU advertisement
               uint8_t data[31];
               int len = parse_adata(p_ble_evt, 0xFF, data);
-              
+
               if (len > 4 && len <= 31 &&
                   *((short *) data) == 0x02E0 &&
                   data[2] == DFU_ADV_DATA_TYPE &&
-                  data[3] == DFU_ADV_DATA_VERS) 
+                  data[3] == DFU_ADV_DATA_VERS)
               {
                 ble_gap_addr_t gap_addr;
                 sd_ble_gap_address_get(&gap_addr);
-                
+
                 if (memcmp(data+4, gap_addr.addr, 6) == 0) {
                   dfu_reset();
                 }
               }
 #endif
 #endif
-              
+
               if (ble_evt_adv_report) {
                   ble_evt_adv_report(p_ble_evt);
               }
-              break; 
+              break;
             }
 
         default:
@@ -350,7 +350,7 @@ void __attribute__((weak)) ble_address_set () {
         // Set the new BLE address with the user-defined address
         memcpy(gap_addr.addr, _ble_address, 6);
     }
- 
+
 #ifdef ENABLE_DFU
     // write ble address to memory to share with bootloader
     memcpy((uint8_t*)BOOTLOADER_BLE_ADDR_START, gap_addr.addr, 6);
@@ -484,7 +484,7 @@ void __attribute__((weak)) dfu_init (void) {
     // Add ctrl pt characteristic
     simple_ble_add_characteristic(0,1,1,1,
         BLE_L2CAP_MTU_DEF, NULL,
-        &dfu_service,&dfu_ctrlpt_char); 
+        &dfu_service,&dfu_ctrlpt_char);
 }
 
 void __attribute__((weak)) dfu_reset_prepare (void) {
@@ -492,8 +492,8 @@ void __attribute__((weak)) dfu_reset_prepare (void) {
 
 void dfu_reset() {
     int err_code = 0;
-                
-    // set flag for bootloader to enter dfu  
+
+    // set flag for bootloader to enter dfu
     err_code = sd_power_gpregret_clr(0xFF);
     APP_ERROR_CHECK(err_code);
     err_code = sd_power_gpregret_set(BOOTLOADER_DFU_START);
