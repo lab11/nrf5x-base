@@ -151,6 +151,12 @@ extern __attribute__((weak)) const int FIRST_CONN_PARAMS_UPDATE_DELAY;
 //no man in the middle
 #define SEC_PARAM_MITM                  0
 
+//disable le secure connection pairing
+#define SEC_PARAM_LESC                  0
+
+//disable keypress notifications
+#define SEC_PARAM_KEYPRESS              0
+
 //no i/o capability
 #define SEC_PARAM_IO_CAPABILITIES       BLE_GAP_IO_CAPS_NONE
 

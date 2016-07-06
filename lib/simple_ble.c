@@ -55,10 +55,18 @@ ble_gap_adv_params_t m_adv_params;
 ble_gap_sec_params_t m_sec_params = {
     SEC_PARAM_BOND,
     SEC_PARAM_MITM,
+#ifdef SOFTDEVICE_s130
+    SEC_PARAM_LESC,
+    SEC_PARAM_KEYPRESS,
+#endif
     SEC_PARAM_IO_CAPABILITIES,
     SEC_PARAM_OOB,
     SEC_PARAM_MIN_KEY_SIZE,
     SEC_PARAM_MAX_KEY_SIZE,
+#ifdef SOFTDEVICE_s130
+    {0, 0, 0, 0},
+    {0, 0, 0, 0}
+#endif
 };
 
 // configuration settings that can be redefined by application
