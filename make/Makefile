@@ -165,6 +165,7 @@ ifeq ($(SDK_VERSION), 11)
 	# Need to add the paths for all the directories in the SDK.
 	# Note that we do not use * because some folders have conflicting files.
 	LIBRARY_PATHS += $(wildcard $(SDK_INCLUDE_PATH)libraries/*/)
+	LIBRARY_PATHS += $(wildcard $(SDK_INCLUDE_PATH)drivers_nrf/adc/)
 	LIBRARY_PATHS += $(wildcard $(SDK_INCLUDE_PATH)drivers_nrf/ble_flash/)
 	LIBRARY_PATHS += $(wildcard $(SDK_INCLUDE_PATH)drivers_nrf/clock/)
 	LIBRARY_PATHS += $(wildcard $(SDK_INCLUDE_PATH)drivers_nrf/common/)
