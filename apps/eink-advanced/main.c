@@ -27,8 +27,11 @@
 #include "led.h"
 #include "device_info_service.h"
 
+#include "eddystone.h"
+
 // Define constants about this beacon.
 #define DEVICE_NAME "E-Ink disp"
+#define PHYSWEB_URL "goo.gl/pKiLW5"
 
 // LED pin number
 #define LED0 18
@@ -74,10 +77,6 @@ static simple_ble_char_t qrcode_char = {.uuid16 = 0xa414};
 static char qrcode_value[52] = {0};
 
 static volatile uint8_t second=0;
-
-void ble_error(uint32_t err_code) {
-    led_on(LED0);
-}
 
 // called automatically by simple_ble_init
 void services_init (void) {
@@ -145,22 +144,15 @@ static void wait_for_not_busy () {
     while (1) {
         uint8_t pin = nrf_gpio_pin_read(nTC_BUSY);
 
-        if (pin) led_on(LED1);
-        if (found_busy_low) led_on(LED2);
-
         if (found_busy_low && pin) {
             break;
-        } else {
-            uint8_t buf = {0xFF, 0xFF, 0xFF, 0xFF};
-            for(int i; i < 100; i++)
-                nrf_drv_spi_transfer(&_spi, buf, 4, NULL, 0);
         }
-
 
         if (pin == 0) {
             found_busy_low = 1;
         }
 
+        /*
         if(!found_busy_low)
         {
             count++;
@@ -169,12 +161,8 @@ static void wait_for_not_busy () {
                 break;
             }
         }
-
-        led_off(LED1);
-        led_off(LED2);
+        */
     }
-    led_off(LED1);
-    led_off(LED2);
 
     // Then wait a little longer so we don't violate the T_NS time.
     nrf_delay_us(5);
@@ -637,6 +625,13 @@ uint8_t tx[6] = {0x30, 0x01, 0x01, 0x00, 0x00, 0x00};
 uint8_t rx[256] = {0};
 void updateDisplay()
 {   
+    nrf_gpio_pin_clear(nTC_EN);
+
+    // Need to wait 6.5 ms per datasheet (section 5.5)
+    // Up that a little to be safe and who cares about a couple ms
+    nrf_delay_ms(10);
+
+
     memset(rx, 0, 256 * sizeof(uint8_t));
     tx[0] = 0x30;
     tx[1] = 0x01;
@@ -728,11 +723,7 @@ void init()
 
     // Assert ENABLE
     nrf_gpio_cfg_output(nTC_EN);
-    nrf_gpio_pin_clear(nTC_EN);
-
-    // Need to wait 6.5 ms per datasheet (section 5.5)
-    // Up that a little to be safe and who cares about a couple ms
-    nrf_delay_ms(10);
+    
 
     // Setup SPI
     spi_init();
@@ -753,6 +744,11 @@ void init()
     // Not sure, sometimes busy signal, sometimes not?
     // Just wait for a hot sec for now
     nrf_delay_ms(1);
+
+    //initial values
+    text_x_coordinate_value = 0;
+    text_y_coordinate_value = 0;
+    text_scale_value = 1;
 }
 
 
@@ -763,7 +759,7 @@ void ble_evt_write(ble_evt_t* p_ble_evt) {
         //writeStringAtLocation(text_value, text_x_coordinate_value, 
         //    text_y_coordinate_value, text_scale_value);
 
-        writeStringAtLocation(text_value, 0, 0, text_scale_value);
+        writeStringAtLocation(text_value, text_x_coordinate_value, text_y_coordinate_value, text_scale_value);
 
         updateDisplay();
     }
@@ -786,6 +782,9 @@ int main(void)
 
     simple_ble_init(&ble_config);
     simple_adv_only_name();
+
+    //advertise url
+    eddystone_adv(PHYSWEB_URL, NULL);
 
     //writeStringAtLocation("Booted up", 0, 0, 2);
     //updateDisplay();

@@ -18,6 +18,8 @@ APPLICATION_SRCS += nrf_drv_common.c
 APPLICATION_SRCS += nrf_drv_gpiote.c
 APPLICATION_SRCS += nrf_delay.c
 
+APPLICATION_SRCS += eddystone.c
+
 # APPLICATION_SRCS += adxl362.c
 
 NRF_BASE_PATH ?= ../..
