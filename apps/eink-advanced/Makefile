@@ -25,6 +25,7 @@ APPLICATION_SRCS += eddystone.c
 NRF_BASE_PATH ?= ../..
 LIBRARY_PATHS += . $(NRF_BASE_PATH)/devices ../../include
 LIBRARY_PATHS += ./libqrencode
+LIBRARY_PATHS += ./font
 SOURCE_PATHS += $(NRF_BASE_PATH)/devices ../../src
 
 SOFTDEVICE_MODEL = s130

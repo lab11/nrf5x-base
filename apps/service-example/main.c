@@ -16,10 +16,10 @@
 #include "device_info_service.h"
 
 // Define constants about this beacon.
-#define DEVICE_NAME "LED Service"
+#define DEVICE_NAME "awesome"
 
 // LED pin number
-#define LED0 13
+#define LED0 18
 
 // Intervals for advertising and connections
 static simple_ble_config_t ble_config = {
