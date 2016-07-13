@@ -12,25 +12,15 @@
 #define LED 13
 
 // Some constants about timers
-#define BLINK_TIMER_PRESCALER              0                                  /**< Value of the RTC1 PRESCALER register. */
-#define BLINK_TIMER_MAX_TIMERS             4                                  /**< Maximum number of simultaneously created timers. */
-#define BLINK_TIMER_OP_QUEUE_SIZE          4                                  /**< Size of timer operation queues. */
+#define BLINK_TIMER_PRESCALER              0  // Value of the RTC1 PRESCALER register.
+#define BLINK_TIMER_OP_QUEUE_SIZE          4  // Size of timer operation queues.
 
 // How long before the timer fires.
 #define BLINK_RATE     APP_TIMER_TICKS(500, BLINK_TIMER_PRESCALER) // Blink every 0.5 seconds
 
 // Timer data structure
-static app_timer_id_t  blink_timer;                        /**< Battery timer. */
+APP_TIMER_DEF(blink_timer);
 
-void app_error_handler(uint32_t error_code,
-                       uint32_t line_num,
-                       const uint8_t * p_file_name) {
-    NVIC_SystemReset();
-}
-
-void assert_nrf_callback(uint16_t line_num, const uint8_t * p_file_name) {
-    app_error_handler(0x11, line_num, p_file_name);
-}
 
 // Timer callback
 static void timer_handler (void* p_context) {
@@ -44,7 +34,6 @@ static void timer_init(void)
 
     // Initialize timer module.
     APP_TIMER_INIT(BLINK_TIMER_PRESCALER,
-                   BLINK_TIMER_MAX_TIMERS,
                    BLINK_TIMER_OP_QUEUE_SIZE,
                    false);
 
@@ -71,7 +60,14 @@ int main(void) {
     led_off(LED);
 
     // Need to set the clock to something
-    SOFTDEVICE_HANDLER_INIT(NRF_CLOCK_LFCLKSRC_RC_250_PPM_8000MS_CALIBRATION, false);
+    nrf_clock_lf_cfg_t clock_lf_cfg = {
+        .source        = NRF_CLOCK_LF_SRC_RC,
+        .rc_ctiv       = 16,
+        .rc_temp_ctiv  = 2,
+        .xtal_accuracy = NRF_CLOCK_LF_XTAL_ACCURACY_250_PPM};
+
+    // Initialize the SoftDevice handler module.
+    SOFTDEVICE_HANDLER_INIT(&clock_lf_cfg, NULL);
 
     timer_init();
     timer_start();
