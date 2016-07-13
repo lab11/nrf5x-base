@@ -25,7 +25,7 @@ void pwm_init () {
 
     err_code = low_power_pwm_init(&pwm, &low_power_pwm_config, NULL);
     APP_ERROR_CHECK(err_code);
-    err_code = low_power_pwm_duty_set(&pwm, 99);
+    err_code = low_power_pwm_duty_set(&pwm, 10);
     APP_ERROR_CHECK(err_code);
 
     err_code = low_power_pwm_start(&pwm, pwm.bit_mask);
@@ -39,7 +39,14 @@ int main(void) {
     led_off(LED0);
 
     // Need to set the clock to something
-    SOFTDEVICE_HANDLER_INIT(NRF_CLOCK_LFCLKSRC_RC_250_PPM_8000MS_CALIBRATION, false);
+    nrf_clock_lf_cfg_t clock_lf_cfg = {
+        .source        = NRF_CLOCK_LF_SRC_RC,
+        .rc_ctiv       = 16,
+        .rc_temp_ctiv  = 2,
+        .xtal_accuracy = NRF_CLOCK_LF_XTAL_ACCURACY_250_PPM};
+
+    // Initialize the SoftDevice handler module.
+    SOFTDEVICE_HANDLER_INIT(&clock_lf_cfg, NULL);
 
     // Start APP_TIMER to generate timeouts.
     APP_TIMER_INIT(0, 3, NULL);
