@@ -6,6 +6,7 @@ This will do debug printf over the Segger JLink.
 After flashing this app, run
 
     JLinkExe -device nrf51822 -if swd -speed 1000
+    > connect
 
 in one terminal and
 
