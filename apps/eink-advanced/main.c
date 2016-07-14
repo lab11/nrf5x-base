@@ -140,6 +140,10 @@ static void spi_init () {
 
 static void wait_for_not_busy () {
     uint8_t found_busy_low = 0;
+    led_on(LED2);
+
+    volatile uint32_t count = 0;
+
     while (1) {
         uint8_t pin = nrf_gpio_pin_read(nTC_BUSY);
         if (found_busy_low && pin) {
@@ -148,7 +152,14 @@ static void wait_for_not_busy () {
         if (pin == 0) {
             found_busy_low = 1;
         }
+
+        if(count > 1000000)
+        {
+            break;
+        }
+        count++;
     }
+    led_off(LED2);
 
     // Then wait a little longer so we don't violate the T_NS time.
     nrf_delay_us(5);
@@ -741,6 +752,16 @@ void ble_evt_write(ble_evt_t* p_ble_evt)
 {
     if (simple_ble_is_char_event(p_ble_evt, &text_char)) 
     {
+        led_on(LED1);
+        nrf_delay_ms(2000);
+        led_off(LED1);
+
+        if(strcmp(text_value, "clearScreen") == 0)
+        {
+            clearScreen();
+            updateDisplay();
+            return;
+        }
 
         writeStringAtLocation(text_value, text_x_coordinate_value, text_y_coordinate_value, text_scale_value);
 
@@ -749,6 +770,8 @@ void ble_evt_write(ble_evt_t* p_ble_evt)
     else if(simple_ble_is_char_event(p_ble_evt, &qrcode_char))
     {
         writeQRcode(qrcode_value);
+
+        //writeStringAtLocation(qrcode_value, 0, 0, 1);
 
         updateDisplay();
     }
@@ -762,6 +785,10 @@ void ble_evt_connected(ble_evt_t* p_ble_evt)
 void ble_evt_disconnected(ble_evt_t* p_ble_evt)
 {
     led_off(LED0);
+}
+
+void ble_error(uint32_t error_code) {
+    led_on(LED2);
 }
 
 int main(void) 
