@@ -117,9 +117,6 @@ DEVICE ?= $(shell echo $(NRF_MODEL) | tr a-z A-Z)
 START_CODE ?= startup_$(NRF_MODEL).s
 SYSTEM_FILE ?= system_$(NRF_MODEL).c
 
-# Set the path to the softdevice
-SOFTDEVICE ?= $(BASE_DIR)/softdevice/$(SOFTDEVICE_MODEL)_$(NRF_MODEL)_$(SOFTDEVICE_VERSION)_softdevice.hex
-
 BOOTLOADER_REGION_START = $(addprefix 0x, $(shell echo "obase=16; (${FLASH_KB}-18)*1024" | bc ))
 BOOTLOADER_SETTINGS_ADDRESS = $(addprefix 0x, $(shell echo "obase=16; (${FLASH_KB}-2)*1024" | bc))
 
@@ -411,6 +408,8 @@ ifeq ($(SDK_VERSION), 9)
 	# Set the path
 	SDK_PATH ?= $(BASE_DIR)/sdk/nrf51_sdk_9.0.0/
 
+	SOFTDEVICE ?= $(SDK_PATH)/components/softdevice/$(SOFTDEVICE_MODEL)/hex/$(SOFTDEVICE_MODEL)_softdevice.hex
+
 	# Other knowns about the SDK paths
 	SDK_INCLUDE_PATH   = $(SDK_PATH)components/
 	SDK_SOURCE_PATH    = $(SDK_PATH)components/
@@ -481,6 +480,9 @@ endif
 endif # SDK 9
 endif # nrf51
 
+
+# Set the Softdevice path
+SOFTDEVICE ?= $(SDK_PATH)/components/softdevice/$(SOFTDEVICE_MODEL)/hex/$(SOFTDEVICE_MODEL)_$(NRF_MODEL)_$(SOFTDEVICE_VERSION)_softdevice.hex
 
 ifeq ($(SOFTDEVICE_MODEL), blank)
     SOFTDEVICE_VERSION = 0

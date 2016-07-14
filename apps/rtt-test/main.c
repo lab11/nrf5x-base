@@ -1,5 +1,5 @@
 /*
- * Test UART print
+ * Test RTT print
  */
 
 #include <stdbool.h>
@@ -29,8 +29,6 @@ static simple_ble_config_t ble_config = {
 
 
 int main (void) {
-    uint32_t err_code;
-
     // Setup BLE
     simple_ble_init(&ble_config);
 

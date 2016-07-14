@@ -37,7 +37,14 @@ int main(void) {
     led_off(LED2);
 
     // Need to set the clock to something
-    SOFTDEVICE_HANDLER_INIT(NRF_CLOCK_LFCLKSRC_RC_250_PPM_8000MS_CALIBRATION, false);
+    nrf_clock_lf_cfg_t clock_lf_cfg = {
+        .source        = NRF_CLOCK_LF_SRC_RC,
+        .rc_ctiv       = 16,
+        .rc_temp_ctiv  = 2,
+        .xtal_accuracy = NRF_CLOCK_LF_XTAL_ACCURACY_250_PPM};
+
+    // Initialize the SoftDevice handler module.
+    SOFTDEVICE_HANDLER_INIT(&clock_lf_cfg, NULL);
 
     // Call the simple timer API
     simple_timer_init();
