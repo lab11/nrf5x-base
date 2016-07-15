@@ -23,7 +23,7 @@ static uint8_t _in_use = 0;
 void simple_timer_init () {
 	APP_TIMER_INIT(SIMPLE_TIMER_PRESCALER,
                    SIMPLE_TIMER_OP_QUEUE_SIZE,
-                   false);
+                   NULL);
 }
 
 uint32_t simple_timer_start (uint32_t milliseconds,
