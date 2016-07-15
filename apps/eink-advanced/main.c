@@ -51,7 +51,7 @@ static simple_ble_config_t ble_config = {
 // service and characteristic handles
 //  UUID created by `uuidgen -r`
 //  16-bit short uuid is 0x890f (bytes 12 and 13 of 128-bit UUID)
-static simple_ble_service_t led_service = {
+static simple_ble_service_t eink_service = {
     .uuid128 = {{0x41, 0xa6, 0xab, 0x05, 0xb5, 0x7c, 0x4f, 0xd4,
                  0x89, 0x30, 0x4f, 0xff, 0xa4, 0x4a, 0x28, 0xe5}}
 };
@@ -76,37 +76,47 @@ static char text_value[30] = {0};
 static simple_ble_char_t qrcode_char = {.uuid16 = 0xa414};
 static char qrcode_value[52] = {0};
 
+//control characteristic 
+static simple_ble_char_t control_char = {.uuid16 = 0xa415};
+static uint8_t control_value = 0;//0 = nothing, 1 = refresh, 2 = clear
+
 static volatile uint8_t second=0;
 
 // called automatically by simple_ble_init
 void services_init (void) {
     // add led service
-    simple_ble_add_service(&led_service);
+    simple_ble_add_service(&eink_service);
 
     //add text x coordinate
     simple_ble_add_characteristic(0, 1, 0, 0,
             2, (uint16_t*)&text_x_coordinate_value,
-            &led_service, &text_x_coordinate_char);
+            &eink_service, &text_x_coordinate_char);
 
     //add text y coordinate
     simple_ble_add_characteristic(0, 1, 0, 0,
             2, (uint16_t*)&text_y_coordinate_value,
-            &led_service, &text_y_coordinate_char);
+            &eink_service, &text_y_coordinate_char);
 
     //add text scale
     simple_ble_add_characteristic(0, 1, 0, 0,
             1, (uint8_t*)&text_scale_value,
-            &led_service, &text_scale_char);
+            &eink_service, &text_scale_char);
 
     //add string
     simple_ble_add_characteristic(0, 1, 0, 0,
             30, (char*)&text_value,
-            &led_service, &text_char);
+            &eink_service, &text_char);
 
     //add qr code
     simple_ble_add_characteristic(0, 1, 0, 0,
             52, (char*)&qrcode_value,
-            &led_service, &qrcode_char);
+            &eink_service, &qrcode_char);
+            
+
+    //add control char
+    simple_ble_add_characteristic(0, 1, 0, 0,
+            1, (uint8_t*)&control_value,
+            &eink_service, &control_char);
 }
 
 
@@ -756,24 +766,25 @@ void ble_evt_write(ble_evt_t* p_ble_evt)
         nrf_delay_ms(2000);
         led_off(LED1);
 
-        if(strcmp(text_value, "clearScreen") == 0)
+        writeStringAtLocation(text_value, text_x_coordinate_value, text_y_coordinate_value, text_scale_value);
+    }
+    else if(simple_ble_is_char_event(p_ble_evt, &control_char))
+    {
+        if(control_value == 1)
         {
+            //refresh
+            updateDisplay();
+        }
+        else if(control_value == 2)
+        {
+            //clear
             clearScreen();
             updateDisplay();
-            return;
         }
-
-        writeStringAtLocation(text_value, text_x_coordinate_value, text_y_coordinate_value, text_scale_value);
-
-        updateDisplay();
     }
     else if(simple_ble_is_char_event(p_ble_evt, &qrcode_char))
     {
         writeQRcode(qrcode_value);
-
-        //writeStringAtLocation(qrcode_value, 0, 0, 1);
-
-        updateDisplay();
     }
 }
 
