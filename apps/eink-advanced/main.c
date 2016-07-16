@@ -70,7 +70,8 @@ static uint8_t text_scale_value = 1;//default to 1
 
 //text
 static simple_ble_char_t text_char = {.uuid16 = 0xa410};
-static char text_value[30] = {0};
+static char text_value[20] = {0};
+static char text[60] = {0};
 
 //qr code
 static simple_ble_char_t qrcode_char = {.uuid16 = 0xa414};
@@ -104,7 +105,7 @@ void services_init (void) {
 
     //add string
     simple_ble_add_characteristic(0, 1, 0, 0,
-            30, (char*)&text_value,
+            60, (char*)&text_value,
             &eink_service, &text_char);
 
     //add qr code
@@ -757,16 +758,35 @@ void init()
     text_scale_value = 1;
 }
 
+void appendCharToText()
+{
+    uint8_t index = text_value[0];
+
+    uint8_t chunkIndex = 1;
+    for(int i = 18 * index; i < 60; i++)
+    {
+        if(chunkIndex < 18)
+        {
+            text[i] = text_value[chunkIndex];
+            chunkIndex++;
+        }
+    }
+    text[59] = '\0';
+}
 
 void ble_evt_write(ble_evt_t* p_ble_evt) 
 {
     if (simple_ble_is_char_event(p_ble_evt, &text_char)) 
     {
+        /*
         led_on(LED1);
         nrf_delay_ms(2000);
         led_off(LED1);
+        */
 
-        writeStringAtLocation(text_value, text_x_coordinate_value, text_y_coordinate_value, text_scale_value);
+        appendCharToText();
+
+        writeStringAtLocation(text, text_x_coordinate_value, text_y_coordinate_value, text_scale_value);
     }
     else if(simple_ble_is_char_event(p_ble_evt, &control_char))
     {
