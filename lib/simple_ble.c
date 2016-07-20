@@ -390,6 +390,7 @@ void __attribute__((weak)) ble_stack_init (void) {
     err_code = softdevice_enable_get_default_config(CENTRAL_LINK_COUNT, // central link count
                                                     PERIPHERAL_LINK_COUNT, // peripheral link count
                                                     &ble_enable_params);
+    ble_enable_params.common_enable_params.vs_uuid_count = BLE_UUID_VS_COUNT_DEFAULT;
     APP_ERROR_CHECK(err_code);
 
     //Check the ram settings against the used number of links
