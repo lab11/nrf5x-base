@@ -535,6 +535,7 @@ CFLAGS += -s -ffunction-sections -fdata-sections
 CFLAGS += -D$(shell echo $(SOFTDEVICE_MODEL) | tr a-z A-Z)
 CFLAGS += $(CMSIS_INCLUDE) $(LIBRARY_INCLUDES) -MD
 LDFLAGS += $(CPUFLAGS) -L $(BASE_DIR)/make/ld -T $(LINKER_SCRIPT) -Wl,--gc-sections -Wl,-Map=$(OUTPUT_PATH)$(OUTPUT_NAME).Map
+OBJDUMP_FLAGS += --disassemble-all --source --disassembler-options=force-thumb -C --section-headers
 
 DFUHEX = $(BASE_DIR)/dfu/_build/$(DFU_OUTPUT_NAME).hex
 DFUELF = $(BASE_DIR)/dfu/_build/$(DFU_OUTPUT_NAME).elf
@@ -543,6 +544,7 @@ DFUBIN = $(BASE_DIR)/dfu/_build/$(DFU_OUTPUT_NAME).bin
 HEX = $(OUTPUT_PATH)$(OUTPUT_NAME).hex
 ELF = $(OUTPUT_PATH)$(OUTPUT_NAME).elf
 BIN = $(OUTPUT_PATH)$(OUTPUT_NAME).bin
+LST = $(OUTPUT_PATH)$(OUTPUT_NAME).lst
 
 SRCS = $(SYSTEM_FILE) $(notdir $(APPLICATION_SRCS))
 OBJS = $(addprefix $(OUTPUT_PATH), $(SRCS:.c=.o)) $(addprefix $(OUTPUT_PATH),$(APPLICATION_LIBS))
@@ -568,6 +570,7 @@ else
   PRINT_AS  = @echo "  AS       " $<
   PRINT_HEX = @echo "  HEX      " $(HEX)
   PRINT_BIN = @echo "  BIN      " $(BIN)
+  PRINT_LST = @echo "  LST      " $(LST)
   PRINT_SIZ = @echo "  SIZE     " $(ELF)
   Q=@
 endif
@@ -600,6 +603,8 @@ $(HEX): $(OBJS) $(OBJS_AS)
 	$(Q)$(OBJCOPY) -Oihex $(ELF) $(HEX)
 	$(PRINT_BIN)
 	$(Q)$(OBJCOPY) -Obinary $(ELF) $(BIN)
+	$(PRINT_LST)
+	$(Q)$(OBJDUMP) $(OBJDUMP_FLAGS) $(ELF) > $(LST)
 	$(PRINT_SIZ)
 	$(Q)$(SIZE) $(ELF)
 
