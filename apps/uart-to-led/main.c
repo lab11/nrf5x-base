@@ -21,47 +21,47 @@ char cmd_buf[CMD_BUFFER_LEN];
 int cmd_index = 0;
 
 void check_cmd () {
-  if (strncmp(cmd_buf, "on", CMD_BUFFER_LEN) == 0) {
-    led_on(LED0);
-  } else if (strncmp(cmd_buf, "off", CMD_BUFFER_LEN) == 0) {
-    led_off(LED0);
-  }
+    if (strncmp(cmd_buf, "on", CMD_BUFFER_LEN) == 0) {
+        led_on(LED0);
+    } else if (strncmp(cmd_buf, "off", CMD_BUFFER_LEN) == 0) {
+        led_off(LED0);
+    }
 }
 
 void uart_error_handle (app_uart_evt_t * p_event) {
     if (p_event->evt_type == APP_UART_COMMUNICATION_ERROR) {
-        APP_ERROR_HANDLER(p_event->data.error_communication);
+        // ignore
     } else if (p_event->evt_type == APP_UART_FIFO_ERROR) {
-        APP_ERROR_HANDLER(p_event->data.error_code);
+        // ignore
     } else if (p_event->evt_type == APP_UART_DATA_READY) {
 
-      // Read the UART character
-      char cr;
-      app_uart_get((uint8_t*) &cr);
-      app_uart_put(cr);
+        // Read the UART character
+        char cr;
+        app_uart_get((uint8_t*) &cr);
+        app_uart_put(cr);
 
-      // Check array bounds
-      if (cmd_index > 255) {
-        cmd_index = 0;
-      }
+        // Check array bounds
+        if (cmd_index > 255) {
+            cmd_index = 0;
+        }
 
-      // Check character
-      if (cr == '\r') {
-        // ignore
-      } else if (cr == '\n') {
-        cmd_buf[cmd_index] = '\0';
-        cmd_index = 0;
-        check_cmd();
-      } else {
-        cmd_buf[cmd_index] = cr;
-        cmd_index++;
-      }
+        // Check character
+        if (cr == '\r') {
+            // ignore
+        } else if (cr == '\n') {
+            cmd_buf[cmd_index] = '\0';
+            cmd_index = 0;
+            check_cmd();
+        } else {
+            cmd_buf[cmd_index] = cr;
+            cmd_index++;
+        }
     }
 }
 
 int main (void) {
-  led_init(LED0);
-  led_off(LED0);
+    led_init(LED0);
+    led_off(LED0);
 
     uint32_t err_code;
     const app_uart_comm_params_t comm_params = {
