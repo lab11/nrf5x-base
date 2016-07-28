@@ -4,10 +4,11 @@
 #include <stdint.h>
 #include <string.h>
 
-void tcmp441_init();
+void tcmp441_clearScreen();
+
+void tcmp441_init(int led0, int led1, int led2, int ntc_en, int ntc_busy, int ntc_cs);
 
 void tcmp441_updateDisplay();
-void tcmp441_clearScreen();
 
 //on = 1 or 0
 void tcmp441_setPixel(int x, int y, int on);

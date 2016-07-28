@@ -395,10 +395,10 @@ void tcmp441_insertPixelGrid(int width, int height, uint8_t grid[height][width],
     for(int y = 0; y < height; y++){
         for(int x = 0; x < width; x++){
             if(grid[y][x] == 1){
-                setPixel(x + xcoord, y + ycoord, 1);//pixel on
+                tcmp441_setPixel(x + xcoord, y + ycoord, 1);//pixel on
             }
             else{
-                setPixel(x + xcoord, y + ycoord, 0);//pixel off
+                tcmp441_setPixel(x + xcoord, y + ycoord, 0);//pixel off
             }
         }
     }
@@ -426,14 +426,14 @@ void tcmp441_writeCharacterAtLocation(char character, int xcoord, int ycoord, ui
         //loop over a scaled version of the character
         for(int y = 0; y < 8 * scale; y++){
             for(int x = 0; x < 8 * scale; x++){
-                setPixel(xcoord + x, ycoord + y, grid[y/scale][x/scale]);
+                tcmp441_setPixel(xcoord + x, ycoord + y, grid[y/scale][x/scale]);
             }
         }
 
         return;
     }
 
-    insertPixelGrid(8, 8, grid, xcoord, ycoord);
+    tcmp441_insertPixelGrid(8, 8, grid, xcoord, ycoord);
 }
 
 //writes a string of ascii characters at an x,y coordinate with a given scale
@@ -443,7 +443,7 @@ void tcmp441_writeStringAtLocation(char *str, int x, int y, int scale){
         //if the character won't be written off the edge of the screen
         if(x + (8 * i * scale) + 8*scale < 400){
             //write the character that the location after the previous characters
-            writeCharacterAtLocation(str[i], x + (8*i * scale), y, scale);
+            tcmp441_writeCharacterAtLocation(str[i], x + (8*i * scale), y, scale);
         }
     }
 }
@@ -595,7 +595,6 @@ void tcmp441_updateDisplay()
 
 
     nrf_gpio_pin_set(nTC_EN);
-    second = 1;
 }
 
 //set up led and spi
@@ -610,7 +609,7 @@ void tcmp441_init(int led0, int led1, int led2, int ntc_en, int ntc_busy, int nt
 	nTC_BUSY = ntc_busy;
 	nTC_CS = ntc_cs;
 
-    clearScreen();
+    tcmp441_clearScreen();
 
     led_init(LED0);
     led_off(LED0);
@@ -645,11 +644,6 @@ void tcmp441_init(int led0, int led1, int led2, int ntc_en, int ntc_busy, int nt
     // Not sure, sometimes busy signal, sometimes not?
     // Just wait for a hot sec for now
     nrf_delay_ms(1);
-
-    //initial values
-    text_x_coordinate_value = 0;
-    text_y_coordinate_value = 0;
-    text_scale_value = 1;
 }
 
 
