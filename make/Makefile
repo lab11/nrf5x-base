@@ -130,6 +130,7 @@ CFLAGS += -fomit-frame-pointer
 # Add useful paths from nRF5x-base
 LIBRARY_PATHS += $(BASE_DIR)/advertisement/
 LIBRARY_PATHS += $(BASE_DIR)/devices/
+LIBRARY_PATHS += $(BASE_DIR)/devices/tcmp441/
 LIBRARY_PATHS += $(BASE_DIR)/lib/
 LIBRARY_PATHS += $(BASE_DIR)/lib/simple_logger/
 LIBRARY_PATHS += $(BASE_DIR)/lib/simple_logger/chanfs
@@ -139,6 +140,7 @@ LIBRARY_PATHS += $(BASE_DIR)/services/
 
 SOURCE_PATHS += $(BASE_DIR)/advertisement/
 SOURCE_PATHS += $(BASE_DIR)/devices/
+SOURCE_PATHS += $(BASE_DIR)/devices/tcmp441/
 SOURCE_PATHS += $(BASE_DIR)/lib/
 SOURCE_PATHS += $(BASE_DIR)/lib/simple_logger/
 SOURCE_PATHS += $(BASE_DIR)/lib/simple_logger/chanfs
