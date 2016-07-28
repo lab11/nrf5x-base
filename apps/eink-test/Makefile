@@ -20,6 +20,10 @@ NRF_BASE_PATH ?= ../..
 LIBRARY_PATHS += . $(NRF_BASE_PATH)/devices ../../include
 SOURCE_PATHS += $(NRF_BASE_PATH)/devices ../../src
 
+SOURCE_PATHS += $(NRF_BASE_PATH)/devices/tcmp441/
+LIBRARY_PATHS += $(NRF_BASE_PATH)/devices/tcmp441/
+APPLICATION_SRCS += tcmp441.c
+
 SOFTDEVICE_MODEL = s130
 RAM_KB = 32
 
