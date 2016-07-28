@@ -20,7 +20,7 @@ Sets up the gpio pins and spi connection to the display. leds 0-2 are just indic
 Updates the display. It applies all of the changes made by most of the other functions.
 
 * ```void tcmp441_clearScreen()```
-This function is very self explanatory. It clears the screen. You still need to call ```updateDisplay()``` to apply the change, though.
+This function is very self explanatory. It clears the screen. You still need to call ```tcmp441updateDisplay()``` to apply the change, though.
 
 * ```void tcmp441_setPixel(int x, int y, int on)```
 Sets a pixel on the display. ```int on``` is either 0 or 1.
@@ -32,7 +32,7 @@ Inserts a grid of pixels. ```(xcoord, ycoord)``` is the coordinate of the upper 
 Sets a block of pixels 8x8 to on (1) or off (0). The 400x300 display has been split up into 50x37 chunks. Your x and y values should be between those respective values.
 
 * ```void tcmp441_insertBigPixelGrid(int width, int height, uint8_t grid[height][width], int xcoord, int ycoord)```
-This function is a combination of setBlock and insertPixelGrid.
+This function is a combination of tcmp441_setBlock and tcmp441_insertPixelGrid.
 
 * ```void tcmp441_writeCharacterAtLocation(char character, int xcoord, int ycoord, uint8_t scale)```
 Writes a character at a given location with a given scale.
