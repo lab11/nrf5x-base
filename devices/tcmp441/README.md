@@ -2,15 +2,19 @@
 This is a library for the TCM-P441-230_v1.0 module from pervasive displays. This library provides an api to write text, images, pixels, and qr codes to the eink display.
 
 ##API
+```int x``` and ```int y``` are 0-400 and 0-300 respectively, unless otherwise stated.
+
 * ```void tcmp441_init(int led0, int led1, int led2, int ntc_en, int ntc_busy, int ntc_cs)```
 Sets up the gpio pins and spi connection to the display. leds 0-2 are just indicators. 
 
-```ntc_en``` is the spi enable pin
-```ntc_busy``` is the busy pin
-```ntc_cs``` is the chip select pin
+    ```ntc_en``` is the spi enable pin
 
-Example
-```void tcmp441_init(18, 19, 20, 24, 23, 22);```
+    ```ntc_busy``` is the busy pin
+
+    ```ntc_cs``` is the chip select pin
+
+    Example
+    ```void tcmp441_init(18, 19, 20, 24, 23, 22);```
 
 * ```void tcmp441_updateDisplay()```
 Updates the display. It applies all of the changes made by most of the other functions.
