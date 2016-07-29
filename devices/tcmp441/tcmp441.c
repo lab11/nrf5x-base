@@ -471,11 +471,11 @@ void tcmp441_insertBigPixelGrid(int width, int height, uint8_t grid[height][widt
         {
             if(grid[y][x] == 1)
             {
-                setBlock(x, y, 1);
+                tcmp441_setBlock(x, y, 1);
             }
             else
             {
-                setBlock(x, y, 0);
+                tcmp441_setBlock(x, y, 0);
             }
         }
     }
@@ -508,7 +508,7 @@ void tcmp441_writeQRcode(char *str)
         grid[x][y] = (*qrcode).data[i] & 1;
     }
     
-    insertBigPixelGrid(width, width, grid, 10, 10);
+    tcmp441_insertBigPixelGrid(width, width, grid, 10, 10);
 
 }
 
@@ -600,14 +600,14 @@ void tcmp441_updateDisplay()
 //set up led and spi
 void tcmp441_init(int led0, int led1, int led2, int ntc_en, int ntc_busy, int ntc_cs)
 {
-	//define
-	LED0 = led0;
-	LED1 = led1;
-	LED2 = led2;
+    //define
+    LED0 = led0;
+    LED1 = led1;
+    LED2 = led2;
 
-	nTC_EN = ntc_en;
-	nTC_BUSY = ntc_busy;
-	nTC_CS = ntc_cs;
+    nTC_EN = ntc_en;
+    nTC_BUSY = ntc_busy;
+    nTC_CS = ntc_cs;
 
     tcmp441_clearScreen();
 
