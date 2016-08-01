@@ -25,6 +25,33 @@ int nTC_EN   = 24; // B3 on Atum Breakout
 int nTC_BUSY = 23; // B4 on Atum Breakout
 int nTC_CS   = 22; // B5 on Atum Breakout
 
+static void wait_for_not_busy () {
+    uint8_t found_busy_low = 0;
+    led_on(LED2);
+
+    volatile uint32_t count = 0;
+
+    while (1) {
+        uint8_t pin = nrf_gpio_pin_read(nTC_BUSY);
+        if (found_busy_low && pin) {
+            break;
+        }
+        if (pin == 0) {
+            found_busy_low = 1;
+        }
+
+        if(count > 1000000)
+        {
+            break;
+        }
+        count++;
+    }
+    led_off(LED2);
+
+    // Then wait a little longer so we don't violate the T_NS time.
+    nrf_delay_us(5);
+}
+
 static nrf_drv_spi_t _spi = NRF_DRV_SPI_INSTANCE(SPI_INSTANCE);
 
 static void spi_init () {
@@ -76,33 +103,6 @@ static void spi_init () {
         err = nrf_drv_spi_init(&_spi, &spi_config, NULL);
         APP_ERROR_CHECK(err);
     }
-}
-
-static void wait_for_not_busy () {
-    uint8_t found_busy_low = 0;
-    led_on(LED2);
-
-    volatile uint32_t count = 0;
-
-    while (1) {
-        uint8_t pin = nrf_gpio_pin_read(nTC_BUSY);
-        if (found_busy_low && pin) {
-            break;
-        }
-        if (pin == 0) {
-            found_busy_low = 1;
-        }
-
-        if(count > 1000000)
-        {
-            break;
-        }
-        count++;
-    }
-    led_off(LED2);
-
-    // Then wait a little longer so we don't violate the T_NS time.
-    nrf_delay_us(5);
 }
 
 uint8_t screen[15000] = {
