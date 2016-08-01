@@ -42,6 +42,40 @@ static void spi_init () {
     // We want blocking mode
     err = nrf_drv_spi_init(&_spi, &spi_config, NULL);
     APP_ERROR_CHECK(err);
+
+    //check and set the correct CS polarity
+    uint8_t tx[6] = {0x30, 0x01, 0x01, 0x00, 0x00, 0x00};
+    uint8_t rx[28] = {0};
+
+    //write
+    nrf_drv_spi_transfer(&_spi, tx, 4, NULL, 0);
+    wait_for_not_busy();
+
+    //read
+    nrf_drv_spi_transfer(&_spi, NULL, 0, rx, 28);
+    nrf_delay_ms(1);
+
+    char* version0 = "MpicoSys TC-P441-230_v1.0";
+
+    if(strcmp(version0, rx) != 0)
+    {
+        //switch it to version 1
+        //uninit
+        nrf_drv_spi_uninit(&_spi);
+
+        nrf_drv_spi_config_t spi_config = NRF_DRV_SPI_DEFAULT_CONFIG(SPI_INSTANCE);
+        // Datasheet says we can do 3 MHz, but 4 also seems to work.
+        spi_config.frequency = NRF_DRV_SPI_FREQ_4M;
+        // We do need CS pin
+        spi_config.ss_pin = nTC_CS;
+        // Datasheet claims we need CPOL=1 CPHA=1.
+        // However, I did not get that to work. MODE 2 does seem to work.
+        spi_config.mode = NRF_DRV_SPI_MODE_1;
+
+        // We want blocking mode
+        err = nrf_drv_spi_init(&_spi, &spi_config, NULL);
+        APP_ERROR_CHECK(err);
+    }
 }
 
 static void wait_for_not_busy () {
@@ -522,7 +556,6 @@ void tcmp441_updateDisplay()
     // Need to wait 6.5 ms per datasheet (section 5.5)
     // Up that a little to be safe and who cares about a couple ms
     nrf_delay_ms(10);
-
 
     memset(rx, 0, 256 * sizeof(uint8_t));
     tx[0] = 0x30;
