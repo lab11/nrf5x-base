@@ -9,7 +9,7 @@
 #include "softdevice_handler.h"
 
 
-#define LED 13
+#define LED 20
 
 // Some constants about timers
 #define BLINK_TIMER_PRESCALER              0  // Value of the RTC1 PRESCALER register.
