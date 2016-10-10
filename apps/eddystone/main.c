@@ -15,7 +15,7 @@
 
 // Define constants about this beacon.
 #define DEVICE_NAME "nRFtest"
-#define PHYSWEB_URL "goo.gl/aaaaaa"
+#define PHYSWEB_URL "goo.gl/83C7Ho"
 
 // Intervals for advertising and connections
 static simple_ble_config_t ble_config = {
