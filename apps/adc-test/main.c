@@ -14,7 +14,7 @@
 static nrf_adc_value_t       adc_buffer[ADC_BUFFER_SIZE]; /**< ADC buffer. */
 static nrf_drv_adc_channel_t m_channel_config = NRF_DRV_ADC_DEFAULT_CHANNEL(NRF_ADC_CONFIG_INPUT_7); /**< Channel instance. Default configuration used. */
 
-#define LED 18
+#define LED 20
 
 // Some constants about timers
 #define ADC_TIMER_PRESCALER              0  // Value of the RTC1 PRESCALER register.
