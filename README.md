@@ -5,10 +5,10 @@ This repository is a starting point and shared code for Nordic nRF5x BLE platfor
 a collection of libraries, SDKs, Softdevices, and Makefiles to be included
 within other projects using the Nordic platfroms. Pull requests welcome.
 
-The currently supported SDK versions are: 9.0.0, 10.0.0, 11.0.0.
+The currently supported SDK versions are: 9.0.0, 10.0.0, 11.0.0, 12.2.0.
 
 The currently supported Softdevice versions are:
-s110_7.3.0, s110_8.0.0, s120_2.1.0, s130_1.0.0, s130 2.0.0.
+s110_7.3.0, s110_8.0.0, s120_2.1.0, s130_1.0.0, s130_2.0.0, s130_2.0.1.
 
 
 Usage
@@ -18,7 +18,7 @@ First, add this project as a submodule inside of your repo with your
 nRF5x code.
 
     git submodule add https://github.com/lab11/nrf5x-base
-    
+
 Then write an application for the nRF5x SoC you are using and include
 a Makefile that looks like this:
 
@@ -102,7 +102,7 @@ you must do.
 1. Install the [`arm-none-eabi-gcc`](https://launchpad.net/gcc-arm-embedded) compiler.
 
     On Ubuntu:
-    
+
         sudo add-apt-repository ppa:team-gcc-arm-embedded/ppa
         sudo apt-get update
         sudo apt-get install gcc-arm-embedded
@@ -116,15 +116,15 @@ The "EDU" edition works fine.
 4. Program an app! With the JLink box attached to the target board:
 
         make flash
-        
+
     will write the app and softdevice to the nRF51822. You can erase
     a chip with:
-    
+
         make erase-all
-    
+
     See the [make](https://github.com/lab11/nrf5x-base/tree/master/make) folder
     for a complete list of commands.
-    
+
     Most of our boards use a [TagConnect header](http://www.tag-connect.com/TC2030-IDC-NL)
     instead of the way-too-large ARM JTAG header. We use [our own](https://github.com/lab11/jtag-tagconnect)
     adapter, but Segger also makes [one](https://www.segger.com/jlink-6-pin-needle-adapter.html).
