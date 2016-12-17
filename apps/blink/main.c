@@ -4,12 +4,13 @@
 #include <stdbool.h>
 #include <stdint.h>
 #include "led.h"
-#include "nordic_common.h"
+#include "nrf.h"
+#include "nrf_sdm.h"
 #include "app_timer.h"
 #include "softdevice_handler.h"
 
 
-#define LED 20
+#define LED 13
 
 // Some constants about timers
 #define BLINK_TIMER_PRESCALER              0  // Value of the RTC1 PRESCALER register.

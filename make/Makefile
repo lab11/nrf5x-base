@@ -58,45 +58,91 @@ SDK_VERSION ?= 10
 # Set this for using GDB
 GDB_PORT_NUMBER ?= 2331
 
-# Configure which stacks we need for various softdevices
+# Choose a default MCU
+NRF_MODEL = nrf51
+
+# Bisect based on nRF model
+ifeq ($(NRF_MODEL), nrf51)
+
+# Now select SDK version
+# SDK 10
+ifeq ($(SDK_VERSION), 10)
 ifeq ($(SOFTDEVICE_MODEL), s110)
     USE_BLE = 1
     SOFTDEVICE_VERSION ?= 8.0.0
-    NRF_MODEL = nrf51
 endif
 
 ifeq ($(SOFTDEVICE_MODEL), s120)
     USE_BLE = 1
     SOFTDEVICE_VERSION ?= 2.1.0
-    NRF_MODEL = nrf51
+endif
 endif
 
-ifeq ($(SOFTDEVICE_MODEL), s130)
-    USE_BLE = 1
-    SOFTDEVICE_VERSION ?= 2.0.0
-    NRF_MODEL = nrf51
-    SDK_VERSION = 11
+# SDK 11
+ifeq ($(SDK_VERSION), 11)
+	USE_BLE = 1
+	SOFTDEVICE_VERSION ?= 2.0.0
+	SOFTDEVICE_MODEL = s130
 endif
 
-ifeq ($(SOFTDEVICE_MODEL), s132)
-    USE_BLE = 1
+# SDK 12
+ifeq ($(SDK_VERSION), 12)
+	USE_BLE = 1
+	SOFTDEVICE_VERSION ?= 2.0.1
+	SOFTDEVICE_MODEL = s130
+endif
+
+endif
+
+# nRF52
+ifeq ($(NRF_MODEL), nrf52)
+
+# SDK 11
+ifeq ($(SDK_VERSION), 11)
+	USE_BLE = 1
     SOFTDEVICE_VERSION ?= 2.0.0-4.alpha
-    NRF_MODEL = nrf52
-    NRF_IC    = nrf52832
+	SOFTDEVICE_MODEL = s132
+    NRF_IC = nrf52832
 endif
 
-ifeq ($(SOFTDEVICE_MODEL), s210)
-    USE_ANT = 1
-    SOFTDEVICE_VERSION ?= 5.0.0
-    NRF_MODEL = nrf51
+# SDK 12
+ifeq ($(SDK_VERSION), 12)
+	USE_BLE = 1
+	SOFTDEVICE_VERSION ?= 3.0.0
+	SOFTDEVICE_MODEL = s132
+    NRF_IC = nrf52832
 endif
 
-ifeq ($(SOFTDEVICE_MODEL), s310)
-    USE_BLE = 1
-    USE_ANT = 1
-    SOFTDEVICE_VERSION ?= 3.0.0
-    NRF_MODEL = nrf51
 endif
+
+# # Configure which stacks we need for various softdevices
+# ifeq ($(SOFTDEVICE_MODEL), s110)
+#     USE_BLE = 1
+#     SOFTDEVICE_VERSION ?= 8.0.0
+#     NRF_MODEL = nrf51
+# endif
+
+# ifeq ($(SOFTDEVICE_MODEL), s120)
+#     USE_BLE = 1
+#     SOFTDEVICE_VERSION ?= 2.1.0
+#     NRF_MODEL = nrf51
+# endif
+
+# ifeq ($(SOFTDEVICE_MODEL), s130)
+#     USE_BLE = 1
+#     SOFTDEVICE_VERSION ?= 2.0.1
+#     NRF_MODEL = nrf51
+#     SDK_VERSION = 11
+# endif
+
+# ifeq ($(SOFTDEVICE_MODEL), s132)
+#     USE_BLE = 1
+#     SOFTDEVICE_VERSION ?= 2.0.0-4.alpha
+#     NRF_MODEL = nrf52
+#     NRF_IC    = nrf52832
+# endif
+
+
 
 # Print some helpful info about what the user is compiling for
 space :=
@@ -153,6 +199,142 @@ SOURCE_PATHS += $(BASE_DIR)/startup/
 
 # Add paths for each SDK version
 ifeq ($(NRF_MODEL), nrf51)
+ifeq ($(SDK_VERSION), 12)
+
+	# Set the path
+	SDK_PATH ?= $(BASE_DIR)/sdk/nrf5_sdk_12.2.0/
+
+	# Other knowns about the SDK paths
+	SDK_INCLUDE_PATH   = $(SDK_PATH)components/
+	SDK_SOURCE_PATH    = $(SDK_PATH)components/
+	CMSIS_INCLUDE_PATH = $(SDK_PATH)components/toolchain/gcc/
+
+	# Need to add the paths for all the directories in the SDK.
+	# Note that we do not use * because some folders have conflicting files.
+	LIBRARY_PATHS += $(wildcard $(SDK_INCLUDE_PATH)libraries/*/)
+	LIBRARY_PATHS += $(wildcard $(SDK_INCLUDE_PATH)libraries/*/src/)
+	LIBRARY_PATHS += $(wildcard $(SDK_INCLUDE_PATH)drivers_nrf/adc/)
+	LIBRARY_PATHS += $(wildcard $(SDK_INCLUDE_PATH)drivers_nrf/ble_flash/)
+	LIBRARY_PATHS += $(wildcard $(SDK_INCLUDE_PATH)drivers_nrf/clock/)
+	LIBRARY_PATHS += $(wildcard $(SDK_INCLUDE_PATH)drivers_nrf/common/)
+	LIBRARY_PATHS += $(wildcard $(SDK_INCLUDE_PATH)drivers_nrf/delay/)
+	LIBRARY_PATHS += $(wildcard $(SDK_INCLUDE_PATH)drivers_nrf/gpiote/)
+	LIBRARY_PATHS += $(wildcard $(SDK_INCLUDE_PATH)drivers_nrf/hal/)
+	LIBRARY_PATHS += $(wildcard $(SDK_INCLUDE_PATH)drivers_nrf/lpcomp/)
+	LIBRARY_PATHS += $(wildcard $(SDK_INCLUDE_PATH)drivers_nrf/ppi/)
+	LIBRARY_PATHS += $(wildcard $(SDK_INCLUDE_PATH)drivers_nrf/pstorage/)
+	LIBRARY_PATHS += $(wildcard $(SDK_INCLUDE_PATH)drivers_nrf/pstorage/config/)
+	LIBRARY_PATHS += $(wildcard $(SDK_INCLUDE_PATH)drivers_nrf/radio_config/)
+	LIBRARY_PATHS += $(wildcard $(SDK_INCLUDE_PATH)drivers_nrf/rng/)
+	LIBRARY_PATHS += $(wildcard $(SDK_INCLUDE_PATH)drivers_nrf/rtc/)
+	LIBRARY_PATHS += $(wildcard $(SDK_INCLUDE_PATH)drivers_nrf/sdio/)
+	LIBRARY_PATHS += $(wildcard $(SDK_INCLUDE_PATH)drivers_nrf/spi_master/)
+	LIBRARY_PATHS += $(wildcard $(SDK_INCLUDE_PATH)drivers_nrf/spi_slave/)
+	LIBRARY_PATHS += $(wildcard $(SDK_INCLUDE_PATH)drivers_nrf/swi/)
+	LIBRARY_PATHS += $(wildcard $(SDK_INCLUDE_PATH)drivers_nrf/timer/)
+	LIBRARY_PATHS += $(wildcard $(SDK_INCLUDE_PATH)drivers_nrf/twi_master/)
+	LIBRARY_PATHS += $(wildcard $(SDK_INCLUDE_PATH)drivers_nrf/uart/)
+	LIBRARY_PATHS += $(wildcard $(SDK_INCLUDE_PATH)drivers_nrf/wdt/)
+	LIBRARY_PATHS += $(wildcard $(SDK_INCLUDE_PATH)drivers_nrf/validation/)
+	LIBRARY_PATHS += $(wildcard $(SDK_INCLUDE_PATH)drivers_ext/*/)
+	LIBRARY_PATHS += $(wildcard $(SDK_INCLUDE_PATH)device/)
+	LIBRARY_PATHS += $(SDK_INCLUDE_PATH)toolchain/gcc/
+	LIBRARY_PATHS += $(SDK_INCLUDE_PATH)toolchain/
+	LIBRARY_PATHS += $(SDK_INCLUDE_PATH)toolchain/cmsis/include/
+
+	SOURCE_PATHS += $(SDK_SOURCE_PATH)
+	SOURCE_PATHS += $(wildcard $(SDK_SOURCE_PATH)*/)
+	SOURCE_PATHS += $(wildcard $(SDK_SOURCE_PATH)libraries/*/)
+	SOURCE_PATHS += $(wildcard $(SDK_SOURCE_PATH)libraries/*/src/)
+	SOURCE_PATHS += $(wildcard $(SDK_SOURCE_PATH)drivers_nrf/*/)
+	SOURCE_PATHS += $(wildcard $(SDK_SOURCE_PATH)drivers_ext/*/)
+
+ifdef SERIALIZATION_MODE
+	LIBRARY_PATHS += $(wildcard $(SDK_INCLUDE_PATH)serialization/*/)
+	LIBRARY_PATHS += $(wildcard $(SDK_INCLUDE_PATH)serialization/common/transport/)
+	LIBRARY_PATHS += $(wildcard $(SDK_INCLUDE_PATH)serialization/$(SERIALIZATION_MODE)/codecs/common/)
+	LIBRARY_PATHS += $(wildcard $(SDK_INCLUDE_PATH)serialization/$(SERIALIZATION_MODE)/hal/)
+	LIBRARY_PATHS += $(wildcard $(SDK_INCLUDE_PATH)serialization/$(SERIALIZATION_MODE)/transport/)
+	LIBRARY_PATHS += $(wildcard $(SDK_INCLUDE_PATH)serialization/common/)
+	LIBRARY_PATHS += $(wildcard $(SDK_INCLUDE_PATH)serialization/common/transport/ser_phy/)
+	LIBRARY_PATHS += $(wildcard $(SDK_INCLUDE_PATH)serialization/common/transport/ser_phy/config/)
+
+	SOURCE_PATHS += $(wildcard $(SDK_SOURCE_PATH)serialization/*/)
+	SOURCE_PATHS += $(wildcard $(SDK_SOURCE_PATH)serialization/common/transport/)
+	SOURCE_PATHS += $(wildcard $(SDK_SOURCE_PATH)serialization/$(SERIALIZATION_MODE)/codecs/common/)
+	SOURCE_PATHS += $(wildcard $(SDK_SOURCE_PATH)serialization/$(SERIALIZATION_MODE)/hal/)
+	SOURCE_PATHS += $(wildcard $(SDK_SOURCE_PATH)serialization/$(SERIALIZATION_MODE)/transport/)
+	SOURCE_PATHS += $(wildcard $(SDK_SOURCE_PATH)serialization/common/)
+	SOURCE_PATHS += $(wildcard $(SDK_SOURCE_PATH)serialization/common/transport/ser_phy/)
+	SOURCE_PATHS += $(wildcard $(SDK_SOURCE_PATH)serialization/common/transport/ser_phy/config/)
+
+# Add defines based on if we are "connectivity" or "application"
+ifeq ($(SERIALIZATION_MODE), connectivity)
+    CFLAGS += -DSER_CONNECTIVITY -DAPP_SCHEDULER_WITH_PAUSE -DBLE_STACK_SUPPORT_REQD -DHCI_TIMER2 -DSOFTDEVICE_PRESENT
+endif
+ifeq ($(SERIALIZATION_MODE), application)
+    CFLAGS += -DSVCALL_AS_NORMAL_FUNCTION -DBLE_STACK_SUPPORT_REQD
+endif
+endif
+
+ifdef USE_BLE
+    # How many central/peripherals are defined changes how much memory the
+    # softdevice requires. Change the amount of memory allotted in a custom ld
+    # file if your configuration is different than default.
+
+    ifeq ($(RAM_KB), 16)
+      # limit 16 kB RAM nRFs to only act as peripherals. Doing otherwise
+      # requires careful balancing of memory requirements and should be done
+      # manually, not automatically
+      CENTRAL_LINK_COUNT ?= 0
+      PERIPHERAL_LINK_COUNT ?= 1
+    else
+      CENTRAL_LINK_COUNT ?= 1
+      PERIPHERAL_LINK_COUNT ?= 1
+    endif
+
+    LIBRARY_PATHS += $(wildcard $(SDK_INCLUDE_PATH)ble/*/)
+    LIBRARY_PATHS += $(wildcard $(SDK_INCLUDE_PATH)ble/ble_services/*/)
+    SOURCE_PATHS += $(wildcard $(SDK_SOURCE_PATH)ble/*/)
+    SOURCE_PATHS += $(wildcard $(SDK_SOURCE_PATH)ble/ble_services/*/)
+    CFLAGS += -DBLE_STACK_SUPPORT_REQD -DSOFTDEVICE_PRESENT -DCENTRAL_LINK_COUNT=$(CENTRAL_LINK_COUNT) -DPERIPHERAL_LINK_COUNT=$(PERIPHERAL_LINK_COUNT)
+endif
+
+ifdef USE_ANT
+    CFLAGS += -DANT_STACK_SUPPORT_REQD
+endif
+
+ifdef ENABLE_WIRELESS_DFU
+    CFLAGS += -DENABLE_DFU
+    APPLICATION_SRCS += bootloader_util.c
+endif
+
+ifdef SOFTDEVICE_MODEL
+    LIBRARY_PATHS += $(SDK_INCLUDE_PATH)softdevice/common/softdevice_handler/
+    LIBRARY_PATHS += $(SDK_INCLUDE_PATH)softdevice/$(SOFTDEVICE_MODEL)/headers/
+    LIBRARY_PATHS += $(SDK_INCLUDE_PATH)softdevice/$(SOFTDEVICE_MODEL)/headers/nrf51
+
+    SOURCE_PATHS += $(SDK_SOURCE_PATH)softdevice/common/softdevice_handler/
+    SOURCE_PATHS += $(SDK_SOURCE_PATH)softdevice/$(SOFTDEVICE_MODEL)/headers/
+    SOURCE_PATHS += $(SDK_SOURCE_PATH)softdevice/$(SOFTDEVICE_MODEL)/headers/nrf51
+
+ifdef SERIALIZATION_MODE
+	# Load the sources from the serialization library
+    LIBRARY_PATHS += $(SDK_INCLUDE_PATH)serialization/$(SERIALIZATION_MODE)/codecs/$(SOFTDEVICE_MODEL)/middleware/
+    LIBRARY_PATHS += $(SDK_INCLUDE_PATH)serialization/$(SERIALIZATION_MODE)/codecs/$(SOFTDEVICE_MODEL)/serializers/
+    LIBRARY_PATHS += $(SDK_INCLUDE_PATH)serialization/common/struct_ser/$(SOFTDEVICE_MODEL)/
+
+    SOURCE_PATHS += $(SDK_SOURCE_PATH)serialization/$(SERIALIZATION_MODE)/codecs/$(SOFTDEVICE_MODEL)/middleware/
+    SOURCE_PATHS += $(SDK_SOURCE_PATH)serialization/$(SERIALIZATION_MODE)/codecs/$(SOFTDEVICE_MODEL)/serializers/
+    SOURCE_PATHS += $(SDK_SOURCE_PATH)serialization/common/struct_ser/$(SOFTDEVICE_MODEL)/
+endif
+else
+	LIBRARY_PATHS += $(wildcard $(SDK_INCLUDE_PATH)drivers_nrf/nrf_soc_nosd/)
+    SOFTDEVICE_MODEL = blank
+endif
+
+endif # SDK 12
+
 ifeq ($(SDK_VERSION), 11)
 
 	# Set the path
@@ -520,6 +702,9 @@ ifeq ($(ENABLE_DIS), true)
     APPLICATION_SRCS += device_info_service.c
 endif
 
+# Needed for SDK12
+NRF_IC_UPPER = $(shell echo $(NRF_IC) | tr a-z A-Z)
+
 print-% : ; @echo $* = $($*)
 
 LINKER_SCRIPT ?= $(BASE_DIR)/make/ld/gcc_$(NRF_MODEL)_$(SOFTDEVICE_MODEL)_$(SOFTDEVICE_VERSION)_$(RAM_KB)_$(FLASH_KB).ld
@@ -534,7 +719,7 @@ VPATH = $(SOURCE_PATHS)
 OUTPUT_PATH ?= _build/
 
 CPUFLAGS = -mthumb -mcpu=cortex-m0 -march=armv6-m
-CFLAGS += -std=gnu99 -c $(CPUFLAGS) -Wall -Wextra -Wno-unused-parameter -Werror=return-type -D$(DEVICE) -D$(BOARD) -DSDK_VERSION_$(SDK_VERSION) -DSOFTDEVICE_$(SOFTDEVICE_MODEL)
+CFLAGS += -std=gnu99 -c $(CPUFLAGS) -Wall -Wextra -Wno-unused-parameter -Werror=return-type -D$(DEVICE) -D$(BOARD) -D$(NRF_IC_UPPER) -DSDK_VERSION_$(SDK_VERSION) -DSOFTDEVICE_$(SOFTDEVICE_MODEL)
 CFLAGS += -s -ffunction-sections -fdata-sections
 CFLAGS += -D$(shell echo $(SOFTDEVICE_MODEL) | tr a-z A-Z)
 CFLAGS += $(CMSIS_INCLUDE) $(LIBRARY_INCLUDES) -MD
