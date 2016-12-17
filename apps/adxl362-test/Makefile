@@ -19,6 +19,7 @@ NRF_BASE_PATH ?= ../..
 LIBRARY_PATHS += . $(NRF_BASE_PATH)/devices ../../include
 SOURCE_PATHS += $(NRF_BASE_PATH)/devices ../../src
 
+SDK_VERSION = 11
 SOFTDEVICE_MODEL = s130
 RAM_KB = 32
 

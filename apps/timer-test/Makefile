@@ -11,7 +11,7 @@ APPLICATION_SRCS += led.c
 APPLICATION_SRCS += simple_ble.c
 APPLICATION_SRCS += simple_timer.c
 
-LIBRARY_PATHS += ../../include
+LIBRARY_PATHS += ../../include .
 SOURCE_PATHS += ../../src
 
 SOFTDEVICE_MODEL = s130
