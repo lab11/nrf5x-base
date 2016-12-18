@@ -249,8 +249,8 @@ uint32_t conn_mw_ble_enable(uint8_t const * const p_rx_buf,
     extern uint32_t __ICFEDIT_region_RAM_start__;
     volatile uint32_t ram_start = (uint32_t) &__ICFEDIT_region_RAM_start__;
 #elif defined   ( __GNUC__ )
-    extern uint32_t __start_fs_data;
-    volatile uint32_t ram_start = (uint32_t) &__start_fs_data;
+    extern uint32_t __data_start__;
+    volatile uint32_t ram_start = (uint32_t) &__data_start__;
 #endif
     app_ram_base = ram_start;
 
