@@ -35,7 +35,7 @@ static bool is_conn_params_ok(ble_gap_conn_params_t * p_conn_params)
     //       the client's connection interval.
     if (
         (p_conn_params->max_conn_interval >= m_preferred_conn_params.min_conn_interval)
-        && 
+        &&
         (p_conn_params->max_conn_interval <= m_preferred_conn_params.max_conn_interval)
        )
     {
@@ -208,6 +208,7 @@ static void on_connect(ble_evt_t * p_ble_evt)
 
 static void on_disconnect(ble_evt_t * p_ble_evt)
 {
+    UNUSED_PARAMETER(p_ble_evt);
     uint32_t err_code;
 
     m_conn_handle = BLE_CONN_HANDLE_INVALID;

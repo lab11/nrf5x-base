@@ -91,7 +91,7 @@ void app_error_save_and_stop(uint32_t id, uint32_t pc, uint32_t info);
  * @param[in] info  Optional additional information regarding the fault. Refer to each fault
  *                  identifier for details.
  */
-static __INLINE void app_error_log(uint32_t id, uint32_t pc, uint32_t info)
+static __INLINE void app_error_log(uint32_t id, __attribute__ ((unused)) uint32_t pc, uint32_t info)
 {
     switch (id)
     {

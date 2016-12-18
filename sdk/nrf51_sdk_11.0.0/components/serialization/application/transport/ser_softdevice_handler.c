@@ -150,15 +150,17 @@ uint32_t sd_ble_evt_get(uint8_t * p_data, uint16_t * p_len)
 uint32_t sd_ble_evt_mailbox_length_get(uint32_t * p_mailbox_length)
 {
     uint32_t err_code = NRF_SUCCESS;
-    
+
     *p_mailbox_length = app_mailbox_length_get(&sd_ble_evt_mailbox);
-    
+
     return err_code;
 }
 
 uint32_t sd_softdevice_enable(nrf_clock_lf_cfg_t const * p_clock_lf_cfg,
                               nrf_fault_handler_t assertion_handler)
 {
+    UNUSED_PARAMETER(p_clock_lf_cfg);
+    UNUSED_PARAMETER(assertion_handler);
     uint32_t err_code;
 
     err_code = ser_app_hal_hw_init(ser_softdevice_flash_operation_success_evt);

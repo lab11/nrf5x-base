@@ -24,6 +24,7 @@
 
 #include <stdint.h>
 #include <stdbool.h>
+#include "nordic_common.h"
 #include "compiler_abstraction.h"
 #include "nrf.h"
 
@@ -385,6 +386,9 @@ static __INLINE uint8_t uint32_big_encode(uint32_t value, uint8_t * p_encoded_da
     p_encoded_data[3] = (uint8_t) ((value & 0x000000FF) >> 0);
 #elif NRF52
     *(uint32_t *)p_encoded_data = __REV(value);
+#else
+    UNUSED_PARAMETER(value);
+    UNUSED_PARAMETER(p_encoded_data);
 #endif
     return sizeof(uint32_t);
 }
