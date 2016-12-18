@@ -107,7 +107,7 @@ void assert_nrf_callback(uint16_t line_num, const uint8_t * p_file_name);
 #ifndef SOFTDEVICE_s130 // This function is called app_error_fault_handler in the SDK 11
 void app_error_handler(uint32_t error_code, uint32_t line_num, const uint8_t * p_file_name) {
 #else
-void app_error_fault_handler(uint32_t error_code, __attribute__ ((unused)) uint32_t line_num, __attribute__ ((unused)) uint32_t info) {
+void __attribute__((weak)) app_error_fault_handler(uint32_t error_code, __attribute__ ((unused)) uint32_t line_num, __attribute__ ((unused)) uint32_t info) {
 #endif
     // APPL_LOG("[APPL]: ASSERT: %s, %d, error 0x%08x\r\n", p_file_name, line_num, error_code);
 
