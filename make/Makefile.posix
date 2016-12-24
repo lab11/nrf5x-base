@@ -65,6 +65,9 @@ ifdef ID
 endif
 	printf "loadfile $(HEX) \nr\ng\nexit\n" >> $(OUTPUT_PATH)flash.jlink
 
+flash.stlinkv2:
+	$(MAKE_BUILD_FOLDER)
+	$(OPENOCD) -c 'program $(HEX) verify reset exit'
 
 test-softdevice: test-softdevice.jlink
 ifndef SOFTDEVICE
@@ -141,6 +144,10 @@ reset.jlink:
 	$(MAKE_BUILD_FOLDER)
 	printf "r\ng\nexit\n" > $(OUTPUT_PATH)reset.jlink
 
+reset.stlinkv2:
+	$(MAKE_BUILD_FOLDER)
+	$(OPENOCD) -c init -c 'reset' -c shutdown
+
 erase-all: erase-all.jlink
 	$(MAKE_BUILD_FOLDER)
 	$(JLINK) $(OUTPUT_PATH)erase-all.jlink
@@ -149,6 +156,10 @@ erase-all.jlink:
 	# Write to NVMC to enable erase, do erase all, wait for completion. reset
 	$(MAKE_BUILD_FOLDER)
 	printf "w4 4001e504 2\nw4 4001e50c 1\nsleep 100\nr\nexit\n" > $(OUTPUT_PATH)erase-all.jlink
+
+erase-all.stlinkv2:
+	$(MAKE_BUILD_FOLDER)
+	$(OPENOCD) -c init -c 'reset halt' -c 'nrf51 mass_erase' -c 'reset' -c shutdown
 
 from-scratch: all flash.jlink flash-softdevice
 	$(MAKE_BUILD_FOLDER)
