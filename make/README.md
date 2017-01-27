@@ -116,6 +116,23 @@ To see the full commands that are being run by make, do:
     make V=1
 
 
+Loading the Softdevice
+----------------------
+
+As mentioned above, `make flash` automatically checks if the correct version of
+the softdevice is installed on the nRF and uploads it if necessary.
+
+This works by first downloading 16 bytes at address SOFTDEVICE_TEST_ADDR from the
+flash of the nRF into the file downloaded_test.bin. Next, the file softdevice_test.bin
+is created by using dd to copy 16 bytes from the same address of the softdevice binary.
+Finally the two binary files are compared with diff to see if they are identical or not.
+If they differ, the Makefile calls `$(MAKE) flash-softdevice` which runs erase-all,
+then flash-softdevice. Finally after that is all complete, the application is uploaded.
+
+Note: SOFTDEVICE_TEST_ADDR was selected through experimentation. At the time the code was
+written, the 16 bytes at that address differed in every softdevice version. It's possible
+that it will need to be changed for future softdevice versions.
+
 License
 -------
 
