@@ -1,5 +1,7 @@
 //SPI control module for chan_FS  modified for the NRF58122
 
+#include "nrf51_bitfields.h"
+#include "nrf_gpio.h"
 
 #define NRF_SPI NRF_SPI1
 
@@ -566,4 +568,3 @@ void disk_timerproc (void)
 		s |= (STA_NODISK | STA_NOINIT);
 	Stat = s;
 }
-
