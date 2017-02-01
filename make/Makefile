@@ -91,8 +91,8 @@ endif
 
 # ---- Set hardware memory sizes
 ifneq (,$(filter $(NRF_IC),nrf51422 nrf51802 nrf51822))
-  RAM_KB   ?= 16   # can be also 32
-  FLASH_KB ?= 256  # can be also 128
+  RAM_KB   ?= 16# can be also 32
+  FLASH_KB ?= 256# can be also 128
 else ifeq ($(NRF_IC), nrf52832)
   RAM_KB   ?= 64
   FLASH_KB ?= 512
@@ -619,7 +619,7 @@ endif # SDK 10
 
 
 ifeq ($(SDK_VERSION), 9)
-
+	
 	# Set the path
 	SDK_PATH ?= $(BASE_DIR)/sdk/nrf51_sdk_9.0.0/
 
