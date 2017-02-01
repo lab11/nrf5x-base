@@ -69,6 +69,9 @@ ifdef NRF_IC
   endif
 endif
 
+# ---- NRF_MODEL Default to nrf51
+NRF_MODEL ?= nrf51
+
 # ---- Force NRF_MODEL for OLD SDK
 ifneq (,$(filter $(SDK_VERSION),9 10))
   ifneq ($(NRF_MODEL), nrf51)
@@ -76,9 +79,6 @@ ifneq (,$(filter $(SDK_VERSION),9 10))
   endif
   NRF_MODEL = nrf51
 endif
-
-# ---- NRF_MODEL Default to nrf51
-NRF_MODEL ?= nrf51
 
 # --- NRF_IC: Default to nrf51822 for nrf51
 ifeq ($(NRF_MODEL), nrf51)
@@ -109,68 +109,85 @@ ifeq ($(NRF_MODEL), nrf51)
 else ifeq ($(NRF_MODEL), nrf52)
   SDK_VERSION ?= 12
 endif
+	
 
 # Set this for using GDB
 GDB_PORT_NUMBER ?= 2331
 
 
-#------ Now select SOFTDEVICE version if used (depending SDK version)
-# TODO: Check SoftDevice and NRF_IC/NRF_MODEL compatibility
+#------ Now select/check SOFTDEVICE version if used (depending SDK version)
+ifdef SOFTDEVICE_MODEL
+	# SDK 9 or 10
+	ifneq (,$(filter $(SDK_VERSION),9 10))
+		WAITED_NRF_MODEL = nrf51
+		ifeq ($(SOFTDEVICE_MODEL), s110)
+		    USE_BLE = 1
+		    WAITED_SOFTDEVICE_VERSION ?= 8.0.0
+		else ifeq ($(SOFTDEVICE_MODEL), s120)
+		    USE_BLE = 1
+		    WAITED_SOFTDEVICE_VERSION ?= 2.1.0
+		else ifeq ($(SOFTDEVICE_MODEL), s130)
+		    USE_BLE = 1
+		    WAITED_SOFTDEVICE_VERSION ?= 1.0.0
+		else ifeq ($(SOFTDEVICE_MODEL), s210)
+			# ANT only softDevice
+		    WAITED_SOFTDEVICE_VERSION ?= 5.0.0
+		else ifeq ($(SOFTDEVICE_MODEL), s310)
+		    USE_BLE = 1
+		    WAITED_SOFTDEVICE_VERSION ?= 3.0.0
+		endif
+	endif
+	
+	# SDK 11
+	ifeq ($(SDK_VERSION), 11)
+		ifeq ($(SOFTDEVICE_MODEL), s130)
+			USE_BLE = 1
+			WAITED_SOFTDEVICE_VERSION ?= 2.0.0
+			WAITED_NRF_MODEL = nrf51
+		else ifeq ($(SOFTDEVICE_MODEL), s132)
+			USE_BLE = 1
+			SOFTDEVICE_VERSION ?= 2.0.0
+		else ifeq ($(SOFTDEVICE_MODEL), s212)
+			# ANT only softDevice
+			SOFTDEVICE_VERSION ?= 0.9.1
+			WAITED_NRF_MODEL = nrf52
+		else ifeq ($(SOFTDEVICE_MODEL), s332)
+			USE_BLE = 1
+			SOFTDEVICE_VERSION ?= 0.9.1
+			WAITED_NRF_MODEL = nrf52
+		endif
+	endif
+	
+	# SDK 12
+	ifeq ($(SDK_VERSION), 12)
+		ifeq ($(SOFTDEVICE_MODEL), s130)
+			USE_BLE = 1
+			WAITED_SOFTDEVICE_VERSION ?= 2.0.1
+			WAITED_NRF_MODEL = nrf51
+		else ifeq ($(SOFTDEVICE_MODEL), s132)
+			USE_BLE = 1
+			SOFTDEVICE_VERSION ?= 3.0.0
+		else ifeq ($(SOFTDEVICE_MODEL), s212)
+			# ANT only softDevice
+			SOFTDEVICE_VERSION ?= 2.0.0
+			WAITED_NRF_MODEL = nrf52
+		else ifeq ($(SOFTDEVICE_MODEL), s332)
+			USE_BLE = 1
+			SOFTDEVICE_VERSION ?= 2.0.0
+			WAITED_NRF_MODEL = nrf52
+		endif
+	endif
 
-# SDK 9 or 10
-ifneq (,$(filter $(SDK_VERSION),9 10))
-ifeq ($(SOFTDEVICE_MODEL), s110)
-    USE_BLE = 1
-    SOFTDEVICE_VERSION ?= 8.0.0
-else ifeq ($(SOFTDEVICE_MODEL), s120)
-    USE_BLE = 1
-    SOFTDEVICE_VERSION ?= 2.1.0
-else ifeq ($(SOFTDEVICE_MODEL), s130)
-    USE_BLE = 1
-    SOFTDEVICE_VERSION ?= 1.0.0
-else ifeq ($(SOFTDEVICE_MODEL), s210)
-    USE_BLE = 1
-    SOFTDEVICE_VERSION ?= 5.0.0
-else ifeq ($(SOFTDEVICE_MODEL), s310)
-    USE_BLE = 1
-    SOFTDEVICE_VERSION ?= 3.0.0
-endif
-endif
-
-# SDK 11
-ifeq ($(SDK_VERSION), 11)
-ifeq ($(SOFTDEVICE_MODEL), s130)
-	USE_BLE = 1
-	SOFTDEVICE_VERSION ?= 2.0.0
-else ifeq ($(SOFTDEVICE_MODEL), s132)
-	USE_BLE = 1
-	SOFTDEVICE_VERSION ?= 2.0.0
-else ifeq ($(SOFTDEVICE_MODEL), s212)
-	USE_BLE = 1
-	SOFTDEVICE_VERSION ?= 0.9.1
-else ifeq ($(SOFTDEVICE_MODEL), s332)
-	USE_BLE = 1
-	SOFTDEVICE_VERSION ?= 0.9.1
-endif
-endif
-
-# SDK 12
-ifeq ($(SDK_VERSION), 12)
-ifeq ($(SOFTDEVICE_MODEL), s130)
-	USE_BLE = 1
-	SOFTDEVICE_VERSION ?= 2.0.1
-else ifeq ($(SOFTDEVICE_MODEL), s132)
-	USE_BLE = 1
-	SOFTDEVICE_VERSION ?= 3.0.0
-else ifeq ($(SOFTDEVICE_MODEL), s212)
-	USE_BLE = 1
-	SOFTDEVICE_VERSION ?= 2.0.0
-else ifeq ($(SOFTDEVICE_MODEL), s332)
-	USE_BLE = 1
-	SOFTDEVICE_VERSION ?= 2.0.0
-endif
-endif
-
+	SOFTDEVICE_VERSION ?= WAITED_SOFTDEVICE_VERSION
+    ifneq ($(SOFTDEVICE_VERSION), WAITED_SOFTDEVICE_VERSION)
+        $(error FOR SDK$(SDK_VERSION) Supported SoftDevice Version for $(SOFTDEVICE_MODEL) is $(WAITED_SOFTDEVICE_VERSION))
+    endif
+    
+    ifneq ($(WAITED_NRF_MODEL), $(NRF_MODEL))
+        $(error SoftDevice $(SOFTDEVICE_MODEL) is only compatible with $(WAITED_NRF_MODEL))
+    endif
+    
+endif // ifdef SOFTDEVICE_MODEL
 
 
 # Print some helpful info about what the user is compiling for
