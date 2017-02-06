@@ -178,8 +178,8 @@ ifdef SOFTDEVICE_MODEL
 		endif
 	endif
 
-	SOFTDEVICE_VERSION ?= WAITED_SOFTDEVICE_VERSION
-    ifneq ($(SOFTDEVICE_VERSION), WAITED_SOFTDEVICE_VERSION)
+	SOFTDEVICE_VERSION ?= $(WAITED_SOFTDEVICE_VERSION)
+    ifneq ($(SOFTDEVICE_VERSION), $(WAITED_SOFTDEVICE_VERSION))
         $(error FOR SDK$(SDK_VERSION) Supported SoftDevice Version for $(SOFTDEVICE_MODEL) is $(WAITED_SOFTDEVICE_VERSION))
     endif
     
@@ -187,7 +187,7 @@ ifdef SOFTDEVICE_MODEL
         $(error SoftDevice $(SOFTDEVICE_MODEL) is only compatible with $(WAITED_NRF_MODEL))
     endif
     
-endif // ifdef SOFTDEVICE_MODEL
+endif # ifdef SOFTDEVICE_MODEL
 
 
 # Print some helpful info about what the user is compiling for
