@@ -10,9 +10,11 @@ APPLICATION_SRCS += nrf_drv_common.c
 APPLICATION_SRCS += nrf_drv_clock.c
 APPLICATION_SRCS += led.c
 
-DEVICE = NRF51
+NRF_MODEL = nrf51
 
 SDK_VERSION = 12
+SOFTDEVICE_MODEL = s130
+
 NRF_BASE_PATH ?= ../..
 
 LIBRARY_PATHS += .  ../../include
