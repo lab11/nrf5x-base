@@ -16,7 +16,6 @@
 #include "app_error.h"
 #include "ble_conn_params.h"
 #include "ble_hci.h"
-#include "app_trace.h"
 #include "ble_hrs_c.h"
 #include "ble_bas_c.h"
 #include "app_util.h"

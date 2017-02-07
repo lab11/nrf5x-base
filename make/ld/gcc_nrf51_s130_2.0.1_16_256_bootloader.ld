@@ -7,7 +7,7 @@ MEMORY
 {
   FLASH (rx): ORIGIN = 256K - 16K - 1K - 1K, LENGTH = 16K /* 1K is taken by flash storage of BLE Address, 16K for Bootloader */
   BOOTLOADER_SETTINGS (rw) : ORIGIN = 256K - 1K - 1K, LENGTH = 1K /* Right below Bootloader */
-  RAM (rwx) : ORIGIN = 0x20000000 + 8K, LENGTH = 16K - 8K /* 8 kB is taken by S110, 8 kB for app. */
+  RAM (rwx) :  ORIGIN = 0x20002100, LENGTH = 0x1F00 /* 0x2100 is taken by s130, 0x1F00 for app. */
   UICR_BOOTLOADER (r)  : ORIGIN = 0x10001014, LENGTH =  0x04
 }
 

@@ -18,7 +18,7 @@
 static simple_ble_config_t ble_config = {
     .platform_id       = 0x00,              // used as 4th octet in device BLE address
     .device_id         = DEVICE_ID_DEFAULT,
-    .adv_name          = "SDK11",
+    .adv_name          = "SDK12",
     .adv_interval      = MSEC_TO_UNITS(500, UNIT_0_625_MS),
     .min_conn_interval = MSEC_TO_UNITS(500, UNIT_1_25_MS),
     .max_conn_interval = MSEC_TO_UNITS(1000, UNIT_1_25_MS)

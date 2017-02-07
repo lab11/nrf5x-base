@@ -9,14 +9,14 @@ APPLICATION_SRCS += app_error.c
 APPLICATION_SRCS += ble_srv_common.c
 APPLICATION_SRCS += app_util_platform.c
 APPLICATION_SRCS += nrf_drv_common.c
-APPLICATION_SRCS += nrf_delay.c
+APPLICATION_SRCS += nrf_drv_clock.c
 APPLICATION_SRCS += led.c
 
 APPLICATION_SRCS += simple_ble.c
 APPLICATION_SRCS += simple_adv.c
 
 SOFTDEVICE_MODEL = s130
-SDK_VERSION = 11
+SDK_VERSION = 12
 
 LIBRARY_PATHS += . ../../include
 SOURCE_PATHS += ../../src
