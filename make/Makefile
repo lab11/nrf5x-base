@@ -16,11 +16,12 @@
 ##   - SOFTDEVICE         : Path to the softdevice to use
 ##   - START_CODE         : .s file to execute first
 ##   - SYSTEM_FILE        : Base nRF .c file.
-##   - NRF_MODEL          : nrf51 | nrf52  : Set by the softdevice used
+##   - NRF_MODEL          : nrf51 | nrf52  : Also set by the NRF_IC used
+##   - NRF_IC             : nrf51422 | nrf51802 | nrf51822 | nrf52832 | nrf52840  
 ##   - BOARD              : Hardware board being used. Will get set as #define.
-##   - RAM_KB             : Size of RAM on chip    : Defaults to 16
-##   - FLASH_KB           : Size of flash on chip  : Defaults to 256
-##   - SDK_VERSION        : Major version number of the SDK to use. Defaults to 10
+##   - RAM_KB             : Size of RAM on chip
+##   - FLASH_KB           : Size of flash on chip
+##   - SDK_VERSION        : Major version number of the SDK to use. Defaults to 10 for nrf51, 12 for nrf52
 ##   - GDB_PORT_NUMBER    : Defaults to 2331
 ##
 ##
@@ -41,107 +42,152 @@ OBJDUMP = $(TOOLCHAIN_PATH)$(TOOLCHAIN_PREFIX)-objdump
 SIZE    = $(TOOLCHAIN_PATH)$(TOOLCHAIN_PREFIX)-size
 GDB     = $(TOOLCHAIN_PATH)$(TOOLCHAIN_PREFIX)-gdb
 
-# Guess nRF51 unless otherwise set
-NRF_MODEL ?= nrf51
-NRF_IC    ?= nrf51822
-
 # Set default board
 BOARD ?= BOARD_NULL
 
-# Set hardware memory sizes
-RAM_KB   ?= 16
-FLASH_KB ?= 256
+# TODO: Guess NRF_MODEL from famous BOARD
 
-# Default to SDK 10
-SDK_VERSION ?= 10
+
+# ---- Guess/Check NRF_MODEL from NRF_IC (if NRF_IC defined)
+ifdef NRF_IC
+  #if NRF_IC == nrf51422 or nrf51802 or nrf51822
+  ifneq (,$(filter $(NRF_IC),nrf51422 nrf51802 nrf51822))
+    ifdef NRF_MODEL
+      ifneq ($(NRF_MODEL), nrf51)
+        $(error NRF_MODEL $(NRF_MODEL) is not valid for NRF_IC $(NRF_IC))
+      endif
+    endif
+    NRF_MODEL = nrf51
+  #else if NRF_IC == nrf52832 or nrf52840
+  else ifneq (,$(filter $(NRF_IC),nrf52832 nrf52840))
+    ifdef NRF_MODEL
+      ifneq ($(NRF_MODEL), nrf52)
+        $(error NRF_MODEL $(NRF_MODEL) is not valid for NRF_IC $(NRF_IC))
+      endif
+    endif
+    NRF_MODEL = nrf52
+  endif
+endif
+
+# ---- NRF_MODEL Default to nrf51
+NRF_MODEL ?= nrf51
+
+# ---- Force NRF_MODEL for OLD SDK
+ifneq (,$(filter $(SDK_VERSION),9 10))
+  ifneq ($(NRF_MODEL), nrf51)
+    $(error NRF_MODEL $(NRF_MODEL) is not valid for SDK_VERSION $(SDK_VERSION))
+  endif
+  NRF_MODEL = nrf51
+endif
+
+# --- NRF_IC: Default to nrf51822 for nrf51
+ifeq ($(NRF_MODEL), nrf51)
+  NRF_IC    ?= nrf51822
+# --- NRF_IC: Default to nrf52832 for nrf52
+else ifeq ($(NRF_MODEL), nrf52)
+  NRF_IC    ?= nrf52832
+endif
+  
+
+# ---- Set hardware memory sizes
+ifneq (,$(filter $(NRF_IC),nrf51422 nrf51802 nrf51822))
+  RAM_KB   ?= 16# can be also 32
+  FLASH_KB ?= 256# can be also 128
+else ifeq ($(NRF_IC), nrf52832)
+  RAM_KB   ?= 64
+  FLASH_KB ?= 512
+else ifeq ($(NRF_IC), nrf52840)
+  RAM_KB   ?= 256
+  FLASH_KB ?= 1024
+endif
+
+# ---- Set SDK if not SET
+# Default to SDK 10 for nrf51
+ifeq ($(NRF_MODEL), nrf51)
+  SDK_VERSION ?= 10
+# Default to SDK 12 for nrf52
+else ifeq ($(NRF_MODEL), nrf52)
+  SDK_VERSION ?= 12
+endif
+	
 
 # Set this for using GDB
 GDB_PORT_NUMBER ?= 2331
 
-# Choose a default MCU
-NRF_MODEL = nrf51
 
-# Bisect based on nRF model
-ifeq ($(NRF_MODEL), nrf51)
+#------ Now select/check SOFTDEVICE version if used (depending SDK version)
+ifdef SOFTDEVICE_MODEL
+	# SDK 9 or 10
+	ifneq (,$(filter $(SDK_VERSION),9 10))
+		WAITED_NRF_MODEL = nrf51
+		ifeq ($(SOFTDEVICE_MODEL), s110)
+		    USE_BLE = 1
+		    WAITED_SOFTDEVICE_VERSION ?= 8.0.0
+		else ifeq ($(SOFTDEVICE_MODEL), s120)
+		    USE_BLE = 1
+		    WAITED_SOFTDEVICE_VERSION ?= 2.1.0
+		else ifeq ($(SOFTDEVICE_MODEL), s130)
+		    USE_BLE = 1
+		    WAITED_SOFTDEVICE_VERSION ?= 1.0.0
+		else ifeq ($(SOFTDEVICE_MODEL), s210)
+			# ANT only softDevice
+		    WAITED_SOFTDEVICE_VERSION ?= 5.0.0
+		else ifeq ($(SOFTDEVICE_MODEL), s310)
+		    USE_BLE = 1
+		    WAITED_SOFTDEVICE_VERSION ?= 3.0.0
+		endif
+	endif
+	
+	# SDK 11
+	ifeq ($(SDK_VERSION), 11)
+		ifeq ($(SOFTDEVICE_MODEL), s130)
+			USE_BLE = 1
+			WAITED_SOFTDEVICE_VERSION ?= 2.0.0
+			WAITED_NRF_MODEL = nrf51
+		else ifeq ($(SOFTDEVICE_MODEL), s132)
+			USE_BLE = 1
+			SOFTDEVICE_VERSION ?= 2.0.0
+		else ifeq ($(SOFTDEVICE_MODEL), s212)
+			# ANT only softDevice
+			SOFTDEVICE_VERSION ?= 0.9.1
+			WAITED_NRF_MODEL = nrf52
+		else ifeq ($(SOFTDEVICE_MODEL), s332)
+			USE_BLE = 1
+			SOFTDEVICE_VERSION ?= 0.9.1
+			WAITED_NRF_MODEL = nrf52
+		endif
+	endif
+	
+	# SDK 12
+	ifeq ($(SDK_VERSION), 12)
+		ifeq ($(SOFTDEVICE_MODEL), s130)
+			USE_BLE = 1
+			WAITED_SOFTDEVICE_VERSION ?= 2.0.1
+			WAITED_NRF_MODEL = nrf51
+		else ifeq ($(SOFTDEVICE_MODEL), s132)
+			USE_BLE = 1
+			SOFTDEVICE_VERSION ?= 3.0.0
+		else ifeq ($(SOFTDEVICE_MODEL), s212)
+			# ANT only softDevice
+			SOFTDEVICE_VERSION ?= 2.0.0
+			WAITED_NRF_MODEL = nrf52
+		else ifeq ($(SOFTDEVICE_MODEL), s332)
+			USE_BLE = 1
+			SOFTDEVICE_VERSION ?= 2.0.0
+			WAITED_NRF_MODEL = nrf52
+		endif
+	endif
 
-# Now select SDK version
-# SDK 10
-ifeq ($(SDK_VERSION), 10)
-ifeq ($(SOFTDEVICE_MODEL), s110)
-    USE_BLE = 1
-    SOFTDEVICE_VERSION ?= 8.0.0
-endif
-
-ifeq ($(SOFTDEVICE_MODEL), s120)
-    USE_BLE = 1
-    SOFTDEVICE_VERSION ?= 2.1.0
-endif
-endif
-
-# SDK 11
-ifeq ($(SDK_VERSION), 11)
-	USE_BLE = 1
-	SOFTDEVICE_VERSION ?= 2.0.0
-	SOFTDEVICE_MODEL = s130
-endif
-
-# SDK 12
-ifeq ($(SDK_VERSION), 12)
-	USE_BLE = 1
-	SOFTDEVICE_VERSION ?= 2.0.1
-	SOFTDEVICE_MODEL = s130
-endif
-
-endif
-
-# nRF52
-ifeq ($(NRF_MODEL), nrf52)
-
-# SDK 11
-ifeq ($(SDK_VERSION), 11)
-	USE_BLE = 1
-    SOFTDEVICE_VERSION ?= 2.0.0-4.alpha
-	SOFTDEVICE_MODEL = s132
-    NRF_IC = nrf52832
-endif
-
-# SDK 12
-ifeq ($(SDK_VERSION), 12)
-	USE_BLE = 1
-	SOFTDEVICE_VERSION ?= 3.0.0
-	SOFTDEVICE_MODEL = s132
-    NRF_IC = nrf52832
-endif
-
-endif
-
-# # Configure which stacks we need for various softdevices
-# ifeq ($(SOFTDEVICE_MODEL), s110)
-#     USE_BLE = 1
-#     SOFTDEVICE_VERSION ?= 8.0.0
-#     NRF_MODEL = nrf51
-# endif
-
-# ifeq ($(SOFTDEVICE_MODEL), s120)
-#     USE_BLE = 1
-#     SOFTDEVICE_VERSION ?= 2.1.0
-#     NRF_MODEL = nrf51
-# endif
-
-# ifeq ($(SOFTDEVICE_MODEL), s130)
-#     USE_BLE = 1
-#     SOFTDEVICE_VERSION ?= 2.0.1
-#     NRF_MODEL = nrf51
-#     SDK_VERSION = 11
-# endif
-
-# ifeq ($(SOFTDEVICE_MODEL), s132)
-#     USE_BLE = 1
-#     SOFTDEVICE_VERSION ?= 2.0.0-4.alpha
-#     NRF_MODEL = nrf52
-#     NRF_IC    = nrf52832
-# endif
-
+	SOFTDEVICE_VERSION ?= $(WAITED_SOFTDEVICE_VERSION)
+    ifneq ($(SOFTDEVICE_VERSION), $(WAITED_SOFTDEVICE_VERSION))
+        $(error FOR SDK$(SDK_VERSION) Supported SoftDevice Version for $(SOFTDEVICE_MODEL) is $(WAITED_SOFTDEVICE_VERSION))
+    endif
+    
+    ifneq ($(WAITED_NRF_MODEL), $(NRF_MODEL))
+        $(error SoftDevice $(SOFTDEVICE_MODEL) is only compatible with $(WAITED_NRF_MODEL))
+    endif
+    
+endif # ifdef SOFTDEVICE_MODEL
 
 
 # Print some helpful info about what the user is compiling for
@@ -590,7 +636,7 @@ endif # SDK 10
 
 
 ifeq ($(SDK_VERSION), 9)
-
+	
 	# Set the path
 	SDK_PATH ?= $(BASE_DIR)/sdk/nrf51_sdk_9.0.0/
 
