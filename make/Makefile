@@ -17,7 +17,7 @@
 ##   - START_CODE         : .s file to execute first
 ##   - SYSTEM_FILE        : Base nRF .c file.
 ##   - NRF_MODEL          : nrf51 | nrf52  : Also set by the NRF_IC used
-##   - NRF_IC             : nrf51422 | nrf51802 | nrf51822 | nrf52832 | nrf52840  
+##   - NRF_IC             : nrf51422 | nrf51802 | nrf51822 | nrf52832 | nrf52840
 ##   - BOARD              : Hardware board being used. Will get set as #define.
 ##   - RAM_KB             : Size of RAM on chip
 ##   - FLASH_KB           : Size of flash on chip
@@ -87,7 +87,7 @@ ifeq ($(NRF_MODEL), nrf51)
 else ifeq ($(NRF_MODEL), nrf52)
   NRF_IC    ?= nrf52832
 endif
-  
+
 
 # ---- Set hardware memory sizes
 ifneq (,$(filter $(NRF_IC),nrf51422 nrf51802 nrf51822))
@@ -109,7 +109,7 @@ ifeq ($(NRF_MODEL), nrf51)
 else ifeq ($(NRF_MODEL), nrf52)
   SDK_VERSION ?= 12
 endif
-	
+
 
 # Set this for using GDB
 GDB_PORT_NUMBER ?= 2331
@@ -117,76 +117,91 @@ GDB_PORT_NUMBER ?= 2331
 
 #------ Now select/check SOFTDEVICE version if used (depending SDK version)
 ifdef SOFTDEVICE_MODEL
-	# SDK 9 or 10
-	ifneq (,$(filter $(SDK_VERSION),9 10))
-		WAITED_NRF_MODEL = nrf51
-		ifeq ($(SOFTDEVICE_MODEL), s110)
-		    USE_BLE = 1
-		    WAITED_SOFTDEVICE_VERSION ?= 8.0.0
-		else ifeq ($(SOFTDEVICE_MODEL), s120)
-		    USE_BLE = 1
-		    WAITED_SOFTDEVICE_VERSION ?= 2.1.0
-		else ifeq ($(SOFTDEVICE_MODEL), s130)
-		    USE_BLE = 1
-		    WAITED_SOFTDEVICE_VERSION ?= 1.0.0
-		else ifeq ($(SOFTDEVICE_MODEL), s210)
-			# ANT only softDevice
-		    WAITED_SOFTDEVICE_VERSION ?= 5.0.0
-		else ifeq ($(SOFTDEVICE_MODEL), s310)
-		    USE_BLE = 1
-		    WAITED_SOFTDEVICE_VERSION ?= 3.0.0
-		endif
-	endif
-	
-	# SDK 11
-	ifeq ($(SDK_VERSION), 11)
-		ifeq ($(SOFTDEVICE_MODEL), s130)
-			USE_BLE = 1
-			WAITED_SOFTDEVICE_VERSION ?= 2.0.0
-			WAITED_NRF_MODEL = nrf51
-		else ifeq ($(SOFTDEVICE_MODEL), s132)
-			USE_BLE = 1
-			SOFTDEVICE_VERSION ?= 2.0.0
-		else ifeq ($(SOFTDEVICE_MODEL), s212)
-			# ANT only softDevice
-			SOFTDEVICE_VERSION ?= 0.9.1
-			WAITED_NRF_MODEL = nrf52
-		else ifeq ($(SOFTDEVICE_MODEL), s332)
-			USE_BLE = 1
-			SOFTDEVICE_VERSION ?= 0.9.1
-			WAITED_NRF_MODEL = nrf52
-		endif
-	endif
-	
-	# SDK 12
-	ifeq ($(SDK_VERSION), 12)
-		ifeq ($(SOFTDEVICE_MODEL), s130)
-			USE_BLE = 1
-			WAITED_SOFTDEVICE_VERSION ?= 2.0.1
-			WAITED_NRF_MODEL = nrf51
-		else ifeq ($(SOFTDEVICE_MODEL), s132)
-			USE_BLE = 1
-			SOFTDEVICE_VERSION ?= 3.0.0
-		else ifeq ($(SOFTDEVICE_MODEL), s212)
-			# ANT only softDevice
-			SOFTDEVICE_VERSION ?= 2.0.0
-			WAITED_NRF_MODEL = nrf52
-		else ifeq ($(SOFTDEVICE_MODEL), s332)
-			USE_BLE = 1
-			SOFTDEVICE_VERSION ?= 2.0.0
-			WAITED_NRF_MODEL = nrf52
-		endif
-	endif
+  # SDK 9 or 10
+  ifneq (,$(filter $(SDK_VERSION),9 10))
+    WAITED_NRF_MODEL = nrf51
+      ifeq ($(SOFTDEVICE_MODEL), s110)
+	USE_BLE = 1
+	SOFTDEVICE_VERSION ?= 8.0.0
+	WAITED_SOFTDEVICE_VERSION = 8.0.0
+      else ifeq ($(SOFTDEVICE_MODEL), s120)
+	USE_BLE = 1
+	SOFTDEVICE_VERSION ?= 2.1.0
+	WAITED_SOFTDEVICE_VERSION = 2.1.0
+      else ifeq ($(SOFTDEVICE_MODEL), s130)
+	USE_BLE = 1
+	SOFTDEVICE_VERSION ?= 1.0.0
+	WAITED_SOFTDEVICE_VERSION = 1.0.0
+      else ifeq ($(SOFTDEVICE_MODEL), s210)
+	# ANT only softDevice
+	SOFTDEVICE_VERSION ?= 5.0.0
+	WAITED_SOFTDEVICE_VERSION = 5.0.0
+      else ifeq ($(SOFTDEVICE_MODEL), s310)
+	USE_BLE = 1
+	SOFTDEVICE_VERSION ?= 3.0.0
+	WAITED_SOFTDEVICE_VERSION = 3.0.0
+      endif
+  endif
 
-	SOFTDEVICE_VERSION ?= $(WAITED_SOFTDEVICE_VERSION)
-    ifneq ($(SOFTDEVICE_VERSION), $(WAITED_SOFTDEVICE_VERSION))
-        $(error FOR SDK$(SDK_VERSION) Supported SoftDevice Version for $(SOFTDEVICE_MODEL) is $(WAITED_SOFTDEVICE_VERSION))
+  # SDK 11
+  ifeq ($(SDK_VERSION), 11)
+    ifeq ($(SOFTDEVICE_MODEL), s130)
+      USE_BLE = 1
+      SOFTDEVICE_VERSION ?= 2.0.0
+      WAITED_SOFTDEVICE_VERSION = 2.0.0
+      WAITED_NRF_MODEL = nrf51
+    else ifeq ($(SOFTDEVICE_MODEL), s132)
+      USE_BLE = 1
+      SOFTDEVICE_VERSION ?= 2.0.0
+      WAITED_SOFTDEVICE_VERSION = 2.0.0
+      WAITED_NRF_MODEL = nrf52
+    else ifeq ($(SOFTDEVICE_MODEL), s212)
+      # ANT only softDevice
+      SOFTDEVICE_VERSION ?= 0.9.1
+      WAITED_SOFTDEVICE_VERSION = 0.9.1
+      WAITED_NRF_MODEL = nrf52
+    else ifeq ($(SOFTDEVICE_MODEL), s332)
+      USE_BLE = 1
+      SOFTDEVICE_VERSION ?= 0.9.1
+      WAITED_SOFTDEVICE_VERSION = 0.9.1
+      WAITED_NRF_MODEL = nrf52
     endif
-    
-    ifneq ($(WAITED_NRF_MODEL), $(NRF_MODEL))
-        $(error SoftDevice $(SOFTDEVICE_MODEL) is only compatible with $(WAITED_NRF_MODEL))
+  endif
+
+  # SDK 12
+  ifeq ($(SDK_VERSION), 12)
+    ifeq ($(SOFTDEVICE_MODEL), s130)
+      USE_BLE = 1
+      SOFTDEVICE_VERSION ?= 2.0.1
+      WAITED_SOFTDEVICE_VERSION = 2.0.1
+      WAITED_NRF_MODEL = nrf51
+    else ifeq ($(SOFTDEVICE_MODEL), s132)
+      USE_BLE = 1
+      SOFTDEVICE_VERSION ?= 3.0.0
+      WAITED_SOFTDEVICE_VERSION = 3.0.0
+      WAITED_NRF_MODEL = nrf52
+    else ifeq ($(SOFTDEVICE_MODEL), s212)
+      # ANT only softDevice
+      SOFTDEVICE_VERSION ?= 2.0.0
+      WAITED_SOFTDEVICE_VERSION = 2.0.0
+      WAITED_NRF_MODEL = nrf52
+    else ifeq ($(SOFTDEVICE_MODEL), s332)
+      USE_BLE = 1
+      SOFTDEVICE_VERSION ?= 2.0.0
+      WAITED_SOFTDEVICE_VERSION = 2.0.0
+      WAITED_NRF_MODEL = nrf52
     endif
-    
+  endif
+
+  SOFTDEVICE_VERSION ?= $(WAITED_SOFTDEVICE_VERSION)
+  ifneq ($(SOFTDEVICE_VERSION), $(WAITED_SOFTDEVICE_VERSION))
+    $(error FOR SDK$(SDK_VERSION) Supported SoftDevice Version for $(SOFTDEVICE_MODEL) is $(WAITED_SOFTDEVICE_VERSION). You selected $(SOFTDEVICE_VERSION))
+  endif
+
+  ifneq ($(WAITED_NRF_MODEL), $(NRF_MODEL))
+    $(error SoftDevice $(SOFTDEVICE_MODEL) is only compatible with $(WAITED_NRF_MODEL). You selected $(SOFTDEVICE_MODEL))
+  endif
+
 endif # ifdef SOFTDEVICE_MODEL
 
 
@@ -636,7 +651,7 @@ endif # SDK 10
 
 
 ifeq ($(SDK_VERSION), 9)
-	
+
 	# Set the path
 	SDK_PATH ?= $(BASE_DIR)/sdk/nrf51_sdk_9.0.0/
 
