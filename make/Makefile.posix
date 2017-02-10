@@ -34,12 +34,17 @@ clean: clean-bootloader
 clean-bootloader:
 	rm -rf $(BASE_DIR)/dfu/_build
 
-ifndef ENABLE_WIRELESS_DFU
-flash: all flash.jlink test-softdevice
-	$(JLINK) $(OUTPUT_PATH)flash.jlink
+ifeq ($(PROGRAMMER),stlinkv2)
+    # TODO: DFU support, test-softdevice
+    flash: all flash.stlinkv2
 else
-flash: all flash.jlink test-softdevice flash-bootloader
-	$(JLINK) $(OUTPUT_PATH)flash.jlink
+    ifndef ENABLE_WIRELESS_DFU
+    flash: all flash.jlink test-softdevice
+	    $(JLINK) $(OUTPUT_PATH)flash.jlink
+    else
+    flash: all flash.jlink test-softdevice flash-bootloader
+	    $(JLINK) $(OUTPUT_PATH)flash.jlink
+    endif
 endif
 
 
@@ -140,9 +145,13 @@ pin-reset: pin-reset.jlink
 	$(MAKE_BUILD_FOLDER)
 	$(JLINK) $(OUTPUT_PATH)pin-reset.jlink
 
+ifeq ($(PROGRAMMER),stlinkv2)
+reset: reset.stlinkv2
+else
 reset: reset.jlink
 	$(MAKE_BUILD_FOLDER)
 	$(JLINK) $(OUTPUT_PATH)reset.jlink
+endif
 
 reset.jlink:
 	$(MAKE_BUILD_FOLDER)
@@ -152,9 +161,13 @@ reset.stlinkv2:
 	$(MAKE_BUILD_FOLDER)
 	$(OPENOCD) -c init -c 'reset' -c shutdown
 
+ifeq ($(PROGRAMMER),stlinkv2)
+erase-all: erase-all.stlinkv2
+else
 erase-all: erase-all.jlink
 	$(MAKE_BUILD_FOLDER)
 	$(JLINK) $(OUTPUT_PATH)erase-all.jlink
+endif
 
 erase-all.jlink:
 	# Write to NVMC to enable erase, do erase all, wait for completion. reset
@@ -169,7 +182,11 @@ from-scratch: all flash.jlink flash-softdevice
 	$(MAKE_BUILD_FOLDER)
 	$(JLINK) $(OUTPUT_PATH)flash.jlink
 
+ifeq ($(PROGRAMMER),stlinkv2)
+startdebug: startdebug.stlinkv2
+else
 startdebug: startdebug.jlink
+endif
 
 startdebug.jlink: debug-gdbinit.jlink
 	$(TERMINAL) "$(JLINKGDBSERVER) -port $(GDB_PORT_NUMBER)"
