@@ -74,10 +74,16 @@ flash.stlinkv2:
 	$(MAKE_BUILD_FOLDER)
 	$(OPENOCD) -c 'program $(HEX) verify reset exit'
 
-test-softdevice: test-softdevice.jlink
 ifndef SOFTDEVICE
+define softdevice-defined=
 	$(error "You need to set the SOFTDEVICE command-line parameter to a path (without spaces) to the softdevice hex-file")
+endef
+else
+define softdevice-defined=
+endef
 endif
+
+test-softdevice: test-softdevice.jlink $(softdevice-defined)
 
 ifneq ($(SOFTDEVICE_MODEL),blank)
 	$(MAKE_BUILD_FOLDER)
@@ -98,12 +104,9 @@ test-softdevice.jlink:
 	printf "r\nsavebin $(SOFTDEVICE_TEST_FLASH) $(SOFTDEVICE_TEST_ADDR) $(SOFTDEVICE_TEST_LEN)\nexit\n" > $(OUTPUT_PATH)test-softdevice.jlink
 
 ifeq ($(PROGRAMMER),stlinkv2)
-flash-softdevice: erase-all flash-softdevice.stlinkv2
+flash-softdevice: erase-all $(softdevice-defined) flash-softdevice.stlinkv2
 else
-flash-softdevice: erase-all flash-softdevice.jlink
-ifndef SOFTDEVICE
-	$(error "You need to set the SOFTDEVICE command-line parameter to a path (without spaces) to the softdevice hex-file")
-endif
+flash-softdevice: erase-all $(softdevice-defined) flash-softdevice.jlink
 	$(MAKE_BUILD_FOLDER)
 	$(OBJCOPY) -Iihex -Obinary $(SOFTDEVICE) $(SOFTDEVICE_OUTPUT:.hex=.bin)
 	$(JLINK) $(OUTPUT_PATH)flash-softdevice.jlink
@@ -115,9 +118,6 @@ flash-softdevice.jlink:
 	printf "w4 4001e504 1\nloadbin \"$(SOFTDEVICE_OUTPUT:.hex=.bin)\" 0\nr\ng\nexit\n" > $(OUTPUT_PATH)flash-softdevice.jlink
 
 flash-softdevice.stlinkv2:
-ifndef SOFTDEVICE
-	$(error "You need to set the SOFTDEVICE command-line parameter to a path (without spaces) to the softdevice hex-file")
-endif
 	$(MAKE_BUILD_FOLDER)
 	$(OPENOCD) -c 'program $(SOFTDEVICE) verify reset exit'
 
