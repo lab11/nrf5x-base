@@ -169,17 +169,26 @@ from-scratch: all flash.jlink flash-softdevice
 	$(MAKE_BUILD_FOLDER)
 	$(JLINK) $(OUTPUT_PATH)flash.jlink
 
-startdebug: debug-gdbinit
+startdebug: startdebug.jlink
+
+startdebug.jlink: debug-gdbinit.jlink
 	$(TERMINAL) "$(JLINKGDBSERVER) -port $(GDB_PORT_NUMBER)"
 	sleep 1
 	$(TERMINAL) "$(GDB) $(ELF)"
+
+startdebug.stlinkv2: debug-gdbinit.stlinkv2
+	$(GDB) $(ELF)
 
 startrtt:
 	$(TERMINAL) "JLinkExe -device nrf51822 -if swd -speed 1000 -AutoConnect 1"
 	sleep 1
 	$(TERMINAL) "$(JLINKRTTCLIENT)"
 
-debug-gdbinit:
+debug-gdbinit.jlink:
 	printf "target remote localhost:$(GDB_PORT_NUMBER)\nload\nmon reset\nbreak main\n" > .gdbinit
+
+debug-gdbinit.stlinkv2:
+	printf "target remote | $(OPENOCD) -c 'gdb_port pipe; log_output openocd.log'" > .gdbinit
+
 
 .PHONY: flash flash-softdevice erase-all startdebug test-softdevice flash.jlink
