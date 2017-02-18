@@ -129,6 +129,9 @@ The "EDU" edition works fine.
     instead of the way-too-large ARM JTAG header. We use [our own](https://github.com/lab11/jtag-tagconnect)
     adapter, but Segger also makes [one](https://www.segger.com/jlink-6-pin-needle-adapter.html).
 
+5. Upon inital programming, the nRF will enter debug mode, which will prevent the nRF from sleeping and 
+   prevent the reset line from working. To fix this, either perform a powerdown/powerup or download nrfjprog from 
+   (https://www.nordicsemi.com/eng/Products/Bluetooth-low-energy/nRF51822) and run nrfjprog --pinreset
 
 Git Submodules
 --------------
