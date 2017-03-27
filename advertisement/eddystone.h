@@ -4,9 +4,9 @@
 #include "ble_advdata.h"
 
 // Functions
-void eddystone_adv(char*, const ble_advdata_t*);
-void eddystone_with_manuf_adv (char* url_str, ble_advdata_manuf_data_t* manuf_specific_data);
-void eddystone_with_name (char* url_str);
+void eddystone_adv(const char*, const ble_advdata_t*);
+void eddystone_with_manuf_adv (const char* url_str, ble_advdata_manuf_data_t* manuf_specific_data);
+void eddystone_with_name (const char* url_str);
 
 // Physical Web
 #define PHYSWEB_SERVICE_ID  0xFEAA

@@ -16,7 +16,7 @@ typedef struct simple_ble_app_s {
 typedef struct simple_ble_config_s {
     uint8_t     platform_id;        // used as 4th octet in device BLE address
     uint16_t    device_id;          // set the lower 16 bits of the device id. Set to DEVICE_ID_DEFAULT to use random.
-    char*       adv_name;           // used in advertisements if there is room
+    const char* adv_name;           // used in advertisements if there is room
     uint16_t    adv_interval;       // Between 20 ms and 10.24 s
     uint16_t    min_conn_interval;
     uint16_t    max_conn_interval;
@@ -47,7 +47,7 @@ extern void __attribute__((weak)) ble_error(uint32_t error_code);
 
 // overwrite to change functionality
 void __attribute__((weak)) ble_stack_init(void);
-void __attribute__((weak)) ble_address_set ();
+void __attribute__((weak)) ble_address_set (void);
 void __attribute__((weak)) gap_params_init(void);
 void __attribute__((weak)) advertising_init(void);
 void __attribute__((weak)) conn_params_init(void);

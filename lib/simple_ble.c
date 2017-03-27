@@ -320,7 +320,7 @@ static void on_ble_evt(ble_evt_t * p_ble_evt) {
 
 // Configure the MAC address of the device based on the config values and
 // what is stored in the flash.
-void __attribute__((weak)) ble_address_set () {
+void __attribute__((weak)) ble_address_set (void) {
     uint32_t err_code;
 
     // Set the MAC address of the device

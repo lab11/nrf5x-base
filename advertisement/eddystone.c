@@ -30,7 +30,7 @@
 #include "eddystone.h"
 
 
-void eddystone_adv(char* url_str, const ble_advdata_t* scan_response_data) {
+void eddystone_adv(const char* url_str, const ble_advdata_t* scan_response_data) {
     uint32_t err_code;
 
     // These have been moved into this function to fix a bleeding-edge
@@ -72,7 +72,7 @@ void eddystone_adv(char* url_str, const ble_advdata_t* scan_response_data) {
     advertising_start();
 }
 
-void eddystone_with_manuf_adv (char* url_str, ble_advdata_manuf_data_t* manuf_specific_data) {
+void eddystone_with_manuf_adv (const char* url_str, ble_advdata_manuf_data_t* manuf_specific_data) {
     ble_advdata_t srdata;
     memset(&srdata, 0, sizeof(srdata));
 
@@ -82,7 +82,7 @@ void eddystone_with_manuf_adv (char* url_str, ble_advdata_manuf_data_t* manuf_sp
     eddystone_adv(url_str, &srdata);
 }
 
-void eddystone_with_name (char* url_str) {
+void eddystone_with_name (const char* url_str) {
     ble_advdata_t srdata;
     memset(&srdata, 0, sizeof(srdata));
 
