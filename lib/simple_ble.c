@@ -103,6 +103,24 @@ void assert_nrf_callback(uint16_t line_num, const uint8_t * p_file_name);
 /*******************************************************************************
  *   HANDLERS AND CALLBACKS
  ******************************************************************************/
+
+// Default weak references for callbacks
+//
+// All of these callbacks are optional. By declaring prototypes with weak
+// references here, these will turn into pointes with value 0 (definition of
+// behavoir for weak references with forward declaration but no implementation)
+// rather than link time failures.
+//
+// Run-time code must check that these functions are valid before calling.
+void __attribute__((weak)) ble_evt_connected(ble_evt_t* p_ble_evt);
+void __attribute__((weak)) ble_evt_disconnected(ble_evt_t* p_ble_evt);
+void __attribute__((weak)) ble_evt_write(ble_evt_t* p_ble_evt);
+void __attribute__((weak)) ble_evt_rw_auth(ble_evt_t* p_ble_evt);
+void __attribute__((weak)) ble_evt_user_handler(ble_evt_t* p_ble_evt);
+void __attribute__((weak)) ble_evt_adv_report(ble_evt_t* p_ble_evt);
+void __attribute__((weak)) ble_error(uint32_t error_code);
+
+
 #ifndef SOFTDEVICE_s130 // This function is called app_error_fault_handler in the SDK 11
 void app_error_handler(uint32_t error_code, uint32_t line_num, const uint8_t * p_file_name) {
 #else

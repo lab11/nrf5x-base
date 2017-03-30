@@ -37,29 +37,29 @@ typedef struct simple_ble_char_s {
  *   FUNCTION PROTOTYPES
  ******************************************************************************/
 // implement for callbacks
-extern void __attribute__((weak)) ble_evt_connected(ble_evt_t* p_ble_evt);
-extern void __attribute__((weak)) ble_evt_disconnected(ble_evt_t* p_ble_evt);
-extern void __attribute__((weak)) ble_evt_write(ble_evt_t* p_ble_evt);
-extern void __attribute__((weak)) ble_evt_rw_auth(ble_evt_t* p_ble_evt);
-extern void __attribute__((weak)) ble_evt_user_handler(ble_evt_t* p_ble_evt);
-extern void __attribute__((weak)) ble_evt_adv_report(ble_evt_t* p_ble_evt);
-extern void __attribute__((weak)) ble_error(uint32_t error_code);
+extern void ble_evt_connected(ble_evt_t* p_ble_evt);
+extern void ble_evt_disconnected(ble_evt_t* p_ble_evt);
+extern void ble_evt_write(ble_evt_t* p_ble_evt);
+extern void ble_evt_rw_auth(ble_evt_t* p_ble_evt);
+extern void ble_evt_user_handler(ble_evt_t* p_ble_evt);
+extern void ble_evt_adv_report(ble_evt_t* p_ble_evt);
+extern void ble_error(uint32_t error_code);
 
 // overwrite to change functionality
-void __attribute__((weak)) ble_stack_init(void);
-void __attribute__((weak)) ble_address_set (void);
-void __attribute__((weak)) gap_params_init(void);
-void __attribute__((weak)) advertising_init(void);
-void __attribute__((weak)) conn_params_init(void);
-void __attribute__((weak)) services_init(void);
+void ble_stack_init(void);
+void ble_address_set (void);
+void gap_params_init(void);
+void advertising_init(void);
+void conn_params_init(void);
+void services_init(void);
 #ifdef ENABLE_DFU
-void __attribute__((weak)) dfu_init (void);
-void __attribute__((weak)) dfu_reset_prepare (void);
+void dfu_init (void);
+void dfu_reset_prepare (void);
 #endif
-void __attribute__((weak)) initialize_app_timer(void);
-void __attribute__((weak)) advertising_start(void);
-void __attribute__((weak)) advertising_stop(void);
-void __attribute__((weak)) power_manage(void);
+void initialize_app_timer(void);
+void advertising_start(void);
+void advertising_stop(void);
+void power_manage(void);
 
 // call to initialize
 simple_ble_app_t* simple_ble_init(const simple_ble_config_t* conf);
@@ -106,10 +106,9 @@ int parse_adata(ble_evt_t * p_ble_evt, uint8_t type, uint8_t * data);
 /*******************************************************************************
  *   GLOBAL CONFIGURATIONS
  *******************************************************************************/
-extern __attribute__((weak)) const int SLAVE_LATENCY;
-extern __attribute__((weak)) const int APP_TIMER_MAX_TIMERS;
-extern __attribute__((weak)) const int CONN_SUP_TIMEOUT;
-extern __attribute__((weak)) const int FIRST_CONN_PARAMS_UPDATE_DELAY;
+extern const int SLAVE_LATENCY;
+extern const int CONN_SUP_TIMEOUT;
+extern const int FIRST_CONN_PARAMS_UPDATE_DELAY;
 
 /*******************************************************************************
  *   DEFINES
