@@ -2,10 +2,13 @@
 #include <stdbool.h>
 #include "nordic_common.h"
 #include "app_timer.h"
+#include "nrf_drv_config.h"
 
 #define SIMPLE_TIMER_PRESCALER     0
-#define SIMPLE_TIMER_OP_QUEUE_SIZE 4
 
+#ifndef SIMPLE_TIMER_OP_QUEUE_SIZE
+#define SIMPLE_TIMER_OP_QUEUE_SIZE 4
+#endif
 // Define four timers that the app can use.
 // This is a bit of a hack, but makes for a really simple API.
 // If your application needs more, or better control, please use the

@@ -2,37 +2,60 @@
 
 #include "nrf51_bitfields.h"
 #include "nrf_gpio.h"
+#include "led.h"
+#include "nrf_delay.h"
+#include "spi_master2.h"
+#include "board.h"
+#include "diskio.h"
 
-#define NRF_SPI NRF_SPI1
+#define NRF_SPI SPI1
 
-#define FCLK_SLOW() NRF_SPI->FREQUENCY = SPI_FREQUENCY_FREQUENCY_K250
-#define FCLK_FAST() NRF_SPI->FREQUENCY = SPI_FREQUENCY_FREQUENCY_M4
+SPIConfig_t sd_card_spi = {
+                                .Config.Fields.BitOrder = SPI_BITORDER_MSB_LSB,
+                                .Config.Fields.Mode     = SPI_MODE0,
+                                .Frequency              = SPI_FREQ_250KBPS,
+                                .Pin_SCK                = SD_SCK,
+                                .Pin_MOSI               = SD_MOSI,
+                                .Pin_MISO               = SD_MISO,
+                                .Pin_CSN                = DUMMY_CS
+};
 
-#define CS_HIGH()	nrf_gpio_pin_set(SPI_CS_PIN)
-#define CS_LOW()	nrf_gpio_pin_clear(SPI_CS_PIN)
-#define	MMC_CD		!nrf_gpio_pin_read(CD_PIN)
+
+#define CS_HIGH()	nrf_gpio_pin_set(SD_CS)
+#define CS_LOW()	nrf_gpio_pin_clear(SD_CS)
+#define	MMC_CD		!nrf_gpio_pin_read(SD_DETECT)
 #define	MMC_WP		0
 
 #define SD_POWER_ON()	nrf_gpio_pin_clear(SD_ENABLE_PIN)
 #define SD_POWER_OFF()	nrf_gpio_pin_set(SD_ENABLE_PIN)
 
-#define SD_PIN_INIT() 	nrf_gpio_cfg_output(SPI_CS_PIN);\
-						nrf_gpio_cfg_output(SD_ENABLE_PIN);\
-						nrf_gpio_cfg_input(CD_PIN, NRF_GPIO_PIN_NOPULL);\
-						nrf_gpio_cfg_input(SPI_MISO_PIN, NRF_GPIO_PIN_PULLUP);
+#define SD_PIN_INIT() 	nrf_gpio_cfg_output(SD_CS);\
+						nrf_gpio_cfg_output(SD_ENABLE);\
+						nrf_gpio_cfg_output(SD_MOSI);\
+						nrf_gpio_cfg_output(SD_SCK);\
+						nrf_gpio_cfg_input(SD_DETECT, NRF_GPIO_PIN_NOPULL);\
+						nrf_gpio_cfg_input(SD_MISO, NRF_GPIO_PIN_NOPULL);
 
-#define	SPI_CONFIG() {\
- 	NRF_SPI->PSELSCK    = SPI_SCK_PIN;\
- 	NRF_SPI->PSELMOSI   = SPI_MOSI_PIN;\
- 	NRF_SPI->PSELMISO   = SPI_MISO_PIN;\
- 	NRF_SPI->CONFIG     = (uint32_t)(SPI_CONFIG_CPHA_Leading << SPI_CONFIG_CPHA_Pos) |\
- 							(SPI_CONFIG_CPOL_ActiveHigh << SPI_CONFIG_CPOL_Pos) |\
- 							(SPI_CONFIG_ORDER_MsbFirst << SPI_CONFIG_ORDER_Pos);\
- 	NRF_SPI->ENABLE = (SPI_ENABLE_ENABLE_Enabled << SPI_ENABLE_ENABLE_Pos);\
- 	NRF_SPI->EVENTS_READY = 0;\
+static void SPI_CONFIG() {
+	spi_master_init(NRF_SPI, &sd_card_spi);
 }
 
+static void FCLK_SLOW() {
+	sd_card_spi.Frequency = SPI_FREQ_250KBPS;
+	SPI_CONFIG();
+}
 
+static void FCLK_FAST() {
+	sd_card_spi.Frequency = SPI_FREQ_4MBPS;
+	SPI_CONFIG();
+}
+
+static BYTE scmd; // cmd given to send cmd
+static DWORD sarg; // arg given to send cmd
+volatile uint8_t sd_counter = 0;
+static void sd_debug_stopper() {
+	sd_counter += 1;
+}
 
 
 /*--------------------------------------------------------------------------
@@ -40,9 +63,6 @@
    Module Private Functions
 
 ---------------------------------------------------------------------------*/
-
-#include "board.h"
-#include "diskio.h"
 
 
 /* MMC/SD command */
@@ -93,20 +113,16 @@ static void init_spi (void) {
 	for (Timer1 = 10; Timer1; ) ;	/* 10ms */
 }
 
-
 /* Exchange a byte */
 static BYTE xchg_spi (BYTE dat) {
-	NRF_SPI->TXD = dat;
-	while (!NRF_SPI->EVENTS_READY);
-	BYTE data = (BYTE)NRF_SPI->RXD;
-	NRF_SPI->EVENTS_READY = 0;
-	return data;
+	BYTE rx_dat;
+	spi_master_tx_rx(NRF_SPI, 1, &dat, &rx_dat);
+	return rx_dat;
 }
 
 
 /* Receive multiple byte */
 static void rcvr_spi_multi ( BYTE *buff, UINT btr) {
-
 	uint32_t i = 0;
 	while(btr) {
 		buff[i] = xchg_spi(0xFF);
@@ -175,7 +191,7 @@ int select (void)	/* 1:OK, 0:Timeout */
 	CS_LOW();		/* Set CS# low */
 	xchg_spi(0xFF);	/* Dummy clock (force DO enabled) */
 	if (wait_ready(500)) return 1;	/* Wait for card ready */
-
+	//led_toggle(LED_RED);
 	deselect();
 	return 0;	/* Timeout */
 }
@@ -252,7 +268,6 @@ BYTE send_cmd (		/* Return value: R1 resp (bit7==1:Failed to send) */
 {
 	BYTE n, res;
 
-
 	if (cmd & 0x80) {	/* Send a CMD55 prior to ACMD<n> */
 		cmd &= 0x7F;
 		res = send_cmd(CMD55, 0);
@@ -302,7 +317,6 @@ BYTE send_cmd (		/* Return value: R1 resp (bit7==1:Failed to send) */
 DSTATUS disk_initialize (BYTE drv) {
 	BYTE n, cmd, ty, ocr[4];
 
-
 	if (drv) return STA_NOINIT;			/* Supports only drive 0 */
 	init_spi();							/* Initialize SPI */
 
@@ -313,11 +327,14 @@ DSTATUS disk_initialize (BYTE drv) {
 
 	ty = 0;
 	if (send_cmd(CMD0, 0) == 1) {			/* Put the card SPI/Idle state */
+		//led_toggle(LED_RED);
 		Timer1 = 1000;						/* Initialization timeout = 1 sec */
 		if (send_cmd(CMD8, 0x1AA) == 1) {	/* SDv2? */
 			for (n = 0; n < 4; n++) ocr[n] = xchg_spi(0xFF);	/* Get 32 bit return value of R7 resp */
 			if (ocr[2] == 0x01 && ocr[3] == 0xAA) {				/* Is the card supports vcc of 2.7-3.6V? */
-				while (Timer1 && send_cmd(ACMD41, 1UL << 30)) ;	/* Wait for end of initialization with ACMD41(HCS) */
+				while (Timer1 && send_cmd(ACMD41, 1UL << 30)) {
+					nrf_delay_ms(10);
+				}	/* Wait for end of initialization with ACMD41(HCS) */
 				if (Timer1 && send_cmd(CMD58, 0) == 0) {		/* Check CCS bit in the OCR */
 					for (n = 0; n < 4; n++) ocr[n] = xchg_spi(0xFF);
 					ty = (ocr[0] & 0x40) ? CT_SD2 | CT_BLOCK : CT_SD2;	/* Card id SDv2 */
@@ -334,6 +351,7 @@ DSTATUS disk_initialize (BYTE drv) {
 				ty = 0;
 		}
 	}
+	//else {led_toggle(LED_BLUE);}
 	CardType = ty;	/* Card type */
 	deselect();
 
@@ -541,9 +559,29 @@ DRESULT disk_ioctl (
 */
 
 void disk_restart(void) {
-	SD_POWER_OFF();
-	for(volatile int i = 0; i < 100000; i++);
+	disk_off();
+	nrf_delay_ms(500);
 	SD_POWER_ON();
+	nrf_gpio_cfg_output(SD_MOSI);
+	nrf_gpio_cfg_output(SD_CS);
+	nrf_gpio_cfg_output(SD_SCK);
+	nrf_gpio_cfg_input(SD_MISO, NRF_GPIO_PIN_NOPULL);
+	SPI_CONFIG();
+	nrf_delay_ms(200);
+
+}
+
+void disk_off() {
+	SD_POWER_OFF();
+	spi_master_disable(NRF_SPI);
+	nrf_gpio_cfg_output(SD_MOSI);
+	nrf_gpio_cfg_output(SD_CS);
+	nrf_gpio_cfg_output(SD_SCK);
+	nrf_gpio_cfg_output(SD_MISO);
+	nrf_gpio_pin_clear(SD_MOSI);
+	nrf_gpio_pin_clear(SD_CS);
+	nrf_gpio_pin_clear(SD_SCK);
+	nrf_gpio_pin_clear(SD_MISO);
 }
 
 void disk_timerproc (void)

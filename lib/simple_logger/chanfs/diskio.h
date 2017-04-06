@@ -32,6 +32,7 @@ typedef enum {
 /* Prototypes for disk control functions */
 /*---------------------------------------*/
 
+void	disk_off();
 void 	disk_restart(void);	
 DSTATUS disk_initialize (BYTE pdrv);
 DSTATUS disk_status (BYTE pdrv);

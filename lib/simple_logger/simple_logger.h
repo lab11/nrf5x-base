@@ -39,6 +39,7 @@ enum {
 	SIMPLE_LOGGER_BAD_PERMISSIONS
 } SIMPLE_LOGGER_ERROR; 
 
+
 uint8_t simple_logger_init(const char *filename, const char *permissions);
 uint8_t simple_logger_ready(void);
 void simple_logger_update();
@@ -47,4 +48,10 @@ uint8_t simple_logger_log(const char *format, ...)
 uint8_t simple_logger_log_header(const char *format, ...)
 		__attribute__ ((format (printf, 1, 2)));
 
+int		simple_logger_fast_log(const char *format, ...);
+uint8_t simple_logger_sync();
+void 	simple_logger_debug_stopper();
+uint8_t simple_logger_start();
+uint8_t simple_logger_stop();
+uint8_t simple_logger_fast_log_binary(const void *buf, unsigned int size);
 #endif
