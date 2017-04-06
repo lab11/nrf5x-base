@@ -27,7 +27,6 @@ clean: clean-bootloader
 	rm -rf $(OUTPUT_PATH)
 	rm -f *.jlink
 	rm -f JLink.log
-	rm -f .gdbinit
 
 clean-bootloader:
 	rm -rf $(BASE_DIR)/dfu/_build
