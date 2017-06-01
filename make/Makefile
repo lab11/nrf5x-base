@@ -23,6 +23,9 @@
 ##   - FLASH_KB           : Size of flash on chip
 ##   - SDK_VERSION        : Major version number of the SDK to use. Defaults to 10 for nrf51, 12 for nrf52
 ##   - GDB_PORT_NUMBER    : Defaults to 2331
+##   - USE_GZLL           : link in the Gazell library and pairing source
+##   - USE_GZP            : include Gazell pairing source (implies USE_GZLL)
+##   - USE_ESB            : include the Enhanced ShockBurst source
 ##
 ##
 ## Then at the end of the Makefile do something like:
@@ -363,6 +366,25 @@ endif
 
 ifdef USE_ANT
     CFLAGS += -DANT_STACK_SUPPORT_REQD
+endif
+
+ifdef USE_GZP
+    USE_GZLL = 1
+    SOURCE_PATHS += $(SDK_SOURCE_PATH)proprietary_rf/gzll
+    APPLICATION_SRCS += nrf_gzp.c
+    APPLICATION_SRCS += nrf_gzp_device.c
+    APPLICATION_SRCS += nrf_gzp_host.c
+    APPLICATION_SRCS += nrf_gzp_host_nrf5x.c
+endif
+
+ifdef USE_GZLL
+    LIBRARY_PATHS += $(SDK_INCLUDE_PATH)proprietary_rf/gzll
+    LIBS += $(SDK_INCLUDE_PATH)proprietary_rf/gzll/gcc/gzll_nrf51_sd_resources_gcc.a
+endif
+
+ifdef USE_ESB
+    SOURCE_PATHS += $(SDK_SOURCE_PATH)proprietary_rf/esb
+    APPLICATION_SRCS += nrf_esb.c
 endif
 
 ifdef ENABLE_WIRELESS_DFU
@@ -787,6 +809,7 @@ CFLAGS += $(CMSIS_INCLUDE) $(LIBRARY_INCLUDES) -MD
 LDFLAGS += $(CPUFLAGS) -L $(BASE_DIR)/make/ld -T $(LINKER_SCRIPT) -Wl,--gc-sections -Wl,-Map=$(OUTPUT_PATH)$(OUTPUT_NAME).Map
 OBJDUMP_FLAGS += --disassemble-all --source --disassembler-options=force-thumb -C --section-headers
 
+
 DFUHEX = $(BASE_DIR)/dfu/_build/$(DFU_OUTPUT_NAME).hex
 DFUELF = $(BASE_DIR)/dfu/_build/$(DFU_OUTPUT_NAME).elf
 DFUBIN = $(BASE_DIR)/dfu/_build/$(DFU_OUTPUT_NAME).bin
@@ -848,7 +871,7 @@ endif
 
 $(HEX): $(OBJS) $(OBJS_AS)
 	$(PRINT_LD)
-	$(Q)$(LD) $(LDFLAGS) $(OBJS_AS) $(OBJS) -o $(ELF)
+	$(Q)$(LD) $(LDFLAGS) $(OBJS_AS) $(OBJS) $(LIBS) -o $(ELF)
 	$(PRINT_HEX)
 	$(Q)$(OBJCOPY) -Oihex $(ELF) $(HEX)
 	$(PRINT_BIN)
