@@ -863,7 +863,8 @@ endif
 
 rebuild: clean all
 
-ifeq ($(OS),Windows_NT)
+# if using mingw/msys, this test will fail and you will correctly get the posix Makefile
+ifeq ($(OS)$(MSYSTEM),Windows_NT)
 include $(BASE_DIR)/make/Makefile.windows
 else
 include $(BASE_DIR)/make/Makefile.posix
