@@ -901,19 +901,13 @@ void simple_ble_add_stack_characteristic (uint8_t read,
 // assuming that the buffer sent in there will be long enough
 uint32_t simple_ble_stack_char_get (simple_ble_char_t* char_handle, uint16_t* len, uint8_t* buf) {
     uint32_t err_code;
-    ble_gatts_value_t value = {0};
+    ble_gatts_value_t value = {
+        .len = *len,
+        .offset = 0,
+        .p_value = buf,
+    };
 
-    err_code = sd_ble_gatts_value_get(app.conn_handle, char_handle->char_handle.value_handle, &value);
-    if (err_code != NRF_SUCCESS) {
-        return err_code;
-    }
-
-    // no error
-    *len = value.len;
-    for (int i=0; i<value.len; i++) {
-        buf[i] = value.p_value[i];
-    }
-    return NRF_SUCCESS;
+    return = sd_ble_gatts_value_get(app.conn_handle, char_handle->char_handle.value_handle, &value);
 }
 
 uint32_t simple_ble_stack_char_set (simple_ble_char_t* char_handle, uint16_t len, uint8_t* buf) {
