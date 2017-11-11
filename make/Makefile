@@ -240,7 +240,7 @@ $(info $(space))
 DEVICE ?= $(shell echo $(NRF_MODEL) | tr a-z A-Z)
 
 # Required files to compile
-START_CODE ?= arm_startup_$(NRF_MODEL).s
+START_CODE ?= gcc_startup_$(NRF_MODEL).s
 SYSTEM_FILE ?= system_$(NRF_MODEL).c
 
 BOOTLOADER_REGION_START = $(addprefix 0x, $(shell echo "obase=16; (${FLASH_KB}-18)*1024" | bc ))
@@ -328,6 +328,7 @@ ifeq ($(SDK_VERSION), 12)
 	SOURCE_PATHS += $(wildcard $(SDK_SOURCE_PATH)libraries/*/src/)
 	SOURCE_PATHS += $(wildcard $(SDK_SOURCE_PATH)drivers_nrf/*/)
 	SOURCE_PATHS += $(wildcard $(SDK_SOURCE_PATH)drivers_ext/*/)
+	SOURCE_PATHS += $(SDK_INCLUDE_PATH)toolchain/gcc/
 
 ifdef SERIALIZATION_MODE
 	LIBRARY_PATHS += $(wildcard $(SDK_INCLUDE_PATH)serialization/*/)
@@ -481,6 +482,7 @@ ifeq ($(SDK_VERSION), 11)
 	SOURCE_PATHS += $(wildcard $(SDK_SOURCE_PATH)libraries/*/)
 	SOURCE_PATHS += $(wildcard $(SDK_SOURCE_PATH)drivers_nrf/*/)
 	SOURCE_PATHS += $(wildcard $(SDK_SOURCE_PATH)drivers_ext/*/)
+	SOURCE_PATHS += $(SDK_INCLUDE_PATH)toolchain/gcc/
 
 ifdef SERIALIZATION_MODE
 	LIBRARY_PATHS += $(wildcard $(SDK_INCLUDE_PATH)serialization/*/)
@@ -613,6 +615,7 @@ ifeq ($(SDK_VERSION), 10)
 	SOURCE_PATHS += $(wildcard $(SDK_SOURCE_PATH)libraries/*/)
 	SOURCE_PATHS += $(wildcard $(SDK_SOURCE_PATH)drivers_nrf/*/)
 	SOURCE_PATHS += $(wildcard $(SDK_SOURCE_PATH)drivers_ext/*/)
+	SOURCE_PATHS += $(SDK_INCLUDE_PATH)toolchain/gcc/
 
 ifdef SERIALIZATION_MODE
 	LIBRARY_PATHS += $(wildcard $(SDK_INCLUDE_PATH)serialization/*/)
@@ -734,6 +737,7 @@ ifeq ($(SDK_VERSION), 9)
 	SOURCE_PATHS += $(wildcard $(SDK_SOURCE_PATH)drivers_nrf/*/)
 	SOURCE_PATHS += $(wildcard $(SDK_SOURCE_PATH)drivers_ext/*/)
 	SOURCE_PATHS += $(wildcard $(SDK_SOURCE_PATH)serialization/*/)
+	SOURCE_PATHS += $(SDK_INCLUDE_PATH)toolchain/gcc/
 
 ifdef USE_BLE
     LIBRARY_PATHS += $(wildcard $(SDK_INCLUDE_PATH)ble/*/)
@@ -815,7 +819,7 @@ ifeq ($(SDK_VERSION), 14)
 	SOURCE_PATHS += $(wildcard $(SDK_SOURCE_PATH)libraries/*/src/)
 	SOURCE_PATHS += $(wildcard $(SDK_SOURCE_PATH)drivers_nrf/*/)
 	SOURCE_PATHS += $(wildcard $(SDK_SOURCE_PATH)drivers_ext/*/)
-	SOURCE_PATHS += $(SDK_SOURCE_PATH)components/toolchain/arm/
+	SOURCE_PATHS += $(SDK_INCLUDE_PATH)toolchain/gcc/
 
 ifdef SERIALIZATION_MODE
 	LIBRARY_PATHS += $(wildcard $(SDK_INCLUDE_PATH)serialization/*/)
@@ -961,7 +965,7 @@ ifeq ($(SDK_VERSION), 12)
 	SOURCE_PATHS += $(wildcard $(SDK_SOURCE_PATH)libraries/*/src/)
 	SOURCE_PATHS += $(wildcard $(SDK_SOURCE_PATH)drivers_nrf/*/)
 	SOURCE_PATHS += $(wildcard $(SDK_SOURCE_PATH)drivers_ext/*/)
-	SOURCE_PATHS += $(wildcard $(SDK_SOURCE_PATH)components/toolchain/arm/*)
+	SOURCE_PATHS += $(SDK_INCLUDE_PATH)toolchain/gcc/
 
 ifdef SERIALIZATION_MODE
 	LIBRARY_PATHS += $(wildcard $(SDK_INCLUDE_PATH)serialization/*/)
@@ -1108,9 +1112,8 @@ endif
 # Needed for SDK12
 NRF_IC_UPPER = $(shell echo $(NRF_IC) | tr a-z A-Z)
 
-print-% : ; @echo $* = $($*)
+LINKER_SCRIPT ?= $(NRF_MODEL)_xxaa.ld
 
-LINKER_SCRIPT ?= $(BASE_DIR)/make/ld/gcc_$(NRF_MODEL)_$(SOFTDEVICE_MODEL)_$(SOFTDEVICE_VERSION)_$(RAM_KB)_$(FLASH_KB).ld
 OUTPUT_NAME ?= $(addsuffix _$(SOFTDEVICE_MODEL), $(PROJECT_NAME))
 DFU_OUTPUT_NAME ?= $(addsuffix _$(FLASH_KB), $(addsuffix _$(RAM_KB), $(addsuffix _$(SOFTDEVICE_MODEL), dfu)))
 
@@ -1131,7 +1134,7 @@ CFLAGS += -std=gnu99 -c $(CPUFLAGS) -Wall -Wextra -Wno-unused-parameter -Werror=
 CFLAGS += -s -ffunction-sections -fdata-sections
 CFLAGS += -D$(shell echo $(SOFTDEVICE_MODEL) | tr a-z A-Z)
 CFLAGS += $(CMSIS_INCLUDE) $(LIBRARY_INCLUDES) -MD
-LDFLAGS += $(CPUFLAGS) -L $(BASE_DIR)/make/ld -T $(LINKER_SCRIPT) -Wl,--gc-sections -Wl,-Map=$(OUTPUT_PATH)$(OUTPUT_NAME).Map
+LDFLAGS += $(CPUFLAGS) -L $(CMSIS_INCLUDE_PATH) -T $(LINKER_SCRIPT) -Wl,--gc-sections -Wl,-Map=$(OUTPUT_PATH)$(OUTPUT_NAME).Map
 OBJDUMP_FLAGS += --disassemble-all --source --disassembler-options=force-thumb -C --section-headers
 
 
