@@ -1,5 +1,5 @@
 ################################################################################
-## Makefile for compiling apps against the nRF51 SDK
+## Makefile for compiling apps against the nRF5x SDK
 ################################################################################
 
 ################################################################################
@@ -50,7 +50,6 @@ BOARD ?= BOARD_NULL
 
 # TODO: Guess NRF_MODEL from famous BOARD
 
-
 # ---- Guess/Check NRF_MODEL from NRF_IC (if NRF_IC defined)
 ifdef NRF_IC
   #if NRF_IC == nrf51422 or nrf51802 or nrf51822
@@ -61,14 +60,21 @@ ifdef NRF_IC
       endif
     endif
     NRF_MODEL = nrf51
-  #else if NRF_IC == nrf52832 or nrf52840
-  else ifneq (,$(filter $(NRF_IC),nrf52832 nrf52840))
+  #else if NRF_IC == nrf52832
+  else ifeq ($(NRF_IC), nrf52832)
     ifdef NRF_MODEL
       ifneq ($(NRF_MODEL), nrf52)
         $(error NRF_MODEL $(NRF_MODEL) is not valid for NRF_IC $(NRF_IC))
       endif
     endif
     NRF_MODEL = nrf52
+  else ifeq ($(NRF_IC), nrf52840_xxaa)
+    ifdef NRF_MODEL
+      ifneq ($(NRF_MODEL), nrf52840)
+        $(error NRF_MODEL $(NRF_MODEL) is not valid for NRF_IC $(NRF_IC))
+      endif
+    endif
+    NRF_MODEL = nrf52840
   endif
 endif
 
@@ -89,17 +95,18 @@ ifeq ($(NRF_MODEL), nrf51)
 # --- NRF_IC: Default to nrf52832 for nrf52
 else ifeq ($(NRF_MODEL), nrf52)
   NRF_IC    ?= nrf52832
+else ifeq ($(NRF_MODEL), nrf52840)
+  NRF_IC    ?= nrf52840_xxaa
 endif
-
 
 # ---- Set hardware memory sizes
 ifneq (,$(filter $(NRF_IC),nrf51422 nrf51802 nrf51822))
   RAM_KB   ?= 16# can be also 32
   FLASH_KB ?= 256# can be also 128
 else ifeq ($(NRF_IC), nrf52832)
-  RAM_KB   ?= 64
-  FLASH_KB ?= 512
-else ifeq ($(NRF_IC), nrf52840)
+  RAM_KB   ?= 64# can be also 32
+  FLASH_KB ?= 512# can be also 256
+else ifeq ($(NRF_IC), nrf52840_xxaa)
   RAM_KB   ?= 256
   FLASH_KB ?= 1024
 endif
@@ -110,39 +117,43 @@ ifeq ($(NRF_MODEL), nrf51)
   SDK_VERSION ?= 10
 # Default to SDK 12 for nrf52
 else ifeq ($(NRF_MODEL), nrf52)
-  SDK_VERSION ?= 12
+  SDK_VERSION ?= 14
+else ifeq ($(NRF_MODEL), nrf52840)
+  SDK_VERSION ?= 14
 endif
 
 
 # Set this for using GDB
 GDB_PORT_NUMBER ?= 2331
 
+WANTED_NRF_MODEL = nrf51
+WANTED_SOFTDEVICE_VERSION = 8.0.0
 
 #------ Now select/check SOFTDEVICE version if used (depending SDK version)
 ifdef SOFTDEVICE_MODEL
   # SDK 9 or 10
   ifneq (,$(filter $(SDK_VERSION),9 10))
-    WAITED_NRF_MODEL = nrf51
+    WANTED_NRF_MODEL = nrf51
       ifeq ($(SOFTDEVICE_MODEL), s110)
 	USE_BLE = 1
 	SOFTDEVICE_VERSION ?= 8.0.0
-	WAITED_SOFTDEVICE_VERSION = 8.0.0
+	WANTED_SOFTDEVICE_VERSION = 8.0.0
       else ifeq ($(SOFTDEVICE_MODEL), s120)
 	USE_BLE = 1
 	SOFTDEVICE_VERSION ?= 2.1.0
-	WAITED_SOFTDEVICE_VERSION = 2.1.0
+	WANTED_SOFTDEVICE_VERSION = 2.1.0
       else ifeq ($(SOFTDEVICE_MODEL), s130)
 	USE_BLE = 1
 	SOFTDEVICE_VERSION ?= 1.0.0
-	WAITED_SOFTDEVICE_VERSION = 1.0.0
+	WANTED_SOFTDEVICE_VERSION = 1.0.0
       else ifeq ($(SOFTDEVICE_MODEL), s210)
 	# ANT only softDevice
 	SOFTDEVICE_VERSION ?= 5.0.0
-	WAITED_SOFTDEVICE_VERSION = 5.0.0
+	WANTED_SOFTDEVICE_VERSION = 5.0.0
       else ifeq ($(SOFTDEVICE_MODEL), s310)
 	USE_BLE = 1
 	SOFTDEVICE_VERSION ?= 3.0.0
-	WAITED_SOFTDEVICE_VERSION = 3.0.0
+	WANTED_SOFTDEVICE_VERSION = 3.0.0
       endif
   endif
 
@@ -151,23 +162,23 @@ ifdef SOFTDEVICE_MODEL
     ifeq ($(SOFTDEVICE_MODEL), s130)
       USE_BLE = 1
       SOFTDEVICE_VERSION ?= 2.0.0
-      WAITED_SOFTDEVICE_VERSION = 2.0.0
-      WAITED_NRF_MODEL = nrf51
+      WANTED_SOFTDEVICE_VERSION = 2.0.0
+      WANTED_NRF_MODEL = nrf51
     else ifeq ($(SOFTDEVICE_MODEL), s132)
       USE_BLE = 1
       SOFTDEVICE_VERSION ?= 2.0.0
-      WAITED_SOFTDEVICE_VERSION = 2.0.0
-      WAITED_NRF_MODEL = nrf52
+      WANTED_SOFTDEVICE_VERSION = 2.0.0
+      WANTED_NRF_MODEL = nrf52
     else ifeq ($(SOFTDEVICE_MODEL), s212)
       # ANT only softDevice
       SOFTDEVICE_VERSION ?= 0.9.1
-      WAITED_SOFTDEVICE_VERSION = 0.9.1
-      WAITED_NRF_MODEL = nrf52
+      WANTED_SOFTDEVICE_VERSION = 0.9.1
+      WANTED_NRF_MODEL = nrf52
     else ifeq ($(SOFTDEVICE_MODEL), s332)
       USE_BLE = 1
       SOFTDEVICE_VERSION ?= 0.9.1
-      WAITED_SOFTDEVICE_VERSION = 0.9.1
-      WAITED_NRF_MODEL = nrf52
+      WANTED_SOFTDEVICE_VERSION = 0.9.1
+      WANTED_NRF_MODEL = nrf52
     endif
   endif
 
@@ -176,49 +187,50 @@ ifdef SOFTDEVICE_MODEL
     ifeq ($(SOFTDEVICE_MODEL), s130)
       USE_BLE = 1
       SOFTDEVICE_VERSION ?= 2.0.1
-      WAITED_SOFTDEVICE_VERSION = 2.0.1
-      WAITED_NRF_MODEL = nrf51
+      WANTED_SOFTDEVICE_VERSION = 2.0.1
+      WANTED_NRF_MODEL = nrf51
     else ifeq ($(SOFTDEVICE_MODEL), s132)
       USE_BLE = 1
       SOFTDEVICE_VERSION ?= 3.0.0
-      WAITED_SOFTDEVICE_VERSION = 3.0.0
-      WAITED_NRF_MODEL = nrf52
+      WANTED_SOFTDEVICE_VERSION = 3.0.0
+      WANTED_NRF_MODEL = nrf52
     else ifeq ($(SOFTDEVICE_MODEL), s212)
       # ANT only softDevice
       SOFTDEVICE_VERSION ?= 2.0.0
-      WAITED_SOFTDEVICE_VERSION = 2.0.0
-      WAITED_NRF_MODEL = nrf52
+      WANTED_SOFTDEVICE_VERSION = 2.0.0
+      WANTED_NRF_MODEL = nrf52
     else ifeq ($(SOFTDEVICE_MODEL), s332)
       USE_BLE = 1
       SOFTDEVICE_VERSION ?= 2.0.0
-      WAITED_SOFTDEVICE_VERSION = 2.0.0
-      WAITED_NRF_MODEL = nrf52
+      WANTED_SOFTDEVICE_VERSION = 2.0.0
+      WANTED_NRF_MODEL = nrf52
     endif
   endif
 
   # SDK 14
   ifeq ($(SDK_VERSION), 14)
-    WAITED_NRF_MODEL = nrf52
     ifeq ($(SOFTDEVICE_MODEL), s132)
       # BLE softdevice for nrf52832
       USE_BLE = 1
       SOFTDEVICE_VERSION ?= 5.0.0
-      WAITED_SOFTDEVICE_VERSION = 5.0.0
+      WANTED_SOFTDEVICE_VERSION = 5.0.0
+      WANTED_NRF_MODEL = nrf52
     else ifeq ($(SOFTDEVICE_MODEL), s140)
       # Multiprotocol softdevice for nrf52840
       USE_BLE = 1
       SOFTDEVICE_VERSION ?= 5.0.0-2.alpha
-      WAITED_SOFTDEVICE_VERSION = 5.0.0-2.alpha
+      WANTED_SOFTDEVICE_VERSION = 5.0.0-2.alpha
+      WANTED_NRF_MODEL = nrf52840
     endif
   endif
 
-  SOFTDEVICE_VERSION ?= $(WAITED_SOFTDEVICE_VERSION)
-  ifneq ($(SOFTDEVICE_VERSION), $(WAITED_SOFTDEVICE_VERSION))
-    $(error FOR SDK$(SDK_VERSION) Supported SoftDevice Version for $(SOFTDEVICE_MODEL) is $(WAITED_SOFTDEVICE_VERSION). You selected $(SOFTDEVICE_VERSION))
+  SOFTDEVICE_VERSION ?= $(WANTED_SOFTDEVICE_VERSION)
+  ifneq ($(SOFTDEVICE_VERSION), $(WANTED_SOFTDEVICE_VERSION))
+    $(error FOR SDK$(SDK_VERSION) Supported SoftDevice Version for $(SOFTDEVICE_MODEL) is $(WANTED_SOFTDEVICE_VERSION). You selected $(SOFTDEVICE_VERSION))
   endif
 
-  ifneq ($(WAITED_NRF_MODEL), $(NRF_MODEL))
-    $(error SoftDevice $(SOFTDEVICE_MODEL) is only compatible with $(WAITED_NRF_MODEL). You selected $(SOFTDEVICE_MODEL))
+  ifneq ($(WANTED_NRF_MODEL), $(NRF_MODEL))
+    $(error SoftDevice $(SOFTDEVICE_MODEL) is only compatible with $(WANTED_NRF_MODEL). You selected $(SOFTDEVICE_MODEL))
   endif
 
 endif # ifdef SOFTDEVICE_MODEL
@@ -769,7 +781,7 @@ endif
 endif # SDK 9
 endif # nrf51
 
-ifeq ($(NRF_MODEL), nrf52)
+ifneq (,$(filter $(NRF_MODEL),nrf52 nrf52840))
 ifeq ($(SDK_VERSION), 14)
 
 	# Set the path
@@ -812,6 +824,7 @@ ifeq ($(SDK_VERSION), 14)
 	LIBRARY_PATHS += $(SDK_INCLUDE_PATH)toolchain/gcc/
 	LIBRARY_PATHS += $(SDK_INCLUDE_PATH)toolchain/
 	LIBRARY_PATHS += $(SDK_INCLUDE_PATH)toolchain/cmsis/include/
+	LIBRARY_PATHS += $(SDK_INCLUDE_PATH)softdevice/common
 
 	SOURCE_PATHS += $(SDK_SOURCE_PATH)
 	SOURCE_PATHS += $(wildcard $(SDK_SOURCE_PATH)*/)
@@ -820,6 +833,7 @@ ifeq ($(SDK_VERSION), 14)
 	SOURCE_PATHS += $(wildcard $(SDK_SOURCE_PATH)drivers_nrf/*/)
 	SOURCE_PATHS += $(wildcard $(SDK_SOURCE_PATH)drivers_ext/*/)
 	SOURCE_PATHS += $(SDK_INCLUDE_PATH)toolchain/gcc/
+	SOURCE_PATHS += $(SDK_INCLUDE_PATH)softdevice/common
 
 ifdef SERIALIZATION_MODE
 	LIBRARY_PATHS += $(wildcard $(SDK_INCLUDE_PATH)serialization/*/)
@@ -955,9 +969,11 @@ ifeq ($(SDK_VERSION), 12)
 	LIBRARY_PATHS += $(wildcard $(SDK_INCLUDE_PATH)drivers_nrf/validation/)
 	LIBRARY_PATHS += $(wildcard $(SDK_INCLUDE_PATH)drivers_ext/*/)
 	LIBRARY_PATHS += $(wildcard $(SDK_INCLUDE_PATH)device/)
+	LIBRARY_PATHS += $(SDK_INCLUDE_PATH)experimental_section_vars/
 	LIBRARY_PATHS += $(SDK_INCLUDE_PATH)toolchain/gcc/
 	LIBRARY_PATHS += $(SDK_INCLUDE_PATH)toolchain/
 	LIBRARY_PATHS += $(SDK_INCLUDE_PATH)toolchain/cmsis/include/
+	LIBRARY_PATHS += $(SDK_INCLUDE_PATH)softdevice/common
 
 	SOURCE_PATHS += $(SDK_SOURCE_PATH)
 	SOURCE_PATHS += $(wildcard $(SDK_SOURCE_PATH)*/)
@@ -966,6 +982,7 @@ ifeq ($(SDK_VERSION), 12)
 	SOURCE_PATHS += $(wildcard $(SDK_SOURCE_PATH)drivers_nrf/*/)
 	SOURCE_PATHS += $(wildcard $(SDK_SOURCE_PATH)drivers_ext/*/)
 	SOURCE_PATHS += $(SDK_INCLUDE_PATH)toolchain/gcc/
+	SOURCE_PATHS += $(SDK_INCLUDE_PATH)softdevice/common
 
 ifdef SERIALIZATION_MODE
 	LIBRARY_PATHS += $(wildcard $(SDK_INCLUDE_PATH)serialization/*/)
@@ -1112,7 +1129,7 @@ endif
 # Needed for SDK12
 NRF_IC_UPPER = $(shell echo $(NRF_IC) | tr a-z A-Z)
 
-LINKER_SCRIPT ?= $(NRF_MODEL)_xxaa.ld
+LINKER_SCRIPT ?= gcc_$(NRF_MODEL)_$(SOFTDEVICE_MODEL)_$(SOFTDEVICE_VERSION)_$(RAM_KB)_$(FLASH_KB).ld
 
 OUTPUT_NAME ?= $(addsuffix _$(SOFTDEVICE_MODEL), $(PROJECT_NAME))
 DFU_OUTPUT_NAME ?= $(addsuffix _$(FLASH_KB), $(addsuffix _$(RAM_KB), $(addsuffix _$(SOFTDEVICE_MODEL), dfu)))
@@ -1125,16 +1142,16 @@ VPATH = $(SOURCE_PATHS)
 OUTPUT_PATH ?= _build/
 
 ifeq ($(NRF_MODEL), nrf51)
-	CPUFLAGS = -mthumb -mcpu=cortex-m0 -march=armv6-m
+  CPUFLAGS = -mthumb -mcpu=cortex-m0 -march=armv6-m
+else ifneq (,$(filter $(NRF_IC),nrf52832 nrf52840_xxaa))
+  CPUFLAGS = -mthumb -mcpu=cortex-m4 -march=armv7e-m
 endif
-ifeq ($(NRF_MODEL), nrf52)
-	CPUFLAGS = -mthumb -mcpu=cortex-m4 -march=armv7e-m
-endif
+
 CFLAGS += -std=gnu99 -c $(CPUFLAGS) -Wall -Wextra -Wno-unused-parameter -Werror=return-type -D$(DEVICE) -D$(BOARD) -D$(NRF_IC_UPPER) -DSDK_VERSION_$(SDK_VERSION) -DSOFTDEVICE_$(SOFTDEVICE_MODEL)
 CFLAGS += -s -ffunction-sections -fdata-sections
 CFLAGS += -D$(shell echo $(SOFTDEVICE_MODEL) | tr a-z A-Z)
 CFLAGS += $(CMSIS_INCLUDE) $(LIBRARY_INCLUDES) -MD
-LDFLAGS += $(CPUFLAGS) -L $(CMSIS_INCLUDE_PATH) -T $(LINKER_SCRIPT) -Wl,--gc-sections -Wl,-Map=$(OUTPUT_PATH)$(OUTPUT_NAME).Map
+LDFLAGS += $(CPUFLAGS) -L $(BASE_DIR)/make/ld -T $(LINKER_SCRIPT) -Wl,--gc-sections -Wl,-Map=$(OUTPUT_PATH)$(OUTPUT_NAME).Map
 OBJDUMP_FLAGS += --disassemble-all --source --disassembler-options=force-thumb -C --section-headers
 
 

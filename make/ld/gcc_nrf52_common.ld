@@ -1,3 +1,4 @@
+GROUP(libgcc.a libc.a libm.a libnosys.a)
 /* Linker script for Nordic Semiconductor nRF52 devices
  *
  * Version: Sourcery G++ 4.5-1
@@ -158,11 +159,11 @@ SECTIONS
 
     /* Check if data + heap + stack exceeds RAM limit */
     ASSERT(__StackLimit >= __HeapLimit, "region RAM overflowed with stack")
-    
+
     /* Check if text sections + data exceeds FLASH limit */
     DataInitFlashUsed = __bss_start__ - __data_start__;
     CodeFlashUsed = __etext - ORIGIN(FLASH);
     TotalFlashUsed = CodeFlashUsed + DataInitFlashUsed;
     ASSERT(TotalFlashUsed <= LENGTH(FLASH), "region FLASH overflowed with .data and user data")
-    
+
 }
