@@ -1,0 +1,6 @@
+target/
+build/
+_build/
+.gdbinit
+*.swp
+*.DS_Store
