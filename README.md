@@ -99,7 +99,7 @@ Program a nRF51822
 To flash an application to a nRF51822 BLE chip, there is some setup
 you must do.
 
-1. Install the [`arm-none-eabi-gcc`](https://launchpad.net/gcc-arm-embedded) compiler.
+First, install the [`arm-none-eabi-gcc`](https://launchpad.net/gcc-arm-embedded) compiler.
 
     On Ubuntu:
 
@@ -107,13 +107,15 @@ you must do.
         sudo apt-get update
         sudo apt-get install gcc-arm-embedded
 
-2. Install the JLink [software](https://www.segger.com/jlink-software.html)
+### With JLink
+
+1. Install the JLink [software](https://www.segger.com/jlink-software.html)
 for your platform. You want the "Software and documentation pack".
 
-3. Acquire a [JLink JTAG programmer](https://www.segger.com/jlink-general-info.html).
+2. Acquire a [JLink JTAG programmer](https://www.segger.com/jlink-general-info.html).
 The "EDU" edition works fine.
 
-4. Program an app! With the JLink box attached to the target board:
+3. Program an app! With the JLink box attached to the target board:
 
         make flash
 
@@ -122,12 +124,33 @@ The "EDU" edition works fine.
 
         make erase-all
 
-    See the [make](https://github.com/lab11/nrf5x-base/tree/master/make) folder
-    for a complete list of commands.
+### With STLink/v2
 
-    Most of our boards use a [TagConnect header](http://www.tag-connect.com/TC2030-IDC-NL)
-    instead of the way-too-large ARM JTAG header. We use [our own](https://github.com/lab11/jtag-tagconnect)
-    adapter, but Segger also makes [one](https://www.segger.com/jlink-6-pin-needle-adapter.html).
+1. Install [openocd](http://openocd.org/), an On-Chip Debugging / In-System Programming tool.
+
+    On Ubuntu:
+
+        sudo apt-get install openocd
+
+2. Get a [STLink/v2 programmer](http://www.st.com/en/development-tools/st-link-v2.html).
+There are also popular unofficial versions described [here](http://wiki.sgmk-ssam.ch/wiki/STM32_dev#ST-Link_V2_Programmer) in more detail.
+
+3. Add `PROGRAMMER = stlinkv2` to your Makefile.
+
+4. Program an app! With the STLink attached to the target board:
+
+        make flash-softdevice # only necessary the first time, after erase of if you change the softdevice
+        make flash
+
+    will write the app and softdevice to the nRF51822. You can erase
+    a chip with:
+
+        make erase-all
+
+
+See the [make](https://github.com/lab11/nrf5x-base/tree/master/make) folder for a complete list of commands.
+
+Most of our boards use a [TagConnect header](http://www.tag-connect.com/TC2030-IDC-NL) instead of the way-too-large ARM JTAG header. We use [our own](https://github.com/lab11/jtag-tagconnect) adapter, but Segger also makes [one](https://www.segger.com/jlink-6-pin-needle-adapter.html).
 
 5. Upon inital programming, the nRF will enter debug mode, which will prevent the nRF from sleeping and 
    prevent the reset line from working. To fix this, either perform a powerdown/powerup or download nrfjprog from 
