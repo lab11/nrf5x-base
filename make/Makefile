@@ -899,6 +899,11 @@ ifdef USE_GZP
     APPLICATION_SRCS += nrf_gzp_host_nrf5x.c
 endif
 
+ifdef USE_GZLL
+    LIBRARY_PATHS += $(SDK_INCLUDE_PATH)proprietary_rf/gzll
+    LIBS += $(SDK_INCLUDE_PATH)proprietary_rf/gzll/gcc/gzll_nrf51_sd_resources_gcc.a
+endif
+
 ifdef USE_ESB
     SOURCE_PATHS += $(SDK_SOURCE_PATH)proprietary_rf/esb
     APPLICATION_SRCS += nrf_esb.c
