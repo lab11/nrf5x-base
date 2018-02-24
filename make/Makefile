@@ -1144,10 +1144,10 @@ OUTPUT_PATH ?= _build/
 ifeq ($(NRF_MODEL), nrf51)
   CPUFLAGS = -mthumb -mcpu=cortex-m0 -march=armv6-m
 else ifneq (,$(filter $(NRF_IC),nrf52832 nrf52840_xxaa))
-  CPUFLAGS = -mthumb -mcpu=cortex-m4 -march=armv7e-m
+  CPUFLAGS = -mthumb -mcpu=cortex-m4 -march=armv7e-m -mfpu=fpv4-sp-d16 -mfloat-abi=hard
 endif
 
-CFLAGS += -std=gnu99 -c $(CPUFLAGS) -Wall -Wextra -Wno-unused-parameter -Werror=return-type -D$(DEVICE) -D$(BOARD) -D$(NRF_IC_UPPER) -DSDK_VERSION_$(SDK_VERSION) -DSOFTDEVICE_$(SOFTDEVICE_MODEL)
+CFLAGS += -std=gnu99 -c $(CPUFLAGS) -Wall -Wextra -Wno-unused-parameter -Werror=return-type -Wno-expansion-to-defined -D$(DEVICE) -D$(BOARD) -D$(NRF_IC_UPPER) -DSDK_VERSION_$(SDK_VERSION) -DSOFTDEVICE_$(SOFTDEVICE_MODEL)
 CFLAGS += -s -ffunction-sections -fdata-sections
 CFLAGS += -D$(shell echo $(SOFTDEVICE_MODEL) | tr a-z A-Z)
 CFLAGS += $(CMSIS_INCLUDE) $(LIBRARY_INCLUDES) -MD
@@ -1169,6 +1169,7 @@ OBJS = $(addprefix $(OUTPUT_PATH), $(SRCS:.c=.o)) $(addprefix $(OUTPUT_PATH),$(A
 DEPS = $(addprefix $(OUTPUT_PATH), $(SRCS:.c=.d))
 SRCS_AS = $(START_CODE)
 OBJS_AS = $(addprefix $(OUTPUT_PATH), $(SRCS_AS:.s=.os))
+
 ### Verbosity control. Use  make V=1  to get verbose builds.
 
 ifeq ($(V),1)
