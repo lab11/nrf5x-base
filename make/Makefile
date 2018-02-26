@@ -109,6 +109,9 @@ else ifeq ($(NRF_IC), nrf52832)
 else ifeq ($(NRF_IC), nrf52840_xxaa)
   RAM_KB   ?= 256
   FLASH_KB ?= 1024
+else ifeq ($(NRF_IC), nrf52810)
+  RAM_KB   ?= 24
+  FLASH_KB ?= 192
 endif
 
 # ---- Set SDK if not SET
@@ -897,6 +900,11 @@ ifdef USE_GZP
     APPLICATION_SRCS += nrf_gzp_device.c
     APPLICATION_SRCS += nrf_gzp_host.c
     APPLICATION_SRCS += nrf_gzp_host_nrf5x.c
+endif
+
+ifdef USE_GZLL
+    LIBRARY_PATHS += $(SDK_INCLUDE_PATH)proprietary_rf/gzll
+    LIBS += $(SDK_INCLUDE_PATH)proprietary_rf/gzll/gcc/gzll_nrf52_sd_resources_gcc.a
 endif
 
 ifdef USE_ESB
