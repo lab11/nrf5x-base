@@ -11,6 +11,7 @@
 // Nordic Libraries
 #include "nordic_common.h"
 #include "ble.h"
+#include "ble_gap.h"
 #include "ble_db_discovery.h"
 #include "app_util.h"
 #include "app_error.h"
@@ -20,8 +21,12 @@
 #include "ble_bas_c.h"
 #include "app_util.h"
 #include "app_timer.h"
-#include "softdevice_handler.h"
 #include "nrf_sdm.h"
+#ifdef SOFTDEVICE_s140
+#include "nrf_sdh.h"
+#else
+#include "softdevice_handler.h"
+#endif
 
 // device firmware update code
 #ifdef ENABLE_DFU
@@ -54,7 +59,7 @@ ble_gap_adv_params_t m_adv_params;
 ble_gap_sec_params_t m_sec_params = {
     SEC_PARAM_BOND,
     SEC_PARAM_MITM,
-#ifdef SOFTDEVICE_s130
+#if defined(SOFTDEVICE_s130) || defined (SOFTDEVICE_s140)
     SEC_PARAM_LESC,
     SEC_PARAM_KEYPRESS,
 #endif
@@ -62,7 +67,7 @@ ble_gap_sec_params_t m_sec_params = {
     SEC_PARAM_OOB,
     SEC_PARAM_MIN_KEY_SIZE,
     SEC_PARAM_MAX_KEY_SIZE,
-#ifdef SOFTDEVICE_s130
+#if defined(SOFTDEVICE_s130) || defined (SOFTDEVICE_s140)
     {0, 0, 0, 0},
     {0, 0, 0, 0}
 #endif
@@ -71,7 +76,11 @@ ble_gap_sec_params_t m_sec_params = {
 // configuration settings that can be redefined by application
 __attribute__((weak)) const int SLAVE_LATENCY = 0;
 __attribute__((weak)) const int CONN_SUP_TIMEOUT = MSEC_TO_UNITS(4000, UNIT_10_MS);
+#ifdef SDK_VERSION_14
+__attribute__((weak)) const int FIRST_CONN_PARAMS_UPDATE_DELAY = APP_TIMER_TICKS(1000);
+#else
 __attribute__((weak)) const int FIRST_CONN_PARAMS_UPDATE_DELAY = APP_TIMER_TICKS(1000, APP_TIMER_PRESCALER);
+#endif
 
 #ifdef ENABLE_DFU
 static simple_ble_service_t dfu_service = {
@@ -96,8 +105,8 @@ static void on_ble_evt(ble_evt_t * p_ble_evt);
 static void dfu_reset();
 #endif
 
-void app_error_handler(uint32_t error_code, uint32_t line_num, const uint8_t * p_file_name);
-void assert_nrf_callback(uint16_t line_num, const uint8_t * p_file_name);
+//void app_error_handler(uint32_t error_code, uint32_t line_num, const uint8_t * p_file_name);
+//void assert_nrf_callback(uint16_t line_num, const uint8_t * p_file_name);
 
 
 /*******************************************************************************
@@ -121,10 +130,10 @@ void __attribute__((weak)) ble_evt_adv_report(ble_evt_t* p_ble_evt);
 void __attribute__((weak)) ble_error(uint32_t error_code);
 
 
-#ifndef SOFTDEVICE_s130 // This function is called app_error_fault_handler in the SDK 11
-void app_error_handler(uint32_t error_code, uint32_t line_num, const uint8_t * p_file_name) {
+#if defined(SOFTDEVICE_s130) || defined(SOFTDEVICE_s140) // This function is called app_error_fault_handler in SDK 11 - 14
+  void __attribute__((weak)) app_error_fault_handler(uint32_t error_code, __attribute__ ((unused)) uint32_t line_num, __attribute__ ((unused)) uint32_t info) {
 #else
-void __attribute__((weak)) app_error_fault_handler(uint32_t error_code, __attribute__ ((unused)) uint32_t line_num, __attribute__ ((unused)) uint32_t info) {
+  void app_error_handler(uint32_t error_code, uint32_t line_num, const uint8_t * p_file_name) {
 #endif
     // APPL_LOG("[APPL]: ASSERT: %s, %d, error 0x%08x\r\n", p_file_name, line_num, error_code);
 
@@ -147,9 +156,9 @@ void __attribute__((weak)) app_error_fault_handler(uint32_t error_code, __attrib
     while(1);
 }
 
-void assert_nrf_callback(uint16_t line_num, const uint8_t * p_file_name) {
-    app_error_handler(0xDEADBEEF, line_num, p_file_name);
-}
+//void assert_nrf_callback(uint16_t line_num, const uint8_t * p_file_name) {
+    //app_error_handler(0xDEADBEEF, line_num, p_file_name);
+//}
 
 static void conn_params_error_handler(uint32_t nrf_error) {
     APP_ERROR_HANDLER(nrf_error);
@@ -158,7 +167,9 @@ static void conn_params_error_handler(uint32_t nrf_error) {
 static void ble_evt_dispatch(ble_evt_t * p_ble_evt)
 {
     on_ble_evt(p_ble_evt);
+#ifndef SDK_VERSION_14
     ble_conn_params_on_ble_evt(p_ble_evt);
+#endif
 }
 
 static void sys_evt_dispatch(__attribute__ ((unused)) uint32_t sys_evt) {
@@ -366,7 +377,11 @@ void __attribute__((weak)) ble_address_set (void) {
             // Set the new BLE address with the Michigan OUI, Platform ID, and
             //  bottom two octets from the original gap address
             // Get the current original address
+#ifdef SDK_VERSION_14
+            sd_ble_gap_addr_get(&gap_addr);
+#else
             sd_ble_gap_address_get(&gap_addr);
+#endif
             memcpy(gap_addr.addr+2, new_mac_addr+2, sizeof(gap_addr.addr)-2);
         }
     } else {
@@ -381,14 +396,37 @@ void __attribute__((weak)) ble_address_set (void) {
     memcpy((uint8_t*)BOOTLOADER_BLE_ADDR_START, gap_addr.addr, 6);
 #endif
     gap_addr.addr_type = BLE_GAP_ADDR_TYPE_PUBLIC;
+#ifdef SDK_VERSION_14
+    err_code = sd_ble_gap_addr_set(&gap_addr);
+#else
     err_code = sd_ble_gap_address_set(BLE_GAP_ADDR_CYCLE_MODE_NONE, &gap_addr);
+#endif
     APP_ERROR_CHECK(err_code);
 }
 
 // Init the crystal and softdevice, plus configure the device address
 void __attribute__((weak)) ble_stack_init (void) {
     uint32_t err_code;
+#ifdef SDK_VERSION_14
+    // SDK 14 and related softdevices change the softdevice initialization
+    // procedure. Softdevice configuration is now done in the sdk_config.h in
+    // each app
+    err_code = nrf_sdh_enable_request();
+    APP_ERROR_CHECK(err_code);
 
+    // Configure the BLE stack using the default settings.
+    // Fetch the start address of the application RAM.
+    uint32_t ram_start = 0;
+    err_code = nrf_sdh_ble_default_cfg_set(APP_BLE_CONN_CFG_TAG, &ram_start);
+    APP_ERROR_CHECK(err_code);
+
+    // Enable BLE stack.
+    err_code = nrf_sdh_ble_enable(&ram_start);
+    APP_ERROR_CHECK(err_code);
+
+    // Register a handler for BLE events.
+    NRF_SDH_BLE_OBSERVER(m_ble_observer, APP_BLE_OBSERVER_PRIO, ble_evt_dispatch, NULL);
+#else
 #ifdef SOFTDEVICE_s130
     // Softdevice 130 2.0.0 changes how the softdevice init procedure works.
     nrf_clock_lf_cfg_t clock_lf_cfg = {
@@ -438,6 +476,7 @@ void __attribute__((weak)) ble_stack_init (void) {
     // Register with the SoftDevice handler module for BLE events.
     err_code = softdevice_sys_evt_handler_set(sys_evt_dispatch);
     APP_ERROR_CHECK(err_code);
+#endif //SDK_VERSION_14
 
     // And set the MAC address in the init phase
     ble_address_set();
@@ -539,10 +578,14 @@ void dfu_reset() {
 #endif
 
 void __attribute__((weak)) initialize_app_timer (void) {
+    int err_code = 0;
     // allow user to overwrite if they want to change timer parameters
 #ifdef SDK_VERSION_9
     // old version of the API specifying maximum number of timers
     APP_TIMER_INIT(APP_TIMER_PRESCALER, APP_TIMER_MAX_TIMERS, APP_TIMER_OP_QUEUE_SIZE, false);
+#elif defined(SDK_VERSION_14)
+    err_code = app_timer_init();
+    APP_ERROR_CHECK(err_code);
 #else
     APP_TIMER_INIT(APP_TIMER_PRESCALER, APP_TIMER_OP_QUEUE_SIZE, false);
 #endif
@@ -553,8 +596,12 @@ void __attribute__((weak)) initialize_app_timer (void) {
  *   HELPER FUNCTIONS
  ******************************************************************************/
 void __attribute__((weak)) advertising_start(void) {
+#ifdef SOFTDEVICE_s140
+    uint32_t err_code = sd_ble_gap_adv_start(&m_adv_params, APP_BLE_CONN_CFG_TAG);
+#else
     uint32_t err_code = sd_ble_gap_adv_start(&m_adv_params);
-#ifdef SOFTDEVICE_s130
+#endif
+#if defined(SOFTDEVICE_s130) || defined(SOFTDEVICE_s140)
     if (err_code == NRF_ERROR_CONN_COUNT) {
         // ignore Connection Count problems. Connectable advertising seems to work just fine
         return;

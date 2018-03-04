@@ -136,7 +136,11 @@ extern const int FIRST_CONN_PARAMS_UPDATE_DELAY;
 //size of op queues
 #define APP_TIMER_OP_QUEUE_SIZE         8
 
+#ifdef SDK_VERSION_14
+#define NEXT_CONN_PARAMS_UPDATE_DELAY   APP_TIMER_TICKS(30000)
+#else
 #define NEXT_CONN_PARAMS_UPDATE_DELAY   APP_TIMER_TICKS(30000, APP_TIMER_PRESCALER)
+#endif
 
 //attempts before giving up parameter negotiation
 #define MAX_CONN_PARAMS_UPDATE_COUNT    3
@@ -174,6 +178,11 @@ extern const int FIRST_CONN_PARAMS_UPDATE_DELAY;
 
 #define MAX_PKT_LEN                     20
 
+//tag identifying softdevice ble config
+#define APP_BLE_CONN_CFG_TAG            1
+
+//ble observer priority (sdk14)
+#define APP_BLE_OBSERVER_PRIO           3
 
 #endif
 
