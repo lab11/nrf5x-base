@@ -799,6 +799,7 @@ ifeq ($(SDK_VERSION), 14)
 	# Note that we do not use * because some folders have conflicting files.
 	LIBRARY_PATHS += $(wildcard $(SDK_INCLUDE_PATH)libraries/*/)
 	LIBRARY_PATHS += $(wildcard $(SDK_INCLUDE_PATH)libraries/*/src/)
+	LIBRARY_PATHS += $(wildcard $(SDK_INCLUDE_PATH)libraries/crypto/backend/*/)
 	LIBRARY_PATHS += $(wildcard $(SDK_INCLUDE_PATH)drivers_nrf/adc/)
 	LIBRARY_PATHS += $(wildcard $(SDK_INCLUDE_PATH)drivers_nrf/ble_flash/)
 	LIBRARY_PATHS += $(wildcard $(SDK_INCLUDE_PATH)drivers_nrf/clock/)
@@ -824,6 +825,8 @@ ifeq ($(SDK_VERSION), 14)
 	LIBRARY_PATHS += $(wildcard $(SDK_INCLUDE_PATH)drivers_nrf/validation/)
 	LIBRARY_PATHS += $(wildcard $(SDK_INCLUDE_PATH)drivers_ext/*/)
 	LIBRARY_PATHS += $(wildcard $(SDK_INCLUDE_PATH)device/)
+	LIBRARY_PATHS += $(wildcard $(SDK_PATH)external/*/include/)
+	LIBRARY_PATHS += $(wildcard $(SDK_PATH)external/*/include/)
 	LIBRARY_PATHS += $(SDK_INCLUDE_PATH)toolchain/gcc/
 	LIBRARY_PATHS += $(SDK_INCLUDE_PATH)toolchain/
 	LIBRARY_PATHS += $(SDK_INCLUDE_PATH)toolchain/cmsis/include/
@@ -833,10 +836,12 @@ ifeq ($(SDK_VERSION), 14)
 	SOURCE_PATHS += $(wildcard $(SDK_SOURCE_PATH)*/)
 	SOURCE_PATHS += $(wildcard $(SDK_SOURCE_PATH)libraries/*/)
 	SOURCE_PATHS += $(wildcard $(SDK_SOURCE_PATH)libraries/*/src/)
+	SOURCE_PATHS += $(wildcard $(SDK_INCLUDE_PATH)libraries/crypto/backend/*/)
 	SOURCE_PATHS += $(wildcard $(SDK_SOURCE_PATH)drivers_nrf/*/)
 	SOURCE_PATHS += $(wildcard $(SDK_SOURCE_PATH)drivers_ext/*/)
 	SOURCE_PATHS += $(SDK_INCLUDE_PATH)toolchain/gcc/
 	SOURCE_PATHS += $(SDK_INCLUDE_PATH)softdevice/common
+	LIBS += $(wildcard $(SDK_PATH)external/nrf_cc310/lib/libcc310_gcc*.a)
 
 ifdef SERIALIZATION_MODE
 	LIBRARY_PATHS += $(wildcard $(SDK_INCLUDE_PATH)serialization/*/)
