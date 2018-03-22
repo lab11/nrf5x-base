@@ -414,6 +414,10 @@ void __attribute__((weak)) ble_stack_init (void) {
     err_code = nrf_sdh_enable_request();
     APP_ERROR_CHECK(err_code);
 
+    // Use DCDC mode
+    err_code = sd_power_dcdc_mode_set(NRF_POWER_DCDC_ENABLE);
+    APP_ERROR_CHECK(err_code);
+
     // Configure the BLE stack using the default settings.
     // Fetch the start address of the application RAM.
     uint32_t ram_start = 0;
