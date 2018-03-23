@@ -34,6 +34,7 @@
 // Simple BLE files
 #include "simple_ble.h"
 #include "device_info_service.h"
+#include "led.h"
 
 #ifdef ENABLE_DFU
 // Defines
@@ -119,6 +120,7 @@ void __attribute__((weak)) ble_evt_rw_auth(ble_evt_t* p_ble_evt);
 void __attribute__((weak)) ble_evt_user_handler(ble_evt_t* p_ble_evt);
 void __attribute__((weak)) ble_evt_adv_report(ble_evt_t* p_ble_evt);
 void __attribute__((weak)) ble_error(uint32_t error_code);
+void __attribute__((weak)) ble_after_adv_event(void);
 
 
 #ifndef SOFTDEVICE_s130 // This function is called app_error_fault_handler in the SDK 11
@@ -193,6 +195,8 @@ static void interrupts_disable(void) {
 }
 #endif
 
+#define LED_PIN 13
+
 static void on_ble_evt(ble_evt_t * p_ble_evt) {
     uint32_t err_code;
 
@@ -200,16 +204,29 @@ static void on_ble_evt(ble_evt_t * p_ble_evt) {
         case BLE_GAP_EVT_CONNECTED:
             app.conn_handle = p_ble_evt->evt.gap_evt.conn_handle;
             // continue advertising, but nonconnectably
-            m_adv_params.type = BLE_GAP_ADV_TYPE_ADV_SCAN_IND;
-            advertising_start();
+            //m_adv_params.type = BLE_GAP_ADV_TYPE_ADV_SCAN_IND;
+            //advertising_start();
             // connected to device. Set initial CCCD attributes to NULL
-            err_code = sd_ble_gatts_sys_attr_set(app.conn_handle, NULL, 0, 0);
-            APP_ERROR_CHECK(err_code);
+            //err_code = sd_ble_gatts_sys_attr_set(app.conn_handle, NULL, 0, 0);
+            //APP_ERROR_CHECK(err_code);
+            led_toggle(LED_PIN);
+            led_toggle(LED_PIN);
+            led_toggle(LED_PIN);
+            led_toggle(LED_PIN);
+            led_toggle(LED_PIN);
+            led_toggle(LED_PIN);
+            led_toggle(LED_PIN);
+            led_toggle(LED_PIN);
 
             // callback for user. Weak reference, so check validity first
             if (ble_evt_connected) {
                 ble_evt_connected(p_ble_evt);
             }
+            break;
+
+        case BLE_GAP_EVT_SCAN_REQ_REPORT:
+            led_toggle(LED_PIN);
+            led_toggle(LED_PIN);
             break;
 
         case BLE_GAP_EVT_DISCONNECTED:
@@ -330,11 +347,48 @@ static void on_ble_evt(ble_evt_t * p_ble_evt) {
     }
 }
 
+// handle radio events
+void SWI1_IRQHandler(bool radio_evt) {
+  if (radio_evt) {
+    // a radio event occurred, call user function if exists
+    if (ble_after_adv_event) {
+      ble_after_adv_event();
+    }
+  }
+}
 
 
 /*******************************************************************************
  *   INIT FUNCTIONS
  ******************************************************************************/
+
+// Get radio event notifications
+uint32_t radio_notification_init (void) {
+  uint32_t err_code;
+
+  // configurations
+  uint32_t irq_priority = 3;
+  uint8_t notification_type = NRF_RADIO_NOTIFICATION_TYPE_INT_ON_INACTIVE;
+  uint8_t notification_distance = NRF_RADIO_NOTIFICATION_DISTANCE_800US;
+
+  err_code = sd_nvic_ClearPendingIRQ(SWI1_IRQn);
+  if (err_code != NRF_SUCCESS) {
+    return err_code;
+  }
+
+  err_code = sd_nvic_SetPriority(SWI1_IRQn, irq_priority);
+  if (err_code != NRF_SUCCESS) {
+    return err_code;
+  }
+
+  err_code = sd_nvic_EnableIRQ(SWI1_IRQn);
+  if (err_code != NRF_SUCCESS) {
+    return err_code;
+  }
+
+  // Configure the event
+  return sd_radio_notification_cfg_set(notification_type, notification_distance);
+}
 
 // Configure the MAC address of the device based on the config values and
 // what is stored in the flash.
@@ -423,6 +477,13 @@ void __attribute__((weak)) ble_stack_init (void) {
     SOFTDEVICE_HANDLER_INIT(NRF_CLOCK_LFCLKSRC_RC_250_PPM_8000MS_CALIBRATION,
             false);
 
+    // create radio notifications to get advertising events
+    err_code = radio_notification_init();
+    APP_ERROR_CHECK(err_code);
+
+    err_code = sd_power_dcdc_mode_set(NRF_POWER_DCDC_ENABLE);
+    APP_ERROR_CHECK(err_code);
+
     // Enable BLE stack
     ble_enable_params_t ble_enable_params;
     memset(&ble_enable_params, 0, sizeof(ble_enable_params));
@@ -448,7 +509,7 @@ void __attribute__((weak)) gap_params_init (void) {
     ble_gap_conn_sec_mode_t sec_mode;
 
     // Full strength signal
-    sd_ble_gap_tx_power_set(4);
+    sd_ble_gap_tx_power_set(0);
 
     // Let anyone connect and set the name given the platform
     BLE_GAP_CONN_SEC_MODE_SET_OPEN(&sec_mode);
@@ -457,13 +518,13 @@ void __attribute__((weak)) gap_params_init (void) {
     APP_ERROR_CHECK(err_code);
 
     // Not sure what this is useful for, but why not set it
-    err_code = sd_ble_gap_appearance_set(BLE_APPEARANCE_GENERIC_COMPUTER);
-    APP_ERROR_CHECK(err_code);
+    //err_code = sd_ble_gap_appearance_set(BLE_APPEARANCE_GENERIC_COMPUTER);
+    //APP_ERROR_CHECK(err_code);
 }
 
 void __attribute__((weak)) advertising_init(void) {
     memset(&m_adv_params, 0, sizeof(m_adv_params));
-    m_adv_params.type        = BLE_GAP_ADV_TYPE_ADV_IND;
+    m_adv_params.type        = BLE_GAP_ADV_TYPE_ADV_NONCONN_IND;
     m_adv_params.p_peer_addr = NULL;
     m_adv_params.fp          = BLE_GAP_ADV_FP_ANY;
     m_adv_params.interval    = ble_config->adv_interval;
@@ -587,25 +648,34 @@ void __attribute__((weak)) power_manage(void) {
 simple_ble_app_t* simple_ble_init(const simple_ble_config_t* conf) {
     ble_config = conf;
 
+led_init(LED_PIN);
+
     // Setup BLE and services
     ble_stack_init();
+
+uint32_t opt_id = BLE_GAP_OPT_SCAN_REQ_REPORT;
+ble_opt_t ble_options;
+ble_options.gap_opt.scan_req_report.enable = 1;
+int err_code = sd_ble_opt_set(opt_id, &ble_options);
+APP_ERROR_CHECK(err_code);
+
     gap_params_init();
     advertising_init();
-    services_init();
+    //services_init();
 
     // create device information service
 #if defined(HW_REVISION) || defined(FW_REVISION)
-    simple_ble_device_info_service_automatic();
+    //simple_ble_device_info_service_automatic();
 #endif
 
     // enable device firmware updates
 #ifdef ENABLE_DFU
-    dfu_init();
+    //dfu_init();
 #endif
 
     // APP_TIMER_INIT must be called before conn_params_init since it uses timers
     initialize_app_timer();
-    conn_params_init();
+    //conn_params_init();
 
     // initialize our connection state to "not in a connection"
     app.conn_handle = BLE_CONN_HANDLE_INVALID;

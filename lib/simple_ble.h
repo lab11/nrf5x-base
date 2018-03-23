@@ -44,6 +44,7 @@ extern void ble_evt_rw_auth(ble_evt_t* p_ble_evt);
 extern void ble_evt_user_handler(ble_evt_t* p_ble_evt);
 extern void ble_evt_adv_report(ble_evt_t* p_ble_evt);
 extern void ble_error(uint32_t error_code);
+extern void ble_after_adv_event(void);
 
 // overwrite to change functionality
 void ble_stack_init(void);
