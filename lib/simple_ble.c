@@ -13,7 +13,6 @@
 #include "ble.h"
 #include "ble_gap.h"
 #include "ble_db_discovery.h"
-#include "app_util.h"
 #include "app_error.h"
 #include "ble_conn_params.h"
 #include "ble_hci.h"
@@ -382,6 +381,7 @@ void __attribute__((weak)) ble_address_set (void) {
 #else
             sd_ble_gap_address_get(&gap_addr);
 #endif
+
             memcpy(gap_addr.addr+2, new_mac_addr+2, sizeof(gap_addr.addr)-2);
         }
     } else {

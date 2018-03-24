@@ -63,7 +63,11 @@ uint32_t multi_adv_start () {
 	uint32_t err;
 
 	err = app_timer_start(multi_adv_timer,
+#ifdef SDK_VERSION_14
+	                      APP_TIMER_TICKS(multi_adv_interval_ms),
+#else
 	                      APP_TIMER_TICKS(multi_adv_interval_ms, 0),
+#endif
 	                      NULL);
 	return err;
 }

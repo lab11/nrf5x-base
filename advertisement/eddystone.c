@@ -10,7 +10,11 @@
 
 // Nordic Libraries
 #include "nordic_common.h"
+#ifdef SOFTDEVICE_s140
+#include "nrf_sdh.h"
+#else
 #include "softdevice_handler.h"
+#endif
 #include "nrf.h"
 #include "nrf_sdm.h"
 #include "ble.h"
@@ -20,7 +24,6 @@
 #include "ble_advdata.h"
 #include "ble_conn_params.h"
 #include "ble_hci.h"
-#include "app_trace.h"
 #include "ble_hrs_c.h"
 #include "ble_bas_c.h"
 #include "app_util.h"
