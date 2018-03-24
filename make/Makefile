@@ -814,6 +814,7 @@ ifeq ($(SDK_VERSION), 14)
 	LIBRARY_PATHS += $(wildcard $(SDK_INCLUDE_PATH)drivers_nrf/radio_config/)
 	LIBRARY_PATHS += $(wildcard $(SDK_INCLUDE_PATH)drivers_nrf/rng/)
 	LIBRARY_PATHS += $(wildcard $(SDK_INCLUDE_PATH)drivers_nrf/rtc/)
+	LIBRARY_PATHS += $(wildcard $(SDK_INCLUDE_PATH)drivers_nrf/saadc/)
 	LIBRARY_PATHS += $(wildcard $(SDK_INCLUDE_PATH)drivers_nrf/sdio/)
 	LIBRARY_PATHS += $(wildcard $(SDK_INCLUDE_PATH)drivers_nrf/spi_master/)
 	LIBRARY_PATHS += $(wildcard $(SDK_INCLUDE_PATH)drivers_nrf/spi_slave/)
@@ -1112,7 +1113,10 @@ ifeq ($(SOFTDEVICE_MODEL), blank)
 endif
 
 # Location for BLE Address if stored in Flash
-ifeq ($(FLASH_KB), 256)
+ifeq ($(FLASH_KB), 1024)
+	CFLAGS += -DBLEADDR_FLASH_LOCATION=0x000FFFF8
+	BLEADDR_FLASH_LOCATION ?= 0x000FFFF8
+else ifeq ($(FLASH_KB), 256)
 	# 256 KB Flash
 	CFLAGS += -DBLEADDR_FLASH_LOCATION=0x0003FFF8
 	BLEADDR_FLASH_LOCATION ?= 0x0003FFF8
