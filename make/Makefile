@@ -70,11 +70,23 @@ ifdef NRF_IC
     NRF_MODEL = nrf52
   else ifeq ($(NRF_IC), nrf52840_xxaa)
     ifdef NRF_MODEL
-      ifneq ($(NRF_MODEL), nrf52840)
-        $(error NRF_MODEL $(NRF_MODEL) is not valid for NRF_IC $(NRF_IC))
+      ifeq ($(SDK_VERSION), 14)
+        ifneq ($(NRF_MODEL), nrf52840)
+          $(error NRF_MODEL $(NRF_MODEL) is not valid for NRF_IC $(NRF_IC))
+        endif
+      endif
+      ifeq ($(SDK_VERSION), 15)
+        ifneq ($(NRF_MODEL), nrf52)
+          $(error NRF_MODEL $(NRF_MODEL) is not valid for NRF_IC $(NRF_IC))
+        endif
       endif
     endif
-    NRF_MODEL = nrf52840
+    ifeq ($(SDK_VERSION), 14)
+      NRF_MODEL = nrf52840
+    endif
+    ifeq ($(SDK_VERSION), 15)
+      NRF_MODEL = nrf52
+    endif
   endif
 endif
 
@@ -224,6 +236,23 @@ ifdef SOFTDEVICE_MODEL
       SOFTDEVICE_VERSION ?= 5.0.0-2.alpha
       WANTED_SOFTDEVICE_VERSION = 5.0.0-2.alpha
       WANTED_NRF_MODEL = nrf52840
+    endif
+  endif
+
+  # SDK 15
+  ifeq ($(SDK_VERSION), 15)
+    ifeq ($(SOFTDEVICE_MODEL), s132)
+      # BLE softdevice for nrf52832
+      USE_BLE = 1
+      SOFTDEVICE_VERSION ?= 6.0.0
+      WANTED_SOFTDEVICE_VERSION = 6.0.0
+      WANTED_NRF_MODEL = nrf52
+    else ifeq ($(SOFTDEVICE_MODEL), s140)
+      # Multiprotocol softdevice for nrf52840
+      USE_BLE = 1
+      SOFTDEVICE_VERSION ?= 6.0.0
+      WANTED_SOFTDEVICE_VERSION = 6.0.0
+      WANTED_NRF_MODEL = nrf52
     endif
   endif
 
@@ -785,6 +814,174 @@ endif # SDK 9
 endif # nrf51
 
 ifneq (,$(filter $(NRF_MODEL),nrf52 nrf52840))
+
+ifeq ($(SDK_VERSION), 15)
+
+	# Set the path
+	SDK_PATH ?= $(BASE_DIR)/sdk/nrf5_sdk_15.0.0/
+
+	# Other knowns about the SDK paths
+	SDK_INCLUDE_PATH   = $(SDK_PATH)components/
+	SDK_SOURCE_PATH    = $(SDK_PATH)components/
+	CMSIS_INCLUDE_PATH = $(SDK_PATH)components/toolchain/gcc/
+
+	# Need to add the paths for all the directories in the SDK.
+	# Note that we do not use * because some folders have conflicting files.
+	LIBRARY_PATHS += $(SDK_PATH)modules/nrfx/
+	LIBRARY_PATHS += $(SDK_PATH)modules/nrfx/mdk/
+	LIBRARY_PATHS += $(SDK_PATH)modules/nrfx/hal/
+	LIBRARY_PATHS += $(SDK_PATH)integration/nrfx/
+	LIBRARY_PATHS += $(wildcard $(SDK_INCLUDE_PATH)libraries/*/)
+	LIBRARY_PATHS += $(wildcard $(SDK_INCLUDE_PATH)libraries/*/src/)
+	LIBRARY_PATHS += $(wildcard $(SDK_INCLUDE_PATH)libraries/crypto/backend/*/)
+	LIBRARY_PATHS += $(wildcard $(SDK_INCLUDE_PATH)drivers_nrf/adc/)
+	LIBRARY_PATHS += $(wildcard $(SDK_INCLUDE_PATH)drivers_nrf/ble_flash/)
+	LIBRARY_PATHS += $(wildcard $(SDK_INCLUDE_PATH)drivers_nrf/clock/)
+	LIBRARY_PATHS += $(wildcard $(SDK_INCLUDE_PATH)drivers_nrf/common/)
+	LIBRARY_PATHS += $(wildcard $(SDK_INCLUDE_PATH)drivers_nrf/delay/)
+	LIBRARY_PATHS += $(wildcard $(SDK_INCLUDE_PATH)drivers_nrf/gpiote/)
+	LIBRARY_PATHS += $(wildcard $(SDK_INCLUDE_PATH)drivers_nrf/hal/)
+	LIBRARY_PATHS += $(wildcard $(SDK_INCLUDE_PATH)drivers_nrf/lpcomp/)
+	LIBRARY_PATHS += $(wildcard $(SDK_INCLUDE_PATH)drivers_nrf/ppi/)
+	LIBRARY_PATHS += $(wildcard $(SDK_INCLUDE_PATH)drivers_nrf/pstorage/)
+	LIBRARY_PATHS += $(wildcard $(SDK_INCLUDE_PATH)drivers_nrf/pstorage/config/)
+	LIBRARY_PATHS += $(wildcard $(SDK_INCLUDE_PATH)drivers_nrf/radio_config/)
+	LIBRARY_PATHS += $(wildcard $(SDK_INCLUDE_PATH)drivers_nrf/rng/)
+	LIBRARY_PATHS += $(wildcard $(SDK_INCLUDE_PATH)drivers_nrf/rtc/)
+	LIBRARY_PATHS += $(wildcard $(SDK_INCLUDE_PATH)drivers_nrf/saadc/)
+	LIBRARY_PATHS += $(wildcard $(SDK_INCLUDE_PATH)drivers_nrf/sdio/)
+	LIBRARY_PATHS += $(wildcard $(SDK_INCLUDE_PATH)drivers_nrf/spi_master/)
+	LIBRARY_PATHS += $(wildcard $(SDK_INCLUDE_PATH)drivers_nrf/spi_slave/)
+	LIBRARY_PATHS += $(wildcard $(SDK_INCLUDE_PATH)drivers_nrf/swi/)
+	LIBRARY_PATHS += $(wildcard $(SDK_INCLUDE_PATH)drivers_nrf/timer/)
+	LIBRARY_PATHS += $(wildcard $(SDK_INCLUDE_PATH)drivers_nrf/twi_master/)
+	LIBRARY_PATHS += $(wildcard $(SDK_INCLUDE_PATH)drivers_nrf/uart/)
+	LIBRARY_PATHS += $(wildcard $(SDK_INCLUDE_PATH)drivers_nrf/wdt/)
+	LIBRARY_PATHS += $(wildcard $(SDK_INCLUDE_PATH)drivers_nrf/validation/)
+	LIBRARY_PATHS += $(wildcard $(SDK_INCLUDE_PATH)drivers_ext/*/)
+	LIBRARY_PATHS += $(wildcard $(SDK_INCLUDE_PATH)device/)
+	LIBRARY_PATHS += $(wildcard $(SDK_PATH)external/*/include/)
+	LIBRARY_PATHS += $(wildcard $(SDK_PATH)external/*/include/)
+	LIBRARY_PATHS += $(SDK_INCLUDE_PATH)toolchain/gcc/
+	LIBRARY_PATHS += $(SDK_INCLUDE_PATH)toolchain/
+	LIBRARY_PATHS += $(SDK_INCLUDE_PATH)toolchain/cmsis/include/
+	LIBRARY_PATHS += $(SDK_INCLUDE_PATH)softdevice/common
+
+	SOURCE_PATHS += $(SDK_SOURCE_PATH)
+	SOURCE_PATHS += $(SDK_PATH)modules/nrfx/
+	SOURCE_PATHS += $(SDK_PATH)modules/nrfx/mdk/
+	SOURCE_PATHS += $(SDK_PATH)modules/nrfx/hal/
+	SOURCE_PATHS += $(wildcard $(SDK_PATH)modules/nrfx/*/)
+	SOURCE_PATHS += $(wildcard $(SDK_SOURCE_PATH)*/)
+	SOURCE_PATHS += $(wildcard $(SDK_SOURCE_PATH)libraries/*/)
+	SOURCE_PATHS += $(wildcard $(SDK_SOURCE_PATH)libraries/*/src/)
+	SOURCE_PATHS += $(wildcard $(SDK_INCLUDE_PATH)libraries/crypto/backend/*/)
+	SOURCE_PATHS += $(wildcard $(SDK_SOURCE_PATH)drivers_nrf/*/)
+	SOURCE_PATHS += $(wildcard $(SDK_SOURCE_PATH)drivers_ext/*/)
+	SOURCE_PATHS += $(SDK_INCLUDE_PATH)toolchain/gcc/
+	SOURCE_PATHS += $(SDK_INCLUDE_PATH)softdevice/common
+	LIBS += $(wildcard $(SDK_PATH)external/nrf_cc310/lib/libcc310_gcc*.a)
+
+ifdef SERIALIZATION_MODE
+	LIBRARY_PATHS += $(wildcard $(SDK_INCLUDE_PATH)serialization/*/)
+	LIBRARY_PATHS += $(wildcard $(SDK_INCLUDE_PATH)serialization/common/transport/)
+	LIBRARY_PATHS += $(wildcard $(SDK_INCLUDE_PATH)serialization/$(SERIALIZATION_MODE)/codecs/common/)
+	LIBRARY_PATHS += $(wildcard $(SDK_INCLUDE_PATH)serialization/$(SERIALIZATION_MODE)/hal/)
+	LIBRARY_PATHS += $(wildcard $(SDK_INCLUDE_PATH)serialization/$(SERIALIZATION_MODE)/transport/)
+	LIBRARY_PATHS += $(wildcard $(SDK_INCLUDE_PATH)serialization/common/)
+	LIBRARY_PATHS += $(wildcard $(SDK_INCLUDE_PATH)serialization/common/transport/ser_phy/)
+	LIBRARY_PATHS += $(wildcard $(SDK_INCLUDE_PATH)serialization/common/transport/ser_phy/config/)
+
+	SOURCE_PATHS += $(wildcard $(SDK_SOURCE_PATH)serialization/*/)
+	SOURCE_PATHS += $(wildcard $(SDK_SOURCE_PATH)serialization/common/transport/)
+	SOURCE_PATHS += $(wildcard $(SDK_SOURCE_PATH)serialization/$(SERIALIZATION_MODE)/codecs/common/)
+	SOURCE_PATHS += $(wildcard $(SDK_SOURCE_PATH)serialization/$(SERIALIZATION_MODE)/hal/)
+	SOURCE_PATHS += $(wildcard $(SDK_SOURCE_PATH)serialization/$(SERIALIZATION_MODE)/transport/)
+	SOURCE_PATHS += $(wildcard $(SDK_SOURCE_PATH)serialization/common/)
+	SOURCE_PATHS += $(wildcard $(SDK_SOURCE_PATH)serialization/common/transport/ser_phy/)
+	SOURCE_PATHS += $(wildcard $(SDK_SOURCE_PATH)serialization/common/transport/ser_phy/config/)
+
+# Add defines based on if we are "connectivity" or "application"
+ifeq ($(SERIALIZATION_MODE), connectivity)
+    CFLAGS += -DSER_CONNECTIVITY -DAPP_SCHEDULER_WITH_PAUSE -DBLE_STACK_SUPPORT_REQD -DHCI_TIMER2 -DSOFTDEVICE_PRESENT
+endif
+ifeq ($(SERIALIZATION_MODE), application)
+    CFLAGS += -DSVCALL_AS_NORMAL_FUNCTION -DBLE_STACK_SUPPORT_REQD
+endif
+endif
+
+ifdef USE_BLE
+    # How many central/peripherals are defined changes how much memory the
+    # softdevice requires. Change the amount of memory allotted in a custom ld
+    # file if your configuration is different than default.
+
+    ifeq ($(RAM_KB), 16)
+      # limit 16 kB RAM nRFs to only act as peripherals. Doing otherwise
+      # requires careful balancing of memory requirements and should be done
+      # manually, not automatically
+      CENTRAL_LINK_COUNT ?= 0
+      PERIPHERAL_LINK_COUNT ?= 1
+    else
+      CENTRAL_LINK_COUNT ?= 1
+      PERIPHERAL_LINK_COUNT ?= 1
+    endif
+
+    LIBRARY_PATHS += $(wildcard $(SDK_INCLUDE_PATH)ble/*/)
+    LIBRARY_PATHS += $(wildcard $(SDK_INCLUDE_PATH)ble/ble_services/*/)
+    SOURCE_PATHS += $(wildcard $(SDK_SOURCE_PATH)ble/*/)
+    SOURCE_PATHS += $(wildcard $(SDK_SOURCE_PATH)ble/ble_services/*/)
+    CFLAGS += -DBLE_STACK_SUPPORT_REQD -DSOFTDEVICE_PRESENT -DCENTRAL_LINK_COUNT=$(CENTRAL_LINK_COUNT) -DPERIPHERAL_LINK_COUNT=$(PERIPHERAL_LINK_COUNT) -DNRF_SD_BLE_API_VERSION=5
+endif
+
+ifdef USE_ANT
+    CFLAGS += -DANT_STACK_SUPPORT_REQD
+endif
+
+ifdef USE_GZP
+    USE_GZLL = 1
+    SOURCE_PATHS += $(SDK_SOURCE_PATH)proprietary_rf/gzll
+    APPLICATION_SRCS += nrf_gzp.c
+    APPLICATION_SRCS += nrf_gzp_device.c
+    APPLICATION_SRCS += nrf_gzp_host.c
+    APPLICATION_SRCS += nrf_gzp_host_nrf5x.c
+endif
+
+ifdef USE_GZLL
+    LIBRARY_PATHS += $(SDK_INCLUDE_PATH)proprietary_rf/gzll
+    LIBS += $(SDK_INCLUDE_PATH)proprietary_rf/gzll/gcc/gzll_nrf52_sd_resources_gcc.a
+endif
+
+ifdef USE_ESB
+    SOURCE_PATHS += $(SDK_SOURCE_PATH)proprietary_rf/esb
+    APPLICATION_SRCS += nrf_esb.c
+endif
+
+ifdef SOFTDEVICE_MODEL
+    LIBRARY_PATHS += $(SDK_INCLUDE_PATH)softdevice/common/softdevice_handler/
+    LIBRARY_PATHS += $(SDK_INCLUDE_PATH)softdevice/$(SOFTDEVICE_MODEL)/headers/
+    LIBRARY_PATHS += $(SDK_INCLUDE_PATH)softdevice/$(SOFTDEVICE_MODEL)/headers/nrf52
+
+    SOURCE_PATHS += $(SDK_SOURCE_PATH)softdevice/common/softdevice_handler/
+    SOURCE_PATHS += $(SDK_SOURCE_PATH)softdevice/$(SOFTDEVICE_MODEL)/headers/
+    SOURCE_PATHS += $(SDK_SOURCE_PATH)softdevice/$(SOFTDEVICE_MODEL)/headers/nrf52
+
+ifdef SERIALIZATION_MODE
+	# Load the sources from the serialization library
+    LIBRARY_PATHS += $(SDK_INCLUDE_PATH)serialization/$(SERIALIZATION_MODE)/codecs/$(SOFTDEVICE_MODEL)/middleware/
+    LIBRARY_PATHS += $(SDK_INCLUDE_PATH)serialization/$(SERIALIZATION_MODE)/codecs/$(SOFTDEVICE_MODEL)/serializers/
+    LIBRARY_PATHS += $(SDK_INCLUDE_PATH)serialization/common/struct_ser/$(SOFTDEVICE_MODEL)/
+
+    SOURCE_PATHS += $(SDK_SOURCE_PATH)serialization/$(SERIALIZATION_MODE)/codecs/$(SOFTDEVICE_MODEL)/middleware/
+    SOURCE_PATHS += $(SDK_SOURCE_PATH)serialization/$(SERIALIZATION_MODE)/codecs/$(SOFTDEVICE_MODEL)/serializers/
+    SOURCE_PATHS += $(SDK_SOURCE_PATH)serialization/common/struct_ser/$(SOFTDEVICE_MODEL)/
+endif
+else
+	LIBRARY_PATHS += $(wildcard $(SDK_INCLUDE_PATH)drivers_nrf/nrf_soc_nosd/)
+    SOFTDEVICE_MODEL = blank
+endif
+
+endif # SDK 15
+
 ifeq ($(SDK_VERSION), 14)
 
 	# Set the path
