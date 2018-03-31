@@ -481,8 +481,8 @@ void __attribute__((weak)) ble_stack_init (void) {
     err_code = radio_notification_init();
     APP_ERROR_CHECK(err_code);
 
-    err_code = sd_power_dcdc_mode_set(NRF_POWER_DCDC_ENABLE);
-    APP_ERROR_CHECK(err_code);
+    //err_code = sd_power_dcdc_mode_set(NRF_POWER_DCDC_ENABLE);
+    //APP_ERROR_CHECK(err_code);
 
     // Enable BLE stack
     ble_enable_params_t ble_enable_params;
@@ -509,7 +509,7 @@ void __attribute__((weak)) gap_params_init (void) {
     ble_gap_conn_sec_mode_t sec_mode;
 
     // Full strength signal
-    sd_ble_gap_tx_power_set(0);
+    sd_ble_gap_tx_power_set(4);
 
     // Let anyone connect and set the name given the platform
     BLE_GAP_CONN_SEC_MODE_SET_OPEN(&sec_mode);

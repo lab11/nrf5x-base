@@ -137,7 +137,7 @@ void ble_after_adv_event (void) {
 
     static uint8_t advdata[31] = {
         0x1e, 0xff,                   // manufacturer-specific data
-        0x65, 0x78, 0x31, 0x2c,       // ex1,
+        0x65, 0x78, 0x32, 0x2c,       // ex2,
         0x61, 0x69, 0x2c,             // ai, (advertisement interval)
         0x00, 0x00, 0x2c,             // <ADV_INTERVAL>,
         0x63, 0x74, 0x2c,             // ct, (counter value)
