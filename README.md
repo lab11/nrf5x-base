@@ -27,17 +27,17 @@ PROJECT_NAME = $(shell basename "$(realpath ./)")
 
 APPLICATION_SRCS = $(notdir $(wildcard ./*.c))
 # Various C libraries that need to be included
-APPLICATION_SRCS += softdevice_handler.c
+APPLICATION_SRCS += app_timer.c
+APPLICATION_SRCS += app_util_platform.c
 APPLICATION_SRCS += ble_advdata.c
 APPLICATION_SRCS += ble_conn_params.c
-APPLICATION_SRCS += app_timer.c
 APPLICATION_SRCS += ble_srv_common.c
-APPLICATION_SRCS += app_util_platform.c
-APPLICATION_SRCS += nrf_drv_common.c
-APPLICATION_SRCS += nrf_delay.c
 APPLICATION_SRCS += led.c
-APPLICATION_SRCS += simple_ble.c
+APPLICATION_SRCS += nrf_delay.c
+APPLICATION_SRCS += nrf_drv_common.c
 APPLICATION_SRCS += simple_adv.c
+APPLICATION_SRCS += simple_ble.c
+APPLICATION_SRCS += softdevice_handler.c
 # Add other libraries here!
 
 # platform-level headers and source files
