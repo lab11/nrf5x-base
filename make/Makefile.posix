@@ -23,23 +23,14 @@ JLINKRTTCLIENT = JLinkRTTClient $(JLINK_OPTIONS) $(JLINKRTTCLIENT_OPTION)
 
 SOFTDEVICE_OUTPUT = $(OUTPUT_PATH)$(notdir $(SOFTDEVICE))
 
-clean: clean-bootloader
+clean:
 	rm -rf $(OUTPUT_PATH)
 	rm -f *.jlink
 	rm -f JLink.log
 	rm -f .gdbinit
 
-clean-bootloader:
-	rm -rf $(BASE_DIR)/dfu/_build
-
-ifndef ENABLE_WIRELESS_DFU
 flash: all flash.jlink test-softdevice
 	$(JLINK) $(OUTPUT_PATH)flash.jlink
-else
-flash: all flash.jlink test-softdevice flash-bootloader
-	$(JLINK) $(OUTPUT_PATH)flash.jlink
-endif
-
 
 ifdef ID
 # Write the ID to flash as well
@@ -55,9 +46,6 @@ endif
 flash.jlink:
 	$(MAKE_BUILD_FOLDER)
 	printf "r\n" > $(OUTPUT_PATH)flash.jlink
-ifdef ENABLE_WIRELESS_DFU
-	printf "w4 $(BOOTLOADER_SETTINGS_ADDRESS), 0x01, 0x00\n" >> $(OUTPUT_PATH)flash.jlink
-endif
 ifdef ID
 	printf "w4 $(BLEADDR_FLASH_LOCATION), 0x$(ID_SECON) 0x$(ID_FIRST)\n" >> $(OUTPUT_PATH)flash.jlink
 endif
@@ -99,19 +87,6 @@ flash-softdevice.jlink:
 	# Write to NVMC to enable write. Write mainpart, write UICR. Assumes device is erased.
 	$(MAKE_BUILD_FOLDER)
 	printf "w4 4001e504 1\nloadbin \"$(SOFTDEVICE_OUTPUT:.hex=.bin)\" 0\nr\ng\nexit\n" > $(OUTPUT_PATH)flash-softdevice.jlink
-
-flash-bootloader: bootloader flash-bootloader.jlink test-softdevice
-	$(JLINK) $(OUTPUT_PATH)flash-bootloader.jlink
-
-flash-bootloader.jlink:
-	printf "r\n" > $(OUTPUT_PATH)flash-bootloader.jlink
-ifdef ID
-	printf "w4 $(BLEADDR_FLASH_LOCATION), 0x$(ID_SECON) 0x$(ID_FIRST)\n" >> $(OUTPUT_PATH)flash-bootloader.jlink
-endif
-	printf "loadfile $(DFUHEX) \nr\ng\nexit\n" >> $(OUTPUT_PATH)flash-bootloader.jlink
-
-bootloader:
-	$(MAKE) SDK_VERSION=$(SDK_VERSION) SOFTDEVICE_MODEL=$(SOFTDEVICE_MODEL) LINKER_SCRIPT=$(BASE_DIR)/make/ld/gcc_$(NRF_MODEL)_$(SOFTDEVICE_MODEL)_$(SOFTDEVICE_VERSION)_$(RAM_KB)_$(FLASH_KB)_bootloader.ld OUTPUT_NAME=$(DFU_OUTPUT_NAME) -C $(BASE_DIR)/dfu
 
 recover: recover.jlink erase-all.jlink pin-reset.jlink
 	$(MAKE_BUILD_FOLDER)

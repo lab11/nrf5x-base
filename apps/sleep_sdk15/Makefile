@@ -4,11 +4,15 @@ APPLICATION_SRCS = $(notdir $(wildcard ./*.c))
 APPLICATION_SRCS += app_timer.c
 APPLICATION_SRCS += app_error.c
 APPLICATION_SRCS += app_error_weak.c
+APPLICATION_SRCS += nrf_sdh.c
+APPLICATION_SRCS += nrf_section_iter.c
+APPLICATION_SRCS += nrf_sdh_ble.c
+APPLICATION_SRCS += app_util_platform.c
 
-NRF_IC = nrf52840_xxaa
 NRF_MODEL = nrf52
 
 SDK_VERSION = 15
+SOFTDEVICE_MODEL = s140
 
 NRF_BASE_PATH ?= ../..
 
