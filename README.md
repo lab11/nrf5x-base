@@ -8,7 +8,7 @@ within other projects using the Nordic platfroms. Pull requests welcome.
 The currently supported SDK versions are: 9.0.0, 10.0.0, 11.0.0, 12.2.0, 14.1.0.
 
 The currently supported Softdevice versions are:
-s110_7.3.0, s110_8.0.0, s120_2.1.0, s130_1.0.0, s130_2.0.0, s130_2.0.1, s150_5.0.0-2.alpha.
+s130_2.0.1, s140_6.0.0
 
 
 Usage
@@ -26,29 +26,24 @@ a Makefile that looks like this:
 PROJECT_NAME = $(shell basename "$(realpath ./)")
 
 APPLICATION_SRCS = $(notdir $(wildcard ./*.c))
-# Various C libraries that need to be included
-APPLICATION_SRCS += softdevice_handler.c
-APPLICATION_SRCS += ble_advdata.c
-APPLICATION_SRCS += ble_conn_params.c
 APPLICATION_SRCS += app_timer.c
-APPLICATION_SRCS += ble_srv_common.c
+APPLICATION_SRCS += app_error.c
+APPLICATION_SRCS += app_error_weak.c
+APPLICATION_SRCS += nrf_sdh.c
+APPLICATION_SRCS += nrf_section_iter.c
+APPLICATION_SRCS += nrf_sdh_ble.c
 APPLICATION_SRCS += app_util_platform.c
-APPLICATION_SRCS += nrf_drv_common.c
-APPLICATION_SRCS += nrf_delay.c
-APPLICATION_SRCS += led.c
-APPLICATION_SRCS += simple_ble.c
-APPLICATION_SRCS += simple_adv.c
-# Add other libraries here!
 
-# platform-level headers and source files
-LIBRARY_PATHS += ../../include
+NRF_MODEL = nrf52
+
+SDK_VERSION = 15
+SOFTDEVICE_MODEL = s140
+
+NRF_BASE_PATH ?= ../..
+
+LIBRARY_PATHS += .  ../../include
 SOURCE_PATHS += ../../src
 
-# Set the softdevice needed for the application
-SOFTDEVICE_MODEL = s110
-
-# Include the main Makefile
-NRF_BASE_PATH ?= ../../nrf5x-base
 include $(NRF_BASE_PATH)/make/Makefile
 ```
 An example Makefile is included in this repo as Makefile.example. Copy to your
@@ -74,29 +69,10 @@ This repo has several example and test applications. See the
 [apps](https://github.com/lab11/nrf5x-base/tree/master/apps)
 folder.
 
-Supported Features
---------------
+Flash an Application
+--------------------
 
-There are libraries for many common BLE functions in this repo:
-
-- `simple_ble`: Quick interface to most common BLE functions
-  - BLE Advertisements
-    - Device name only
-    - Manufacturer data
-    - Eddystone
-    - Rotating multiple advertisements
-  - BLE Services
-- SQL style database ([LittleD](https://github.com/graemedouglas/LittleD))
-- [RTT Debugging](https://www.segger.com/pr-j-link-real-time.html)
-- Nordic [BLE Serialization](http://infocenter.nordicsemi.com/index.jsp?topic=%2Fcom.nordic.infocenter.sdk51.v10.0.0%2Fble_serialization_s110_events.html)
-- Nordic DFU over-the-air reprogramming.
-
-
-
-Program a nRF51822
-------------------
-
-To flash an application to a nRF51822 BLE chip, there is some setup
+To flash an application, there is some setup
 you must do.
 
 1. Install the [`arm-none-eabi-gcc`](https://launchpad.net/gcc-arm-embedded) compiler.
@@ -117,7 +93,7 @@ The "EDU" edition works fine.
 
         make flash
 
-    will write the app and softdevice to the nRF51822. You can erase
+    will write the app and softdevice to the device. You can erase
     a chip with:
 
         make erase-all
@@ -129,8 +105,8 @@ The "EDU" edition works fine.
     instead of the way-too-large ARM JTAG header. We use [our own](https://github.com/lab11/jtag-tagconnect)
     adapter, but Segger also makes [one](https://www.segger.com/jlink-6-pin-needle-adapter.html).
 
-5. Upon inital programming, the nRF will enter debug mode, which will prevent the nRF from sleeping and 
-   prevent the reset line from working. To fix this, either perform a powerdown/powerup or download nrfjprog from 
+5. Upon inital programming of an NRF51822, the nRF will enter debug mode, which will prevent the nRF from sleeping and
+   prevent the reset line from working. To fix this, either perform a powerdown/powerup or download nrfjprog from
    (https://www.nordicsemi.com/eng/Products/Bluetooth-low-energy/nRF51822) and run nrfjprog --pinreset
 
 Git Submodules
@@ -150,16 +126,6 @@ On iOS, [LightBlue Explorer](https://itunes.apple.com/us/app/lightblue-explorer-
 has similar or better functionality. Alternatively,
 [noble](https://github.com/sandeepmistry/noble) is a NodeJS library for interacting with BLE that can run from
 a Linux or Mac computer.
-
-Example Platforms Using nRF5x-base
-----------------------------------
-
-- [Squall](https://github.com/helena-project/squall)
-- [BLEES](https://github.com/lab11/blees)
-- [Nucleum](https://github.com/lab11/nucleum)
-- [PolyPoint](https://github.com/lab11/polypoint)
-- [PowerBlade](https://github.com/lab11/powerblade)
-
 
 License
 -------
