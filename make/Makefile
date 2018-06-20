@@ -255,15 +255,16 @@ ifdef SOFTDEVICE_MODEL
       WANTED_NRF_MODEL = nrf52
     endif
   endif
-
-  SOFTDEVICE_VERSION ?= $(WANTED_SOFTDEVICE_VERSION)
-  ifneq ($(SOFTDEVICE_VERSION), $(WANTED_SOFTDEVICE_VERSION))
-    $(error FOR SDK$(SDK_VERSION) Supported SoftDevice Version for $(SOFTDEVICE_MODEL) is $(WANTED_SOFTDEVICE_VERSION). You selected $(SOFTDEVICE_VERSION))
+  ifeq ($(USE_BLE), 1)
+    SOFTDEVICE_VERSION ?= $(WANTED_SOFTDEVICE_VERSION)
+    ifneq ($(SOFTDEVICE_VERSION), $(WANTED_SOFTDEVICE_VERSION))
+      $(error FOR SDK$(SDK_VERSION) Supported SoftDevice Version for $(SOFTDEVICE_MODEL) is $(WANTED_SOFTDEVICE_VERSION). You selected $(SOFTDEVICE_VERSION))
+    endif
+    ifneq ($(WANTED_NRF_MODEL), $(NRF_MODEL))
+      $(error SoftDevice $(SOFTDEVICE_MODEL) is only compatible with $(WANTED_NRF_MODEL). You selected $(NRF_MODEL))
+    endif
   endif
 
-  ifneq ($(WANTED_NRF_MODEL), $(NRF_MODEL))
-    $(error SoftDevice $(SOFTDEVICE_MODEL) is only compatible with $(WANTED_NRF_MODEL). You selected $(SOFTDEVICE_MODEL))
-  endif
 
 endif # ifdef SOFTDEVICE_MODEL
 
