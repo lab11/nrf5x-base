@@ -23,7 +23,7 @@ JLINKRTTCLIENT = JLinkRTTClient $(JLINK_OPTIONS) $(JLINKRTTCLIENT_OPTION)
 
 SOFTDEVICE_OUTPUT = $(OUTPUT_PATH)$(notdir $(SOFTDEVICE))
 
-clean: clean-thread
+clean:
 	rm -rf $(OUTPUT_PATH)
 	rm -f *.jlink
 	rm -f JLink.log
@@ -137,27 +137,27 @@ startrtt:
 	sleep 1
 	$(TERMINAL) "$(JLINKRTTCLIENT)"
 
-$(OPENTHREAD_DIR)/Makefile.in:
-	@cd $(OPENTHREAD_DIR); \
-	./bootstrap;
-
-$(THREAD_LIBS): $(OPENTHREAD_DIR)/Makefile.in
-	@$(MAKE_BUILD_FOLDER)
-	@mkdir -p $(OUTPUT_PATH)openthread
-	@mkdir -p $(OUTPUT_PATH)openthread/output
-	@mkdir -p $(OUTPUT_PATH)openthread/build
-	@cd $(OPENTHREAD_DIR); \
-	make -f $(OPENTHREAD_DIR)examples/Makefile-nrf52840;
-	@cp -r $(OPENTHREAD_DIR)output/* $(OUTPUT_PATH)openthread/output
-	@cp -r $(OPENTHREAD_DIR)build/* $(OUTPUT_PATH)openthread/build
-
-$(OUTPUT_PATH)openthread/output/nrf52840/lib/ \
-$(OUTPUT_PATH)openthread/output/ \
-$(OUTPUT_PATH)openthread/build/nrf52840/: $(THREAD_LIBS)
-
-clean-thread:
-	rm -rf $(OPENTHREAD_DIR)build/
-	rm -rf $(OPENTHREAD_DIR)output/
+#$(OPENTHREAD_DIR)/Makefile.in:
+#	@cd $(OPENTHREAD_DIR); \
+#	./bootstrap;
+#
+#$(THREAD_LIBS): $(OPENTHREAD_DIR)/Makefile.in
+#	@$(MAKE_BUILD_FOLDER)
+#	@mkdir -p $(OUTPUT_PATH)openthread
+#	@mkdir -p $(OUTPUT_PATH)openthread/output
+#	@mkdir -p $(OUTPUT_PATH)openthread/build
+#	@cd $(OPENTHREAD_DIR); \
+#	make -f $(OPENTHREAD_DIR)examples/Makefile-nrf52840;
+#	@cp -r $(OPENTHREAD_DIR)output/* $(OUTPUT_PATH)openthread/output
+#	@cp -r $(OPENTHREAD_DIR)build/* $(OUTPUT_PATH)openthread/build
+#
+#$(OUTPUT_PATH)openthread/output/nrf52840/lib/ \
+#$(OUTPUT_PATH)openthread/output/ \
+#$(OUTPUT_PATH)openthread/build/nrf52840/: $(THREAD_LIBS)
+#
+#clean-thread:
+#	rm -rf $(OPENTHREAD_DIR)build/
+#	rm -rf $(OPENTHREAD_DIR)output/
 
 
 debug-gdbinit:
