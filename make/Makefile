@@ -34,6 +34,7 @@
 
 # Helper for relative paths
 BASE_DIR := $(dir $(lastword $(MAKEFILE_LIST)))..
+OPENTHREAD_DIR := $(BASE_DIR)/lib/openthread/
 
 # Setup the compilers to use
 TOOLCHAIN_PREFIX ?= arm-none-eabi
@@ -523,6 +524,36 @@ ifneq (,$(filter $(NRF_MODEL),nrf52 nrf52840))
 		LIBRARY_PATHS += $(wildcard $(SDK_INCLUDE_PATH)drivers_nrf/nrf_soc_nosd/)
 		SOFTDEVICE_MODEL = blank
 	endif
+	ifdef USE_THREAD
+		THREAD_LIB_FILES = libmbedcrypto-cc310.a
+		ifdef THREAD_FTD
+			THREAD_LIB_FILES += libopenthread-ftd.a
+		else
+			THREAD_LIB_FILES += libopenthread-mtd.a
+		endif
+		THREAD_LIBS = $(addprefix -I,$(THREAD_LIB_FILES))
+		LIBS += $(THREAD_LIBS)
+		LIBRARY_PATHS += $(OUTPUT_PATH)openthread/output/nrf52840/lib/
+		LIBRARY_PATHS += $(OUTPUT_PATH)openthread/output/include/
+		LIBRARY_PATHS += $(OUTPUT_PATH)openthread/build/nrf52840/include/
+		LIBRARY_PATHS += $(OPENTHREAD_DIR)examples/platforms/nrf52840/
+		LIBRARY_PATHS += $(OPENTHREAD_DIR)examples/platforms/
+		LIBRARY_PATHS += $(OPENTHREAD_DIR)src/core/
+
+		SOURCE_PATHS += $(OPENTHREAD_DIR)examples/platforms/nrf52840/
+		APPLICATION_SRCS += alarm.c\
+												diag.c\
+												fem.c\
+												flash.c\
+												flash_nosd.c\
+												misc.c\
+												platform.c\
+												radio.c\
+												random.c\
+												temp.c\
+												uart.c
+	endif
+
 
 	endif # SDK 15
 endif # nrf52
@@ -642,7 +673,7 @@ else
 include $(BASE_DIR)/make/Makefile.posix
 endif
 
-$(HEX): $(OBJS) $(OBJS_AS)
+$(HEX): $(OBJS) $(OBJS_AS) $(LIBS)
 	$(PRINT_LD)
 	$(Q)$(LD) $(LDFLAGS) $(OBJS_AS) $(OBJS) $(LIBS) -o $(ELF)
 	$(PRINT_HEX)
@@ -666,6 +697,8 @@ $(OUTPUT_PATH)%.os: %.s
 	@$(MAKE_BUILD_FOLDER)
 	$(PRINT_AS)
 	$(Q)$(AS) $< -o $@
+
+thread: $(THREAD_LIBS)
 
 -include $(DEPS)
 
