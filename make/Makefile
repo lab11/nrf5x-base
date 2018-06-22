@@ -378,7 +378,9 @@ endif
     LIBRARY_PATHS += $(SDK_PATH)modules/nrfx/
     LIBRARY_PATHS += $(SDK_PATH)modules/nrfx/mdk/
     LIBRARY_PATHS += $(SDK_PATH)modules/nrfx/hal/
+    LIBRARY_PATHS += $(SDK_PATH)modules/nrfx/drivers/include/
     LIBRARY_PATHS += $(SDK_PATH)integration/nrfx/
+    LIBRARY_PATHS += $(SDK_PATH)integration/nrfx/legacy/
     LIBRARY_PATHS += $(wildcard $(SDK_INCLUDE_PATH)libraries/*/)
     LIBRARY_PATHS += $(wildcard $(SDK_INCLUDE_PATH)libraries/*/src/)
     LIBRARY_PATHS += $(wildcard $(SDK_INCLUDE_PATH)libraries/crypto/backend/*/)
@@ -419,6 +421,9 @@ endif
     SOURCE_PATHS += $(SDK_PATH)modules/nrfx/
     SOURCE_PATHS += $(SDK_PATH)modules/nrfx/mdk/
     SOURCE_PATHS += $(SDK_PATH)modules/nrfx/hal/
+    SOURCE_PATHS += $(SDK_PATH)modules/nrfx/drivers/src/
+    SOURCE_PATHS += $(SDK_PATH)modules/nrfx/drivers/src/prs/
+    SOURCE_PATHS += $(SDK_PATH)integration/nrfx/legacy/
     SOURCE_PATHS += $(wildcard $(SDK_PATH)modules/nrfx/*/)
     SOURCE_PATHS += $(wildcard $(SDK_SOURCE_PATH)*/)
     SOURCE_PATHS += $(wildcard $(SDK_SOURCE_PATH)libraries/*/)
