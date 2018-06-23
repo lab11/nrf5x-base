@@ -76,7 +76,7 @@ ifdef NRF_IC
         endif
       endif
     endif
-    NRF_MODEL = nrf52
+    NRF_MODEL = nrf52840
   endif
 endif
 
@@ -410,7 +410,7 @@ endif
     LIBRARY_PATHS += $(wildcard $(SDK_INCLUDE_PATH)drivers_nrf/validation/)
     LIBRARY_PATHS += $(wildcard $(SDK_INCLUDE_PATH)drivers_ext/*/)
     LIBRARY_PATHS += $(wildcard $(SDK_INCLUDE_PATH)device/)
-    LIBRARY_PATHS += $(wildcard $(SDK_PATH)external/*/include/)
+    LIBRARY_PATHS += $(SDK_PATH)external/fprintf/
     LIBRARY_PATHS += $(wildcard $(SDK_PATH)external/*/include/)
     LIBRARY_PATHS += $(SDK_INCLUDE_PATH)toolchain/gcc/
     LIBRARY_PATHS += $(SDK_INCLUDE_PATH)toolchain/
@@ -433,6 +433,7 @@ endif
     SOURCE_PATHS += $(wildcard $(SDK_SOURCE_PATH)drivers_ext/*/)
     SOURCE_PATHS += $(SDK_INCLUDE_PATH)toolchain/gcc/
     SOURCE_PATHS += $(SDK_INCLUDE_PATH)softdevice/common
+    SOURCE_PATHS += $(SDK_PATH)external/fprintf/
     LIBS += $(wildcard $(SDK_PATH)external/nrf_cc310/lib/libcc310_gcc*.a)
 
   ifdef SERIALIZATION_MODE
@@ -533,20 +534,24 @@ endif
     SOFTDEVICE_MODEL = blank
   endif
   ifdef USE_THREAD
-    LIBRARY_PATHS += $(SDK_PATH)external/openthread/include/
-
+    ifdef THREAD_FTD
+      THREAD_LIB_FILES += $(SDK_PATH)external/openthread/lib/gcc/libopenthread-ftd.a
+    else
+      THREAD_LIB_FILES += $(SDK_PATH)external/openthread/lib/gcc/libopenthread-mtd.a
+    endif
     THREAD_LIB_FILES += $(SDK_PATH)external/openthread/lib/gcc/libopenthread-platform-utils.a
     THREAD_LIB_FILES += $(SDK_PATH)external/openthread/lib/gcc/libopenthread-nrf52840-sdk.a
     THREAD_LIB_FILES += $(SDK_PATH)external/openthread/lib/gcc/libopenthread-diag.a
-    THREAD_LIB_FILES += $(SDK_PATH)external/openthread/libmbedcrypto.a
+    THREAD_LIB_FILES += $(SDK_PATH)external/openthread/lib/gcc/libmbedcrypto.a
     THREAD_LIB_FILES += $(SDK_PATH)external/nrf_cc310/lib/libnrf_cc310_0.9.9.a
-    ifdef THREAD_FTD
-      THREAD_LIB_FILES += $(SDK_PATH)external/openthread/libopenthread-ftd.a
-    else
-      THREAD_LIB_FILES += $(SDK_PATH)external/openthread/libopenthread-mtd.a
-    endif
-    LIBS += $(THREAD_LIBS_FILES)
+    LIBS += $(THREAD_LIB_FILES)
+
+    LIBRARY_PATHS += $(SDK_PATH)external/openthread/include/
+    LIBRARY_PATHS += $(SDK_PATH)external/segger_rtt/
+    SOURCE_PATHS  += $(SDK_PATH)external/segger_rtt/
+
     CFLAGS += -DOPENTHREAD_ENABLE_APPLICATION_COAP
+    CFLAGS += -DOPENTHREAD_MTD=1
   endif
 
 
@@ -675,8 +680,8 @@ $(HEX): $(OBJS) $(OBJS_AS) $(LIBS)
 	$(Q)$(OBJCOPY) -Oihex $(ELF) $(HEX)
 	$(PRINT_BIN)
 	$(Q)$(OBJCOPY) -Obinary $(ELF) $(BIN)
-	$(PRINT_LST)
-	$(Q)$(OBJDUMP) $(OBJDUMP_FLAGS) $(ELF) > $(LST)
+#	$(PRINT_LST)
+#	$(Q)$(OBJDUMP) $(OBJDUMP_FLAGS) $(ELF) > $(LST)
 	$(PRINT_SIZ)
 	$(Q)$(SIZE) $(ELF)
 
