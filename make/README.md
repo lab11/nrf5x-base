@@ -96,6 +96,11 @@ extra explanation:
 
     To use this feature you must enable the working path as safe! you can also
     enable all paths by adding 'set auto-load safe-path /' to ~/.gdbinit.
+    
+- `remotedebug`
+
+    Starts a J-Link GDB Server without starting the GDB. This target therefore allows for remote debugging
+    using an IDE which can manually connect to the GDB server.
 
 - `recover`
 

@@ -234,7 +234,7 @@ BOOTLOADER_SETTINGS_ADDRESS = $(addprefix 0x, $(shell echo "obase=16; (${FLASH_K
 JLINK_OPTIONS = -device $(NRF_IC) -if swd -speed 1000
 
 # If not set in app makefile, lets optimize for size
-CFLAGS += -Os
+CFLAGS ?= -Os
 CFLAGS += -fomit-frame-pointer
 
 # Add useful paths from nRF5x-base

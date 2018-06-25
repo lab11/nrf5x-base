@@ -157,6 +157,9 @@ startdebug: debug-gdbinit
 	sleep 1
 	$(TERMINAL) "$(GDB) $(ELF)"
 
+remotedebug: debug-gdbinit
+	$(TERMINAL) "$(JLINKGDBSERVER) -port $(GDB_PORT_NUMBER)"
+
 startrtt:
 	$(TERMINAL) "JLinkExe -device nrf51822 -if swd -speed 1000 -AutoConnect 1"
 	sleep 1
