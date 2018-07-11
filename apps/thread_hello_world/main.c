@@ -25,8 +25,6 @@
 #define LED1 NRF_GPIO_PIN_MAP(0,5)
 #define LED2 NRF_GPIO_PIN_MAP(0,6)
 
-#define THREAD_PANID 0xFACE
-#define THREAD_CHANNEL 11
 #define AUTOCOMMISSION 1
 #define DEFAULT_CHILD_TIMEOUT    40                                         /**< Thread child timeout [s]. */
 #define DEFAULT_POLL_PERIOD      1000                                       /**< Thread Sleepy End Device polling period when MQTT-SN Asleep. [ms] */
@@ -156,12 +154,12 @@ void thread_sleep(void)
     {
         fix_errata_78_in_nrf_802154();
 
-#ifdef SOFTDEVICE_PRESENT
-        ret_code_t err_code = sd_app_evt_wait();
-        ASSERT(err_code == NRF_SUCCESS);
-#else
+//#ifdef SOFTDEVICE_PRESENT
+//        ret_code_t err_code = sd_app_evt_wait();
+//        ASSERT(err_code == NRF_SUCCESS);
+//#else
         __WFE();
-#endif
+//#endif
     }
 }
 
