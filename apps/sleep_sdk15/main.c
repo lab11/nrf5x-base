@@ -16,10 +16,6 @@ int main(void) {
     err_code = nrf_sdh_enable_request();
     APP_ERROR_CHECK(err_code);
 
-    if (!nrf_sdh_is_enabled()) {
-      printf("Failed to enable softdevice\n");
-    }
-
     uint32_t ram_start = 0;
     err_code = nrf_sdh_ble_app_ram_start_get(&ram_start);
     APP_ERROR_CHECK(err_code);

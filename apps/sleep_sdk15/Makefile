@@ -9,7 +9,7 @@ APPLICATION_SRCS += nrf_section_iter.c
 APPLICATION_SRCS += nrf_sdh_ble.c
 APPLICATION_SRCS += app_util_platform.c
 
-NRF_MODEL = nrf52
+NRF_IC = nrf52840_xxaa
 
 SDK_VERSION = 15
 SOFTDEVICE_MODEL = s140
