@@ -831,7 +831,9 @@ ifeq ($(SDK_VERSION), 15)
 	LIBRARY_PATHS += $(SDK_PATH)modules/nrfx/
 	LIBRARY_PATHS += $(SDK_PATH)modules/nrfx/mdk/
 	LIBRARY_PATHS += $(SDK_PATH)modules/nrfx/hal/
+	LIBRARY_PATHS += $(SDK_PATH)modules/nrfx/drivers/include/
 	LIBRARY_PATHS += $(SDK_PATH)integration/nrfx/
+	LIBRARY_PATHS += $(SDK_PATH)integration/nrfx/legacy/
 	LIBRARY_PATHS += $(wildcard $(SDK_INCLUDE_PATH)libraries/*/)
 	LIBRARY_PATHS += $(wildcard $(SDK_INCLUDE_PATH)libraries/*/src/)
 	LIBRARY_PATHS += $(wildcard $(SDK_INCLUDE_PATH)libraries/crypto/backend/*/)
@@ -872,6 +874,8 @@ ifeq ($(SDK_VERSION), 15)
 	SOURCE_PATHS += $(SDK_PATH)modules/nrfx/
 	SOURCE_PATHS += $(SDK_PATH)modules/nrfx/mdk/
 	SOURCE_PATHS += $(SDK_PATH)modules/nrfx/hal/
+	SOURCE_PATHS += $(SDK_PATH)modules/nrfx/drivers/src/
+	SOURCE_PATHS += $(SDK_PATH)integration/nrfx/legacy/
 	SOURCE_PATHS += $(wildcard $(SDK_PATH)modules/nrfx/*/)
 	SOURCE_PATHS += $(wildcard $(SDK_SOURCE_PATH)*/)
 	SOURCE_PATHS += $(wildcard $(SDK_SOURCE_PATH)libraries/*/)
@@ -881,7 +885,7 @@ ifeq ($(SDK_VERSION), 15)
 	SOURCE_PATHS += $(wildcard $(SDK_SOURCE_PATH)drivers_ext/*/)
 	SOURCE_PATHS += $(SDK_INCLUDE_PATH)toolchain/gcc/
 	SOURCE_PATHS += $(SDK_INCLUDE_PATH)softdevice/common
-	LIBS += $(wildcard $(SDK_PATH)external/nrf_cc310/lib/libcc310_gcc*.a)
+	LIBS += $(SDK_PATH)external/nrf_cc310/lib/libnrf_cc310_0.9.9.a
 
 ifdef SERIALIZATION_MODE
 	LIBRARY_PATHS += $(wildcard $(SDK_INCLUDE_PATH)serialization/*/)
@@ -1040,7 +1044,7 @@ ifeq ($(SDK_VERSION), 14)
 	SOURCE_PATHS += $(wildcard $(SDK_SOURCE_PATH)drivers_ext/*/)
 	SOURCE_PATHS += $(SDK_INCLUDE_PATH)toolchain/gcc/
 	SOURCE_PATHS += $(SDK_INCLUDE_PATH)softdevice/common
-	LIBS += $(wildcard $(SDK_PATH)external/nrf_cc310/lib/libcc310_gcc*.a)
+	LIBS += $(SDK_PATH)external/nrf_cc310/lib/libnrf_cc310_0.9.9.a
 
 ifdef SERIALIZATION_MODE
 	LIBRARY_PATHS += $(wildcard $(SDK_INCLUDE_PATH)serialization/*/)
@@ -1358,11 +1362,11 @@ OUTPUT_PATH ?= _build/
 
 ifeq ($(NRF_MODEL), nrf51)
   CPUFLAGS = -mthumb -mcpu=cortex-m0 -march=armv6-m
-else ifneq (,$(filter $(NRF_IC),nrf52832 nrf52840_xxaa))
+else ifneq (,$(filter $(NRF_MODEL),nrf52 nrf52840))
   CPUFLAGS = -mthumb -mcpu=cortex-m4 -march=armv7e-m -mfpu=fpv4-sp-d16 -mfloat-abi=hard
 endif
 
-CFLAGS += -std=gnu99 -c $(CPUFLAGS) -Wall -Wextra -Wno-unused-parameter -Werror=return-type -Wno-expansion-to-defined -D$(DEVICE) -D$(BOARD) -D$(NRF_IC_UPPER) -DSDK_VERSION_$(SDK_VERSION) -DSOFTDEVICE_$(SOFTDEVICE_MODEL)
+CFLAGS += -std=gnu99 -c $(CPUFLAGS) -Wall -Wextra -Wno-unused-parameter -Werror=return-type -Wno-expansion-to-defined -D$(DEVICE) -D$(BOARD) -D$(NRF_IC_UPPER) -DSDK_VERSION_$(SDK_VERSION) -DSOFTDEVICE_$(SOFTDEVICE_MODEL) -DCONFIG_GPIO_AS_PINRESET
 CFLAGS += -s -ffunction-sections -fdata-sections
 CFLAGS += -D$(shell echo $(SOFTDEVICE_MODEL) | tr a-z A-Z)
 CFLAGS += $(CMSIS_INCLUDE) $(LIBRARY_INCLUDES) -MD
