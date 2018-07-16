@@ -71,7 +71,7 @@ ifdef NRF_IC
   else ifeq ($(NRF_IC), nrf52840_xxaa)
     ifdef NRF_MODEL
       ifeq ($(SDK_VERSION), 15)
-        ifneq ($(NRF_MODEL), nrf52)
+        ifneq ($(NRF_MODEL), nrf52840)
           $(error NRF_MODEL $(NRF_MODEL) is not valid for NRF_IC $(NRF_IC))
         endif
       endif
@@ -203,6 +203,7 @@ JLINK_OPTIONS = -device $(NRF_IC) -if swd -speed 1000
 # If not set in app makefile, lets optimize for size
 CFLAGS += -Os
 CFLAGS += -fomit-frame-pointer
+STDLIBS = -lc -lnosys -lm -lstdc++
 
 # Add paths for each SDK version
 ifeq ($(NRF_MODEL), nrf51)
@@ -616,7 +617,7 @@ else ifneq (,$(filter $(NRF_IC),nrf52832 nrf52840_xxaa))
   CPUFLAGS = -mthumb -mcpu=cortex-m4 -march=armv7e-m -mfpu=fpv4-sp-d16 -mfloat-abi=hard
 endif
 
-CFLAGS += -std=gnu99 -c $(CPUFLAGS) -Wall -Wextra -Wno-unused-parameter -Werror=return-type -Wno-expansion-to-defined -D$(DEVICE) -D$(BOARD) -D$(NRF_IC_UPPER) -DSDK_VERSION_$(SDK_VERSION) -DSOFTDEVICE_$(SOFTDEVICE_MODEL) -DCONFIG_GPIO_AS_PINRESET
+CFLAGS += -std=gnu99 -c $(CPUFLAGS) -Wall -Wextra -Wno-unused-parameter -Werror=return-type -Wno-expansion-to-defined -D$(BOARD) -D$(NRF_IC_UPPER) -DSDK_VERSION_$(SDK_VERSION) -DSOFTDEVICE_$(SOFTDEVICE_MODEL) -DCONFIG_GPIO_AS_PINRESET
 CFLAGS += -s -ffunction-sections -fdata-sections
 CFLAGS += -D$(shell echo $(SOFTDEVICE_MODEL) | tr a-z A-Z)
 CFLAGS += $(CMSIS_INCLUDE) $(LIBRARY_INCLUDES) -MD
@@ -674,7 +675,7 @@ endif
 
 $(HEX): $(OBJS) $(OBJS_AS) $(LIBS)
 	$(PRINT_LD)
-	$(Q)$(LD) $(LDFLAGS) $(OBJS_AS) $(OBJS) $(LIBS) -o $(ELF)
+	$(Q)$(LD) $(LDFLAGS) $(OBJS_AS) $(OBJS) $(LIBS) -o $(ELF) $(STDLIBS)
 	$(PRINT_HEX)
 	$(Q)$(OBJCOPY) -Oihex $(ELF) $(HEX)
 	$(PRINT_BIN)
