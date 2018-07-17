@@ -205,6 +205,10 @@ CFLAGS += -Os
 CFLAGS += -fomit-frame-pointer
 STDLIBS = -lc -lnosys -lm -lstdc++
 
+LIBRARY_PATHS += $(BASE_DIR)/lib/
+
+SOURCE_PATHS  += $(BASE_DIR)/lib/
+
 # Add paths for each SDK version
 ifeq ($(NRF_MODEL), nrf51)
   ifeq ($(SDK_VERSION), 12)
