@@ -22,7 +22,6 @@
 #define LED1 NRF_GPIO_PIN_MAP(0,5)
 #define LED2 NRF_GPIO_PIN_MAP(0,6)
 
-#define AUTOCOMMISSION 1
 #define DEFAULT_CHILD_TIMEOUT    40                                         /**< Thread child timeout [s]. */
 #define DEFAULT_POLL_PERIOD      1000                                       /**< Thread Sleepy End Device polling period when MQTT-SN Asleep. [ms] */
 #define NUM_SLAAC_ADDRESSES      4                                          /**< Number of SLAAC addresses. */
