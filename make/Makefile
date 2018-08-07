@@ -416,6 +416,7 @@ endif
     LIBRARY_PATHS += $(wildcard $(SDK_INCLUDE_PATH)drivers_ext/*/)
     LIBRARY_PATHS += $(wildcard $(SDK_INCLUDE_PATH)device/)
     LIBRARY_PATHS += $(SDK_PATH)external/fprintf/
+    LIBRARY_PATHS += $(SDK_PATH)external/segger_rtt/
     LIBRARY_PATHS += $(wildcard $(SDK_PATH)external/*/include/)
     LIBRARY_PATHS += $(SDK_INCLUDE_PATH)toolchain/gcc/
     LIBRARY_PATHS += $(SDK_INCLUDE_PATH)toolchain/
@@ -439,6 +440,7 @@ endif
     SOURCE_PATHS += $(SDK_INCLUDE_PATH)toolchain/gcc/
     SOURCE_PATHS += $(SDK_INCLUDE_PATH)softdevice/common
     SOURCE_PATHS += $(SDK_PATH)external/fprintf/
+    SOURCE_PATHS  += $(SDK_PATH)external/segger_rtt/
 
   ifdef SERIALIZATION_MODE
     LIBRARY_PATHS += $(wildcard $(SDK_INCLUDE_PATH)serialization/*/)
@@ -551,8 +553,6 @@ endif
     LIBS += $(THREAD_LIB_FILES)
 
     LIBRARY_PATHS += $(SDK_PATH)external/openthread/include/
-    LIBRARY_PATHS += $(SDK_PATH)external/segger_rtt/
-    SOURCE_PATHS  += $(SDK_PATH)external/segger_rtt/
 
     CFLAGS += -DOPENTHREAD_ENABLE_APPLICATION_COAP
     CFLAGS += -DOPENTHREAD_MTD=1
