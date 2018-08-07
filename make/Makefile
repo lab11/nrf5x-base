@@ -61,7 +61,7 @@ ifdef NRF_IC
     endif
     NRF_MODEL = nrf51
   #else if NRF_IC == nrf52832
-  else ifeq ($(NRF_IC), nrf52832)
+  else ifeq ($(NRF_IC), nrf52832_xxaa)
     ifdef NRF_MODEL
       ifneq ($(NRF_MODEL), nrf52)
         $(error NRF_MODEL $(NRF_MODEL) is not valid for NRF_IC $(NRF_IC))
@@ -95,7 +95,7 @@ endif
 ifneq (,$(filter $(NRF_IC),nrf51422 nrf51802 nrf51822))
   RAM_KB   ?= 16# can be also 32
   FLASH_KB ?= 256# can be also 128
-else ifeq ($(NRF_IC), nrf52832)
+else ifeq ($(NRF_IC), nrf52832_xxaa)
   RAM_KB   ?= 64# can be also 32
   FLASH_KB ?= 512# can be also 256
 else ifeq ($(NRF_IC), nrf52840_xxaa)
@@ -617,7 +617,7 @@ OUTPUT_PATH ?= _build/
 
 ifeq ($(NRF_MODEL), nrf51)
   CPUFLAGS = -mthumb -mcpu=cortex-m0 -march=armv6-m
-else ifneq (,$(filter $(NRF_IC),nrf52832 nrf52840_xxaa))
+else ifneq (,$(filter $(NRF_IC),nrf52832_xxaa nrf52840_xxaa))
   CPUFLAGS = -mthumb -mcpu=cortex-m4 -march=armv7e-m -mfpu=fpv4-sp-d16 -mfloat-abi=hard
 endif
 
