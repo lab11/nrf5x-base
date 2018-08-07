@@ -13,8 +13,11 @@ APPLICATION_SRCS += app_fifo.c
 APPLICATION_SRCS += app_uart_fifo.c
 APPLICATION_SRCS += retarget.c
 
-NRF_IC = nrf52840_xxaa
+NRF_IC = nrf52832_xxaa
+NRF_MODEL = nrf52
+
 SDK_VERSION = 15
+SOFTDEVICE_MODEL = s132
 
 LIBRARY_PATHS += ./ ../../include/ ../../chips/
 SOURCE_PATHS += ./ ../../chips/

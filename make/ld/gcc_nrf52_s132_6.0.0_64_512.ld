@@ -2,7 +2,7 @@
 MEMORY
 {
   FLASH (rx) : ORIGIN = 0x0 + 152K, LENGTH = 512K - 152K /* 152 kB is taken by S132, 360 kB for app. */
-  RAM (rwx) :  ORIGIN = 0x08000000 + 0x2128, LENGTH = 32K - 0x2128 /* this should significantly overshoot what the softdevice needs (documented as a minimum of 5.54 kB) */
+  RAM (rwx) :  ORIGIN = 0x20000000 + 0x2128, LENGTH = 32K - 0x2128 /* this should significantly overshoot what the softdevice needs (documented as a minimum of 5.54 kB) */
   /* NOTE: RAM must be updated based on parameters to softdevice_enable() */
 }
 
