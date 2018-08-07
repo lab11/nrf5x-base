@@ -1,3 +1,6 @@
 [submodule "lib/openthread"]
 	path = lib/openthread
 	url = https://github.com/openthread/openthread.git
+[submodule "lib/ntpclient"]
+	path = lib/ntpclient
+	url = git@github.com:vrtsystems/ntpclient.git
