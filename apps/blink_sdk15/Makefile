@@ -6,7 +6,6 @@ APPLICATION_SRCS += app_error.c
 APPLICATION_SRCS += app_error_weak.c
 
 NRF_IC = nrf52840_xxaa
-NRF_MODEL = nrf52
 
 SDK_VERSION = 15
 
