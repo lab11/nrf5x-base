@@ -46,6 +46,1706 @@
 #ifdef USE_APP_CONFIG
 #include "app_config.h"
 #endif
+// <h> lwIP 
+
+//==========================================================
+// <e> NRF_LWIP_DRIVER_CONFIG_LOG_ENABLED - lwip - lwIP stack for nRF5x
+//==========================================================
+#ifndef NRF_LWIP_DRIVER_CONFIG_LOG_ENABLED
+#define NRF_LWIP_DRIVER_CONFIG_LOG_ENABLED 0
+#endif
+// <o> NRF_LWIP_DRIVER_CONFIG_LOG_LEVEL  - Default Severity level
+ 
+// <0=> Off 
+// <1=> Error 
+// <2=> Warning 
+// <3=> Info 
+// <4=> Debug 
+
+#ifndef NRF_LWIP_DRIVER_CONFIG_LOG_LEVEL
+#define NRF_LWIP_DRIVER_CONFIG_LOG_LEVEL 3
+#endif
+
+// <o> NRF_LWIP_DRIVER_CONFIG_INFO_COLOR  - ANSI escape code prefix.
+ 
+// <0=> Default 
+// <1=> Black 
+// <2=> Red 
+// <3=> Green 
+// <4=> Yellow 
+// <5=> Blue 
+// <6=> Magenta 
+// <7=> Cyan 
+// <8=> White 
+
+#ifndef NRF_LWIP_DRIVER_CONFIG_INFO_COLOR
+#define NRF_LWIP_DRIVER_CONFIG_INFO_COLOR 0
+#endif
+
+// <o> NRF_LWIP_DRIVER_CONFIG_DEBUG_COLOR  - ANSI escape code prefix.
+ 
+// <0=> Default 
+// <1=> Black 
+// <2=> Red 
+// <3=> Green 
+// <4=> Yellow 
+// <5=> Blue 
+// <6=> Magenta 
+// <7=> Cyan 
+// <8=> White 
+
+#ifndef NRF_LWIP_DRIVER_CONFIG_DEBUG_COLOR
+#define NRF_LWIP_DRIVER_CONFIG_DEBUG_COLOR 0
+#endif
+
+// </e>
+
+// </h> 
+//==========================================================
+// <h> BLE_PAIR_SECURITY_PARAMETERS - BLE Security Parameters (all connections).
+
+//==========================================================
+// <e> BLE_SEC_PARAM_BOND - Enables device bonding.
+
+// <i> If bonding is enabled, at least one of the BLE_NFC_SEC_PARAM_KDIST options must be enabled.
+//==========================================================
+#ifndef BLE_SEC_PARAM_BOND
+#define BLE_SEC_PARAM_BOND 1
+#endif
+// <q> BLE_SEC_PARAM_KDIST_OWN_ENC  - Enables Long Term Key and Master Identification distribution by device.
+ 
+
+#ifndef BLE_SEC_PARAM_KDIST_OWN_ENC
+#define BLE_SEC_PARAM_KDIST_OWN_ENC 1
+#endif
+
+// <q> BLE_SEC_PARAM_KDIST_OWN_ID  - Enables Identity Resolving Key and Identity Address Information distribution by device.
+ 
+
+#ifndef BLE_SEC_PARAM_KDIST_OWN_ID
+#define BLE_SEC_PARAM_KDIST_OWN_ID 1
+#endif
+
+// <q> BLE_SEC_PARAM_KDIST_PEER_ENC  - Enables Long Term Key and Master Identification distribution by peer.
+ 
+
+#ifndef BLE_SEC_PARAM_KDIST_PEER_ENC
+#define BLE_SEC_PARAM_KDIST_PEER_ENC 1
+#endif
+
+// <q> BLE_SEC_PARAM_KDIST_PEER_ID  - Enables Identity Resolving Key and Identity Address Information distribution by peer.
+ 
+
+#ifndef BLE_SEC_PARAM_KDIST_PEER_ID
+#define BLE_SEC_PARAM_KDIST_PEER_ID 1
+#endif
+
+// <q> BLE_SEC_PARAM_KDIST_OWN_ENC  - Enables Long Term Key and Master Identification distribution by device.
+ 
+
+#ifndef BLE_SEC_PARAM_KDIST_OWN_ENC
+#define BLE_SEC_PARAM_KDIST_OWN_ENC 1
+#endif
+
+// <q> BLE_SEC_PARAM_KDIST_OWN_ID  - Enables Identity Resolving Key and Identity Address Information distribution by device.
+ 
+
+#ifndef BLE_SEC_PARAM_KDIST_OWN_ID
+#define BLE_SEC_PARAM_KDIST_OWN_ID 1
+#endif
+
+// <q> BLE_SEC_PARAM_KDIST_PEER_ENC  - Enables Long Term Key and Master Identification distribution by peer.
+ 
+
+#ifndef BLE_SEC_PARAM_KDIST_PEER_ENC
+#define BLE_SEC_PARAM_KDIST_PEER_ENC 1
+#endif
+
+// <q> BLE_SEC_PARAM_KDIST_PEER_ID  - Enables Identity Resolving Key and Identity Address Information distribution by peer.
+ 
+
+#ifndef BLE_SEC_PARAM_KDIST_PEER_ID
+#define BLE_SEC_PARAM_KDIST_PEER_ID 1
+#endif
+
+// <q> BLE_SEC_PARAM_KDIST_OWN_ENC  - Enables Long Term Key and Master Identification distribution by device.
+ 
+
+#ifndef BLE_SEC_PARAM_KDIST_OWN_ENC
+#define BLE_SEC_PARAM_KDIST_OWN_ENC 1
+#endif
+
+// <q> BLE_SEC_PARAM_KDIST_OWN_ID  - Enables Identity Resolving Key and Identity Address Information distribution by device.
+ 
+
+#ifndef BLE_SEC_PARAM_KDIST_OWN_ID
+#define BLE_SEC_PARAM_KDIST_OWN_ID 1
+#endif
+
+// <q> BLE_SEC_PARAM_KDIST_PEER_ENC  - Enables Long Term Key and Master Identification distribution by peer.
+ 
+
+#ifndef BLE_SEC_PARAM_KDIST_PEER_ENC
+#define BLE_SEC_PARAM_KDIST_PEER_ENC 1
+#endif
+
+// <q> BLE_SEC_PARAM_KDIST_PEER_ID  - Enables Identity Resolving Key and Identity Address Information distribution by peer.
+ 
+
+#ifndef BLE_SEC_PARAM_KDIST_PEER_ID
+#define BLE_SEC_PARAM_KDIST_PEER_ID 1
+#endif
+
+// <q> BLE_SEC_PARAM_KDIST_OWN_ENC  - Enables Long Term Key and Master Identification distribution by device.
+ 
+
+#ifndef BLE_SEC_PARAM_KDIST_OWN_ENC
+#define BLE_SEC_PARAM_KDIST_OWN_ENC 1
+#endif
+
+// <q> BLE_SEC_PARAM_KDIST_OWN_ID  - Enables Identity Resolving Key and Identity Address Information distribution by device.
+ 
+
+#ifndef BLE_SEC_PARAM_KDIST_OWN_ID
+#define BLE_SEC_PARAM_KDIST_OWN_ID 1
+#endif
+
+// <q> BLE_SEC_PARAM_KDIST_PEER_ENC  - Enables Long Term Key and Master Identification distribution by peer.
+ 
+
+#ifndef BLE_SEC_PARAM_KDIST_PEER_ENC
+#define BLE_SEC_PARAM_KDIST_PEER_ENC 1
+#endif
+
+// <q> BLE_SEC_PARAM_KDIST_PEER_ID  - Enables Identity Resolving Key and Identity Address Information distribution by peer.
+ 
+
+#ifndef BLE_SEC_PARAM_KDIST_PEER_ID
+#define BLE_SEC_PARAM_KDIST_PEER_ID 1
+#endif
+
+// <q> BLE_SEC_PARAM_KDIST_OWN_ENC  - Enables Long Term Key and Master Identification distribution by device.
+ 
+
+#ifndef BLE_SEC_PARAM_KDIST_OWN_ENC
+#define BLE_SEC_PARAM_KDIST_OWN_ENC 1
+#endif
+
+// <q> BLE_SEC_PARAM_KDIST_OWN_ID  - Enables Identity Resolving Key and Identity Address Information distribution by device.
+ 
+
+#ifndef BLE_SEC_PARAM_KDIST_OWN_ID
+#define BLE_SEC_PARAM_KDIST_OWN_ID 1
+#endif
+
+// <q> BLE_SEC_PARAM_KDIST_PEER_ENC  - Enables Long Term Key and Master Identification distribution by peer.
+ 
+
+#ifndef BLE_SEC_PARAM_KDIST_PEER_ENC
+#define BLE_SEC_PARAM_KDIST_PEER_ENC 1
+#endif
+
+// <q> BLE_SEC_PARAM_KDIST_PEER_ID  - Enables Identity Resolving Key and Identity Address Information distribution by peer.
+ 
+
+#ifndef BLE_SEC_PARAM_KDIST_PEER_ID
+#define BLE_SEC_PARAM_KDIST_PEER_ID 1
+#endif
+
+// <q> BLE_SEC_PARAM_KDIST_OWN_ENC  - Enables Long Term Key and Master Identification distribution by device.
+ 
+
+#ifndef BLE_SEC_PARAM_KDIST_OWN_ENC
+#define BLE_SEC_PARAM_KDIST_OWN_ENC 1
+#endif
+
+// <q> BLE_SEC_PARAM_KDIST_OWN_ID  - Enables Identity Resolving Key and Identity Address Information distribution by device.
+ 
+
+#ifndef BLE_SEC_PARAM_KDIST_OWN_ID
+#define BLE_SEC_PARAM_KDIST_OWN_ID 1
+#endif
+
+// <q> BLE_SEC_PARAM_KDIST_PEER_ENC  - Enables Long Term Key and Master Identification distribution by peer.
+ 
+
+#ifndef BLE_SEC_PARAM_KDIST_PEER_ENC
+#define BLE_SEC_PARAM_KDIST_PEER_ENC 1
+#endif
+
+// <q> BLE_SEC_PARAM_KDIST_PEER_ID  - Enables Identity Resolving Key and Identity Address Information distribution by peer.
+ 
+
+#ifndef BLE_SEC_PARAM_KDIST_PEER_ID
+#define BLE_SEC_PARAM_KDIST_PEER_ID 1
+#endif
+
+// <q> BLE_SEC_PARAM_KDIST_OWN_ENC  - Enables Long Term Key and Master Identification distribution by device.
+ 
+
+#ifndef BLE_SEC_PARAM_KDIST_OWN_ENC
+#define BLE_SEC_PARAM_KDIST_OWN_ENC 1
+#endif
+
+// <q> BLE_SEC_PARAM_KDIST_OWN_ID  - Enables Identity Resolving Key and Identity Address Information distribution by device.
+ 
+
+#ifndef BLE_SEC_PARAM_KDIST_OWN_ID
+#define BLE_SEC_PARAM_KDIST_OWN_ID 1
+#endif
+
+// <q> BLE_SEC_PARAM_KDIST_PEER_ENC  - Enables Long Term Key and Master Identification distribution by peer.
+ 
+
+#ifndef BLE_SEC_PARAM_KDIST_PEER_ENC
+#define BLE_SEC_PARAM_KDIST_PEER_ENC 1
+#endif
+
+// <q> BLE_SEC_PARAM_KDIST_PEER_ID  - Enables Identity Resolving Key and Identity Address Information distribution by peer.
+ 
+
+#ifndef BLE_SEC_PARAM_KDIST_PEER_ID
+#define BLE_SEC_PARAM_KDIST_PEER_ID 1
+#endif
+
+// <q> BLE_SEC_PARAM_KDIST_OWN_ENC  - Enables Long Term Key and Master Identification distribution by device.
+ 
+
+#ifndef BLE_SEC_PARAM_KDIST_OWN_ENC
+#define BLE_SEC_PARAM_KDIST_OWN_ENC 1
+#endif
+
+// <q> BLE_SEC_PARAM_KDIST_OWN_ID  - Enables Identity Resolving Key and Identity Address Information distribution by device.
+ 
+
+#ifndef BLE_SEC_PARAM_KDIST_OWN_ID
+#define BLE_SEC_PARAM_KDIST_OWN_ID 1
+#endif
+
+// <q> BLE_SEC_PARAM_KDIST_PEER_ENC  - Enables Long Term Key and Master Identification distribution by peer.
+ 
+
+#ifndef BLE_SEC_PARAM_KDIST_PEER_ENC
+#define BLE_SEC_PARAM_KDIST_PEER_ENC 1
+#endif
+
+// <q> BLE_SEC_PARAM_KDIST_PEER_ID  - Enables Identity Resolving Key and Identity Address Information distribution by peer.
+ 
+
+#ifndef BLE_SEC_PARAM_KDIST_PEER_ID
+#define BLE_SEC_PARAM_KDIST_PEER_ID 1
+#endif
+
+// <q> BLE_SEC_PARAM_KDIST_OWN_ENC  - Enables Long Term Key and Master Identification distribution by device.
+ 
+
+#ifndef BLE_SEC_PARAM_KDIST_OWN_ENC
+#define BLE_SEC_PARAM_KDIST_OWN_ENC 1
+#endif
+
+// <q> BLE_SEC_PARAM_KDIST_OWN_ID  - Enables Identity Resolving Key and Identity Address Information distribution by device.
+ 
+
+#ifndef BLE_SEC_PARAM_KDIST_OWN_ID
+#define BLE_SEC_PARAM_KDIST_OWN_ID 1
+#endif
+
+// <q> BLE_SEC_PARAM_KDIST_PEER_ENC  - Enables Long Term Key and Master Identification distribution by peer.
+ 
+
+#ifndef BLE_SEC_PARAM_KDIST_PEER_ENC
+#define BLE_SEC_PARAM_KDIST_PEER_ENC 1
+#endif
+
+// <q> BLE_SEC_PARAM_KDIST_PEER_ID  - Enables Identity Resolving Key and Identity Address Information distribution by peer.
+ 
+
+#ifndef BLE_SEC_PARAM_KDIST_PEER_ID
+#define BLE_SEC_PARAM_KDIST_PEER_ID 1
+#endif
+
+// <q> BLE_SEC_PARAM_KDIST_OWN_ENC  - Enables Long Term Key and Master Identification distribution by device.
+ 
+
+#ifndef BLE_SEC_PARAM_KDIST_OWN_ENC
+#define BLE_SEC_PARAM_KDIST_OWN_ENC 1
+#endif
+
+// <q> BLE_SEC_PARAM_KDIST_OWN_ID  - Enables Identity Resolving Key and Identity Address Information distribution by device.
+ 
+
+#ifndef BLE_SEC_PARAM_KDIST_OWN_ID
+#define BLE_SEC_PARAM_KDIST_OWN_ID 1
+#endif
+
+// <q> BLE_SEC_PARAM_KDIST_PEER_ENC  - Enables Long Term Key and Master Identification distribution by peer.
+ 
+
+#ifndef BLE_SEC_PARAM_KDIST_PEER_ENC
+#define BLE_SEC_PARAM_KDIST_PEER_ENC 1
+#endif
+
+// <q> BLE_SEC_PARAM_KDIST_PEER_ID  - Enables Identity Resolving Key and Identity Address Information distribution by peer.
+ 
+
+#ifndef BLE_SEC_PARAM_KDIST_PEER_ID
+#define BLE_SEC_PARAM_KDIST_PEER_ID 1
+#endif
+
+// <q> BLE_SEC_PARAM_KDIST_OWN_ENC  - Enables Long Term Key and Master Identification distribution by device.
+ 
+
+#ifndef BLE_SEC_PARAM_KDIST_OWN_ENC
+#define BLE_SEC_PARAM_KDIST_OWN_ENC 1
+#endif
+
+// <q> BLE_SEC_PARAM_KDIST_OWN_ID  - Enables Identity Resolving Key and Identity Address Information distribution by device.
+ 
+
+#ifndef BLE_SEC_PARAM_KDIST_OWN_ID
+#define BLE_SEC_PARAM_KDIST_OWN_ID 1
+#endif
+
+// <q> BLE_SEC_PARAM_KDIST_PEER_ENC  - Enables Long Term Key and Master Identification distribution by peer.
+ 
+
+#ifndef BLE_SEC_PARAM_KDIST_PEER_ENC
+#define BLE_SEC_PARAM_KDIST_PEER_ENC 1
+#endif
+
+// <q> BLE_SEC_PARAM_KDIST_PEER_ID  - Enables Identity Resolving Key and Identity Address Information distribution by peer.
+ 
+
+#ifndef BLE_SEC_PARAM_KDIST_PEER_ID
+#define BLE_SEC_PARAM_KDIST_PEER_ID 1
+#endif
+
+// <q> BLE_SEC_PARAM_KDIST_OWN_ENC  - Enables Long Term Key and Master Identification distribution by device.
+ 
+
+#ifndef BLE_SEC_PARAM_KDIST_OWN_ENC
+#define BLE_SEC_PARAM_KDIST_OWN_ENC 1
+#endif
+
+// <q> BLE_SEC_PARAM_KDIST_OWN_ID  - Enables Identity Resolving Key and Identity Address Information distribution by device.
+ 
+
+#ifndef BLE_SEC_PARAM_KDIST_OWN_ID
+#define BLE_SEC_PARAM_KDIST_OWN_ID 1
+#endif
+
+// <q> BLE_SEC_PARAM_KDIST_PEER_ENC  - Enables Long Term Key and Master Identification distribution by peer.
+ 
+
+#ifndef BLE_SEC_PARAM_KDIST_PEER_ENC
+#define BLE_SEC_PARAM_KDIST_PEER_ENC 1
+#endif
+
+// <q> BLE_SEC_PARAM_KDIST_PEER_ID  - Enables Identity Resolving Key and Identity Address Information distribution by peer.
+ 
+
+#ifndef BLE_SEC_PARAM_KDIST_PEER_ID
+#define BLE_SEC_PARAM_KDIST_PEER_ID 1
+#endif
+
+// <q> BLE_SEC_PARAM_KDIST_OWN_ENC  - Enables Long Term Key and Master Identification distribution by device.
+ 
+
+#ifndef BLE_SEC_PARAM_KDIST_OWN_ENC
+#define BLE_SEC_PARAM_KDIST_OWN_ENC 1
+#endif
+
+// <q> BLE_SEC_PARAM_KDIST_OWN_ID  - Enables Identity Resolving Key and Identity Address Information distribution by device.
+ 
+
+#ifndef BLE_SEC_PARAM_KDIST_OWN_ID
+#define BLE_SEC_PARAM_KDIST_OWN_ID 1
+#endif
+
+// <q> BLE_SEC_PARAM_KDIST_PEER_ENC  - Enables Long Term Key and Master Identification distribution by peer.
+ 
+
+#ifndef BLE_SEC_PARAM_KDIST_PEER_ENC
+#define BLE_SEC_PARAM_KDIST_PEER_ENC 1
+#endif
+
+// <q> BLE_SEC_PARAM_KDIST_PEER_ID  - Enables Identity Resolving Key and Identity Address Information distribution by peer.
+ 
+
+#ifndef BLE_SEC_PARAM_KDIST_PEER_ID
+#define BLE_SEC_PARAM_KDIST_PEER_ID 1
+#endif
+
+// <q> BLE_SEC_PARAM_KDIST_OWN_ENC  - Enables Long Term Key and Master Identification distribution by device.
+ 
+
+#ifndef BLE_SEC_PARAM_KDIST_OWN_ENC
+#define BLE_SEC_PARAM_KDIST_OWN_ENC 1
+#endif
+
+// <q> BLE_SEC_PARAM_KDIST_OWN_ID  - Enables Identity Resolving Key and Identity Address Information distribution by device.
+ 
+
+#ifndef BLE_SEC_PARAM_KDIST_OWN_ID
+#define BLE_SEC_PARAM_KDIST_OWN_ID 1
+#endif
+
+// <q> BLE_SEC_PARAM_KDIST_PEER_ENC  - Enables Long Term Key and Master Identification distribution by peer.
+ 
+
+#ifndef BLE_SEC_PARAM_KDIST_PEER_ENC
+#define BLE_SEC_PARAM_KDIST_PEER_ENC 1
+#endif
+
+// <q> BLE_SEC_PARAM_KDIST_PEER_ID  - Enables Identity Resolving Key and Identity Address Information distribution by peer.
+ 
+
+#ifndef BLE_SEC_PARAM_KDIST_PEER_ID
+#define BLE_SEC_PARAM_KDIST_PEER_ID 1
+#endif
+
+// </e>
+
+// <q> BLE_SEC_PARAM_LESC  - Enable LE Secure Connection.
+ 
+
+#ifndef BLE_SEC_PARAM_LESC
+#define BLE_SEC_PARAM_LESC 1
+#endif
+
+// <q> BLE_SEC_PARAM_MITM  - Enable Man In The Middle protection.
+ 
+
+#ifndef BLE_SEC_PARAM_MITM
+#define BLE_SEC_PARAM_MITM 1
+#endif
+
+// <q> BLE_SEC_PARAM_OOB  - Enable OOB.
+ 
+
+#ifndef BLE_SEC_PARAM_OOB
+#define BLE_SEC_PARAM_OOB 0
+#endif
+
+// <q> BLE_SEC_PARAM_KEYPRESS  - Enable keypress notifications.
+ 
+
+#ifndef BLE_SEC_PARAM_KEYPRESS
+#define BLE_SEC_PARAM_KEYPRESS 0
+#endif
+
+// <o> BLE_SEC_PARAM_IO_CAPS  - IO Capabilities settings.
+ 
+// <0=> BLE_GAP_IO_CAPS_DISPLAY_ONLY 
+// <1=> BLE_GAP_IO_CAPS_DISPLAY_YESNO 
+// <2=> BLE_GAP_IO_CAPS_KEYBOARD_ONLY 
+// <3=> BLE_GAP_IO_CAPS_NONE 
+// <4=> BLE_GAP_IO_CAPS_KEYBOARD_DISPLAY 
+// <0=> BLE_GAP_IO_CAPS_DISPLAY_ONLY 
+// <1=> BLE_GAP_IO_CAPS_DISPLAY_YESNO 
+// <2=> BLE_GAP_IO_CAPS_KEYBOARD_ONLY 
+// <3=> BLE_GAP_IO_CAPS_NONE 
+// <4=> BLE_GAP_IO_CAPS_KEYBOARD_DISPLAY 
+// <0=> BLE_GAP_IO_CAPS_DISPLAY_ONLY 
+// <1=> BLE_GAP_IO_CAPS_DISPLAY_YESNO 
+// <2=> BLE_GAP_IO_CAPS_KEYBOARD_ONLY 
+// <3=> BLE_GAP_IO_CAPS_NONE 
+// <4=> BLE_GAP_IO_CAPS_KEYBOARD_DISPLAY 
+// <0=> BLE_GAP_IO_CAPS_DISPLAY_ONLY 
+// <1=> BLE_GAP_IO_CAPS_DISPLAY_YESNO 
+// <2=> BLE_GAP_IO_CAPS_KEYBOARD_ONLY 
+// <3=> BLE_GAP_IO_CAPS_NONE 
+// <4=> BLE_GAP_IO_CAPS_KEYBOARD_DISPLAY 
+// <0=> BLE_GAP_IO_CAPS_DISPLAY_ONLY 
+// <1=> BLE_GAP_IO_CAPS_DISPLAY_YESNO 
+// <2=> BLE_GAP_IO_CAPS_KEYBOARD_ONLY 
+// <3=> BLE_GAP_IO_CAPS_NONE 
+// <4=> BLE_GAP_IO_CAPS_KEYBOARD_DISPLAY 
+// <0=> BLE_GAP_IO_CAPS_DISPLAY_ONLY 
+// <1=> BLE_GAP_IO_CAPS_DISPLAY_YESNO 
+// <2=> BLE_GAP_IO_CAPS_KEYBOARD_ONLY 
+// <3=> BLE_GAP_IO_CAPS_NONE 
+// <4=> BLE_GAP_IO_CAPS_KEYBOARD_DISPLAY 
+// <0=> BLE_GAP_IO_CAPS_DISPLAY_ONLY 
+// <1=> BLE_GAP_IO_CAPS_DISPLAY_YESNO 
+// <2=> BLE_GAP_IO_CAPS_KEYBOARD_ONLY 
+// <3=> BLE_GAP_IO_CAPS_NONE 
+// <4=> BLE_GAP_IO_CAPS_KEYBOARD_DISPLAY 
+// <0=> BLE_GAP_IO_CAPS_DISPLAY_ONLY 
+// <1=> BLE_GAP_IO_CAPS_DISPLAY_YESNO 
+// <2=> BLE_GAP_IO_CAPS_KEYBOARD_ONLY 
+// <3=> BLE_GAP_IO_CAPS_NONE 
+// <4=> BLE_GAP_IO_CAPS_KEYBOARD_DISPLAY 
+// <0=> BLE_GAP_IO_CAPS_DISPLAY_ONLY 
+// <1=> BLE_GAP_IO_CAPS_DISPLAY_YESNO 
+// <2=> BLE_GAP_IO_CAPS_KEYBOARD_ONLY 
+// <3=> BLE_GAP_IO_CAPS_NONE 
+// <4=> BLE_GAP_IO_CAPS_KEYBOARD_DISPLAY 
+// <0=> BLE_GAP_IO_CAPS_DISPLAY_ONLY 
+// <1=> BLE_GAP_IO_CAPS_DISPLAY_YESNO 
+// <2=> BLE_GAP_IO_CAPS_KEYBOARD_ONLY 
+// <3=> BLE_GAP_IO_CAPS_NONE 
+// <4=> BLE_GAP_IO_CAPS_KEYBOARD_DISPLAY 
+// <0=> BLE_GAP_IO_CAPS_DISPLAY_ONLY 
+// <1=> BLE_GAP_IO_CAPS_DISPLAY_YESNO 
+// <2=> BLE_GAP_IO_CAPS_KEYBOARD_ONLY 
+// <3=> BLE_GAP_IO_CAPS_NONE 
+// <4=> BLE_GAP_IO_CAPS_KEYBOARD_DISPLAY 
+// <0=> BLE_GAP_IO_CAPS_DISPLAY_ONLY 
+// <1=> BLE_GAP_IO_CAPS_DISPLAY_YESNO 
+// <2=> BLE_GAP_IO_CAPS_KEYBOARD_ONLY 
+// <3=> BLE_GAP_IO_CAPS_NONE 
+// <4=> BLE_GAP_IO_CAPS_KEYBOARD_DISPLAY 
+// <0=> BLE_GAP_IO_CAPS_DISPLAY_ONLY 
+// <1=> BLE_GAP_IO_CAPS_DISPLAY_YESNO 
+// <2=> BLE_GAP_IO_CAPS_KEYBOARD_ONLY 
+// <3=> BLE_GAP_IO_CAPS_NONE 
+// <4=> BLE_GAP_IO_CAPS_KEYBOARD_DISPLAY 
+// <0=> BLE_GAP_IO_CAPS_DISPLAY_ONLY 
+// <1=> BLE_GAP_IO_CAPS_DISPLAY_YESNO 
+// <2=> BLE_GAP_IO_CAPS_KEYBOARD_ONLY 
+// <3=> BLE_GAP_IO_CAPS_NONE 
+// <4=> BLE_GAP_IO_CAPS_KEYBOARD_DISPLAY 
+
+#ifndef BLE_SEC_PARAM_IO_CAPS
+#define BLE_SEC_PARAM_IO_CAPS 1
+#endif
+
+// <o> BLE_SEC_PARAM_MIN_KEY_SIZE  - Minimum size of a security key.
+ 
+// <7=> 7 
+// <8=> 8 
+// <9=> 9 
+// <10=> 10 
+// <11=> 11 
+// <12=> 12 
+// <13=> 13 
+// <14=> 14 
+// <15=> 15 
+// <16=> 16 
+
+#ifndef BLE_SEC_PARAM_MIN_KEY_SIZE
+#define BLE_SEC_PARAM_MIN_KEY_SIZE 7
+#endif
+
+// <o> BLE_SEC_PARAM_MAX_KEY_SIZE  - Maximum size of a security key.
+ 
+// <7=> 7 
+// <8=> 8 
+// <9=> 9 
+// <10=> 10 
+// <11=> 11 
+// <12=> 12 
+// <13=> 13 
+// <14=> 14 
+// <15=> 15 
+// <16=> 16 
+
+#ifndef BLE_SEC_PARAM_MAX_KEY_SIZE
+#define BLE_SEC_PARAM_MAX_KEY_SIZE 16
+#endif
+
+// </h> 
+// <h> nRF_ANT 
+
+//==========================================================
+// <e> ANTFS_ENABLED - ant_fs - ANT File Share module.
+//==========================================================
+#ifndef ANTFS_ENABLED
+#define ANTFS_ENABLED 0
+#endif
+// <o> ANTFS_CONFIG_NETWORK_NUMBER - ANT-FS network number. 
+#ifndef ANTFS_CONFIG_NETWORK_NUMBER
+#define ANTFS_CONFIG_NETWORK_NUMBER 0
+#endif
+
+// <o> ANTFS_CONFIG_CHANNEL_NUMBER - ANT-FS channel number. 
+#ifndef ANTFS_CONFIG_CHANNEL_NUMBER
+#define ANTFS_CONFIG_CHANNEL_NUMBER 0
+#endif
+
+// <o> ANTFS_CONFIG_PAIRING_TIMEOUT - Pairing timeout - how long the UI will wait for a response to a pairing request before switching to the link layer, in seconds. 
+#ifndef ANTFS_CONFIG_PAIRING_TIMEOUT
+#define ANTFS_CONFIG_PAIRING_TIMEOUT 120
+#endif
+
+// <o> ANTFS_CONFIG_LINK_COMMAND_TIMEOUT - Command timeout - how long the client will wait without receiving any commands before switching to the link layer, in seconds. 
+#ifndef ANTFS_CONFIG_LINK_COMMAND_TIMEOUT
+#define ANTFS_CONFIG_LINK_COMMAND_TIMEOUT 10
+#endif
+
+// <o> ANTFS_CONFIG_TRANS_TYPE - ANT-FS Transmission Type. 
+#ifndef ANTFS_CONFIG_TRANS_TYPE
+#define ANTFS_CONFIG_TRANS_TYPE 10
+#endif
+
+// <o> ANTFS_CONFIG_DEVICE_TYPE - ANT device type for channel configuration. 
+#ifndef ANTFS_CONFIG_DEVICE_TYPE
+#define ANTFS_CONFIG_DEVICE_TYPE 1
+#endif
+
+// <o> ANTFS_CONFIG_BEACON_STATUS_PERIOD  - ANT-FS Beacon Message Period.
+ 
+// <0=> 0.5 Hz 
+// <1=> 1 Hz 
+// <2=> 2 Hz 
+// <3=> 4 Hz 
+// <4=> 8 Hz 
+
+#ifndef ANTFS_CONFIG_BEACON_STATUS_PERIOD
+#define ANTFS_CONFIG_BEACON_STATUS_PERIOD 3
+#endif
+
+// <o> ANTFS_CONFIG_TRANSMIT_POWER  - ANT Transmit Power.
+ 
+// <0=> Lowest ANT Tx power level setting. (-20dBm) 
+// <1=> ANT Tx power > Lvl 0. (-12dBm) 
+// <2=> ANT Tx power > Lvl 1. (-4dBm) 
+// <3=> ANT Tx power > Lvl 2. Default tx power level. (0dBm) 
+// <4=> ANT Tx power > Lvl 3. (+4dBm) 
+// <128=> Custom tx power selection 
+
+#ifndef ANTFS_CONFIG_TRANSMIT_POWER
+#define ANTFS_CONFIG_TRANSMIT_POWER 3
+#endif
+
+// <o> ANTFS_CONFIG_CUSTOM_TRANSMIT_POWER - ANT Custom Transmit Power. 
+#ifndef ANTFS_CONFIG_CUSTOM_TRANSMIT_POWER
+#define ANTFS_CONFIG_CUSTOM_TRANSMIT_POWER 0
+#endif
+
+// <q> ANTFS_CONFIG_AUTH_TYPE_PAIRING_ENABLED  - Use pairing and key exchange authentication.
+ 
+
+#ifndef ANTFS_CONFIG_AUTH_TYPE_PAIRING_ENABLED
+#define ANTFS_CONFIG_AUTH_TYPE_PAIRING_ENABLED 0
+#endif
+
+// <q> ANTFS_CONFIG_AUTH_TYPE_PASSKEY_ENABLED  - Use passkey authentication.
+ 
+
+#ifndef ANTFS_CONFIG_AUTH_TYPE_PASSKEY_ENABLED
+#define ANTFS_CONFIG_AUTH_TYPE_PASSKEY_ENABLED 0
+#endif
+
+// <q> ANTFS_CONFIG_AUTH_TYPE_PASSTHROUGH_ENABLED  - Allow host to bypass authentication.
+ 
+
+#ifndef ANTFS_CONFIG_AUTH_TYPE_PASSTHROUGH_ENABLED
+#define ANTFS_CONFIG_AUTH_TYPE_PASSTHROUGH_ENABLED 0
+#endif
+
+// <q> ANTFS_CONFIG_UPLOAD_ENABLED  - Support upload operation.
+ 
+
+#ifndef ANTFS_CONFIG_UPLOAD_ENABLED
+#define ANTFS_CONFIG_UPLOAD_ENABLED 0
+#endif
+
+// <q> ANTFS_CONFIG_DEBUG_LED_ENABLED  - Enables LED debug in the module.
+ 
+
+#ifndef ANTFS_CONFIG_DEBUG_LED_ENABLED
+#define ANTFS_CONFIG_DEBUG_LED_ENABLED 0
+#endif
+
+// </e>
+
+// <e> ANT_BPWR_ENABLED - ant_bpwr - Bicycle Power Profile
+//==========================================================
+#ifndef ANT_BPWR_ENABLED
+#define ANT_BPWR_ENABLED 0
+#endif
+// <e> ANT_BPWR_LOG_ENABLED - Enables general logging in the module.
+//==========================================================
+#ifndef ANT_BPWR_LOG_ENABLED
+#define ANT_BPWR_LOG_ENABLED 0
+#endif
+// <o> ANT_BPWR_LOG_LEVEL  - Default Severity level
+ 
+// <0=> Off 
+// <1=> Error 
+// <2=> Warning 
+// <3=> Info 
+// <4=> Debug 
+
+#ifndef ANT_BPWR_LOG_LEVEL
+#define ANT_BPWR_LOG_LEVEL 3
+#endif
+
+// <o> ANT_BPWR_INFO_COLOR  - ANSI escape code prefix.
+ 
+// <0=> Default 
+// <1=> Black 
+// <2=> Red 
+// <3=> Green 
+// <4=> Yellow 
+// <5=> Blue 
+// <6=> Magenta 
+// <7=> Cyan 
+// <8=> White 
+
+#ifndef ANT_BPWR_INFO_COLOR
+#define ANT_BPWR_INFO_COLOR 0
+#endif
+
+// </e>
+
+// <e> ANT_BPWR_COMMON_LOG_ENABLED - Enables logging of BPWR tracing common data.
+//==========================================================
+#ifndef ANT_BPWR_COMMON_LOG_ENABLED
+#define ANT_BPWR_COMMON_LOG_ENABLED 0
+#endif
+// <o> ANT_BPWR_COMMON_LOG_LEVEL  - Default Severity level
+ 
+// <0=> Off 
+// <1=> Error 
+// <2=> Warning 
+// <3=> Info 
+// <4=> Debug 
+
+#ifndef ANT_BPWR_COMMON_LOG_LEVEL
+#define ANT_BPWR_COMMON_LOG_LEVEL 3
+#endif
+
+// <o> ANT_BPWR_COMMON_INFO_COLOR  - ANSI escape code prefix.
+ 
+// <0=> Default 
+// <1=> Black 
+// <2=> Red 
+// <3=> Green 
+// <4=> Yellow 
+// <5=> Blue 
+// <6=> Magenta 
+// <7=> Cyan 
+// <8=> White 
+
+#ifndef ANT_BPWR_COMMON_INFO_COLOR
+#define ANT_BPWR_COMMON_INFO_COLOR 0
+#endif
+
+// </e>
+
+// <e> ANT_BPWR_PAGE_TORQUE_LOG_ENABLED - Enables logging of BPWR torque page in the module.
+//==========================================================
+#ifndef ANT_BPWR_PAGE_TORQUE_LOG_ENABLED
+#define ANT_BPWR_PAGE_TORQUE_LOG_ENABLED 0
+#endif
+// <o> ANT_BPWR_PAGE_TORQUE_LOG_LEVEL  - Default Severity level
+ 
+// <0=> Off 
+// <1=> Error 
+// <2=> Warning 
+// <3=> Info 
+// <4=> Debug 
+
+#ifndef ANT_BPWR_PAGE_TORQUE_LOG_LEVEL
+#define ANT_BPWR_PAGE_TORQUE_LOG_LEVEL 3
+#endif
+
+// <o> ANT_BPWR_PAGE_TORQUE_INFO_COLOR  - ANSI escape code prefix.
+ 
+// <0=> Default 
+// <1=> Black 
+// <2=> Red 
+// <3=> Green 
+// <4=> Yellow 
+// <5=> Blue 
+// <6=> Magenta 
+// <7=> Cyan 
+// <8=> White 
+
+#ifndef ANT_BPWR_PAGE_TORQUE_INFO_COLOR
+#define ANT_BPWR_PAGE_TORQUE_INFO_COLOR 0
+#endif
+
+// </e>
+
+// <e> ANT_BPWR_PAGE_1_LOG_ENABLED - Enables logging of BPWR page 1 in the module.
+//==========================================================
+#ifndef ANT_BPWR_PAGE_1_LOG_ENABLED
+#define ANT_BPWR_PAGE_1_LOG_ENABLED 0
+#endif
+// <o> ANT_BPWR_PAGE_1_LOG_LEVEL  - Default Severity level
+ 
+// <0=> Off 
+// <1=> Error 
+// <2=> Warning 
+// <3=> Info 
+// <4=> Debug 
+
+#ifndef ANT_BPWR_PAGE_1_LOG_LEVEL
+#define ANT_BPWR_PAGE_1_LOG_LEVEL 3
+#endif
+
+// <o> ANT_BPWR_PAGE_1_INFO_COLOR  - ANSI escape code prefix.
+ 
+// <0=> Default 
+// <1=> Black 
+// <2=> Red 
+// <3=> Green 
+// <4=> Yellow 
+// <5=> Blue 
+// <6=> Magenta 
+// <7=> Cyan 
+// <8=> White 
+
+#ifndef ANT_BPWR_PAGE_1_INFO_COLOR
+#define ANT_BPWR_PAGE_1_INFO_COLOR 0
+#endif
+
+// </e>
+
+// <e> ANT_BPWR_PAGE_16_LOG_ENABLED - Enables logging of BPWR page 16 in the module.
+//==========================================================
+#ifndef ANT_BPWR_PAGE_16_LOG_ENABLED
+#define ANT_BPWR_PAGE_16_LOG_ENABLED 0
+#endif
+// <o> ANT_BPWR_PAGE_16_LOG_LEVEL  - Default Severity level
+ 
+// <0=> Off 
+// <1=> Error 
+// <2=> Warning 
+// <3=> Info 
+// <4=> Debug 
+
+#ifndef ANT_BPWR_PAGE_16_LOG_LEVEL
+#define ANT_BPWR_PAGE_16_LOG_LEVEL 3
+#endif
+
+// <o> ANT_BPWR_PAGE_16_INFO_COLOR  - ANSI escape code prefix.
+ 
+// <0=> Default 
+// <1=> Black 
+// <2=> Red 
+// <3=> Green 
+// <4=> Yellow 
+// <5=> Blue 
+// <6=> Magenta 
+// <7=> Cyan 
+// <8=> White 
+
+#ifndef ANT_BPWR_PAGE_16_INFO_COLOR
+#define ANT_BPWR_PAGE_16_INFO_COLOR 0
+#endif
+
+// </e>
+
+// <e> ANT_BPWR_PAGE_17_LOG_ENABLED - Enables logging of BPWR page 17 in the module.
+//==========================================================
+#ifndef ANT_BPWR_PAGE_17_LOG_ENABLED
+#define ANT_BPWR_PAGE_17_LOG_ENABLED 0
+#endif
+// <o> ANT_BPWR_PAGE_17_LOG_LEVEL  - Default Severity level
+ 
+// <0=> Off 
+// <1=> Error 
+// <2=> Warning 
+// <3=> Info 
+// <4=> Debug 
+
+#ifndef ANT_BPWR_PAGE_17_LOG_LEVEL
+#define ANT_BPWR_PAGE_17_LOG_LEVEL 3
+#endif
+
+// <o> ANT_BPWR_PAGE_17_INFO_COLOR  - ANSI escape code prefix.
+ 
+// <0=> Default 
+// <1=> Black 
+// <2=> Red 
+// <3=> Green 
+// <4=> Yellow 
+// <5=> Blue 
+// <6=> Magenta 
+// <7=> Cyan 
+// <8=> White 
+
+#ifndef ANT_BPWR_PAGE_17_INFO_COLOR
+#define ANT_BPWR_PAGE_17_INFO_COLOR 0
+#endif
+
+// </e>
+
+// <e> ANT_BPWR_PAGE_18_LOG_ENABLED - Enables logging of BPWR page 18 in the module.
+//==========================================================
+#ifndef ANT_BPWR_PAGE_18_LOG_ENABLED
+#define ANT_BPWR_PAGE_18_LOG_ENABLED 0
+#endif
+// <o> ANT_BPWR_PAGE_18_LOG_LEVEL  - Default Severity level
+ 
+// <0=> Off 
+// <1=> Error 
+// <2=> Warning 
+// <3=> Info 
+// <4=> Debug 
+
+#ifndef ANT_BPWR_PAGE_18_LOG_LEVEL
+#define ANT_BPWR_PAGE_18_LOG_LEVEL 3
+#endif
+
+// <o> ANT_BPWR_PAGE_18_INFO_COLOR  - ANSI escape code prefix.
+ 
+// <0=> Default 
+// <1=> Black 
+// <2=> Red 
+// <3=> Green 
+// <4=> Yellow 
+// <5=> Blue 
+// <6=> Magenta 
+// <7=> Cyan 
+// <8=> White 
+
+#ifndef ANT_BPWR_PAGE_18_INFO_COLOR
+#define ANT_BPWR_PAGE_18_INFO_COLOR 0
+#endif
+
+// </e>
+
+// </e>
+
+// <e> ANT_BSC_ENABLED - ant_bsc - Bicycle Speed and Cadence Profile
+//==========================================================
+#ifndef ANT_BSC_ENABLED
+#define ANT_BSC_ENABLED 0
+#endif
+// <e> ANT_BSC_LOG_ENABLED - Enables general logging in the module.
+//==========================================================
+#ifndef ANT_BSC_LOG_ENABLED
+#define ANT_BSC_LOG_ENABLED 0
+#endif
+// <o> ANT_BSC_LOG_LEVEL  - Default Severity level
+ 
+// <0=> Off 
+// <1=> Error 
+// <2=> Warning 
+// <3=> Info 
+// <4=> Debug 
+
+#ifndef ANT_BSC_LOG_LEVEL
+#define ANT_BSC_LOG_LEVEL 3
+#endif
+
+// <o> ANT_BSC_INFO_COLOR  - ANSI escape code prefix.
+ 
+// <0=> Default 
+// <1=> Black 
+// <2=> Red 
+// <3=> Green 
+// <4=> Yellow 
+// <5=> Blue 
+// <6=> Magenta 
+// <7=> Cyan 
+// <8=> White 
+
+#ifndef ANT_BSC_INFO_COLOR
+#define ANT_BSC_INFO_COLOR 0
+#endif
+
+// </e>
+
+// <e> ANT_BSC_COMBINED_PAGE_0_LOG_ENABLED - Enables logging of BSC Combined page 0 in the module.
+//==========================================================
+#ifndef ANT_BSC_COMBINED_PAGE_0_LOG_ENABLED
+#define ANT_BSC_COMBINED_PAGE_0_LOG_ENABLED 0
+#endif
+// <o> ANT_BSC_COMBINED_PAGE_0_LOG_LEVEL  - Default Severity level
+ 
+// <0=> Off 
+// <1=> Error 
+// <2=> Warning 
+// <3=> Info 
+// <4=> Debug 
+
+#ifndef ANT_BSC_COMBINED_PAGE_0_LOG_LEVEL
+#define ANT_BSC_COMBINED_PAGE_0_LOG_LEVEL 3
+#endif
+
+// <o> ANT_BSC_COMBINED_PAGE_0_INFO_COLOR  - ANSI escape code prefix.
+ 
+// <0=> Default 
+// <1=> Black 
+// <2=> Red 
+// <3=> Green 
+// <4=> Yellow 
+// <5=> Blue 
+// <6=> Magenta 
+// <7=> Cyan 
+// <8=> White 
+
+#ifndef ANT_BSC_COMBINED_PAGE_0_INFO_COLOR
+#define ANT_BSC_COMBINED_PAGE_0_INFO_COLOR 0
+#endif
+
+// </e>
+
+// <e> ANT_BSC_PAGE_0_LOG_ENABLED - Enables logging of BSC page 0 in the module.
+//==========================================================
+#ifndef ANT_BSC_PAGE_0_LOG_ENABLED
+#define ANT_BSC_PAGE_0_LOG_ENABLED 0
+#endif
+// <o> ANT_BSC_PAGE_0_LOG_LEVEL  - Default Severity level
+ 
+// <0=> Off 
+// <1=> Error 
+// <2=> Warning 
+// <3=> Info 
+// <4=> Debug 
+
+#ifndef ANT_BSC_PAGE_0_LOG_LEVEL
+#define ANT_BSC_PAGE_0_LOG_LEVEL 3
+#endif
+
+// <o> ANT_BSC_PAGE_0_INFO_COLOR  - ANSI escape code prefix.
+ 
+// <0=> Default 
+// <1=> Black 
+// <2=> Red 
+// <3=> Green 
+// <4=> Yellow 
+// <5=> Blue 
+// <6=> Magenta 
+// <7=> Cyan 
+// <8=> White 
+
+#ifndef ANT_BSC_PAGE_0_INFO_COLOR
+#define ANT_BSC_PAGE_0_INFO_COLOR 0
+#endif
+
+// </e>
+
+// <e> ANT_BSC_PAGE_1_LOG_ENABLED - Enables logging of BSC page 1 in the module.
+//==========================================================
+#ifndef ANT_BSC_PAGE_1_LOG_ENABLED
+#define ANT_BSC_PAGE_1_LOG_ENABLED 0
+#endif
+// <o> ANT_BSC_PAGE_1_LOG_LEVEL  - Default Severity level
+ 
+// <0=> Off 
+// <1=> Error 
+// <2=> Warning 
+// <3=> Info 
+// <4=> Debug 
+
+#ifndef ANT_BSC_PAGE_1_LOG_LEVEL
+#define ANT_BSC_PAGE_1_LOG_LEVEL 3
+#endif
+
+// <o> ANT_BSC_PAGE_1_INFO_COLOR  - ANSI escape code prefix.
+ 
+// <0=> Default 
+// <1=> Black 
+// <2=> Red 
+// <3=> Green 
+// <4=> Yellow 
+// <5=> Blue 
+// <6=> Magenta 
+// <7=> Cyan 
+// <8=> White 
+
+#ifndef ANT_BSC_PAGE_1_INFO_COLOR
+#define ANT_BSC_PAGE_1_INFO_COLOR 0
+#endif
+
+// </e>
+
+// <e> ANT_BSC_PAGE_2_LOG_ENABLED - Enables logging of BSC page 2 in the module.
+//==========================================================
+#ifndef ANT_BSC_PAGE_2_LOG_ENABLED
+#define ANT_BSC_PAGE_2_LOG_ENABLED 0
+#endif
+// <o> ANT_BSC_PAGE_2_LOG_LEVEL  - Default Severity level
+ 
+// <0=> Off 
+// <1=> Error 
+// <2=> Warning 
+// <3=> Info 
+// <4=> Debug 
+
+#ifndef ANT_BSC_PAGE_2_LOG_LEVEL
+#define ANT_BSC_PAGE_2_LOG_LEVEL 3
+#endif
+
+// <o> ANT_BSC_PAGE_2_INFO_COLOR  - ANSI escape code prefix.
+ 
+// <0=> Default 
+// <1=> Black 
+// <2=> Red 
+// <3=> Green 
+// <4=> Yellow 
+// <5=> Blue 
+// <6=> Magenta 
+// <7=> Cyan 
+// <8=> White 
+
+#ifndef ANT_BSC_PAGE_2_INFO_COLOR
+#define ANT_BSC_PAGE_2_INFO_COLOR 0
+#endif
+
+// </e>
+
+// <e> ANT_BSC_PAGE_3_LOG_ENABLED - Enables logging of BSC page 3 in the module.
+//==========================================================
+#ifndef ANT_BSC_PAGE_3_LOG_ENABLED
+#define ANT_BSC_PAGE_3_LOG_ENABLED 0
+#endif
+// <o> ANT_BSC_PAGE_3_LOG_LEVEL  - Default Severity level
+ 
+// <0=> Off 
+// <1=> Error 
+// <2=> Warning 
+// <3=> Info 
+// <4=> Debug 
+
+#ifndef ANT_BSC_PAGE_3_LOG_LEVEL
+#define ANT_BSC_PAGE_3_LOG_LEVEL 3
+#endif
+
+// <o> ANT_BSC_PAGE_3_INFO_COLOR  - ANSI escape code prefix.
+ 
+// <0=> Default 
+// <1=> Black 
+// <2=> Red 
+// <3=> Green 
+// <4=> Yellow 
+// <5=> Blue 
+// <6=> Magenta 
+// <7=> Cyan 
+// <8=> White 
+
+#ifndef ANT_BSC_PAGE_3_INFO_COLOR
+#define ANT_BSC_PAGE_3_INFO_COLOR 0
+#endif
+
+// </e>
+
+// <e> ANT_BSC_PAGE_4_LOG_ENABLED - Enables logging of BSC page 4 in the module.
+//==========================================================
+#ifndef ANT_BSC_PAGE_4_LOG_ENABLED
+#define ANT_BSC_PAGE_4_LOG_ENABLED 0
+#endif
+// <o> ANT_BSC_PAGE_4_LOG_LEVEL  - Default Severity level
+ 
+// <0=> Off 
+// <1=> Error 
+// <2=> Warning 
+// <3=> Info 
+// <4=> Debug 
+
+#ifndef ANT_BSC_PAGE_4_LOG_LEVEL
+#define ANT_BSC_PAGE_4_LOG_LEVEL 3
+#endif
+
+// <o> ANT_BSC_PAGE_4_INFO_COLOR  - ANSI escape code prefix.
+ 
+// <0=> Default 
+// <1=> Black 
+// <2=> Red 
+// <3=> Green 
+// <4=> Yellow 
+// <5=> Blue 
+// <6=> Magenta 
+// <7=> Cyan 
+// <8=> White 
+
+#ifndef ANT_BSC_PAGE_4_INFO_COLOR
+#define ANT_BSC_PAGE_4_INFO_COLOR 0
+#endif
+
+// </e>
+
+// <e> ANT_BSC_PAGE_5_LOG_ENABLED - Enables logging of BSC page 5 in the module.
+//==========================================================
+#ifndef ANT_BSC_PAGE_5_LOG_ENABLED
+#define ANT_BSC_PAGE_5_LOG_ENABLED 0
+#endif
+// <o> ANT_BSC_PAGE_5_LOG_LEVEL  - Default Severity level
+ 
+// <0=> Off 
+// <1=> Error 
+// <2=> Warning 
+// <3=> Info 
+// <4=> Debug 
+
+#ifndef ANT_BSC_PAGE_5_LOG_LEVEL
+#define ANT_BSC_PAGE_5_LOG_LEVEL 3
+#endif
+
+// <o> ANT_BSC_PAGE_5_INFO_COLOR  - ANSI escape code prefix.
+ 
+// <0=> Default 
+// <1=> Black 
+// <2=> Red 
+// <3=> Green 
+// <4=> Yellow 
+// <5=> Blue 
+// <6=> Magenta 
+// <7=> Cyan 
+// <8=> White 
+
+#ifndef ANT_BSC_PAGE_5_INFO_COLOR
+#define ANT_BSC_PAGE_5_INFO_COLOR 0
+#endif
+
+// </e>
+
+// </e>
+
+// <q> ANT_CHANNEL_CONFIG_ENABLED  - ant_channel_config - ANT common channel configuration
+ 
+
+#ifndef ANT_CHANNEL_CONFIG_ENABLED
+#define ANT_CHANNEL_CONFIG_ENABLED 1
+#endif
+
+// <e> ANT_COMMON_PAGE_70_ENABLED - ant_common_page_70 - ANT+ common page 70
+//==========================================================
+#ifndef ANT_COMMON_PAGE_70_ENABLED
+#define ANT_COMMON_PAGE_70_ENABLED 1
+#endif
+// <e> ANT_COMMON_PAGE_70_LOG_ENABLED - Enables logging of common page 70 in the module.
+//==========================================================
+#ifndef ANT_COMMON_PAGE_70_LOG_ENABLED
+#define ANT_COMMON_PAGE_70_LOG_ENABLED 0
+#endif
+// <o> ANT_COMMON_PAGE_70_LOG_LEVEL  - Default Severity level
+ 
+// <0=> Off 
+// <1=> Error 
+// <2=> Warning 
+// <3=> Info 
+// <4=> Debug 
+
+#ifndef ANT_COMMON_PAGE_70_LOG_LEVEL
+#define ANT_COMMON_PAGE_70_LOG_LEVEL 3
+#endif
+
+// <o> ANT_COMMON_PAGE_70_INFO_COLOR  - ANSI escape code prefix.
+ 
+// <0=> Default 
+// <1=> Black 
+// <2=> Red 
+// <3=> Green 
+// <4=> Yellow 
+// <5=> Blue 
+// <6=> Magenta 
+// <7=> Cyan 
+// <8=> White 
+
+#ifndef ANT_COMMON_PAGE_70_INFO_COLOR
+#define ANT_COMMON_PAGE_70_INFO_COLOR 0
+#endif
+
+// </e>
+
+// </e>
+
+// <e> ANT_COMMON_PAGE_80_ENABLED - ant_common_page_80 - ANT+ common page 80
+//==========================================================
+#ifndef ANT_COMMON_PAGE_80_ENABLED
+#define ANT_COMMON_PAGE_80_ENABLED 1
+#endif
+// <e> ANT_COMMON_PAGE_80_LOG_ENABLED - Enables logging of common page 80 in the module.
+//==========================================================
+#ifndef ANT_COMMON_PAGE_80_LOG_ENABLED
+#define ANT_COMMON_PAGE_80_LOG_ENABLED 0
+#endif
+// <o> ANT_COMMON_PAGE_80_LOG_LEVEL  - Default Severity level
+ 
+// <0=> Off 
+// <1=> Error 
+// <2=> Warning 
+// <3=> Info 
+// <4=> Debug 
+
+#ifndef ANT_COMMON_PAGE_80_LOG_LEVEL
+#define ANT_COMMON_PAGE_80_LOG_LEVEL 3
+#endif
+
+// <o> ANT_COMMON_PAGE_80_INFO_COLOR  - ANSI escape code prefix.
+ 
+// <0=> Default 
+// <1=> Black 
+// <2=> Red 
+// <3=> Green 
+// <4=> Yellow 
+// <5=> Blue 
+// <6=> Magenta 
+// <7=> Cyan 
+// <8=> White 
+
+#ifndef ANT_COMMON_PAGE_80_INFO_COLOR
+#define ANT_COMMON_PAGE_80_INFO_COLOR 0
+#endif
+
+// </e>
+
+// </e>
+
+// <e> ANT_COMMON_PAGE_81_ENABLED - ant_common_page_81 - ANT+ common page 81
+//==========================================================
+#ifndef ANT_COMMON_PAGE_81_ENABLED
+#define ANT_COMMON_PAGE_81_ENABLED 1
+#endif
+// <e> ANT_COMMON_PAGE_81_LOG_ENABLED - Enables logging of common page 81 in the module.
+//==========================================================
+#ifndef ANT_COMMON_PAGE_81_LOG_ENABLED
+#define ANT_COMMON_PAGE_81_LOG_ENABLED 0
+#endif
+// <o> ANT_COMMON_PAGE_81_LOG_LEVEL  - Default Severity level
+ 
+// <0=> Off 
+// <1=> Error 
+// <2=> Warning 
+// <3=> Info 
+// <4=> Debug 
+
+#ifndef ANT_COMMON_PAGE_81_LOG_LEVEL
+#define ANT_COMMON_PAGE_81_LOG_LEVEL 3
+#endif
+
+// <o> ANT_COMMON_PAGE_81_INFO_COLOR  - ANSI escape code prefix.
+ 
+// <0=> Default 
+// <1=> Black 
+// <2=> Red 
+// <3=> Green 
+// <4=> Yellow 
+// <5=> Blue 
+// <6=> Magenta 
+// <7=> Cyan 
+// <8=> White 
+
+#ifndef ANT_COMMON_PAGE_81_INFO_COLOR
+#define ANT_COMMON_PAGE_81_INFO_COLOR 0
+#endif
+
+// </e>
+
+// </e>
+
+// <q> ANT_ENCRYPT_CONFIG_ENABLED  - ant_encrypt_config - Cryptographic ANT stack configuration
+ 
+
+#ifndef ANT_ENCRYPT_CONFIG_ENABLED
+#define ANT_ENCRYPT_CONFIG_ENABLED 0
+#endif
+
+// <q> ANT_ENCRYPT_NEGOTIATION_SLAVE_ENABLED  - ant_encrypt_negotiation_slave - Encryption negotiation for encrypted ANT slave channels
+ 
+
+#ifndef ANT_ENCRYPT_NEGOTIATION_SLAVE_ENABLED
+#define ANT_ENCRYPT_NEGOTIATION_SLAVE_ENABLED 0
+#endif
+
+// <e> ANT_HRM_ENABLED - ant_hrm - Heart Rate Monitor Profile
+//==========================================================
+#ifndef ANT_HRM_ENABLED
+#define ANT_HRM_ENABLED 0
+#endif
+// <e> ANT_HRM_LOG_ENABLED - Enables general logging in the module.
+//==========================================================
+#ifndef ANT_HRM_LOG_ENABLED
+#define ANT_HRM_LOG_ENABLED 0
+#endif
+// <o> ANT_HRM_LOG_LEVEL  - Default Severity level
+ 
+// <0=> Off 
+// <1=> Error 
+// <2=> Warning 
+// <3=> Info 
+// <4=> Debug 
+
+#ifndef ANT_HRM_LOG_LEVEL
+#define ANT_HRM_LOG_LEVEL 3
+#endif
+
+// <o> ANT_HRM_INFO_COLOR  - ANSI escape code prefix.
+ 
+// <0=> Default 
+// <1=> Black 
+// <2=> Red 
+// <3=> Green 
+// <4=> Yellow 
+// <5=> Blue 
+// <6=> Magenta 
+// <7=> Cyan 
+// <8=> White 
+
+#ifndef ANT_HRM_INFO_COLOR
+#define ANT_HRM_INFO_COLOR 0
+#endif
+
+// </e>
+
+// <e> ANT_HRM_PAGE_0_LOG_ENABLED - Enables logging of HRM page 0 in the module.
+//==========================================================
+#ifndef ANT_HRM_PAGE_0_LOG_ENABLED
+#define ANT_HRM_PAGE_0_LOG_ENABLED 0
+#endif
+// <o> ANT_HRM_PAGE_0_LOG_LEVEL  - Default Severity level
+ 
+// <0=> Off 
+// <1=> Error 
+// <2=> Warning 
+// <3=> Info 
+// <4=> Debug 
+
+#ifndef ANT_HRM_PAGE_0_LOG_LEVEL
+#define ANT_HRM_PAGE_0_LOG_LEVEL 3
+#endif
+
+// <o> ANT_HRM_PAGE_0_INFO_COLOR  - ANSI escape code prefix.
+ 
+// <0=> Default 
+// <1=> Black 
+// <2=> Red 
+// <3=> Green 
+// <4=> Yellow 
+// <5=> Blue 
+// <6=> Magenta 
+// <7=> Cyan 
+// <8=> White 
+
+#ifndef ANT_HRM_PAGE_0_INFO_COLOR
+#define ANT_HRM_PAGE_0_INFO_COLOR 0
+#endif
+
+// </e>
+
+// <e> ANT_HRM_PAGE_1_LOG_ENABLED - Enables logging of HRM page 1 in the module.
+//==========================================================
+#ifndef ANT_HRM_PAGE_1_LOG_ENABLED
+#define ANT_HRM_PAGE_1_LOG_ENABLED 0
+#endif
+// <o> ANT_HRM_PAGE_1_LOG_LEVEL  - Default Severity level
+ 
+// <0=> Off 
+// <1=> Error 
+// <2=> Warning 
+// <3=> Info 
+// <4=> Debug 
+
+#ifndef ANT_HRM_PAGE_1_LOG_LEVEL
+#define ANT_HRM_PAGE_1_LOG_LEVEL 3
+#endif
+
+// <o> ANT_HRM_PAGE_1_INFO_COLOR  - ANSI escape code prefix.
+ 
+// <0=> Default 
+// <1=> Black 
+// <2=> Red 
+// <3=> Green 
+// <4=> Yellow 
+// <5=> Blue 
+// <6=> Magenta 
+// <7=> Cyan 
+// <8=> White 
+
+#ifndef ANT_HRM_PAGE_1_INFO_COLOR
+#define ANT_HRM_PAGE_1_INFO_COLOR 0
+#endif
+
+// </e>
+
+// <e> ANT_HRM_PAGE_2_LOG_ENABLED - Enables logging of HRM page 2 in the module.
+//==========================================================
+#ifndef ANT_HRM_PAGE_2_LOG_ENABLED
+#define ANT_HRM_PAGE_2_LOG_ENABLED 0
+#endif
+// <o> ANT_HRM_PAGE_2_LOG_LEVEL  - Default Severity level
+ 
+// <0=> Off 
+// <1=> Error 
+// <2=> Warning 
+// <3=> Info 
+// <4=> Debug 
+
+#ifndef ANT_HRM_PAGE_2_LOG_LEVEL
+#define ANT_HRM_PAGE_2_LOG_LEVEL 3
+#endif
+
+// <o> ANT_HRM_PAGE_2_INFO_COLOR  - ANSI escape code prefix.
+ 
+// <0=> Default 
+// <1=> Black 
+// <2=> Red 
+// <3=> Green 
+// <4=> Yellow 
+// <5=> Blue 
+// <6=> Magenta 
+// <7=> Cyan 
+// <8=> White 
+
+#ifndef ANT_HRM_PAGE_2_INFO_COLOR
+#define ANT_HRM_PAGE_2_INFO_COLOR 0
+#endif
+
+// </e>
+
+// <e> ANT_HRM_PAGE_3_LOG_ENABLED - Enables logging of HRM page 3 in the module.
+//==========================================================
+#ifndef ANT_HRM_PAGE_3_LOG_ENABLED
+#define ANT_HRM_PAGE_3_LOG_ENABLED 0
+#endif
+// <o> ANT_HRM_PAGE_3_LOG_LEVEL  - Default Severity level
+ 
+// <0=> Off 
+// <1=> Error 
+// <2=> Warning 
+// <3=> Info 
+// <4=> Debug 
+
+#ifndef ANT_HRM_PAGE_3_LOG_LEVEL
+#define ANT_HRM_PAGE_3_LOG_LEVEL 3
+#endif
+
+// <o> ANT_HRM_PAGE_3_INFO_COLOR  - ANSI escape code prefix.
+ 
+// <0=> Default 
+// <1=> Black 
+// <2=> Red 
+// <3=> Green 
+// <4=> Yellow 
+// <5=> Blue 
+// <6=> Magenta 
+// <7=> Cyan 
+// <8=> White 
+
+#ifndef ANT_HRM_PAGE_3_INFO_COLOR
+#define ANT_HRM_PAGE_3_INFO_COLOR 0
+#endif
+
+// </e>
+
+// <e> ANT_HRM_PAGE_4_LOG_ENABLED - Enables logging of HRM page 4 in the module.
+//==========================================================
+#ifndef ANT_HRM_PAGE_4_LOG_ENABLED
+#define ANT_HRM_PAGE_4_LOG_ENABLED 0
+#endif
+// <o> ANT_HRM_PAGE_4_LOG_LEVEL  - Default Severity level
+ 
+// <0=> Off 
+// <1=> Error 
+// <2=> Warning 
+// <3=> Info 
+// <4=> Debug 
+
+#ifndef ANT_HRM_PAGE_4_LOG_LEVEL
+#define ANT_HRM_PAGE_4_LOG_LEVEL 3
+#endif
+
+// <o> ANT_HRM_PAGE_4_INFO_COLOR  - ANSI escape code prefix.
+ 
+// <0=> Default 
+// <1=> Black 
+// <2=> Red 
+// <3=> Green 
+// <4=> Yellow 
+// <5=> Blue 
+// <6=> Magenta 
+// <7=> Cyan 
+// <8=> White 
+
+#ifndef ANT_HRM_PAGE_4_INFO_COLOR
+#define ANT_HRM_PAGE_4_INFO_COLOR 0
+#endif
+
+// </e>
+
+// </e>
+
+// <q> ANT_KEY_MANAGER_ENABLED  - ant_key_manager - Software Component
+ 
+
+#ifndef ANT_KEY_MANAGER_ENABLED
+#define ANT_KEY_MANAGER_ENABLED 0
+#endif
+
+// <q> ANT_REQUEST_CONTROLLER_ENABLED  - ant_request_controller - ANT+ request controller
+ 
+
+#ifndef ANT_REQUEST_CONTROLLER_ENABLED
+#define ANT_REQUEST_CONTROLLER_ENABLED 0
+#endif
+
+// <e> ANT_SDM_ENABLED - ant_sdm - Stride Based Speed and Distance Monitor Profile
+//==========================================================
+#ifndef ANT_SDM_ENABLED
+#define ANT_SDM_ENABLED 0
+#endif
+// <e> ANT_SDM_LOG_ENABLED - Enables general logging in the module.
+//==========================================================
+#ifndef ANT_SDM_LOG_ENABLED
+#define ANT_SDM_LOG_ENABLED 0
+#endif
+// <o> ANT_SDM_LOG_LEVEL  - Default Severity level
+ 
+// <0=> Off 
+// <1=> Error 
+// <2=> Warning 
+// <3=> Info 
+// <4=> Debug 
+
+#ifndef ANT_SDM_LOG_LEVEL
+#define ANT_SDM_LOG_LEVEL 3
+#endif
+
+// <o> ANT_SDM_INFO_COLOR  - ANSI escape code prefix.
+ 
+// <0=> Default 
+// <1=> Black 
+// <2=> Red 
+// <3=> Green 
+// <4=> Yellow 
+// <5=> Blue 
+// <6=> Magenta 
+// <7=> Cyan 
+// <8=> White 
+
+#ifndef ANT_SDM_INFO_COLOR
+#define ANT_SDM_INFO_COLOR 0
+#endif
+
+// </e>
+
+// </e>
+
+// <e> ANT_SEARCH_CONFIG_ENABLED - ant_search_config - ANT common search configuration
+//==========================================================
+#ifndef ANT_SEARCH_CONFIG_ENABLED
+#define ANT_SEARCH_CONFIG_ENABLED 0
+#endif
+// <o> ANT_DEFAULT_LOW_PRIORITY_TIMEOUT - Default low priority search time-out.  <0-255> 
+
+
+#ifndef ANT_DEFAULT_LOW_PRIORITY_TIMEOUT
+#define ANT_DEFAULT_LOW_PRIORITY_TIMEOUT 2
+#endif
+
+// <o> ANT_DEFAULT_HIGH_PRIORITY_TIMEOUT - Default high priority search time-out.  <0-255> 
+
+
+#ifndef ANT_DEFAULT_HIGH_PRIORITY_TIMEOUT
+#define ANT_DEFAULT_HIGH_PRIORITY_TIMEOUT 10
+#endif
+
+// </e>
+
+// <e> ANT_STATE_INDICATOR_ENABLED - ant_state_indicator - ANT state indicator using BSP
+//==========================================================
+#ifndef ANT_STATE_INDICATOR_ENABLED
+#define ANT_STATE_INDICATOR_ENABLED 0
+#endif
+// <o> ANT_STATE_INDICATOR_CONFIG_SHUTDOWN_HANDLER_PRIORITY - Shutdown observer priority. 
+#ifndef ANT_STATE_INDICATOR_CONFIG_SHUTDOWN_HANDLER_PRIORITY
+#define ANT_STATE_INDICATOR_CONFIG_SHUTDOWN_HANDLER_PRIORITY 1
+#endif
+
+// </e>
+
+// </h> 
+//==========================================================
+
 // <h> nRF_BLE 
 
 //==========================================================
@@ -54,6 +1754,13 @@
 
 #ifndef BLE_ADVERTISING_ENABLED
 #define BLE_ADVERTISING_ENABLED 0
+#endif
+
+// <q> BLE_DB_DISCOVERY_ENABLED  - ble_db_discovery - Database discovery module
+ 
+
+#ifndef BLE_DB_DISCOVERY_ENABLED
+#define BLE_DB_DISCOVERY_ENABLED 0
 #endif
 
 // <q> BLE_DTM_ENABLED  - ble_dtm - Module for testing RF/PHY using DTM commands
@@ -68,6 +1775,35 @@
 
 #ifndef BLE_RACP_ENABLED
 #define BLE_RACP_ENABLED 0
+#endif
+
+// <e> NRF_BLE_CONN_PARAMS_ENABLED - ble_conn_params - Initiating and executing a connection parameters negotiation procedure
+//==========================================================
+#ifndef NRF_BLE_CONN_PARAMS_ENABLED
+#define NRF_BLE_CONN_PARAMS_ENABLED 0
+#endif
+
+// <o> NRF_BLE_CONN_PARAMS_MAX_SLAVE_LATENCY_DEVIATION - The largest acceptable deviation in slave latency. 
+// <i> The largest deviation (+ or -) from the requested slave latency that will not be renegotiated.
+
+#ifndef NRF_BLE_CONN_PARAMS_MAX_SLAVE_LATENCY_DEVIATION
+#define NRF_BLE_CONN_PARAMS_MAX_SLAVE_LATENCY_DEVIATION 499
+#endif
+
+// <o> NRF_BLE_CONN_PARAMS_MAX_SUPERVISION_TIMEOUT_DEVIATION - The largest acceptable deviation (in 10 ms units) in supervision timeout. 
+// <i> The largest deviation (+ or -, in 10 ms units) from the requested supervision timeout that will not be renegotiated.
+
+#ifndef NRF_BLE_CONN_PARAMS_MAX_SUPERVISION_TIMEOUT_DEVIATION
+#define NRF_BLE_CONN_PARAMS_MAX_SUPERVISION_TIMEOUT_DEVIATION 65535
+#endif
+
+// </e>
+
+// <q> NRF_BLE_GATT_ENABLED  - nrf_ble_gatt - GATT module
+ 
+
+#ifndef NRF_BLE_GATT_ENABLED
+#define NRF_BLE_GATT_ENABLED 0
 #endif
 
 // <e> NRF_BLE_QWR_ENABLED - nrf_ble_qwr - Queued writes support module (prepare/execute write)
@@ -233,6 +1969,13 @@
 
 #ifndef BLE_DIS_ENABLED
 #define BLE_DIS_ENABLED 0
+#endif
+
+// <q> BLE_ECS_ENABLED  - nrf_ble_escs - Eddystone Configuration Service
+ 
+
+#ifndef BLE_ECS_ENABLED
+#define BLE_ECS_ENABLED 0
 #endif
 
 // <q> BLE_GLS_ENABLED  - ble_gls - Glucose Service
@@ -441,6 +2184,79 @@
 #ifndef BLE_TPS_ENABLED
 #define BLE_TPS_ENABLED 0
 #endif
+
+// <q> NRF_BLE_GATTS_C_ENABLED  - nrf_ble_gatts_c - GATT Service Client
+ 
+
+#ifndef NRF_BLE_GATTS_C_ENABLED
+#define NRF_BLE_GATTS_C_ENABLED 0
+#endif
+
+// <h> ble_ipsp - Internet Protocol Support Profile
+
+//==========================================================
+// <q> BLE_IPSP_DISABLE_API_PARAM_CHECK  - Enable or disable API parameter check.
+ 
+
+// <i> API parameter checks are added to ensure right parameters are passed to the module. These checks are useful during development phase but be redundant once application is developed. Disabling this can result in some code saving.
+
+#ifndef BLE_IPSP_DISABLE_API_PARAM_CHECK
+#define BLE_IPSP_DISABLE_API_PARAM_CHECK 0
+#endif
+
+// <e> IOT_BLE_IPSP_CONFIG_LOG_ENABLED - Enables logging in the module.
+//==========================================================
+#ifndef IOT_BLE_IPSP_CONFIG_LOG_ENABLED
+#define IOT_BLE_IPSP_CONFIG_LOG_ENABLED 0
+#endif
+// <o> IOT_BLE_IPSP_CONFIG_LOG_LEVEL  - Default Severity level
+ 
+// <0=> Off 
+// <1=> Error 
+// <2=> Warning 
+// <3=> Info 
+// <4=> Debug 
+
+#ifndef IOT_BLE_IPSP_CONFIG_LOG_LEVEL
+#define IOT_BLE_IPSP_CONFIG_LOG_LEVEL 3
+#endif
+
+// <o> IOT_BLE_IPSP_CONFIG_INFO_COLOR  - ANSI escape code prefix.
+ 
+// <0=> Default 
+// <1=> Black 
+// <2=> Red 
+// <3=> Green 
+// <4=> Yellow 
+// <5=> Blue 
+// <6=> Magenta 
+// <7=> Cyan 
+// <8=> White 
+
+#ifndef IOT_BLE_IPSP_CONFIG_INFO_COLOR
+#define IOT_BLE_IPSP_CONFIG_INFO_COLOR 0
+#endif
+
+// <o> IOT_BLE_IPSP_CONFIG_DEBUG_COLOR  - ANSI escape code prefix.
+ 
+// <0=> Default 
+// <1=> Black 
+// <2=> Red 
+// <3=> Green 
+// <4=> Yellow 
+// <5=> Blue 
+// <6=> Magenta 
+// <7=> Cyan 
+// <8=> White 
+
+#ifndef IOT_BLE_IPSP_CONFIG_DEBUG_COLOR
+#define IOT_BLE_IPSP_CONFIG_DEBUG_COLOR 0
+#endif
+
+// </e>
+
+// </h> 
+//==========================================================
 
 // </h> 
 //==========================================================
@@ -1168,6 +2984,30 @@
 
 // </e>
 
+// <h> nrf_crypto_rng - RNG Configuration
+
+//==========================================================
+// <q> NRF_CRYPTO_RNG_STATIC_MEMORY_BUFFERS_ENABLED  - Use static memory buffers for context and temporary init buffer.
+ 
+
+// <i> Always recommended when using the nRF HW RNG as the context and temporary buffers are small. Consider disabling if using the CC310 RNG in a RAM constrained application. In this case, memory must be provided to nrf_crypto_rng_init, or it can be allocated internally provided that NRF_CRYPTO_ALLOCATOR does not allocate memory on the stack.
+
+#ifndef NRF_CRYPTO_RNG_STATIC_MEMORY_BUFFERS_ENABLED
+#define NRF_CRYPTO_RNG_STATIC_MEMORY_BUFFERS_ENABLED 1
+#endif
+
+// <q> NRF_CRYPTO_RNG_AUTO_INIT_ENABLED  - Initialize the RNG module automatically when nrf_crypto is initialized.
+ 
+
+// <i> Automatic initialization is only supported with static or internally allocated context and temporary memory.
+
+#ifndef NRF_CRYPTO_RNG_AUTO_INIT_ENABLED
+#define NRF_CRYPTO_RNG_AUTO_INIT_ENABLED 1
+#endif
+
+// </h> 
+//==========================================================
+
 // </h> 
 //==========================================================
 
@@ -1190,6 +3030,197 @@
 #ifndef NRF_DFU_BLE_BUTTONLESS_SUPPORTS_BONDS
 #define NRF_DFU_BLE_BUTTONLESS_SUPPORTS_BONDS 0
 #endif
+
+// </h> 
+//==========================================================
+
+// <h> nrf_dfu - Device Firmware Upgrade
+
+//==========================================================
+// <h> DFU transport 
+
+//==========================================================
+// <e> NRF_DFU_TRANSPORT_BLE - BLE transport settings
+//==========================================================
+#ifndef NRF_DFU_TRANSPORT_BLE
+#define NRF_DFU_TRANSPORT_BLE 0
+#endif
+// <s> NRF_DFU_BLE_ADV_NAME - Default advertising name.
+#ifndef NRF_DFU_BLE_ADV_NAME
+#define NRF_DFU_BLE_ADV_NAME "DfuTarg"
+#endif
+
+// <h> BLE DFU security 
+
+//==========================================================
+// <q> NRF_DFU_BLE_REQUIRES_BONDS  - Require bond with peer.
+ 
+
+#ifndef NRF_DFU_BLE_REQUIRES_BONDS
+#define NRF_DFU_BLE_REQUIRES_BONDS 0
+#endif
+
+// </h> 
+//==========================================================
+
+// <h> BLE DFU connection 
+
+//==========================================================
+// <o> NRF_DFU_BLE_MIN_CONN_INTERVAL - Minimum connection interval (units). 
+// <i> Minimum GAP connection interval, in 1.25 ms units.
+
+#ifndef NRF_DFU_BLE_MIN_CONN_INTERVAL
+#define NRF_DFU_BLE_MIN_CONN_INTERVAL 12
+#endif
+
+// <o> NRF_DFU_BLE_MAX_CONN_INTERVAL - Maximum connection interval (units). 
+// <i> Maximum GAP connection interval, in 1.25 ms units.
+
+#ifndef NRF_DFU_BLE_MAX_CONN_INTERVAL
+#define NRF_DFU_BLE_MAX_CONN_INTERVAL 12
+#endif
+
+// <o> NRF_DFU_BLE_CONN_SUP_TIMEOUT_MS - Supervision timeout (ms). 
+// <i> GAP connection supervision timeout, in milliseconds.
+
+#ifndef NRF_DFU_BLE_CONN_SUP_TIMEOUT_MS
+#define NRF_DFU_BLE_CONN_SUP_TIMEOUT_MS 6000
+#endif
+
+// </h> 
+//==========================================================
+
+// <h> BLE DFU buffers 
+
+//==========================================================
+// <e> NRF_DFU_BLE_BUFFERS_OVERRIDE 
+
+// <i> Check this option to override the default number of buffers.
+//==========================================================
+#ifndef NRF_DFU_BLE_BUFFERS_OVERRIDE
+#define NRF_DFU_BLE_BUFFERS_OVERRIDE 0
+#endif
+// <o> NRF_DFU_BLE_BUFFERS - Number of buffers in the BLE transport. 
+// <i> Number of buffers to store incoming data while it is being written to flash.
+// <i> Reduce this value to save RAM. If this value is too low, the DFU process will fail.
+
+#ifndef NRF_DFU_BLE_BUFFERS
+#define NRF_DFU_BLE_BUFFERS 8
+#endif
+
+// </e>
+
+// </h> 
+//==========================================================
+
+// </e>
+
+// </h> 
+//==========================================================
+
+// <h> DFU protocol 
+
+//==========================================================
+// <q> NRF_DFU_PROTOCOL_FW_VERSION_MSG  - Firmware version message support.
+ 
+
+// <i> Firmware version message support.
+// <i> If disabled, firmware version requests will return NRF_DFU_RES_CODE_OP_CODE_NOT_SUPPORTED.
+
+#ifndef NRF_DFU_PROTOCOL_FW_VERSION_MSG
+#define NRF_DFU_PROTOCOL_FW_VERSION_MSG 1
+#endif
+
+// <q> NRF_DFU_PROTOCOL_VERSION_MSG  - Protocol version message support.
+ 
+
+// <i> Protocol version message support.
+// <i> If disabled, protocol version requests will return NRF_DFU_RES_CODE_OP_CODE_NOT_SUPPORTED.
+
+#ifndef NRF_DFU_PROTOCOL_VERSION_MSG
+#define NRF_DFU_PROTOCOL_VERSION_MSG 1
+#endif
+
+// </h> 
+//==========================================================
+
+// <h> DFU security 
+
+//==========================================================
+// <q> NRF_DFU_APP_DOWNGRADE_PREVENTION  - Check the firmware version and SoftDevice requirements of application (and SoftDevice) updates.
+ 
+
+// <i> Whether to check the incoming version against the version of the existing app and/or
+// <i> the incoming SoftDevice requirements against the existing SoftDevice.
+// <i> This applies to application updates, and possibly to SoftDevice updates.
+// <i> Disabling this causes the checks to always ignore the incoming firmware version and
+// <i> to ignore the SoftDevice requirements if the first requirement is 0.
+// <i> This does not apply the bootloader updates. If the bootloader depends on the SoftDevice
+// <i> e.g. for BLE transport, this does not apply to SoftDevice updates.
+// <i> See @ref lib_bootloader_dfu_validation for more information.
+// <i> When signed updates are required, version checking should always be enabled.
+
+#ifndef NRF_DFU_APP_DOWNGRADE_PREVENTION
+#define NRF_DFU_APP_DOWNGRADE_PREVENTION 1
+#endif
+
+// <q> NRF_DFU_FORCE_DUAL_BANK_APP_UPDATES  - Accept only dual-bank application updates.
+ 
+
+// <i> If not enabled then if there is not enough space to perform dual-bank update
+// <i> application is deleted and single-bank update is performed. In case it is considered
+// <i> security concern user can prefer to discard update request rather than overwrite
+// <i> current application.
+
+#ifndef NRF_DFU_FORCE_DUAL_BANK_APP_UPDATES
+#define NRF_DFU_FORCE_DUAL_BANK_APP_UPDATES 0
+#endif
+
+// <o> NRF_DFU_HW_VERSION - Device hardware version. 
+// <i> This is used to determine if given update is targeting the device.
+// <i> It is checked against the hw_version value in the init packet
+
+#ifndef NRF_DFU_HW_VERSION
+#define NRF_DFU_HW_VERSION 52
+#endif
+
+// <q> NRF_DFU_REQUIRE_SIGNED_APP_UPDATE  - Require a valid signature to update the application or SoftDevice.
+ 
+
+#ifndef NRF_DFU_REQUIRE_SIGNED_APP_UPDATE
+#define NRF_DFU_REQUIRE_SIGNED_APP_UPDATE 1
+#endif
+
+// <q> NRF_DFU_SINGLE_BANK_APP_UPDATES  - Place the application and the SoftDevice directly where they are supposed to be.
+ 
+
+// <i> Note that this creates security concerns when signing and  version checks
+// <i> are enabled. An attacker will be able to delete (but not replace)
+// <i> the current app or SoftDevice without knowing the signature key.
+
+#ifndef NRF_DFU_SINGLE_BANK_APP_UPDATES
+#define NRF_DFU_SINGLE_BANK_APP_UPDATES 0
+#endif
+
+// </h> 
+//==========================================================
+
+// <h> Misc DFU settings 
+
+//==========================================================
+// <q> NRF_DFU_SAVE_PROGRESS_IN_FLASH  - Save DFU progress in flash.
+ 
+
+// <i> Save DFU progress to flash so that it can be resumed if interrupted, instead of being restarted.
+// <i> Keep this setting disabled to maximize transfer speed and minimize flash wear.
+// <i> The init packet is always saved in flash, regardless of this setting.
+
+#ifndef NRF_DFU_SAVE_PROGRESS_IN_FLASH
+#define NRF_DFU_SAVE_PROGRESS_IN_FLASH 0
+#endif
+
+// </h> 
+//==========================================================
 
 // </h> 
 //==========================================================
@@ -2130,6 +4161,99 @@
 
 #ifndef NRFX_PPI_CONFIG_DEBUG_COLOR
 #define NRFX_PPI_CONFIG_DEBUG_COLOR 0
+#endif
+
+// </e>
+
+// </e>
+
+// <e> NRFX_PRS_ENABLED - nrfx_prs - Peripheral Resource Sharing module
+//==========================================================
+#ifndef NRFX_PRS_ENABLED
+#define NRFX_PRS_ENABLED 1
+#endif
+// <q> NRFX_PRS_BOX_0_ENABLED  - Enables box 0 in the module.
+ 
+
+#ifndef NRFX_PRS_BOX_0_ENABLED
+#define NRFX_PRS_BOX_0_ENABLED 0
+#endif
+
+// <q> NRFX_PRS_BOX_1_ENABLED  - Enables box 1 in the module.
+ 
+
+#ifndef NRFX_PRS_BOX_1_ENABLED
+#define NRFX_PRS_BOX_1_ENABLED 0
+#endif
+
+// <q> NRFX_PRS_BOX_2_ENABLED  - Enables box 2 in the module.
+ 
+
+#ifndef NRFX_PRS_BOX_2_ENABLED
+#define NRFX_PRS_BOX_2_ENABLED 0
+#endif
+
+// <q> NRFX_PRS_BOX_3_ENABLED  - Enables box 3 in the module.
+ 
+
+#ifndef NRFX_PRS_BOX_3_ENABLED
+#define NRFX_PRS_BOX_3_ENABLED 0
+#endif
+
+// <q> NRFX_PRS_BOX_4_ENABLED  - Enables box 4 in the module.
+ 
+
+#ifndef NRFX_PRS_BOX_4_ENABLED
+#define NRFX_PRS_BOX_4_ENABLED 1
+#endif
+
+// <e> NRFX_PRS_CONFIG_LOG_ENABLED - Enables logging in the module.
+//==========================================================
+#ifndef NRFX_PRS_CONFIG_LOG_ENABLED
+#define NRFX_PRS_CONFIG_LOG_ENABLED 0
+#endif
+// <o> NRFX_PRS_CONFIG_LOG_LEVEL  - Default Severity level
+ 
+// <0=> Off 
+// <1=> Error 
+// <2=> Warning 
+// <3=> Info 
+// <4=> Debug 
+
+#ifndef NRFX_PRS_CONFIG_LOG_LEVEL
+#define NRFX_PRS_CONFIG_LOG_LEVEL 3
+#endif
+
+// <o> NRFX_PRS_CONFIG_INFO_COLOR  - ANSI escape code prefix.
+ 
+// <0=> Default 
+// <1=> Black 
+// <2=> Red 
+// <3=> Green 
+// <4=> Yellow 
+// <5=> Blue 
+// <6=> Magenta 
+// <7=> Cyan 
+// <8=> White 
+
+#ifndef NRFX_PRS_CONFIG_INFO_COLOR
+#define NRFX_PRS_CONFIG_INFO_COLOR 0
+#endif
+
+// <o> NRFX_PRS_CONFIG_DEBUG_COLOR  - ANSI escape code prefix.
+ 
+// <0=> Default 
+// <1=> Black 
+// <2=> Red 
+// <3=> Green 
+// <4=> Yellow 
+// <5=> Blue 
+// <6=> Magenta 
+// <7=> Cyan 
+// <8=> White 
+
+#ifndef NRFX_PRS_CONFIG_DEBUG_COLOR
+#define NRFX_PRS_CONFIG_DEBUG_COLOR 0
 #endif
 
 // </e>
@@ -4760,9 +6884,1604 @@
 // </h> 
 //==========================================================
 
+// <h> nRF_IoT 
+
+//==========================================================
+// <o> COAP_DTLS_MAX_REMOTE_SESSION - coap_transport_dtls - Nordic's smartCoAP library - DTLS secure transport  <0-65535> 
+
+
+#ifndef COAP_DTLS_MAX_REMOTE_SESSION
+#define COAP_DTLS_MAX_REMOTE_SESSION 2
+#endif
+
+// <o> IPV6_DEFAULT_HOP_LIMIT - ipv6_utils - IoT utilities  <1-255> 
+
+
+// <i> This parameter indicates how many hops by default IPv6 packets can do. Each router which forward IPv6 packets to another host/router decrease this value by 1. When this field become 0, the packet is discarded. Hop limit value of 1,64 or 255 are prefarable in case of more efficient compression.
+
+#ifndef IPV6_DEFAULT_HOP_LIMIT
+#define IPV6_DEFAULT_HOP_LIMIT 64
+#endif
+
+// <h> background_dfu - Background DFU library.
+
+//==========================================================
+// <o> BACKGROUND_DFU_DEFAULT_BLOCK_SIZE - Block size used by background DFU.  <1-4096> 
+
+
+#ifndef BACKGROUND_DFU_DEFAULT_BLOCK_SIZE
+#define BACKGROUND_DFU_DEFAULT_BLOCK_SIZE 512
+#endif
+
+// <o> BACKGROUND_DFU_BLOCKS_PER_BUFFER - Maximum number of blocks that can be kept in RAM during DFU.  <1-4096> 
+
+
+#ifndef BACKGROUND_DFU_BLOCKS_PER_BUFFER
+#define BACKGROUND_DFU_BLOCKS_PER_BUFFER 2
+#endif
+
+// <o> BACKGROUND_DFU_CONFIG_LOG_LEVEL  - Default Severity level
+ 
+// <0=> Off 
+// <1=> Error 
+// <2=> Warning 
+// <3=> Info 
+// <4=> Debug 
+
+#ifndef BACKGROUND_DFU_CONFIG_LOG_LEVEL
+#define BACKGROUND_DFU_CONFIG_LOG_LEVEL 3
+#endif
+
+// <o> BACKGROUND_DFU_CONFIG_INFO_COLOR  - ANSI escape code prefix.
+ 
+// <0=> Default 
+// <1=> Black 
+// <2=> Red 
+// <3=> Green 
+// <4=> Yellow 
+// <5=> Blue 
+// <6=> Magenta 
+// <7=> Cyan 
+// <8=> White 
+
+#ifndef BACKGROUND_DFU_CONFIG_INFO_COLOR
+#define BACKGROUND_DFU_CONFIG_INFO_COLOR 0
+#endif
+
+// <o> BACKGROUND_DFU_CONFIG_DEBUG_COLOR  - ANSI escape code prefix.
+ 
+// <0=> Default 
+// <1=> Black 
+// <2=> Red 
+// <3=> Green 
+// <4=> Yellow 
+// <5=> Blue 
+// <6=> Magenta 
+// <7=> Cyan 
+// <8=> White 
+
+#ifndef BACKGROUND_DFU_CONFIG_DEBUG_COLOR
+#define BACKGROUND_DFU_CONFIG_DEBUG_COLOR 0
+#endif
+
+// </h> 
+//==========================================================
+
+// <h> ble_6lowpan - 6LoWPAN over BLE and Internet Protocol Support Profile library
+
+//==========================================================
+// <q> BLE_6LOWPAN_DISABLE_API_PARAM_CHECK  - Enable or disable API parameter check.
+ 
+
+// <i> API parameter checks are added to ensure right parameters are passed to the module. These checks are useful during development phase but be redundant once application is developed. Disabling this can result in some code saving.
+
+#ifndef BLE_6LOWPAN_DISABLE_API_PARAM_CHECK
+#define BLE_6LOWPAN_DISABLE_API_PARAM_CHECK 0
+#endif
+
+// <e> IOT_BLE_6LOWPAN_CONFIG_LOG_ENABLED - Enables logging in the module.
+//==========================================================
+#ifndef IOT_BLE_6LOWPAN_CONFIG_LOG_ENABLED
+#define IOT_BLE_6LOWPAN_CONFIG_LOG_ENABLED 0
+#endif
+// <o> IOT_BLE_6LOWPAN_CONFIG_LOG_LEVEL  - Default Severity level
+ 
+// <0=> Off 
+// <1=> Error 
+// <2=> Warning 
+// <3=> Info 
+// <4=> Debug 
+
+#ifndef IOT_BLE_6LOWPAN_CONFIG_LOG_LEVEL
+#define IOT_BLE_6LOWPAN_CONFIG_LOG_LEVEL 3
+#endif
+
+// <o> IOT_BLE_6LOWPAN_CONFIG_INFO_COLOR  - ANSI escape code prefix.
+ 
+// <0=> Default 
+// <1=> Black 
+// <2=> Red 
+// <3=> Green 
+// <4=> Yellow 
+// <5=> Blue 
+// <6=> Magenta 
+// <7=> Cyan 
+// <8=> White 
+
+#ifndef IOT_BLE_6LOWPAN_CONFIG_INFO_COLOR
+#define IOT_BLE_6LOWPAN_CONFIG_INFO_COLOR 0
+#endif
+
+// <o> IOT_BLE_6LOWPAN_CONFIG_DEBUG_COLOR  - ANSI escape code prefix.
+ 
+// <0=> Default 
+// <1=> Black 
+// <2=> Red 
+// <3=> Green 
+// <4=> Yellow 
+// <5=> Blue 
+// <6=> Magenta 
+// <7=> Cyan 
+// <8=> White 
+
+#ifndef IOT_BLE_6LOWPAN_CONFIG_DEBUG_COLOR
+#define IOT_BLE_6LOWPAN_CONFIG_DEBUG_COLOR 0
+#endif
+
+// </e>
+
+// <q> BLE_6LOWPAN_LEGACY_MODE  - Enable legacy mode of IID derivation from Bluetooth Device Address and Link Layer address size determination. The legacy mode is not compatible with the RFC7668 sepcification. For the Linux Kernel versions higher or equal to 4.12 this define has to be set to 0, otherwise to 1.
+ 
+
+#ifndef BLE_6LOWPAN_LEGACY_MODE
+#define BLE_6LOWPAN_LEGACY_MODE 1
+#endif
+
+// </h> 
+//==========================================================
+
+// <h> coap_config - Nordic's smartCoAP library - config definitions
+
+//==========================================================
+// <q> COAP_DISABLE_DTLS_API  - Disable CoAPs API
+ 
+
+// <i> 
+
+#ifndef COAP_DISABLE_DTLS_API
+#define COAP_DISABLE_DTLS_API 0
+#endif
+
+// <o> COAP_ACK_RANDOM_FACTOR - Random factor to calculate the initial time-out value for a Confirmable message.  <0-65535> 
+
+
+// <i> COAP_MAX_TRANSMISSION_SPAN / COAP_MAX_RETRANSMIT_COUNT / COAP_ACK_TIMEOUT
+
+#ifndef COAP_ACK_RANDOM_FACTOR
+#define COAP_ACK_RANDOM_FACTOR 1
+#endif
+
+// <o> COAP_ACK_TIMEOUT - Minimum spacing before another retransmission.  <0-65535> 
+
+
+// <i> Max value should not exceed COAP_MAX_TRANSMISSION_SPAN / COAP_MAX_RETRANSMIT_COUNT.
+
+#ifndef COAP_ACK_TIMEOUT
+#define COAP_ACK_TIMEOUT 2
+#endif
+
+// <q> COAP_DISABLE_API_PARAM_CHECK  - Enable or disable API parameter check.
+ 
+
+// <i> API parameter checks are added to ensure right parameters are passed to the module. These checks are useful during development phase but be redundant once application is developed. Disabling this can result in some code saving.
+
+#ifndef COAP_DISABLE_API_PARAM_CHECK
+#define COAP_DISABLE_API_PARAM_CHECK 0
+#endif
+
+// <e> IOT_COAP_CONFIG_LOG_ENABLED - Enables logging in the module.
+//==========================================================
+#ifndef IOT_COAP_CONFIG_LOG_ENABLED
+#define IOT_COAP_CONFIG_LOG_ENABLED 0
+#endif
+// <o> IOT_COAP_CONFIG_LOG_LEVEL  - Default Severity level
+ 
+// <0=> Off 
+// <1=> Error 
+// <2=> Warning 
+// <3=> Info 
+// <4=> Debug 
+
+#ifndef IOT_COAP_CONFIG_LOG_LEVEL
+#define IOT_COAP_CONFIG_LOG_LEVEL 3
+#endif
+
+// <o> IOT_COAP_CONFIG_INFO_COLOR  - ANSI escape code prefix.
+ 
+// <0=> Default 
+// <1=> Black 
+// <2=> Red 
+// <3=> Green 
+// <4=> Yellow 
+// <5=> Blue 
+// <6=> Magenta 
+// <7=> Cyan 
+// <8=> White 
+
+#ifndef IOT_COAP_CONFIG_INFO_COLOR
+#define IOT_COAP_CONFIG_INFO_COLOR 0
+#endif
+
+// <o> IOT_COAP_CONFIG_DEBUG_COLOR  - ANSI escape code prefix.
+ 
+// <0=> Default 
+// <1=> Black 
+// <2=> Red 
+// <3=> Green 
+// <4=> Yellow 
+// <5=> Blue 
+// <6=> Magenta 
+// <7=> Cyan 
+// <8=> White 
+
+#ifndef IOT_COAP_CONFIG_DEBUG_COLOR
+#define IOT_COAP_CONFIG_DEBUG_COLOR 0
+#endif
+
+// </e>
+
+// <q> COAP_ENABLE_OBSERVE_CLIENT  - Enable CoAP observe client role.
+ 
+
+// <i> If enabled, the coap_observe module has to be included. It will enable the module with a table to store observable resources, and provide access to functions to register and unregister observable resources. The observable resources list is used to match incomming notifications to an application callback function.
+
+#ifndef COAP_ENABLE_OBSERVE_CLIENT
+#define COAP_ENABLE_OBSERVE_CLIENT 0
+#endif
+
+// <q> COAP_ENABLE_OBSERVE_SERVER  - Enable CoAP observe server role.
+ 
+
+// <i> If enabled the coap_observe module has to be included. It will enable the module with a table to store observers, and provide access to functions to register and unregister observers. The list can be traversed in order to send notifications to the observers.
+
+#ifndef COAP_ENABLE_OBSERVE_SERVER
+#define COAP_ENABLE_OBSERVE_SERVER 0
+#endif
+
+// <o> COAP_MAX_NUMBER_OF_OPTIONS - The maximum size of a smartCoAP message excluding the mandatory CoAP header.  <1-65535> 
+
+
+#ifndef COAP_MAX_NUMBER_OF_OPTIONS
+#define COAP_MAX_NUMBER_OF_OPTIONS 8
+#endif
+
+// <o> COAP_MAX_RETRANSMIT_COUNT - Maximum number of transmit attempts for a Confirmable messages.  <0-255> 
+
+
+#ifndef COAP_MAX_RETRANSMIT_COUNT
+#define COAP_MAX_RETRANSMIT_COUNT 1
+#endif
+
+// <o> COAP_MAX_TRANSMISSION_SPAN - Maximum time from the first transmission of a Confirmable message to its last retransmission.  <0-65535> 
+
+
+#ifndef COAP_MAX_TRANSMISSION_SPAN
+#define COAP_MAX_TRANSMISSION_SPAN 10
+#endif
+
+// <o> COAP_MESSAGE_DATA_MAX_SIZE - The maximum size of a smartCoAP message excluding the mandatory CoAP header.  <1-65535> 
+
+
+#ifndef COAP_MESSAGE_DATA_MAX_SIZE
+#define COAP_MESSAGE_DATA_MAX_SIZE 256
+#endif
+
+// <o> COAP_MESSAGE_QUEUE_SIZE - Maximum number of smartCoAP messages that can be in transmission at a time.  <1-65535> 
+
+
+// <i> smartCoAP uses the Memory Manager that is also used by the underlying transport protocol. Therefore, if you increase this value, you should also increase the number of buffers. Depending on the COAP_MESSAGE_DATA_MAX_SIZE + 4 byte CoAP header, you must increase either MEMORY_MANAGER_SMALL_BLOCK_COUNT or MEMORY_MANAGER_MEDIUM_BLOCK_COUNT to ensure that there are additional buffers for the CoAP message queue. Which macro must be increased, depends on the size of the buffer that is sufficient for the CoAP message.
+
+#ifndef COAP_MESSAGE_QUEUE_SIZE
+#define COAP_MESSAGE_QUEUE_SIZE 4
+#endif
+
+// <o> COAP_OBSERVE_MAX_NUM_OBSERVABLES - Maximum number of CoAP observable resources that a client can have active at any point of time.  <0-255> 
+
+
+// <i> The maximum number of observable resources to be registered by a client. For each observable resource added, it will increase the memory consumption of one coap_observable_t struct.
+
+#ifndef COAP_OBSERVE_MAX_NUM_OBSERVABLES
+#define COAP_OBSERVE_MAX_NUM_OBSERVABLES 0
+#endif
+
+// <o> COAP_OBSERVE_MAX_NUM_OBSERVERS - Maximum number of CoAP observers that a server can have active at any point of time.  <0-255> 
+
+
+// <i> The maximum number of observers to be registered by a server. For each observer added, it will increase the memory consumption of one coap_observer_t struct.
+
+#ifndef COAP_OBSERVE_MAX_NUM_OBSERVERS
+#define COAP_OBSERVE_MAX_NUM_OBSERVERS 0
+#endif
+
+// <o> COAP_PORT_COUNT - Number of local ports used by CoAP.  <0-UDP6_MAX_SOCKET_COUNT> 
+
+
+// <i> The max number of client/server ports used by the application. One socket will be created for each port.
+
+#ifndef COAP_PORT_COUNT
+#define COAP_PORT_COUNT 1
+#endif
+
+// <o> COAP_RESOURCE_MAX_DEPTH - Maximum number of CoAP resource levels.  <1-255> 
+
+
+// <i> The maximum number of resource depth levels uCoAP will use. The number will be used when adding resource to the resource structure, or when traversing the resources for a matching resource name given in a request. Each level added will increase the stack usage runtime with 4 bytes.
+
+#ifndef COAP_RESOURCE_MAX_DEPTH
+#define COAP_RESOURCE_MAX_DEPTH 4
+#endif
+
+// <o> COAP_RESOURCE_MAX_NAME_LEN - Maximum length of CoAP resource verbose name.  <1-65535> 
+
+
+// <i> The maximum length of resource name that can be supplied from the application.
+
+#ifndef COAP_RESOURCE_MAX_NAME_LEN
+#define COAP_RESOURCE_MAX_NAME_LEN 19
+#endif
+
+// <o> COAP_VERSION - CoAP version number.  <0-3> 
+
+
+// <i> The version of CoAP which all CoAP messages will be populated with.
+
+#ifndef COAP_VERSION
+#define COAP_VERSION 1
+#endif
+
+// </h> 
+//==========================================================
+
+// <h> iot_context_manager - Context Manager
+
+//==========================================================
+// <q> IOT_CONTEXT_MANAGER_DISABLE_API_PARAM_CHECK  - Enable or disable API parameter check.
+ 
+
+// <i> API parameter checks are added to ensure right parameters are passed to the module. These checks are useful during development phase but be redundant once application is developed. Disabling this can result in some code saving.
+
+#ifndef IOT_CONTEXT_MANAGER_DISABLE_API_PARAM_CHECK
+#define IOT_CONTEXT_MANAGER_DISABLE_API_PARAM_CHECK 0
+#endif
+
+// <e> IOT_CONTEXT_MANAGER_CONFIG_LOG_ENABLED - Enables logging in the module.
+//==========================================================
+#ifndef IOT_CONTEXT_MANAGER_CONFIG_LOG_ENABLED
+#define IOT_CONTEXT_MANAGER_CONFIG_LOG_ENABLED 0
+#endif
+// <o> IOT_CONTEXT_MANAGER_CONFIG_LOG_LEVEL  - Default Severity level
+ 
+// <0=> Off 
+// <1=> Error 
+// <2=> Warning 
+// <3=> Info 
+// <4=> Debug 
+
+#ifndef IOT_CONTEXT_MANAGER_CONFIG_LOG_LEVEL
+#define IOT_CONTEXT_MANAGER_CONFIG_LOG_LEVEL 3
+#endif
+
+// <o> IOT_CONTEXT_MANAGER_CONFIG_INFO_COLOR  - ANSI escape code prefix.
+ 
+// <0=> Default 
+// <1=> Black 
+// <2=> Red 
+// <3=> Green 
+// <4=> Yellow 
+// <5=> Blue 
+// <6=> Magenta 
+// <7=> Cyan 
+// <8=> White 
+
+#ifndef IOT_CONTEXT_MANAGER_CONFIG_INFO_COLOR
+#define IOT_CONTEXT_MANAGER_CONFIG_INFO_COLOR 0
+#endif
+
+// <o> IOT_CONTEXT_MANAGER_CONFIG_DEBUG_COLOR  - ANSI escape code prefix.
+ 
+// <0=> Default 
+// <1=> Black 
+// <2=> Red 
+// <3=> Green 
+// <4=> Yellow 
+// <5=> Blue 
+// <6=> Magenta 
+// <7=> Cyan 
+// <8=> White 
+
+#ifndef IOT_CONTEXT_MANAGER_CONFIG_DEBUG_COLOR
+#define IOT_CONTEXT_MANAGER_CONFIG_DEBUG_COLOR 0
+#endif
+
+// </e>
+
+// <o> IOT_CONTEXT_MANAGER_MAX_CONTEXTS - Maximum number of supported context identifiers.  <1-16> 
+
+
+// <i> Maximum value of 16 is preferable to correct decompression.
+
+#ifndef IOT_CONTEXT_MANAGER_MAX_CONTEXTS
+#define IOT_CONTEXT_MANAGER_MAX_CONTEXTS 16
+#endif
+
+// <o> IOT_CONTEXT_MANAGER_MAX_TABLES - Maximum number of supported context's table.  <1-255> 
+
+
+// <i> If value is equal to BLE_IPSP_MAX_CHANNELS then all interface will have its own table which is preferable. This value should be less or equal to BLE_IPSP_MAX_CHANNELS.
+
+#ifndef IOT_CONTEXT_MANAGER_MAX_TABLES
+#define IOT_CONTEXT_MANAGER_MAX_TABLES 1
+#endif
+
+// </h> 
+//==========================================================
+
+// <h> iot_file - IoT File
+
+//==========================================================
+// <q> IOT_FILE_DISABLE_API_PARAM_CHECK  - Enable or disable API parameter check.
+ 
+
+// <i> API parameter checks are added to ensure right parameters are passed to the module. These checks are useful during development phase but be redundant once application is developed. Disabling this can result in some code saving.
+
+#ifndef IOT_FILE_DISABLE_API_PARAM_CHECK
+#define IOT_FILE_DISABLE_API_PARAM_CHECK 0
+#endif
+
+// <e> IOT_FILE_CONFIG_LOG_ENABLED - Enables logging in the module.
+//==========================================================
+#ifndef IOT_FILE_CONFIG_LOG_ENABLED
+#define IOT_FILE_CONFIG_LOG_ENABLED 0
+#endif
+// <o> IOT_FILE_CONFIG_LOG_LEVEL  - Default Severity level
+ 
+// <0=> Off 
+// <1=> Error 
+// <2=> Warning 
+// <3=> Info 
+// <4=> Debug 
+
+#ifndef IOT_FILE_CONFIG_LOG_LEVEL
+#define IOT_FILE_CONFIG_LOG_LEVEL 3
+#endif
+
+// <o> IOT_FILE_CONFIG_INFO_COLOR  - ANSI escape code prefix.
+ 
+// <0=> Default 
+// <1=> Black 
+// <2=> Red 
+// <3=> Green 
+// <4=> Yellow 
+// <5=> Blue 
+// <6=> Magenta 
+// <7=> Cyan 
+// <8=> White 
+
+#ifndef IOT_FILE_CONFIG_INFO_COLOR
+#define IOT_FILE_CONFIG_INFO_COLOR 0
+#endif
+
+// <o> IOT_FILE_CONFIG_DEBUG_COLOR  - ANSI escape code prefix.
+ 
+// <0=> Default 
+// <1=> Black 
+// <2=> Red 
+// <3=> Green 
+// <4=> Yellow 
+// <5=> Blue 
+// <6=> Magenta 
+// <7=> Cyan 
+// <8=> White 
+
+#ifndef IOT_FILE_CONFIG_DEBUG_COLOR
+#define IOT_FILE_CONFIG_DEBUG_COLOR 0
+#endif
+
+// </e>
+
+// </h> 
+//==========================================================
+
+// <h> iot_pbuffer - Packet buffer for IPv6 stack
+
+//==========================================================
+// <q> IOT_PBUFFER_DISABLE_API_PARAM_CHECK  - Enable or disable API parameter check.
+ 
+
+// <i> API parameter checks are added to ensure right parameters are passed to the module. These checks are useful during development phase but be redundant once application is developed. Disabling this can result in some code saving.
+
+#ifndef IOT_PBUFFER_DISABLE_API_PARAM_CHECK
+#define IOT_PBUFFER_DISABLE_API_PARAM_CHECK 0
+#endif
+
+// <e> IOT_PBUFFER_CONFIG_LOG_ENABLED - Enables logging in the module.
+//==========================================================
+#ifndef IOT_PBUFFER_CONFIG_LOG_ENABLED
+#define IOT_PBUFFER_CONFIG_LOG_ENABLED 0
+#endif
+// <o> IOT_PBUFFER_CONFIG_LOG_LEVEL  - Default Severity level
+ 
+// <0=> Off 
+// <1=> Error 
+// <2=> Warning 
+// <3=> Info 
+// <4=> Debug 
+
+#ifndef IOT_PBUFFER_CONFIG_LOG_LEVEL
+#define IOT_PBUFFER_CONFIG_LOG_LEVEL 3
+#endif
+
+// <o> IOT_PBUFFER_CONFIG_INFO_COLOR  - ANSI escape code prefix.
+ 
+// <0=> Default 
+// <1=> Black 
+// <2=> Red 
+// <3=> Green 
+// <4=> Yellow 
+// <5=> Blue 
+// <6=> Magenta 
+// <7=> Cyan 
+// <8=> White 
+
+#ifndef IOT_PBUFFER_CONFIG_INFO_COLOR
+#define IOT_PBUFFER_CONFIG_INFO_COLOR 0
+#endif
+
+// <o> IOT_PBUFFER_CONFIG_DEBUG_COLOR  - ANSI escape code prefix.
+ 
+// <0=> Default 
+// <1=> Black 
+// <2=> Red 
+// <3=> Green 
+// <4=> Yellow 
+// <5=> Blue 
+// <6=> Magenta 
+// <7=> Cyan 
+// <8=> White 
+
+#ifndef IOT_PBUFFER_CONFIG_DEBUG_COLOR
+#define IOT_PBUFFER_CONFIG_DEBUG_COLOR 0
+#endif
+
+// </e>
+
+// <o> IOT_PBUFFER_MAX_COUNT - Maximum packet buffers managed by the module.  <1-255> 
+
+
+#ifndef IOT_PBUFFER_MAX_COUNT
+#define IOT_PBUFFER_MAX_COUNT 10
+#endif
+
+// </h> 
+//==========================================================
+
+// <h> iot_tftp - TFTP Client/Server
+
+//==========================================================
+// <q> TFTP_DISABLE_API_PARAM_CHECK  - Enable or disable API parameter check.
+ 
+
+// <i> API parameter checks are added to ensure right parameters are passed to the module. These checks are useful during development phase but be redundant once application is developed. Disabling this can result in some code saving.
+
+#ifndef TFTP_DISABLE_API_PARAM_CHECK
+#define TFTP_DISABLE_API_PARAM_CHECK 0
+#endif
+
+// <e> TFTP_CONFIG_LOG_ENABLED - Enables logging in the module.
+//==========================================================
+#ifndef TFTP_CONFIG_LOG_ENABLED
+#define TFTP_CONFIG_LOG_ENABLED 0
+#endif
+// <o> TFTP_CONFIG_LOG_LEVEL  - Default Severity level
+ 
+// <0=> Off 
+// <1=> Error 
+// <2=> Warning 
+// <3=> Info 
+// <4=> Debug 
+
+#ifndef TFTP_CONFIG_LOG_LEVEL
+#define TFTP_CONFIG_LOG_LEVEL 3
+#endif
+
+// <o> TFTP_CONFIG_INFO_COLOR  - ANSI escape code prefix.
+ 
+// <0=> Default 
+// <1=> Black 
+// <2=> Red 
+// <3=> Green 
+// <4=> Yellow 
+// <5=> Blue 
+// <6=> Magenta 
+// <7=> Cyan 
+// <8=> White 
+
+#ifndef TFTP_CONFIG_INFO_COLOR
+#define TFTP_CONFIG_INFO_COLOR 0
+#endif
+
+// <o> TFTP_CONFIG_DEBUG_COLOR  - ANSI escape code prefix.
+ 
+// <0=> Default 
+// <1=> Black 
+// <2=> Red 
+// <3=> Green 
+// <4=> Yellow 
+// <5=> Blue 
+// <6=> Magenta 
+// <7=> Cyan 
+// <8=> White 
+
+#ifndef TFTP_CONFIG_DEBUG_COLOR
+#define TFTP_CONFIG_DEBUG_COLOR 0
+#endif
+
+// </e>
+
+// <o> TFTP_MAX_INSTANCES - Maximum amount of TFTP instances.  <1-4294967295> 
+
+
+#ifndef TFTP_MAX_INSTANCES
+#define TFTP_MAX_INSTANCES 2
+#endif
+
+// <o> TFTP_MAX_RETRANSMISSION_COUNT - Maximum number of retransmissions.  <0-255> 
+
+
+// <i> Set this define to 0 to disable retransmissions attempts.
+
+#ifndef TFTP_MAX_RETRANSMISSION_COUNT
+#define TFTP_MAX_RETRANSMISSION_COUNT 10
+#endif
+
+// <o> TFTP_RETRANSMISSION_TIMER_INTERVAL - Interval for timeout process to provide packet retransmission. 
+// <i> This value should represent one second interval.
+
+#ifndef TFTP_RETRANSMISSION_TIMER_INTERVAL
+#define TFTP_RETRANSMISSION_TIMER_INTERVAL 1000
+#endif
+
+// </h> 
+//==========================================================
+
+// <h> iot_timer - IoT Timer
+
+//==========================================================
+// <q> IOT_TIMER_DISABLE_API_PARAM_CHECK  - Disables API parameter checks in the module.
+ 
+
+// <i> API parameter checks are added to ensure right parameters are passed to the module. These checks are useful during development phase but be redundant once application is developed. Disabling this can result in some code saving.
+
+#ifndef IOT_TIMER_DISABLE_API_PARAM_CHECK
+#define IOT_TIMER_DISABLE_API_PARAM_CHECK 0
+#endif
+
+// <o> IOT_TIMER_RESOLUTION_IN_MS - Wall clock resolution in milliseconds.  <1-4294967295> 
+
+
+// <i> The wall clock of the IoT Timer module has to be updated from an external source at regular intervals. This define needs to be set to the interval between updates.
+
+#ifndef IOT_TIMER_RESOLUTION_IN_MS
+#define IOT_TIMER_RESOLUTION_IN_MS 100
+#endif
+
+// </h> 
+//==========================================================
+
+// <h> ipv6_dns6 - Domain Name System Client (DNS)
+
+//==========================================================
+// <q> DNS6_DISABLE_API_PARAM_CHECK  - Enable or disable API parameter check.
+ 
+
+// <i> API parameter checks are added to ensure right parameters are passed to the module. These checks are useful during development phase but be redundant once application is developed. Disabling this can result in some code saving.
+
+#ifndef DNS6_DISABLE_API_PARAM_CHECK
+#define DNS6_DISABLE_API_PARAM_CHECK 0
+#endif
+
+// <e> DNS6_CONFIG_LOG_ENABLED - Enables logging in the module.
+//==========================================================
+#ifndef DNS6_CONFIG_LOG_ENABLED
+#define DNS6_CONFIG_LOG_ENABLED 0
+#endif
+// <o> DNS6_CONFIG_LOG_LEVEL  - Default Severity level
+ 
+// <0=> Off 
+// <1=> Error 
+// <2=> Warning 
+// <3=> Info 
+// <4=> Debug 
+
+#ifndef DNS6_CONFIG_LOG_LEVEL
+#define DNS6_CONFIG_LOG_LEVEL 3
+#endif
+
+// <o> DNS6_CONFIG_INFO_COLOR  - ANSI escape code prefix.
+ 
+// <0=> Default 
+// <1=> Black 
+// <2=> Red 
+// <3=> Green 
+// <4=> Yellow 
+// <5=> Blue 
+// <6=> Magenta 
+// <7=> Cyan 
+// <8=> White 
+
+#ifndef DNS6_CONFIG_INFO_COLOR
+#define DNS6_CONFIG_INFO_COLOR 0
+#endif
+
+// <o> DNS6_CONFIG_DEBUG_COLOR  - ANSI escape code prefix.
+ 
+// <0=> Default 
+// <1=> Black 
+// <2=> Red 
+// <3=> Green 
+// <4=> Yellow 
+// <5=> Blue 
+// <6=> Magenta 
+// <7=> Cyan 
+// <8=> White 
+
+#ifndef DNS6_CONFIG_DEBUG_COLOR
+#define DNS6_CONFIG_DEBUG_COLOR 0
+#endif
+
+// </e>
+
+// <o> DNS6_MAX_PENDING_QUERIES - Maximum number of pending queries in queue.  <1-65534> 
+
+
+#ifndef DNS6_MAX_PENDING_QUERIES
+#define DNS6_MAX_PENDING_QUERIES 3
+#endif
+
+// <o> DNS6_MAX_RETRANSMISSION_COUNT - Max number of retransmissions.  <0-255> 
+
+
+// <i> Set this define to 0 to disable retransmission attempts.
+
+#ifndef DNS6_MAX_RETRANSMISSION_COUNT
+#define DNS6_MAX_RETRANSMISSION_COUNT 3
+#endif
+
+// <o> DNS6_RETRANSMISSION_INTERVAL - Interval between retransmissions in seconds.  <2-4294967295> 
+
+
+#ifndef DNS6_RETRANSMISSION_INTERVAL
+#define DNS6_RETRANSMISSION_INTERVAL 2
+#endif
+
+// </h> 
+//==========================================================
+
+// <h> ipv6_icmp6 - Internet Control Message Protocol (ICMP6)
+
+//==========================================================
+// <q> ICMP6_DISABLE_API_PARAM_CHECK  - Enable or disable API parameter check.
+ 
+
+// <i> API parameter checks are added to ensure right parameters are passed to the module. These checks are useful during development phase but be redundant once application is developed. Disabling this can result in some code saving.
+
+#ifndef ICMP6_DISABLE_API_PARAM_CHECK
+#define ICMP6_DISABLE_API_PARAM_CHECK 0
+#endif
+
+// <q> ICMP6_ENABLE_ALL_MESSAGES_TO_APPLICATION  - Enables call ICMPv6 event handler on getting any of ICMPv6 message.
+ 
+
+// <i> Set this parameter to 1 to enable call ICMPv6 event handler on receiving any of ICMPv6 messages including error, Neighbour Discovery or ping messages.
+
+#ifndef ICMP6_ENABLE_ALL_MESSAGES_TO_APPLICATION
+#define ICMP6_ENABLE_ALL_MESSAGES_TO_APPLICATION 0
+#endif
+
+// <q> ICMP6_ENABLE_HANDLE_ECHO_REQUEST_TO_APPLICATION  - Enable or disable internal ECHO response.
+ 
+
+// <i> Set this parameter to 1 to disable internal ECHO RESPONSE sending after processing ICMP packet in application (if ICMP6_ENABLE_ALL_MESSAGES_TO_APPLICATION is set). Application then is responsible of processing ECHO REQUEST and should also generate ECHO RESPONSE by itself. Set this parameter to 0 to let automatically reply inside of ICMP6 module, after processing it by application.
+
+#ifndef ICMP6_ENABLE_HANDLE_ECHO_REQUEST_TO_APPLICATION
+#define ICMP6_ENABLE_HANDLE_ECHO_REQUEST_TO_APPLICATION 0
+#endif
+
+// <e> ICMP6_CONFIG_LOG_ENABLED - Enables logging in the module.
+//==========================================================
+#ifndef ICMP6_CONFIG_LOG_ENABLED
+#define ICMP6_CONFIG_LOG_ENABLED 0
+#endif
+// <o> ICMP6_CONFIG_LOG_LEVEL  - Default Severity level
+ 
+// <0=> Off 
+// <1=> Error 
+// <2=> Warning 
+// <3=> Info 
+// <4=> Debug 
+
+#ifndef ICMP6_CONFIG_LOG_LEVEL
+#define ICMP6_CONFIG_LOG_LEVEL 3
+#endif
+
+// <o> ICMP6_CONFIG_INFO_COLOR  - ANSI escape code prefix.
+ 
+// <0=> Default 
+// <1=> Black 
+// <2=> Red 
+// <3=> Green 
+// <4=> Yellow 
+// <5=> Blue 
+// <6=> Magenta 
+// <7=> Cyan 
+// <8=> White 
+
+#ifndef ICMP6_CONFIG_INFO_COLOR
+#define ICMP6_CONFIG_INFO_COLOR 0
+#endif
+
+// <o> ICMP6_CONFIG_DEBUG_COLOR  - ANSI escape code prefix.
+ 
+// <0=> Default 
+// <1=> Black 
+// <2=> Red 
+// <3=> Green 
+// <4=> Yellow 
+// <5=> Blue 
+// <6=> Magenta 
+// <7=> Cyan 
+// <8=> White 
+
+#ifndef ICMP6_CONFIG_DEBUG_COLOR
+#define ICMP6_CONFIG_DEBUG_COLOR 0
+#endif
+
+// </e>
+
+// <q> ICMP6_ENABLE_ND6_MESSAGES_TO_APPLICATION  - Enables call ICMPv6 event handler on getting Neighbour Discovery message.
+ 
+
+// <i> Set this parameter to 1 to enable call ICMPv6 event handler on receiving one of Neighbour Discovery messages.
+
+#ifndef ICMP6_ENABLE_ND6_MESSAGES_TO_APPLICATION
+#define ICMP6_ENABLE_ND6_MESSAGES_TO_APPLICATION 0
+#endif
+
+// <o> ICMP6_ERROR_MESSAGE_MAX_SIZE  - Maximum error message size when transmitting.
+ 
+
+// <i> Error messages contain partial or complete IPv6 packet that resulted in transmission of error message in the host. See RFC 4443 for details. This configurable parameter allows limiting the size of ICMP packet when responding with an error message. The size defined here is inclusive of ICMP Header.
+// <48=> 48 
+// <1240=> 1240 
+
+#ifndef ICMP6_ERROR_MESSAGE_MAX_SIZE
+#define ICMP6_ERROR_MESSAGE_MAX_SIZE 128
+#endif
+
+// </h> 
+//==========================================================
+
+// <h> ipv6_medium - IPv6 Medium
+
+//==========================================================
+// <e> IPV6_MEDIUM_CONFIG_LOG_ENABLED - Enables logging in the module.
+//==========================================================
+#ifndef IPV6_MEDIUM_CONFIG_LOG_ENABLED
+#define IPV6_MEDIUM_CONFIG_LOG_ENABLED 0
+#endif
+// <o> IPV6_MEDIUM_CONFIG_LOG_LEVEL  - Default Severity level
+ 
+// <0=> Off 
+// <1=> Error 
+// <2=> Warning 
+// <3=> Info 
+// <4=> Debug 
+
+#ifndef IPV6_MEDIUM_CONFIG_LOG_LEVEL
+#define IPV6_MEDIUM_CONFIG_LOG_LEVEL 3
+#endif
+
+// <o> IPV6_MEDIUM_CONFIG_INFO_COLOR  - ANSI escape code prefix.
+ 
+// <0=> Default 
+// <1=> Black 
+// <2=> Red 
+// <3=> Green 
+// <4=> Yellow 
+// <5=> Blue 
+// <6=> Magenta 
+// <7=> Cyan 
+// <8=> White 
+
+#ifndef IPV6_MEDIUM_CONFIG_INFO_COLOR
+#define IPV6_MEDIUM_CONFIG_INFO_COLOR 0
+#endif
+
+// <o> IPV6_MEDIUM_CONFIG_DEBUG_COLOR  - ANSI escape code prefix.
+ 
+// <0=> Default 
+// <1=> Black 
+// <2=> Red 
+// <3=> Green 
+// <4=> Yellow 
+// <5=> Blue 
+// <6=> Magenta 
+// <7=> Cyan 
+// <8=> White 
+
+#ifndef IPV6_MEDIUM_CONFIG_DEBUG_COLOR
+#define IPV6_MEDIUM_CONFIG_DEBUG_COLOR 0
+#endif
+
+// </e>
+
+// <o> CONFIG_MODE_ADV_ADV_INTERVAL - If COMMISSIONING_ENABLED is defined: The advertising interval in Configuration mode. This value can vary between 100ms to 10.24s.  <32-16384> 
+
+
+// <i> Minimum 0x0020, maximum 0x4000, unit UNIT_0_625_MS.
+
+#ifndef CONFIG_MODE_ADV_ADV_INTERVAL
+#define CONFIG_MODE_ADV_ADV_INTERVAL 532
+#endif
+
+// <o> CONFIG_MODE_ADV_TIMEOUT - If COMMISSIONING_ENABLED is defined: Time for which the device must be advertising in non-connectable mode (in seconds) in Configuration mode. 0 disables timeout.  <0-16383> 
+
+
+#ifndef CONFIG_MODE_ADV_TIMEOUT
+#define CONFIG_MODE_ADV_TIMEOUT 0
+#endif
+
+// <o> CONFIG_MODE_CONN_SUP_TIMEOUT - If COMMISSIONING_ENABLED is defined: Connection Supervision Timeout in 10 ms units in Configuration mode, see BLE_GAP_CP_LIMITS. 
+// <i> Minimum BLE_GAP_CP_CONN_SUP_TIMEOUT_MIN, maximum BLE_GAP_CP_CONN_SUP_TIMEOUT_MAX, unit UNIT_10_MS.
+
+#ifndef CONFIG_MODE_CONN_SUP_TIMEOUT
+#define CONFIG_MODE_CONN_SUP_TIMEOUT 43
+#endif
+
+// <s> CONFIG_MODE_DEVICE_NAME - If COMMISSIONING_ENABLED is defined: Device name used in BLE undirected advertisement in Configuration mode.
+#ifndef CONFIG_MODE_DEVICE_NAME
+#define CONFIG_MODE_DEVICE_NAME "Node_Cfg"
+#endif
+
+// <o> CONFIG_MODE_MAX_CONN_INTERVAL - If COMMISSIONING_ENABLED is defined: Maximum Connection Interval in 1.25 ms units in Configuration mode, see BLE_GAP_CP_LIMITS. 
+// <i> Minimum BLE_GAP_CP_MAX_CONN_INTVL_MIN, maximum BLE_GAP_CP_MAX_CONN_INTVL_MAX, unit UNIT_1_25_MS.
+
+#ifndef CONFIG_MODE_MAX_CONN_INTERVAL
+#define CONFIG_MODE_MAX_CONN_INTERVAL 24
+#endif
+
+// <o> CONFIG_MODE_MIN_CONN_INTERVAL - If COMMISSIONING_ENABLED is defined: Minimum Connection Interval in 1.25 ms units in Configuration mode, see BLE_GAP_CP_LIMITS. 
+// <i> Minimum BLE_GAP_CP_MIN_CONN_INTVL_MIN, maximum BLE_GAP_CP_MIN_CONN_INTVL_MAX, unit UNIT_1_25_MS
+
+#ifndef CONFIG_MODE_MIN_CONN_INTERVAL
+#define CONFIG_MODE_MIN_CONN_INTERVAL 6
+#endif
+
+// <o> CONFIG_MODE_SLAVE_LATENCY - If COMMISSIONING_ENABLED is defined: Slave Latency in number of connection events in Configuration mode, see BLE_GAP_CP_LIMITS. 
+// <i> Minimum 0, maximum BLE_GAP_CP_SLAVE_LATENCY_MAX.
+
+#ifndef CONFIG_MODE_SLAVE_LATENCY
+#define CONFIG_MODE_SLAVE_LATENCY 6
+#endif
+
+// <q> IS_SRVC_CHANGED_CHARACT_PRESENT  - Include the Service Changed characteristic in the Attribute Table.
+ 
+
+#ifndef IS_SRVC_CHANGED_CHARACT_PRESENT
+#define IS_SRVC_CHANGED_CHARACT_PRESENT 0
+#endif
+
+// <o> JOINING_MODE_ADV_ADV_INTERVAL - If COMMISSIONING_ENABLED is defined: The advertising interval in Joining mode. This value can vary between 100ms to 10.24s.  <32-16384> 
+
+
+// <i> Minimum 0x0020, maximum 0x4000, unit UNIT_0_625_MS.
+
+#ifndef JOINING_MODE_ADV_ADV_INTERVAL
+#define JOINING_MODE_ADV_ADV_INTERVAL 532
+#endif
+
+// <o> JOINING_MODE_ADV_TIMEOUT - If COMMISSIONING_ENABLED is defined: Time for which the device must be advertising in non-connectable mode (in seconds) in Joining mode. 0 disables timeout.  <0-16383> 
+
+
+#ifndef JOINING_MODE_ADV_TIMEOUT
+#define JOINING_MODE_ADV_TIMEOUT 0
+#endif
+
+// <o> JOINING_MODE_CONN_SUP_TIMEOUT - If COMMISSIONING_ENABLED is defined: Connection Supervision Timeout in 10 ms units in Joining mode, see BLE_GAP_CP_LIMITS. 
+// <i> Minimum BLE_GAP_CP_CONN_SUP_TIMEOUT_MIN, maximum BLE_GAP_CP_CONN_SUP_TIMEOUT_MAX, unit UNIT_10_MS.
+
+#ifndef JOINING_MODE_CONN_SUP_TIMEOUT
+#define JOINING_MODE_CONN_SUP_TIMEOUT 43
+#endif
+
+// <o> JOINING_MODE_MAX_CONN_INTERVAL - If COMMISSIONING_ENABLED is defined: Maximum Connection Interval in 1.25 ms units in Joining mode, see BLE_GAP_CP_LIMITS. 
+// <i> Minimum BLE_GAP_CP_MAX_CONN_INTVL_MIN, maximum BLE_GAP_CP_MAX_CONN_INTVL_MAX, unit UNIT_1_25_MS.
+
+#ifndef JOINING_MODE_MAX_CONN_INTERVAL
+#define JOINING_MODE_MAX_CONN_INTERVAL 24
+#endif
+
+// <o> JOINING_MODE_MIN_CONN_INTERVAL - If COMMISSIONING_ENABLED is defined: Minimum Connection Interval in 1.25 ms units in Joining mode, see BLE_GAP_CP_LIMITS. 
+// <i> Minimum BLE_GAP_CP_MIN_CONN_INTVL_MIN, maximum BLE_GAP_CP_MIN_CONN_INTVL_MAX, unit UNIT_1_25_MS.
+
+#ifndef JOINING_MODE_MIN_CONN_INTERVAL
+#define JOINING_MODE_MIN_CONN_INTERVAL 6
+#endif
+
+// <o> JOINING_MODE_SLAVE_LATENCY - If COMMISSIONING_ENABLED is defined: Slave Latency in number of connection events in Joining mode, see BLE_GAP_CP_LIMITS. 
+// <i> Minimum 0, maximum BLE_GAP_CP_SLAVE_LATENCY_MAX.
+
+#ifndef JOINING_MODE_SLAVE_LATENCY
+#define JOINING_MODE_SLAVE_LATENCY 6
+#endif
+
+// <q> BLE_IPV6_MEDIUM_ENABLED  - Enabling BLE IPv6 module
+ 
+
+#ifndef BLE_IPV6_MEDIUM_ENABLED
+#define BLE_IPV6_MEDIUM_ENABLED 0
+#endif
+
+// </h> 
+//==========================================================
+
+// <h> mqtt_config - MQTT Config Definitions
+
+//==========================================================
+// <e> MQTT_CONFIG_LOG_ENABLED - Enables logging in the module.
+//==========================================================
+#ifndef MQTT_CONFIG_LOG_ENABLED
+#define MQTT_CONFIG_LOG_ENABLED 0
+#endif
+// <o> MQTT_CONFIG_LOG_LEVEL  - Default Severity level
+ 
+// <0=> Off 
+// <1=> Error 
+// <2=> Warning 
+// <3=> Info 
+// <4=> Debug 
+
+#ifndef MQTT_CONFIG_LOG_LEVEL
+#define MQTT_CONFIG_LOG_LEVEL 3
+#endif
+
+// <o> MQTT_CONFIG_INFO_COLOR  - ANSI escape code prefix.
+ 
+// <0=> Default 
+// <1=> Black 
+// <2=> Red 
+// <3=> Green 
+// <4=> Yellow 
+// <5=> Blue 
+// <6=> Magenta 
+// <7=> Cyan 
+// <8=> White 
+
+#ifndef MQTT_CONFIG_INFO_COLOR
+#define MQTT_CONFIG_INFO_COLOR 0
+#endif
+
+// <o> MQTT_CONFIG_DEBUG_COLOR  - ANSI escape code prefix.
+ 
+// <0=> Default 
+// <1=> Black 
+// <2=> Red 
+// <3=> Green 
+// <4=> Yellow 
+// <5=> Blue 
+// <6=> Magenta 
+// <7=> Cyan 
+// <8=> White 
+
+#ifndef MQTT_CONFIG_DEBUG_COLOR
+#define MQTT_CONFIG_DEBUG_COLOR 0
+#endif
+
+// </e>
+
+// <o> MQTT_MAX_CLIENTS - Maximum number of clients that can be managed by the module.  <1-255> 
+
+
+#ifndef MQTT_MAX_CLIENTS
+#define MQTT_MAX_CLIENTS 1
+#endif
+
+// <o> MQTT_KEEPALIVE - Keep alive time for MQTT (in seconds). Sending of Ping Requests to keep the connection alive are governed by this value. A keep alive value of zero (0) has the effect of turning off the keep alive mechanism.  <0-65535> 
+
+
+#ifndef MQTT_KEEPALIVE
+#define MQTT_KEEPALIVE 60
+#endif
+
+// <o> MQTT_MAX_PACKET_LENGTH - Maximum MQTT packet size that can be sent (including the fixed and variable header).  <5-268435460> 
+
+
+#ifndef MQTT_MAX_PACKET_LENGTH
+#define MQTT_MAX_PACKET_LENGTH 128
+#endif
+
+// </h> 
+//==========================================================
+
+// <h> ipv6_sntp - Simple Network Time Protocol (SNTP)
+
+//==========================================================
+// <q> SNTP_CLIENT_DISABLE_API_PARAM_CHECK  - Enable or disable API parameter check.
+ 
+
+// <i> API parameter checks are added to ensure right parameters are passed to the module. These checks are useful during development phase but be redundant once application is developed. Disabling this can result in some code saving.
+
+#ifndef SNTP_CLIENT_DISABLE_API_PARAM_CHECK
+#define SNTP_CLIENT_DISABLE_API_PARAM_CHECK 0
+#endif
+
+// <e> SNTP_CLIENT_CONFIG_LOG_ENABLED - Enables logging in the module.
+//==========================================================
+#ifndef SNTP_CLIENT_CONFIG_LOG_ENABLED
+#define SNTP_CLIENT_CONFIG_LOG_ENABLED 0
+#endif
+// <o> SNTP_CLIENT_CONFIG_LOG_LEVEL  - Default Severity level
+ 
+// <0=> Off 
+// <1=> Error 
+// <2=> Warning 
+// <3=> Info 
+// <4=> Debug 
+
+#ifndef SNTP_CLIENT_CONFIG_LOG_LEVEL
+#define SNTP_CLIENT_CONFIG_LOG_LEVEL 3
+#endif
+
+// <o> SNTP_CLIENT_CONFIG_INFO_COLOR  - ANSI escape code prefix.
+ 
+// <0=> Default 
+// <1=> Black 
+// <2=> Red 
+// <3=> Green 
+// <4=> Yellow 
+// <5=> Blue 
+// <6=> Magenta 
+// <7=> Cyan 
+// <8=> White 
+
+#ifndef SNTP_CLIENT_CONFIG_INFO_COLOR
+#define SNTP_CLIENT_CONFIG_INFO_COLOR 0
+#endif
+
+// <o> SNTP_CLIENT_CONFIG_DEBUG_COLOR  - ANSI escape code prefix.
+ 
+// <0=> Default 
+// <1=> Black 
+// <2=> Red 
+// <3=> Green 
+// <4=> Yellow 
+// <5=> Blue 
+// <6=> Magenta 
+// <7=> Cyan 
+// <8=> White 
+
+#ifndef SNTP_CLIENT_CONFIG_DEBUG_COLOR
+#define SNTP_CLIENT_CONFIG_DEBUG_COLOR 0
+#endif
+
+// </e>
+
+// <o> SNTP_MAX_RETRANSMISSION_COUNT - Maximum number of retransmissions.  <0-255> 
+
+
+// <i> Set this define to 0 to disable retransmissions attempts.
+
+#ifndef SNTP_MAX_RETRANSMISSION_COUNT
+#define SNTP_MAX_RETRANSMISSION_COUNT 2
+#endif
+
+// <o> SNTP_RETRANSMISSION_INTERVAL - Interval between retransmissions in seconds.  <0-255> 
+
+
+#ifndef SNTP_RETRANSMISSION_INTERVAL
+#define SNTP_RETRANSMISSION_INTERVAL 2
+#endif
+
+// </h> 
+//==========================================================
+
+// <h> ipv6_stack - Internet Protocol version 6 (IPv6)
+
+//==========================================================
+// <q> IPV6_DISABLE_API_PARAM_CHECK  - Enable or disable API parameter check.
+ 
+
+// <i> API parameter checks are added to ensure right parameters are passed to the module. These checks are useful during development phase but be redundant once application is developed. Disabling this can result in some code saving.
+
+#ifndef IPV6_DISABLE_API_PARAM_CHECK
+#define IPV6_DISABLE_API_PARAM_CHECK 0
+#endif
+
+// <e> IPV6_CONFIG_LOG_ENABLED - Enables logging in the module.
+//==========================================================
+#ifndef IPV6_CONFIG_LOG_ENABLED
+#define IPV6_CONFIG_LOG_ENABLED 0
+#endif
+// <o> IPV6_CONFIG_LOG_LEVEL  - Default Severity level
+ 
+// <0=> Off 
+// <1=> Error 
+// <2=> Warning 
+// <3=> Info 
+// <4=> Debug 
+
+#ifndef IPV6_CONFIG_LOG_LEVEL
+#define IPV6_CONFIG_LOG_LEVEL 3
+#endif
+
+// <o> IPV6_CONFIG_INFO_COLOR  - ANSI escape code prefix.
+ 
+// <0=> Default 
+// <1=> Black 
+// <2=> Red 
+// <3=> Green 
+// <4=> Yellow 
+// <5=> Blue 
+// <6=> Magenta 
+// <7=> Cyan 
+// <8=> White 
+
+#ifndef IPV6_CONFIG_INFO_COLOR
+#define IPV6_CONFIG_INFO_COLOR 0
+#endif
+
+// <o> IPV6_CONFIG_DEBUG_COLOR  - ANSI escape code prefix.
+ 
+// <0=> Default 
+// <1=> Black 
+// <2=> Red 
+// <3=> Green 
+// <4=> Yellow 
+// <5=> Blue 
+// <6=> Magenta 
+// <7=> Cyan 
+// <8=> White 
+
+#ifndef IPV6_CONFIG_DEBUG_COLOR
+#define IPV6_CONFIG_DEBUG_COLOR 0
+#endif
+
+// </e>
+
+// <q> IPV6_ENABLE_USNUPORTED_PROTOCOLS_TO_APPLICATION  - Enables call application event handler if getting unsupported transport protocols.
+ 
+
+// <i> Set this parameter to 1 to enable event while getting unsupported transport protocol. In the current implementation, it means, all transport protocols besides ICMPv6 or UDP.
+
+#ifndef IPV6_ENABLE_USNUPORTED_PROTOCOLS_TO_APPLICATION
+#define IPV6_ENABLE_USNUPORTED_PROTOCOLS_TO_APPLICATION 0
+#endif
+
+// <o> IPV6_MAX_ADDRESS_PER_INTERFACE - Number of IPv6 addresses supported per interface.  <1-255> 
+
+
+// <i> Number of IPv6 address supported including link local address.
+
+#ifndef IPV6_MAX_ADDRESS_PER_INTERFACE
+#define IPV6_MAX_ADDRESS_PER_INTERFACE 3
+#endif
+
+// <o> IPV6_MAX_INTERFACE - Number of IPv6 network interface.  <1-255> 
+
+
+#ifndef IPV6_MAX_INTERFACE
+#define IPV6_MAX_INTERFACE 1
+#endif
+
+// </h> 
+//==========================================================
+
+// <h> ipv6_udp - User Datagram Protocol (UDP)
+
+//==========================================================
+// <q> UDP6_DISABLE_API_PARAM_CHECK  - Enable or disable API parameter check.
+ 
+
+// <i> API parameter checks are added to ensure right parameters are passed to the module. These checks are useful during development phase but be redundant once application is developed. Disabling this can result in some code saving.
+
+#ifndef UDP6_DISABLE_API_PARAM_CHECK
+#define UDP6_DISABLE_API_PARAM_CHECK 0
+#endif
+
+// <e> UDP6_CONFIG_LOG_ENABLED - Enables logging in the module.
+//==========================================================
+#ifndef UDP6_CONFIG_LOG_ENABLED
+#define UDP6_CONFIG_LOG_ENABLED 0
+#endif
+// <o> UDP6_CONFIG_LOG_LEVEL  - Default Severity level
+ 
+// <0=> Off 
+// <1=> Error 
+// <2=> Warning 
+// <3=> Info 
+// <4=> Debug 
+
+#ifndef UDP6_CONFIG_LOG_LEVEL
+#define UDP6_CONFIG_LOG_LEVEL 3
+#endif
+
+// <o> UDP6_CONFIG_INFO_COLOR  - ANSI escape code prefix.
+ 
+// <0=> Default 
+// <1=> Black 
+// <2=> Red 
+// <3=> Green 
+// <4=> Yellow 
+// <5=> Blue 
+// <6=> Magenta 
+// <7=> Cyan 
+// <8=> White 
+
+#ifndef UDP6_CONFIG_INFO_COLOR
+#define UDP6_CONFIG_INFO_COLOR 0
+#endif
+
+// <o> UDP6_CONFIG_DEBUG_COLOR  - ANSI escape code prefix.
+ 
+// <0=> Default 
+// <1=> Black 
+// <2=> Red 
+// <3=> Green 
+// <4=> Yellow 
+// <5=> Blue 
+// <6=> Magenta 
+// <7=> Cyan 
+// <8=> White 
+
+#ifndef UDP6_CONFIG_DEBUG_COLOR
+#define UDP6_CONFIG_DEBUG_COLOR 0
+#endif
+
+// </e>
+
+// <o> UDP6_MAX_SOCKET_COUNT - The max number of sockets to support for UDP module.  <1-255> 
+
+
+#ifndef UDP6_MAX_SOCKET_COUNT
+#define UDP6_MAX_SOCKET_COUNT 3
+#endif
+
+// </h> 
+//==========================================================
+
+// <h> lwm2m_config - Nordic's LWM2M library - config definitions
+
+//==========================================================
+// <o> LWM2M_COAP_HANDLER_MAX_INSTANCES - Maximum number of object instance supported by the device.  <1-65535> 
+
+
+// <i> Maximum number of object instances. Objects are not included as an instance as the handlers are kept in a seperate buffer.
+
+#ifndef LWM2M_COAP_HANDLER_MAX_INSTANCES
+#define LWM2M_COAP_HANDLER_MAX_INSTANCES 5
+#endif
+
+// <o> LWM2M_COAP_HANDLER_MAX_OBJECTS - Maximum number of objects supported by the device.  <1-65535> 
+
+
+// <i> As objects are default resource handler for the LWM2M instances when no instance is registred, this has to be defined to set of memory for the objects that are going to be registered as handlers.
+
+#ifndef LWM2M_COAP_HANDLER_MAX_OBJECTS
+#define LWM2M_COAP_HANDLER_MAX_OBJECTS 5
+#endif
+
+// <q> LWM2M_DISABLE_API_PARAM_CHECK  - Enable or disable API parameter check.
+ 
+
+// <i> API parameter checks are added to ensure right parameters are passed to the module. These checks are useful during development phase but be redundant once application is developed. Disabling this can result in some code saving.
+
+#ifndef LWM2M_DISABLE_API_PARAM_CHECK
+#define LWM2M_DISABLE_API_PARAM_CHECK 0
+#endif
+
+// <e> LWM2M_CONFIG_LOG_ENABLED - Enables logging in the module.
+//==========================================================
+#ifndef LWM2M_CONFIG_LOG_ENABLED
+#define LWM2M_CONFIG_LOG_ENABLED 0
+#endif
+// <o> LWM2M_CONFIG_LOG_LEVEL  - Default Severity level
+ 
+// <0=> Off 
+// <1=> Error 
+// <2=> Warning 
+// <3=> Info 
+// <4=> Debug 
+
+#ifndef LWM2M_CONFIG_LOG_LEVEL
+#define LWM2M_CONFIG_LOG_LEVEL 3
+#endif
+
+// <o> LWM2M_CONFIG_INFO_COLOR  - ANSI escape code prefix.
+ 
+// <0=> Default 
+// <1=> Black 
+// <2=> Red 
+// <3=> Green 
+// <4=> Yellow 
+// <5=> Blue 
+// <6=> Magenta 
+// <7=> Cyan 
+// <8=> White 
+
+#ifndef LWM2M_CONFIG_INFO_COLOR
+#define LWM2M_CONFIG_INFO_COLOR 0
+#endif
+
+// <o> LWM2M_CONFIG_DEBUG_COLOR  - ANSI escape code prefix.
+ 
+// <0=> Default 
+// <1=> Black 
+// <2=> Red 
+// <3=> Green 
+// <4=> Yellow 
+// <5=> Blue 
+// <6=> Magenta 
+// <7=> Cyan 
+// <8=> White 
+
+#ifndef LWM2M_CONFIG_DEBUG_COLOR
+#define LWM2M_CONFIG_DEBUG_COLOR 0
+#endif
+
+// </e>
+
+// <o> LWM2M_MAX_SERVERS - Maximum number of LWM2M servers to connect to.  <1-65535> 
+
+
+// <i> As bootstrap server is not counted as a server in this sense, the number should reflect how many servers the device is suppose to register to.
+
+#ifndef LWM2M_MAX_SERVERS
+#define LWM2M_MAX_SERVERS 1
+#endif
+
+// <o> LWM2M_REGISTER_MAX_LOCATION_LEN - Max number of bytes allocated for location string from remote server.  <1-255> 
+
+
+// <i> Upon registration the device will get a location string to be used as identifier for later communication with the server it is registered to. This setting defines the maximum length of the location string a server can return upon registration with a server.
+
+#ifndef LWM2M_REGISTER_MAX_LOCATION_LEN
+#define LWM2M_REGISTER_MAX_LOCATION_LEN 20
+#endif
+
+// </h> 
+//==========================================================
+
+// </h> 
+//==========================================================
+
+// <h> nRF_IoT_Commissioning 
+
+//==========================================================
+// <e> COMMISSIONING_CONFIG_LOG_ENABLED - commissioning - IoT Commissioning module
+//==========================================================
+#ifndef COMMISSIONING_CONFIG_LOG_ENABLED
+#define COMMISSIONING_CONFIG_LOG_ENABLED 0
+#endif
+// <o> COMMISSIONING_CONFIG_LOG_LEVEL  - Default Severity level
+ 
+// <0=> Off 
+// <1=> Error 
+// <2=> Warning 
+// <3=> Info 
+// <4=> Debug 
+
+#ifndef COMMISSIONING_CONFIG_LOG_LEVEL
+#define COMMISSIONING_CONFIG_LOG_LEVEL 3
+#endif
+
+// <o> COMMISSIONING_CONFIG_INFO_COLOR  - ANSI escape code prefix.
+ 
+// <0=> Default 
+// <1=> Black 
+// <2=> Red 
+// <3=> Green 
+// <4=> Yellow 
+// <5=> Blue 
+// <6=> Magenta 
+// <7=> Cyan 
+// <8=> White 
+
+#ifndef COMMISSIONING_CONFIG_INFO_COLOR
+#define COMMISSIONING_CONFIG_INFO_COLOR 0
+#endif
+
+// <o> COMMISSIONING_CONFIG_DEBUG_COLOR  - ANSI escape code prefix.
+ 
+// <0=> Default 
+// <1=> Black 
+// <2=> Red 
+// <3=> Green 
+// <4=> Yellow 
+// <5=> Blue 
+// <6=> Magenta 
+// <7=> Cyan 
+// <8=> White 
+
+#ifndef COMMISSIONING_CONFIG_DEBUG_COLOR
+#define COMMISSIONING_CONFIG_DEBUG_COLOR 0
+#endif
+
+// </e>
+
+// <e> NCFGS_CONFIG_LOG_ENABLED - ble_ncfgs - BLE Node Configuration Service
+//==========================================================
+#ifndef NCFGS_CONFIG_LOG_ENABLED
+#define NCFGS_CONFIG_LOG_ENABLED 0
+#endif
+// <o> NCFGS_CONFIG_LOG_LEVEL  - Default Severity level
+ 
+// <0=> Off 
+// <1=> Error 
+// <2=> Warning 
+// <3=> Info 
+// <4=> Debug 
+
+#ifndef NCFGS_CONFIG_LOG_LEVEL
+#define NCFGS_CONFIG_LOG_LEVEL 3
+#endif
+
+// <o> NCFGS_CONFIG_INFO_COLOR  - ANSI escape code prefix.
+ 
+// <0=> Default 
+// <1=> Black 
+// <2=> Red 
+// <3=> Green 
+// <4=> Yellow 
+// <5=> Blue 
+// <6=> Magenta 
+// <7=> Cyan 
+// <8=> White 
+
+#ifndef NCFGS_CONFIG_INFO_COLOR
+#define NCFGS_CONFIG_INFO_COLOR 0
+#endif
+
+// <o> NCFGS_CONFIG_DEBUG_COLOR  - ANSI escape code prefix.
+ 
+// <0=> Default 
+// <1=> Black 
+// <2=> Red 
+// <3=> Green 
+// <4=> Yellow 
+// <5=> Blue 
+// <6=> Magenta 
+// <7=> Cyan 
+// <8=> White 
+
+#ifndef NCFGS_CONFIG_DEBUG_COLOR
+#define NCFGS_CONFIG_DEBUG_COLOR 0
+#endif
+
+// </e>
+
+// </h> 
+//==========================================================
+
 // <h> nRF_Libraries 
 
 //==========================================================
+// <q> APP_FIFO_ENABLED  - app_fifo - Software FIFO implementation
+ 
+
+#ifndef APP_FIFO_ENABLED
+#define APP_FIFO_ENABLED 0
+#endif
+
 // <q> APP_GPIOTE_ENABLED  - app_gpiote - GPIOTE events dispatcher
  
 
@@ -5619,6 +9338,41 @@
 
 // </e>
 
+// <e> NRF_CLI_RTT_ENABLED - nrf_cli_rtt - RTT command line interface transport
+//==========================================================
+#ifndef NRF_CLI_RTT_ENABLED
+#define NRF_CLI_RTT_ENABLED 0
+#endif
+// <o> NRF_CLI_RTT_TERMINAL_ID - RTT terminal ID for CLI. 
+#ifndef NRF_CLI_RTT_TERMINAL_ID
+#define NRF_CLI_RTT_TERMINAL_ID 0
+#endif
+
+// <o> NRF_CLI_RTT_TX_RETRY_DELAY_MS - Period before retrying writing to RTT 
+#ifndef NRF_CLI_RTT_TX_RETRY_DELAY_MS
+#define NRF_CLI_RTT_TX_RETRY_DELAY_MS 10
+#endif
+
+// <o> NRF_CLI_RTT_TX_RETRY_CNT - Writing to RTT retries. 
+// <i> If RTT fails to accept any new data after retries
+// <i> module assumes that host is not active and on next
+// <i> request it will perform only one write attempt.
+// <i> On successful writing, module assumes that host is active
+// <i> and scheme with retry is applied again.
+
+#ifndef NRF_CLI_RTT_TX_RETRY_CNT
+#define NRF_CLI_RTT_TX_RETRY_CNT 5
+#endif
+
+// </e>
+
+// <q> NRF_CLI_UART_ENABLED  - nrf_cli_uart - UART command line interface transport
+ 
+
+#ifndef NRF_CLI_UART_ENABLED
+#define NRF_CLI_UART_ENABLED 0
+#endif
+
 // <e> NRF_CSENSE_ENABLED - nrf_csense - Capacitive sensor module
 //==========================================================
 #ifndef NRF_CSENSE_ENABLED
@@ -5927,6 +9681,13 @@
 #define NRF_TWI_MNGR_ENABLED 0
 #endif
 
+// <q> RETARGET_ENABLED  - retarget - Retargeting stdio functions
+ 
+
+#ifndef RETARGET_ENABLED
+#define RETARGET_ENABLED 0
+#endif
+
 // <q> SLIP_ENABLED  - slip - SLIP encoding and decoding
  
 
@@ -6098,6 +9859,84 @@
 // <h> nRF_Log 
 
 //==========================================================
+// <e> NRF_LOG_BACKEND_RTT_ENABLED - nrf_log_backend_rtt - Log RTT backend
+//==========================================================
+#ifndef NRF_LOG_BACKEND_RTT_ENABLED
+#define NRF_LOG_BACKEND_RTT_ENABLED 0
+#endif
+// <o> NRF_LOG_BACKEND_RTT_TEMP_BUFFER_SIZE - Size of buffer for partially processed strings. 
+// <i> Size of the buffer is a trade-off between RAM usage and processing.
+// <i> if buffer is smaller then strings will often be fragmented.
+// <i> It is recommended to use size which will fit typical log and only the
+// <i> longer one will be fragmented.
+
+#ifndef NRF_LOG_BACKEND_RTT_TEMP_BUFFER_SIZE
+#define NRF_LOG_BACKEND_RTT_TEMP_BUFFER_SIZE 64
+#endif
+
+// <o> NRF_LOG_BACKEND_RTT_TX_RETRY_DELAY_MS - Period before retrying writing to RTT 
+#ifndef NRF_LOG_BACKEND_RTT_TX_RETRY_DELAY_MS
+#define NRF_LOG_BACKEND_RTT_TX_RETRY_DELAY_MS 1
+#endif
+
+// <o> NRF_LOG_BACKEND_RTT_TX_RETRY_CNT - Writing to RTT retries. 
+// <i> If RTT fails to accept any new data after retries
+// <i> module assumes that host is not active and on next
+// <i> request it will perform only one write attempt.
+// <i> On successful writing, module assumes that host is active
+// <i> and scheme with retry is applied again.
+
+#ifndef NRF_LOG_BACKEND_RTT_TX_RETRY_CNT
+#define NRF_LOG_BACKEND_RTT_TX_RETRY_CNT 3
+#endif
+
+// </e>
+
+// <e> NRF_LOG_BACKEND_UART_ENABLED - nrf_log_backend_uart - Log UART backend
+//==========================================================
+#ifndef NRF_LOG_BACKEND_UART_ENABLED
+#define NRF_LOG_BACKEND_UART_ENABLED 0
+#endif
+// <o> NRF_LOG_BACKEND_UART_TX_PIN - UART TX pin 
+#ifndef NRF_LOG_BACKEND_UART_TX_PIN
+#define NRF_LOG_BACKEND_UART_TX_PIN 6
+#endif
+
+// <o> NRF_LOG_BACKEND_UART_BAUDRATE  - Default Baudrate
+ 
+// <323584=> 1200 baud 
+// <643072=> 2400 baud 
+// <1290240=> 4800 baud 
+// <2576384=> 9600 baud 
+// <3862528=> 14400 baud 
+// <5152768=> 19200 baud 
+// <7716864=> 28800 baud 
+// <10289152=> 38400 baud 
+// <15400960=> 57600 baud 
+// <20615168=> 76800 baud 
+// <30801920=> 115200 baud 
+// <61865984=> 230400 baud 
+// <67108864=> 250000 baud 
+// <121634816=> 460800 baud 
+// <251658240=> 921600 baud 
+// <268435456=> 1000000 baud 
+
+#ifndef NRF_LOG_BACKEND_UART_BAUDRATE
+#define NRF_LOG_BACKEND_UART_BAUDRATE 30801920
+#endif
+
+// <o> NRF_LOG_BACKEND_UART_TEMP_BUFFER_SIZE - Size of buffer for partially processed strings. 
+// <i> Size of the buffer is a trade-off between RAM usage and processing.
+// <i> if buffer is smaller then strings will often be fragmented.
+// <i> It is recommended to use size which will fit typical log and only the
+// <i> longer one will be fragmented.
+
+#ifndef NRF_LOG_BACKEND_UART_TEMP_BUFFER_SIZE
+#define NRF_LOG_BACKEND_UART_TEMP_BUFFER_SIZE 64
+#endif
+
+// </e>
+
 // <q> NRF_LOG_STR_FORMATTER_TIMESTAMP_FORMAT_ENABLED  - nrf_log_str_formatter - Log string formatter
  
 
@@ -8565,9 +12404,168 @@
 // </h> 
 //==========================================================
 
+// <h> nRF_Segger_RTT 
+
+//==========================================================
+// <h> segger_rtt - SEGGER RTT
+
+//==========================================================
+// <o> SEGGER_RTT_CONFIG_BUFFER_SIZE_UP - Size of upstream buffer. 
+// <i> Note that either @ref NRF_LOG_BACKEND_RTT_OUTPUT_BUFFER_SIZE
+// <i> or this value is actually used. It depends on which one is bigger.
+
+#ifndef SEGGER_RTT_CONFIG_BUFFER_SIZE_UP
+#define SEGGER_RTT_CONFIG_BUFFER_SIZE_UP 512
+#endif
+
+// <o> SEGGER_RTT_CONFIG_MAX_NUM_UP_BUFFERS - Size of upstream buffer. 
+#ifndef SEGGER_RTT_CONFIG_MAX_NUM_UP_BUFFERS
+#define SEGGER_RTT_CONFIG_MAX_NUM_UP_BUFFERS 2
+#endif
+
+// <o> SEGGER_RTT_CONFIG_BUFFER_SIZE_DOWN - Size of upstream buffer. 
+#ifndef SEGGER_RTT_CONFIG_BUFFER_SIZE_DOWN
+#define SEGGER_RTT_CONFIG_BUFFER_SIZE_DOWN 16
+#endif
+
+// <o> SEGGER_RTT_CONFIG_MAX_NUM_DOWN_BUFFERS - Size of upstream buffer. 
+#ifndef SEGGER_RTT_CONFIG_MAX_NUM_DOWN_BUFFERS
+#define SEGGER_RTT_CONFIG_MAX_NUM_DOWN_BUFFERS 2
+#endif
+
+// <o> SEGGER_RTT_CONFIG_DEFAULT_MODE  - RTT behavior if the buffer is full.
+ 
+
+// <i> The following modes are supported:
+// <i> - SKIP  - Do not block, output nothing.
+// <i> - TRIM  - Do not block, output as much as fits.
+// <i> - BLOCK - Wait until there is space in the buffer.
+// <0=> SKIP 
+// <1=> TRIM 
+// <2=> BLOCK_IF_FIFO_FULL 
+
+#ifndef SEGGER_RTT_CONFIG_DEFAULT_MODE
+#define SEGGER_RTT_CONFIG_DEFAULT_MODE 0
+#endif
+
+// </h> 
+//==========================================================
+
+// </h> 
+//==========================================================
+
 // <h> nRF_SoftDevice 
 
 //==========================================================
+// <e> NRF_SDH_ANT_ENABLED - nrf_sdh_ant - SoftDevice ANT event handler
+//==========================================================
+#ifndef NRF_SDH_ANT_ENABLED
+#define NRF_SDH_ANT_ENABLED 0
+#endif
+// <h> ANT Channels 
+
+//==========================================================
+// <o> NRF_SDH_ANT_TOTAL_CHANNELS_ALLOCATED - Allocated ANT channels. 
+#ifndef NRF_SDH_ANT_TOTAL_CHANNELS_ALLOCATED
+#define NRF_SDH_ANT_TOTAL_CHANNELS_ALLOCATED 0
+#endif
+
+// <o> NRF_SDH_ANT_ENCRYPTED_CHANNELS - Encrypted ANT channels. 
+#ifndef NRF_SDH_ANT_ENCRYPTED_CHANNELS
+#define NRF_SDH_ANT_ENCRYPTED_CHANNELS 0
+#endif
+
+// </h> 
+//==========================================================
+
+// <h> ANT Queues 
+
+//==========================================================
+// <o> NRF_SDH_ANT_EVENT_QUEUE_SIZE - Event queue size. 
+#ifndef NRF_SDH_ANT_EVENT_QUEUE_SIZE
+#define NRF_SDH_ANT_EVENT_QUEUE_SIZE 32
+#endif
+
+// <o> NRF_SDH_ANT_BURST_QUEUE_SIZE - ANT burst queue size. 
+#ifndef NRF_SDH_ANT_BURST_QUEUE_SIZE
+#define NRF_SDH_ANT_BURST_QUEUE_SIZE 128
+#endif
+
+// </h> 
+//==========================================================
+
+// <h> ANT Observers - Observers and priority levels
+
+//==========================================================
+// <o> NRF_SDH_ANT_OBSERVER_PRIO_LEVELS - Total number of priority levels for ANT observers. 
+// <i> This setting configures the number of priority levels available for the ANT event handlers.
+// <i> The priority level of a handler determines the order in which it receives events, with respect to other handlers.
+
+#ifndef NRF_SDH_ANT_OBSERVER_PRIO_LEVELS
+#define NRF_SDH_ANT_OBSERVER_PRIO_LEVELS 2
+#endif
+
+// <h> ANT Observers priorities - Invididual priorities
+
+//==========================================================
+// <o> ANT_BPWR_ANT_OBSERVER_PRIO  
+// <i> Priority with which ANT events are dispatched to the Bicycle Power Profile.
+
+#ifndef ANT_BPWR_ANT_OBSERVER_PRIO
+#define ANT_BPWR_ANT_OBSERVER_PRIO 1
+#endif
+
+// <o> ANT_BSC_ANT_OBSERVER_PRIO  
+// <i> Priority with which ANT events are dispatched to the Bicycle Speed and Cadence Profile.
+
+#ifndef ANT_BSC_ANT_OBSERVER_PRIO
+#define ANT_BSC_ANT_OBSERVER_PRIO 1
+#endif
+
+// <o> ANT_ENCRYPT_ANT_OBSERVER_PRIO  
+// <i> Priority with which ANT events are dispatched to the Cryptographic ANT stack configuration module.
+
+#ifndef ANT_ENCRYPT_ANT_OBSERVER_PRIO
+#define ANT_ENCRYPT_ANT_OBSERVER_PRIO 1
+#endif
+
+// <o> ANT_HRM_ANT_OBSERVER_PRIO  
+// <i> Priority with which ANT events are dispatched to the Heart Rate Monitor.
+
+#ifndef ANT_HRM_ANT_OBSERVER_PRIO
+#define ANT_HRM_ANT_OBSERVER_PRIO 1
+#endif
+
+// <o> ANT_SDM_ANT_OBSERVER_PRIO  
+// <i> Priority with which ANT events are dispatched to the Stride Based Speed and Distance Monitor Profile.
+
+#ifndef ANT_SDM_ANT_OBSERVER_PRIO
+#define ANT_SDM_ANT_OBSERVER_PRIO 1
+#endif
+
+// <o> ANT_STATE_INDICATOR_ANT_OBSERVER_PRIO  
+// <i> Priority with which ANT events are dispatched to the ANT state indicator module.
+
+#ifndef ANT_STATE_INDICATOR_ANT_OBSERVER_PRIO
+#define ANT_STATE_INDICATOR_ANT_OBSERVER_PRIO 1
+#endif
+
+// <o> BSP_BTN_ANT_OBSERVER_PRIO  
+// <i> Priority with which ANT events are dispatched to the Button Control module.
+
+#ifndef BSP_BTN_ANT_OBSERVER_PRIO
+#define BSP_BTN_ANT_OBSERVER_PRIO 1
+#endif
+
+// </h> 
+//==========================================================
+
+// </h> 
+//==========================================================
+
+
+// </e>
+
 // <e> NRF_SDH_BLE_ENABLED - nrf_sdh_ble - SoftDevice BLE event handler
 //==========================================================
 #ifndef NRF_SDH_BLE_ENABLED
@@ -8888,20 +12886,6 @@
 #define NFC_BLE_PAIR_LIB_BLE_OBSERVER_PRIO 1
 #endif
 
-// <o> NFC_BLE_PAIR_LIB_BLE_OBSERVER_PRIO  
-// <i> Priority with which BLE events are dispatched to the NFC pairing library.
-
-#ifndef NFC_BLE_PAIR_LIB_BLE_OBSERVER_PRIO
-#define NFC_BLE_PAIR_LIB_BLE_OBSERVER_PRIO 1
-#endif
-
-// <o> NFC_BLE_PAIR_LIB_BLE_OBSERVER_PRIO  
-// <i> Priority with which BLE events are dispatched to the NFC pairing library.
-
-#ifndef NFC_BLE_PAIR_LIB_BLE_OBSERVER_PRIO
-#define NFC_BLE_PAIR_LIB_BLE_OBSERVER_PRIO 1
-#endif
-
 // <o> NRF_BLE_BMS_BLE_OBSERVER_PRIO  
 // <i> Priority with which BLE events are dispatched to the Bond Management Service.
 
@@ -9179,6 +13163,63 @@
 // </h> 
 //==========================================================
 
+
+// </e>
+
+// </h> 
+//==========================================================
+
+// <h> nRF_TLS 
+
+//==========================================================
+// <e> TLS_CONFIG_LOG_ENABLED - nrf_dtls - DTLS library
+//==========================================================
+#ifndef TLS_CONFIG_LOG_ENABLED
+#define TLS_CONFIG_LOG_ENABLED 0
+#endif
+// <o> TLS_CONFIG_LOG_LEVEL  - Default Severity level
+ 
+// <0=> Off 
+// <1=> Error 
+// <2=> Warning 
+// <3=> Info 
+// <4=> Debug 
+
+#ifndef TLS_CONFIG_LOG_LEVEL
+#define TLS_CONFIG_LOG_LEVEL 3
+#endif
+
+// <o> TLS_CONFIG_INFO_COLOR  - ANSI escape code prefix.
+ 
+// <0=> Default 
+// <1=> Black 
+// <2=> Red 
+// <3=> Green 
+// <4=> Yellow 
+// <5=> Blue 
+// <6=> Magenta 
+// <7=> Cyan 
+// <8=> White 
+
+#ifndef TLS_CONFIG_INFO_COLOR
+#define TLS_CONFIG_INFO_COLOR 0
+#endif
+
+// <o> TLS_CONFIG_DEBUG_COLOR  - ANSI escape code prefix.
+ 
+// <0=> Default 
+// <1=> Black 
+// <2=> Red 
+// <3=> Green 
+// <4=> Yellow 
+// <5=> Blue 
+// <6=> Magenta 
+// <7=> Cyan 
+// <8=> White 
+
+#ifndef TLS_CONFIG_DEBUG_COLOR
+#define TLS_CONFIG_DEBUG_COLOR 0
+#endif
 
 // </e>
 

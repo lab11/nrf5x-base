@@ -1,19 +1,30 @@
 /* Linker script to configure memory regions. */
+
+SEARCH_DIR(.)
+GROUP(-lgcc -lc -lnosys)
+
 MEMORY
 {
-  FLASH (rx) : ORIGIN = 0x0 + 0x22000, LENGTH = 1024K - 0x22000 /* 140 kB is taken by S140, */
-  RAM (rwx) :  ORIGIN = 0x20000000 + 0x2128, LENGTH = 256K - 0x2128 /* softdevice wants max ~11K bytes. */
-  /* NOTE: RAM must be updated based on parameters to softdevice_enable() */
+  FLASH (rx) : ORIGIN = 0x0 + 152K, LENGTH = 1024K - 152K - 4K /* 152 kB is taken by s140, 4 kB is taken by bootloader settings */
+  RAM (rwx) :  ORIGIN = 0x200094b8, LENGTH = 0x36b48 /* worst case taken from example apps. this can be significantly reduced if needed */
+  bootloader_settings_page (r) : ORIGIN = 1024K - 4K, LENGTH = 4K
+  uicr_bootloader_start_address (r) : ORIGIN = 0x10001014, LENGTH = 0x4
 }
 
 SECTIONS
 {
-  .fs_data_out ALIGN(4):
+  .bootloader_settings_page(NOLOAD) :
   {
-    PROVIDE( __start_fs_data = .);
-    KEEP(*(fs_data))
-    PROVIDE( __stop_fs_data = .);
-  } = 0
+    PROVIDE(__start_bootloader_settings_page = .);
+    KEEP(*(SORT(.bootloader_settings_page*)))
+    PROVIDE(__stop_bootloader_settings_page = .);
+  } > bootloader_settings_page
+  .uicr_bootloader_start_address :
+  {
+    PROVIDE(__start_uicr_bootloader_start_address = .);
+    KEEP(*(SORT(.uicr_bootloader_start_address*)))
+    PROVIDE(__stop_uicr_bootloader_start_address = .);
+  } > uicr_bootloader_start_address
 }
 
 SECTIONS
@@ -25,7 +36,7 @@ SECTIONS
   .log_dynamic_data :
   {
     PROVIDE(__start_log_dynamic_data = .);
-    KEEP(*(.log_dynamic_data))
+    KEEP(*(SORT(.log_dynamic_data*)))
     PROVIDE(__stop_log_dynamic_data = .);
   } > RAM
   .cli_sorted_cmd_ptrs :
@@ -54,23 +65,29 @@ SECTIONS
     KEEP(*(SORT(.sdh_soc_observers*)))
     PROVIDE(__stop_sdh_soc_observers = .);
   } > FLASH
-  .pwr_mgmt_data :
+  .crypto_data :
   {
-    PROVIDE(__start_pwr_mgmt_data = .);
-    KEEP(*(SORT(.pwr_mgmt_data*)))
-    PROVIDE(__stop_pwr_mgmt_data = .);
+    PROVIDE(__start_crypto_data = .);
+    KEEP(*(SORT(.crypto_data*)))
+    PROVIDE(__stop_crypto_data = .);
   } > FLASH
-  .sdh_ble_observers :
-  {
-    PROVIDE(__start_sdh_ble_observers = .);
-    KEEP(*(SORT(.sdh_ble_observers*)))
-    PROVIDE(__stop_sdh_ble_observers = .);
-  } > FLASH
-    .log_const_data :
+  .log_const_data :
   {
     PROVIDE(__start_log_const_data = .);
-    KEEP(*(.log_const_data))
+    KEEP(*(SORT(.log_const_data*)))
     PROVIDE(__stop_log_const_data = .);
+  } > FLASH
+    .nrf_balloc :
+  {
+    PROVIDE(__start_nrf_balloc = .);
+    KEEP(*(.nrf_balloc))
+    PROVIDE(__stop_nrf_balloc = .);
+  } > FLASH
+    .nrf_queue :
+  {
+    PROVIDE(__start_nrf_queue = .);
+    KEEP(*(.nrf_queue))
+    PROVIDE(__stop_nrf_queue = .);
   } > FLASH
   .sdh_state_observers :
   {
@@ -96,8 +113,25 @@ SECTIONS
     KEEP(*(.cli_command))
     PROVIDE(__stop_cli_command = .);
   } > FLASH
-
+  .pwr_mgmt_data :
+  {
+    PROVIDE(__start_pwr_mgmt_data = .);
+    KEEP(*(SORT(.pwr_mgmt_data*)))
+    PROVIDE(__stop_pwr_mgmt_data = .);
+  } > FLASH
+  .sdh_ble_observers :
+  {
+    PROVIDE(__start_sdh_ble_observers = .);
+    KEEP(*(SORT(.sdh_ble_observers*)))
+    PROVIDE(__stop_sdh_ble_observers = .);
+  } > FLASH
+  .dfu_trans :
+  {
+    PROVIDE(__start_dfu_trans = .);
+    KEEP(*(SORT(.dfu_trans*)))
+    PROVIDE(__stop_dfu_trans = .);
+  } > FLASH
 
 } INSERT AFTER .text
 
-INCLUDE "gcc_nrf52_common.ld"
+INCLUDE "nrf_common.ld"

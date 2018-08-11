@@ -21,3 +21,4 @@ void get_device_id(uint8_t* device_id) {
     device_id[5] = ((uint8_t*)ID_FLASH_LOCATION)[0];
   }
 }
+
