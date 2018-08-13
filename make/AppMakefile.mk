@@ -32,8 +32,6 @@ include $(NRF_BASE_DIR)/make/Includes.mk
 # JTAG flashing configuration and rules
 include $(NRF_BASE_DIR)/make/Jtag.mk
 
-#XXX: test for blank softdevice
-
 
 # ---- Rules for building apps
 .PHONY:	all
