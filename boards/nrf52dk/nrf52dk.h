@@ -2,6 +2,7 @@
 
 #pragma once
 
+#include "nrf_gpio.h"
 
 #define NRF52DK_LED1 NRF_GPIO_PIN_MAP(0,17)
 #define NRF52DK_LED2 NRF_GPIO_PIN_MAP(0,18)

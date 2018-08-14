@@ -3,8 +3,6 @@
 
 #pragma once
 
-#include "nrf52dk.h"
-
 #define BLE_ADVERTISING_ENABLED 1
 #define NRF_BLE_CONN_PARAMS_ENABLED 1
 #define NRF_BLE_GATT_ENABLED 1
@@ -52,8 +50,8 @@
 #define UART_ENABLED 1
 #define UART0_ENABLED 1
 #define APP_UART_ENABLED 1
-#define HCI_UART_TX_PIN NRF52DK_UART_TXD
-#define HCI_UART_RX_PIN NRF52DK_UART_RXD
+#define HCI_UART_TX_PIN 6
+#define HCI_UART_RX_PIN 8
 
 #define NRFX_TWIM_ENABLED 1
 #define NRFX_TWI_ENABLED 1
