@@ -1,7 +1,7 @@
 # Included folders and source files for building nrf applications
 # Included by Configuration.mk
 
-# ensure that this file is only included once
+# Ensure that this file is only included once
 ifndef INCLUDES_MAKEFILE
 INCLUDES_MAKEFILE = 1
 
@@ -36,6 +36,10 @@ ifneq (,$(filter $(NRF_IC),nrf52832 nrf52840))
     #XXX: are there other C files that I can include here?
     SDK_SOURCES += app_error.c
     SDK_SOURCES += app_error_weak.c
+
+    # To make SEGGER RTT retarget to printf correctly, you need to get around
+    # the silly ANSI C compatibility stuff that breaks our GCC builds
+    PARAMS_DEFINE = -D_PARAMS\(paramlist\)=paramlist
 
     # Add paths for sdk-specific linker files
     SDK_LINKER_PATHS += $(SDK_ROOT)modules/nrfx/mdk/
@@ -335,7 +339,7 @@ SOFTDEVICE_PATH ?= $(SDK_ROOT)/components/softdevice/$(SOFTDEVICE_MODEL)/hex/$(S
 # Flags for compiler
 HEADER_INCLUDES = $(addprefix -I,$(SDK_HEADER_PATHS)) $(addprefix -I,$(REPO_HEADER_PATHS)) $(addprefix -I,$(BOARD_HEADER_PATHS)) $(addprefix -I,$(APP_HEADER_PATHS))
 LINKER_INCLUDES = $(addprefix -L,$(SDK_LINKER_PATHS)) $(addprefix -L,$(BOARD_LINKER_PATHS))
-SDK_DEFINES = $(addprefix -D,$(SDK_VARS)) $(addprefix -D,$(BOARD_VARS)) $(addprefix -D,$(APP_VARS))
+SDK_DEFINES = $(addprefix -D,$(SDK_VARS)) $(addprefix -D,$(BOARD_VARS)) $(addprefix -D,$(APP_VARS)) $(PARAMS_DEFINE)
 
 # Directories make searches for prerequisites
 VPATH = $(SDK_SOURCE_PATHS) $(REPO_SOURCE_PATHS) $(BOARD_SOURCE_PATHS) $(APP_SOURCE_PATHS)

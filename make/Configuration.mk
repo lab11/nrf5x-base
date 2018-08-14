@@ -1,7 +1,7 @@
 # Configuration parameters for building nrf applications
 # Included by AppMakefile.mk
 
-# ensure that this file is only included once
+# Ensure that this file is only included once
 ifndef CONFIGURATION_MAKEFILE
 CONFIGURATION_MAKEFILE = 1
 
@@ -205,6 +205,7 @@ override OBJDUMP_FLAGS += \
     --section-headers
 
 
+#XXX: it would be good to have a way to bring these back but only compile the user code with them (not sdk)
 ##################################################################################################
 # Extra warning flags not enabled by Wall or Wextra.
 #
@@ -232,15 +233,16 @@ override CFLAGS += -Wfloat-equal #              # floats used with '=' operator,
 override CFLAGS += -Wformat-nonliteral #        # can't check format string (maybe disable if annoying)
 override CFLAGS += -Wformat-security #          # using untrusted format strings (maybe disable)
 override CFLAGS += -Wformat-y2k #               # use of strftime that assumes two digit years
+override CFLAGS += -Wno-implicit-fallthrough    # warning that's occurring in the sdk
 override CFLAGS += -Winit-self #                # { int i = i }
 override CFLAGS += -Wlogical-op #               # "suspicous use of logical operators in expressions" (a lint)
 #override CFLAGS += -Wmissing-declarations #     # ^same? not sure how these differ
-override CFLAGS += -Wmissing-field-initializers # if init'ing struct w/out field names, warn if not all used
+override CFLAGS += -Wno-missing-field-initializers # if init'ing struct w/out field names, warn if not all used
 override CFLAGS += -Wmissing-format-attribute # # something looks printf-like but isn't marked as such
 #override CFLAGS += -Wmissing-noreturn #         # __attribute__((noreturn)) like -> ! in Rust, should use it
 override CFLAGS += -Wmultichar #                # use of 'foo' instead of "foo" (surpised not on by default?)
 override CFLAGS += -Wpointer-arith #            # sizeof things not define'd (i.e. sizeof(void))
-override CFLAGS += -Wredundant-decls #          # { int i; int i; } (a lint)
+#override CFLAGS += -Wredundant-decls #          # { int i; int i; } (a lint)
 override CFLAGS += -Wshadow #                   # int foo(int a) { int a = 1; } inner a shadows outer a
 override CFLAGS += -Wtrampolines #              # attempt to generate a trampoline on the NX stack
 #override CFLAGS += -Wunused-macros #            # macro defined in this file not used
@@ -285,7 +287,7 @@ override CFLAGS += -Wwrite-strings #            # { char* c = "foo"; c[0] = 'b' 
 override CFLAGS += -Wjump-misses-init #           # goto or switch skips over a variable initialziation
 #override CFLAGS += -Wmissing-prototypes #         # global fn defined w/out prototype (should be static or in .h)
 override CFLAGS += -Wnested-externs #             # mis/weird-use of extern keyword
-override CFLAGS += -Wold-style-definition #       # this garbage: void bar (a) int a; { }
+#override CFLAGS += -Wold-style-definition #       # this garbage: void bar (a) int a; { }
 
 #CFLAGS += -Wunsuffixed-float-constants # # { float f=0.67; if(f==0.67) printf("y"); else printf("n"); } => n
 #                                         ^ doesn't seem to work right? find_north does funny stuff

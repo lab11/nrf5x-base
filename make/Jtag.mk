@@ -1,7 +1,7 @@
 # Commands and configurations for loading code onto hardware with JTAG
 # Included by AppMakefile.mk
 
-# ensure that this file is only included once
+# Ensure that this file is only included once
 ifndef JTAG_MAKEFILE
 JTAG_MAKEFILE = 1
 
