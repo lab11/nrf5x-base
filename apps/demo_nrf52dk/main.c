@@ -1,6 +1,7 @@
-// Blink app
+// nRF52DK Demo App
 //
-// Blinks an LED
+// Connects button pushes to LEDs and prints information about the LEDs over
+// UART and RTT. This application is made for the nRF52DK (PCA10040)
 
 #include <stdbool.h>
 #include <stdint.h>
