@@ -9007,7 +9007,7 @@
 // <i> Before a HardFault handler exits, the stack will be reverted to its previous value.
 
 #ifndef HARDFAULT_HANDLER_GDB_PSP_BACKTRACE
-#define HARDFAULT_HANDLER_GDB_PSP_BACKTRACE 1
+#define HARDFAULT_HANDLER_GDB_PSP_BACKTRACE 0
 #endif
 
 // </e>

@@ -85,6 +85,7 @@ ifneq (,$(filter $(NRF_IC),nrf52832 nrf52840))
     SDK_HEADER_PATHS += $(SDK_ROOT)components/libraries/gfx/
     SDK_HEADER_PATHS += $(SDK_ROOT)components/libraries/gpiote/
     SDK_HEADER_PATHS += $(SDK_ROOT)components/libraries/hardfault/
+    SDK_HEADER_PATHS += $(SDK_ROOT)components/libraries/hardfault/$(NRF_MODEL)/handler/
     SDK_HEADER_PATHS += $(SDK_ROOT)components/libraries/hci/
     SDK_HEADER_PATHS += $(SDK_ROOT)components/libraries/led_softblink/
     SDK_HEADER_PATHS += $(SDK_ROOT)components/libraries/low_power_pwm/
@@ -189,6 +190,7 @@ ifneq (,$(filter $(NRF_IC),nrf52832 nrf52840))
     SDK_SOURCE_PATHS += $(SDK_ROOT)components/libraries/gfx/
     SDK_SOURCE_PATHS += $(SDK_ROOT)components/libraries/gpiote/
     SDK_SOURCE_PATHS += $(SDK_ROOT)components/libraries/hardfault/
+    SDK_SOURCE_PATHS += $(SDK_ROOT)components/libraries/hardfault/$(NRF_MODEL)/handler/
     SDK_SOURCE_PATHS += $(SDK_ROOT)components/libraries/hci/
     SDK_SOURCE_PATHS += $(SDK_ROOT)components/libraries/led_softblink/
     SDK_SOURCE_PATHS += $(SDK_ROOT)components/libraries/low_power_pwm/
