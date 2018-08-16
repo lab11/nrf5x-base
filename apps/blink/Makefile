@@ -14,5 +14,5 @@ APP_SOURCES = $(notdir $(wildcard ./*.c))
 #include $(NRF_BASE_DIR)/boards/<BOARD_NAME_HERE>
 
 # Include main Makefile
-NRF_BASE_DIR ?= ../..
+NRF_BASE_DIR ?= ../../
 include $(NRF_BASE_DIR)/make/AppMakefile.mk

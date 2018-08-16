@@ -28,6 +28,7 @@ BOARD_SOURCES += \
 	app_error_handler_gcc.c\
 	app_scheduler.c\
 	app_timer.c\
+	app_uart.c\
 	app_util_platform.c\
 	nrf_assert.c\
 	nrf_atomic.c\
@@ -51,6 +52,7 @@ BOARD_SOURCES += \
 	nrf_queue.c\
 	nrfx_gpiote.c\
 	nrfx_prs.c\
+	nrfx_saadc.c\
 	nrfx_timer.c\
 	nrfx_twi.c\
 	nrfx_twim.c\
@@ -59,7 +61,6 @@ BOARD_SOURCES += \
 	SEGGER_RTT.c\
 	SEGGER_RTT_Syscalls_GCC.c\
 	SEGGER_RTT_printf.c\
-
 
 endif
 

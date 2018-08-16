@@ -45,7 +45,7 @@ ifneq (,$(filter $(NRF_IC),nrf52832 nrf52840))
     SDK_LINKER_PATHS += $(SDK_ROOT)modules/nrfx/mdk/
 
     # Path for default sdk_config.h
-    SDK_HEADER_PATHS += $(SDK_ROOT)config/$(NRF_IC)/config/
+    SDK_HEADER_PATHS += $(NRF_BASE_DIR)/make/config/$(NRF_IC)/config/
 
     # Need to add the paths for all the directories in the SDK.
     # Note that we do not use * because some folders have conflicting files.

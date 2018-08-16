@@ -25,5 +25,5 @@ APP_VARS += USE_APP_CONFIG
 #include $(NRF_BASE_DIR)/boards/<BOARD_NAME_HERE>
 
 # Include main Makefile
-NRF_BASE_DIR ?= ../..
+NRF_BASE_DIR ?= ../../
 include $(NRF_BASE_DIR)/make/AppMakefile.mk
