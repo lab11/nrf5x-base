@@ -1,11 +1,12 @@
 #include <stdbool.h>
 #include <stdint.h>
 #include <stdio.h>
-#include "nrf_gpio.h"
-#include "nrf_delay.h"
+
 #include "app_uart.h"
-#include "nrf_uarte.h"
+#include "nrf_delay.h"
+#include "nrf_gpio.h"
 #include "nrf_power.h"
+#include "nrf_uarte.h"
 
 // Pin configurations
 #define LED NRF_GPIO_PIN_MAP(0,17)
@@ -41,7 +42,7 @@ void uart_init(void) {
 
   // actually initialize UART
   APP_UART_FIFO_INIT(&comm_params, UART_RX_BUF_SIZE, UART_TX_BUF_SIZE,
-        uart_error_handle, APP_IRQ_PRIORITY_LOW, err_code);
+                     uart_error_handle, APP_IRQ_PRIORITY_LOW, err_code);
   APP_ERROR_CHECK(err_code);
 }
 

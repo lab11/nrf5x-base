@@ -50,22 +50,22 @@ void app_error_fault_handler(uint32_t id, uint32_t pc, uint32_t info) {
     }
 #endif
     case NRF_FAULT_ID_SDK_ASSERT: {
-        assert_info_t * p_info = (assert_info_t *)info;
-        printf("ASSERTION FAILED at %s:%u\n",
-            p_info->p_file_name,
-            p_info->line_num);
-        break;
-      }
+      assert_info_t * p_info = (assert_info_t *)info;
+      printf("ASSERTION FAILED at %s:%u\n",
+             p_info->p_file_name,
+             p_info->line_num);
+      break;
+    }
     case NRF_FAULT_ID_SDK_ERROR: {
-        error_info_t * p_info = (error_info_t *)info;
-        printf("ERROR %lu [%s] at %s:%lu\t\tPC at: 0x%08lX\n",
-            p_info->err_code,
-            nrf_strerror_get(p_info->err_code),
-            p_info->p_file_name,
-            p_info->line_num,
-            pc);
-        break;
-      }
+      error_info_t * p_info = (error_info_t *)info;
+      printf("ERROR %lu [%s] at %s:%lu\t\tPC at: 0x%08lX\n",
+             p_info->err_code,
+             nrf_strerror_get(p_info->err_code),
+             p_info->p_file_name,
+             p_info->line_num,
+             pc);
+      break;
+    }
     default: {
       printf("UNKNOWN FAULT at 0x%08lX\n", pc);
       break;
@@ -83,28 +83,28 @@ void app_error_fault_handler(uint32_t id, uint32_t pc, uint32_t info) {
   // configure leds
   // manually-controlled (simple) output, initially set
   nrfx_gpiote_out_config_t out_config = NRFX_GPIOTE_CONFIG_OUT_SIMPLE(true);
-  for (int i=0; i<LED_COUNT; i++) {
+  for (int i = 0; i < LED_COUNT; i++) {
     nrfx_gpiote_out_init(LEDS[i], &out_config);
   }
 
   // loop forever blinking LEDs in a particular pattern to attact attention
   while (1) {
-    for (int i=0; i<LED_COUNT; i++) {
+    for (int i = 0; i < LED_COUNT; i++) {
       nrfx_gpiote_out_clear(LEDS[i]);
     }
     nrf_delay_ms(500);
 
-    for (int i=0; i<LED_COUNT; i++) {
+    for (int i = 0; i < LED_COUNT; i++) {
       nrfx_gpiote_out_set(LEDS[i]);
     }
     nrf_delay_ms(50);
 
-    for (int i=0; i<LED_COUNT; i++) {
+    for (int i = 0; i < LED_COUNT; i++) {
       nrfx_gpiote_out_clear(LEDS[i]);
     }
     nrf_delay_ms(500);
 
-    for (int i=0; i<LED_COUNT; i++) {
+    for (int i = 0; i < LED_COUNT; i++) {
       nrfx_gpiote_out_set(LEDS[i]);
     }
     nrf_delay_ms(250);
@@ -124,28 +124,28 @@ void HardFault_process(HardFault_stack_t* p_stack) {
   // configure leds
   // manually-controlled (simple) output, initially set
   nrfx_gpiote_out_config_t out_config = NRFX_GPIOTE_CONFIG_OUT_SIMPLE(true);
-  for (int i=0; i<LED_COUNT; i++) {
+  for (int i = 0; i < LED_COUNT; i++) {
     nrfx_gpiote_out_init(LEDS[i], &out_config);
   }
 
   // loop forever blinking LEDs in a particular pattern to attact attention
   while (1) {
-    for (int i=0; i<LED_COUNT; i++) {
+    for (int i = 0; i < LED_COUNT; i++) {
       nrfx_gpiote_out_clear(LEDS[i]);
     }
     nrf_delay_ms(500);
 
-    for (int i=0; i<LED_COUNT; i++) {
+    for (int i = 0; i < LED_COUNT; i++) {
       nrfx_gpiote_out_set(LEDS[i]);
     }
     nrf_delay_ms(50);
 
-    for (int i=0; i<LED_COUNT; i++) {
+    for (int i = 0; i < LED_COUNT; i++) {
       nrfx_gpiote_out_clear(LEDS[i]);
     }
     nrf_delay_ms(500);
 
-    for (int i=0; i<LED_COUNT; i++) {
+    for (int i = 0; i < LED_COUNT; i++) {
       nrfx_gpiote_out_set(LEDS[i]);
     }
     nrf_delay_ms(250);

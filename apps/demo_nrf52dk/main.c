@@ -10,13 +10,13 @@
 #include "app_error.h"
 #include "nrf.h"
 #include "nrf_delay.h"
-#include "nrfx_gpiote.h"
 #include "nrf_gpio.h"
 #include "nrf_log.h"
 #include "nrf_log_ctrl.h"
 #include "nrf_log_default_backends.h"
 #include "nrf_pwr_mgmt.h"
 #include "nrf_serial.h"
+#include "nrfx_gpiote.h"
 
 #include "nrf52dk.h"
 
@@ -30,7 +30,8 @@ NRF_SERIAL_UART_DEF(serial_uart_instance, 0);
 // configuration for uart, RX & TX pin, empty RTS and CTS pins,
 //  flow control disabled, no parity bit, 115200 baud, default priority
 NRF_SERIAL_DRV_UART_CONFIG_DEF(serial_uart_config, NRF52DK_UART_RXD, NRF52DK_UART_TXD, 0, 0,
-      NRF_UART_HWFC_DISABLED, NRF_UART_PARITY_EXCLUDED, NRF_UART_BAUDRATE_115200, UART_DEFAULT_CONFIG_IRQ_PRIORITY);
+                               NRF_UART_HWFC_DISABLED, NRF_UART_PARITY_EXCLUDED, NRF_UART_BAUDRATE_115200,
+                               UART_DEFAULT_CONFIG_IRQ_PRIORITY);
 // create serial queues for commands, tx length 32, rx length 32
 NRF_SERIAL_QUEUES_DEF(serial_queues, 32, 32);
 // create serial buffers for data, tx size 100 bytes, rx size 100 bytes
@@ -45,7 +46,7 @@ void pin_change_handler(nrfx_gpiote_pin_t pin, nrf_gpiote_polarity_t action) {
   ret_code_t error_code = NRF_SUCCESS;
 
   // iterate through the buttons to determine which caused the event
-  for (int i=0; i<4; i++) {
+  for (int i = 0; i < 4; i++) {
     if (pin == BTNS[i]) {
 
       // change the state of the corresponding LED to match
@@ -85,7 +86,7 @@ int main(void) {
   // configure leds
   // manually-controlled (simple) output, initially set
   nrfx_gpiote_out_config_t out_config = NRFX_GPIOTE_CONFIG_OUT_SIMPLE(true);
-  for (int i=0; i<4; i++) {
+  for (int i = 0; i < 4; i++) {
     error_code = nrfx_gpiote_out_init(LEDS[i], &out_config);
     APP_ERROR_CHECK(error_code);
   }
@@ -94,7 +95,7 @@ int main(void) {
   // input pin, trigger on either edge, low accuracy (allows low-power operation)
   nrfx_gpiote_in_config_t in_config = NRFX_GPIOTE_CONFIG_IN_SENSE_TOGGLE(false);
   in_config.pull = NRF_GPIO_PIN_PULLUP;
-  for (int i=0; i<4; i++) {
+  for (int i = 0; i < 4; i++) {
     error_code = nrfx_gpiote_in_init(BTNS[i], &in_config, pin_change_handler);
     APP_ERROR_CHECK(error_code);
 

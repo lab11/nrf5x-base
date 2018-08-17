@@ -32,6 +32,9 @@ include $(NRF_BASE_DIR)/make/Includes.mk
 # JTAG flashing configuration and rules
 include $(NRF_BASE_DIR)/make/Jtag.mk
 
+# Uncrustify code cleaner configuration and rules
+include $(NRF_BASE_DIR)/make/Uncrustify.mk
+
 
 # ---- Rules for building apps
 .PHONY:	all
