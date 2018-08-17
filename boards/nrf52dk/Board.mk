@@ -22,6 +22,8 @@ USE_BLE = 1
 BOARD_VARS = \
 	BOARD_$(BOARD)\
 	USE_APP_CONFIG\
+	DEBUG\
+	DEBUG_NRF\
 
 # Default SDK source files to be included
 BOARD_SOURCES += \
@@ -30,6 +32,8 @@ BOARD_SOURCES += \
 	app_timer.c\
 	app_uart.c\
 	app_util_platform.c\
+	hardfault_handler_gcc.c\
+	hardfault_implementation.c\
 	nrf_assert.c\
 	nrf_atomic.c\
 	nrf_balloc.c\
