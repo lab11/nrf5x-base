@@ -82,7 +82,7 @@ erase: $(BUILDDIR)
 gdb:
 	$(Q)$(TERMINAL) -e "$(JLINK_GDBSERVER) $(JLINK_FLAGS) $(JLINK_GDBSERVER_FLAGS)"
 	$(Q)sleep 1
-	$(Q)printf "target remote localhost:$(GDB_PORT_NUMBER)\nload\nmon reset\nbreak main\n" > .gdbinit
+	$(Q)printf "target remote localhost:$(GDB_PORT_NUMBER)\nload\nmon reset\nbreak main\ncontinue\n" > .gdbinit
 ifneq ("$(wildcard $(DEBUG_ELF))","")
 	$(Q)$(TERMINAL) -e "$(GDB) $(DEBUG_ELF)"
 else ifneq ("$(wildcard $(ELF))","")
