@@ -64,11 +64,11 @@ $(BUILDDIR)%.os-debug: $(BUILDDIR)%.s | $(BUILDDIR)
 
 $(ELF): $(OBJS) $(OBJS_AS) $(LIBS) | $(BUILDDIR)
 	$(TRACE_LD)
-	$(Q)$(LD) $(LDFLAGS) $^ -o $@
+	$(Q)$(LD) $(LDFLAGS) -Wl,--start-group $^ $(LDLIBS) -Wl,--end-group -o $@
 
 $(DEBUG_ELF): $(DEBUG_OBJS) $(DEBUG_OBJS_AS) $(LIBS) | $(BUILDDIR)
 	$(TRACE_LD)
-	$(Q)$(LD) $(LDFLAGS) $^ -o $@
+	$(Q)$(LD) $(LDFLAGS) -Wl,--start-group $^ $(LDLIBS) -Wl,--end-group -o $@
 
 $(HEX): $(ELF) | $(BUILDDIR)
 	$(TRACE_HEX)

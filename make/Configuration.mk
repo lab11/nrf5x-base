@@ -190,11 +190,13 @@ override LDFLAGS += \
     -T $(LINKER_SCRIPT)\
     -Wl,--gc-sections\
     -Wl,-Map=$(BUILDDIR)$(OUTPUT_NAME).Map\
+    $(LINKER_INCLUDES)\
+
+override LDLIBS += \
     -lc\
     -lnosys\
     -lm\
     -lstdc++\
-    $(LINKER_INCLUDES)\
 
 #XXX: compare to tock and nrf to add new flags
 override OBJDUMP_FLAGS += \
