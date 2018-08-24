@@ -70,10 +70,11 @@ static void timer_init(void (*timeout_fct)(void*)) {
 	//lfclk_request();
 
 	// Init application timer module
-	app_timer_init();
+	ret_code_t err_code = app_timer_init();
+	APP_ERROR_CHECK(err_code);
 
 	// Create timer
-	uint32_t err_code = app_timer_create(&clock_timer, APP_TIMER_MODE_REPEATED, timeout_fct);
+	err_code = app_timer_create(&clock_timer, APP_TIMER_MODE_REPEATED, timeout_fct);
 	APP_ERROR_CHECK(err_code);
 
 }
@@ -127,17 +128,23 @@ uint8_t simple_logger_init(const char *filename, const char *permissions) {
 // Let's reopen the file, and try to rewrite the header if it's necessary
 static uint8_t logger_init() {
 
-	volatile FRESULT res;
+	volatile FRESULT res = FR_OK;
+    //printf("Trying to mount...\r\n");
 	res |= f_mount(&simple_logger_fs, "", 1);
+
+    //printf("Mounted\r\n");
 
 	// See if the file exists already
 	FIL temp;
 	res |= f_open(&temp,file, FA_READ | FA_OPEN_EXISTING);
+    //printf("Try opening file...\r\n");
 	if(res == FR_NO_FILE) {
 		//the file doesn't exist
 		simple_logger_file_exists = 0;
+		//printf("File doesnt exist!\r\n");
 	} else if(res == FR_OK) {
 		simple_logger_file_exists = 1;
+        //printf("Opened file\r\n");
 		res |= f_close(&temp);
 	}
 

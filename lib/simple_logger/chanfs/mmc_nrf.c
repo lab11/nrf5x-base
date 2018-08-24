@@ -15,7 +15,7 @@
  * CD_PIN
 */
 
-#define NRF_SPI NRF_SPI1
+#define NRF_SPI NRF_SPI0
 
 #define FCLK_SLOW() NRF_SPI->FREQUENCY = SPI_FREQUENCY_FREQUENCY_K250
 #define FCLK_FAST() NRF_SPI->FREQUENCY = SPI_FREQUENCY_FREQUENCY_M4
@@ -25,8 +25,8 @@
 #define	MMC_CD		!nrf_gpio_pin_read(CD_PIN)
 #define	MMC_WP		0
 
-#define SD_POWER_ON()	nrf_gpio_pin_clear(SD_ENABLE_PIN)
-#define SD_POWER_OFF()	nrf_gpio_pin_set(SD_ENABLE_PIN)
+#define SD_POWER_ON()	nrf_gpio_pin_set(SD_ENABLE_PIN)
+#define SD_POWER_OFF()	nrf_gpio_pin_clear(SD_ENABLE_PIN)
 
 #define SD_PIN_INIT() 	nrf_gpio_cfg_output(SPI_CS_PIN);\
 						nrf_gpio_cfg_output(SD_ENABLE_PIN);\
