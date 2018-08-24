@@ -129,22 +129,52 @@ uint8_t simple_logger_init(const char *filename, const char *permissions) {
 static uint8_t logger_init() {
 
 	volatile FRESULT res = FR_OK;
-    //printf("Trying to mount...\r\n");
 	res |= f_mount(&simple_logger_fs, "", 1);
 
-    //printf("Mounted\r\n");
+	// See if the file system already exists
+	while (res != FR_OK) {
+		switch (res) {
+			case FR_NOT_READY: {
+				// No disk found; check "Card Detected" signal before calling this function
+				return res;
+			}
+			case FR_NO_FILESYSTEM: {
+				// No existing file system
+				res = f_mkfs("", !_MULTI_PARTITION, _MAX_SS);
 
-	// See if the file exists already
+				if (res != FR_OK) {
+					printf("Failed to make a new filesystem: %d\n", res);
+					return res;
+				}
+
+				// Retry mounting now
+				res = f_mount(&simple_logger_fs, "", 1);
+				if (res != FR_OK) {
+					return res;
+				}
+
+				break;
+			}
+			default: {
+				printf("Unexpected error while mounting SD card: %d\n", res);
+				return res;
+			}
+		}
+	}
+
+	// See if the file already exists
 	FIL temp;
 	res |= f_open(&temp,file, FA_READ | FA_OPEN_EXISTING);
-    //printf("Try opening file...\r\n");
+
 	if(res == FR_NO_FILE) {
-		//the file doesn't exist
+
+		// The file doesn't exist
 		simple_logger_file_exists = 0;
-		//printf("File doesnt exist!\r\n");
+
 	} else if(res == FR_OK) {
+
+		// The file does exist
 		simple_logger_file_exists = 1;
-        //printf("Opened file\r\n");
 		res |= f_close(&temp);
 	}
 
