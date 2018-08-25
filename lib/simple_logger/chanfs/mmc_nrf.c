@@ -7,40 +7,51 @@
 // Your own board file
 #include "boards.h"
 /* For allowing SPI to run, you must define the following pins in your board file:
- * SD_ENABLE_PIN
- * SPI_CS_PIN
- * SPI_MISO_PIN
- * SPI_MOSI_PIN
- * SPI_SCK_PIN
- * CD_PIN
- * NRF_SPI
+ * SD_CARD_ENABLE
+ * SD_CARD_DETECT
+ * SD_CARD_SPI_CS
+ * SD_CARD_SPI_MISO
+ * SD_CARD_SPI_MOSI
+ * SD_CARD_SPI_SCLK
+ * SD_CARD_SPI_INSTANCE
 */
 
-#define FCLK_SLOW() NRF_SPI->FREQUENCY = SPI_FREQUENCY_FREQUENCY_K250
-#define FCLK_FAST() NRF_SPI->FREQUENCY = SPI_FREQUENCY_FREQUENCY_M4
+#define FCLK_SLOW() SD_CARD_SPI_INSTANCE->FREQUENCY = SPI_FREQUENCY_FREQUENCY_K250
+#define FCLK_FAST() SD_CARD_SPI_INSTANCE->FREQUENCY = SPI_FREQUENCY_FREQUENCY_M4
 
-#define CS_HIGH()	nrf_gpio_pin_set(SPI_CS_PIN)
-#define CS_LOW()	nrf_gpio_pin_clear(SPI_CS_PIN)
-#define	MMC_CD		!nrf_gpio_pin_read(CD_PIN)
-#define	MMC_WP		0
+#define CS_HIGH()	nrf_gpio_pin_set(SD_CARD_SPI_CS)
+#define CS_LOW()	nrf_gpio_pin_clear(SD_CARD_SPI_CS)
 
-#define SD_POWER_ON()	nrf_gpio_pin_set(SD_ENABLE_PIN)
-#define SD_POWER_OFF()	nrf_gpio_pin_clear(SD_ENABLE_PIN)
+// If SD_CARD_DETECT is available, use it; otherwise, assume that it's always detected
+#ifdef SD_CARD_DETECT
+#define	MMC_CD		    !nrf_gpio_pin_read(SD_CARD_DETECT)
 
-#define SD_PIN_INIT() 	nrf_gpio_cfg_output(SPI_CS_PIN);\
-						nrf_gpio_cfg_output(SD_ENABLE_PIN);\
-						nrf_gpio_cfg_input(CD_PIN, NRF_GPIO_PIN_NOPULL);\
-						nrf_gpio_cfg_input(SPI_MISO_PIN, NRF_GPIO_PIN_PULLUP);
+#define SD_PIN_INIT() 	nrf_gpio_cfg_output(SD_CARD_SPI_CS);\
+						nrf_gpio_cfg_output(SD_CARD_ENABLE);\
+						nrf_gpio_cfg_input(SD_CARD_DETECT, NRF_GPIO_PIN_NOPULL);\
+						nrf_gpio_cfg_input(SD_CARD_SPI_MISO, NRF_GPIO_PIN_PULLUP);
+#else
+#define MMC_CD          1
+
+#define SD_PIN_INIT() 	nrf_gpio_cfg_output(SD_CARD_SPI_CS);\
+						nrf_gpio_cfg_output(SD_CARD_ENABLE);\
+						nrf_gpio_cfg_input(SD_CARD_SPI_MISO, NRF_GPIO_PIN_PULLUP);
+#endif
+
+#define	MMC_WP		    0
+
+#define SD_POWER_ON()	nrf_gpio_pin_set(SD_CARD_ENABLE)
+#define SD_POWER_OFF()	nrf_gpio_pin_clear(SD_CARD_ENABLE)
 
 #define	SPI_CONFIG() {\
- 	NRF_SPI->PSELSCK    = SPI_SCK_PIN;\
- 	NRF_SPI->PSELMOSI   = SPI_MOSI_PIN;\
- 	NRF_SPI->PSELMISO   = SPI_MISO_PIN;\
- 	NRF_SPI->CONFIG     = (uint32_t)(SPI_CONFIG_CPHA_Leading << SPI_CONFIG_CPHA_Pos) |\
+ 	SD_CARD_SPI_INSTANCE->PSELSCK    = SD_CARD_SPI_SCLK;\
+ 	SD_CARD_SPI_INSTANCE->PSELMOSI   = SD_CARD_SPI_MOSI;\
+ 	SD_CARD_SPI_INSTANCE->PSELMISO   = SD_CARD_SPI_MISO;\
+ 	SD_CARD_SPI_INSTANCE->CONFIG     = (uint32_t)(SPI_CONFIG_CPHA_Leading << SPI_CONFIG_CPHA_Pos) |\
  							(SPI_CONFIG_CPOL_ActiveHigh << SPI_CONFIG_CPOL_Pos) |\
  							(SPI_CONFIG_ORDER_MsbFirst << SPI_CONFIG_ORDER_Pos);\
- 	NRF_SPI->ENABLE = (SPI_ENABLE_ENABLE_Enabled << SPI_ENABLE_ENABLE_Pos);\
- 	NRF_SPI->EVENTS_READY = 0;\
+ 	SD_CARD_SPI_INSTANCE->ENABLE = (SPI_ENABLE_ENABLE_Enabled << SPI_ENABLE_ENABLE_Pos);\
+ 	SD_CARD_SPI_INSTANCE->EVENTS_READY = 0;\
 }
 
 
@@ -104,10 +115,10 @@ static void init_spi (void) {
 
 /* Exchange a byte */
 static BYTE xchg_spi (BYTE dat) {
-	NRF_SPI->TXD = dat;
-	while (!NRF_SPI->EVENTS_READY);
-	BYTE data = (BYTE)NRF_SPI->RXD;
-	NRF_SPI->EVENTS_READY = 0;
+	SD_CARD_SPI_INSTANCE->TXD = dat;
+	while (!SD_CARD_SPI_INSTANCE->EVENTS_READY);
+	BYTE data = (BYTE)SD_CARD_SPI_INSTANCE->RXD;
+	SD_CARD_SPI_INSTANCE->EVENTS_READY = 0;
 	return data;
 }
 
