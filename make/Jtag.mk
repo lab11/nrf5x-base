@@ -84,11 +84,11 @@ gdb:
 	$(Q)sleep 1
 	$(Q)printf "target remote localhost:$(GDB_PORT_NUMBER)\nload\nmon reset\nbreak main\ncontinue\n" > .gdbinit
 ifneq ("$(wildcard $(DEBUG_ELF))","")
-	$(Q)$(TERMINAL) -e "$(GDB) $(DEBUG_ELF)"
+	$(Q)$(TERMINAL) -e "$(GDB) -x .gdbinit $(DEBUG_ELF)"
 else ifneq ("$(wildcard $(ELF))","")
-	$(Q)$(TERMINAL) -e "$(GDB) $(ELF)"
+	$(Q)$(TERMINAL) -e "$(GDB) -x .gdbinit $(ELF)"
 else
-	$(Q)$(TERMINAL) -e "$(GDB)"
+	$(Q)$(TERMINAL) -e "$(GDB) -x .gdbinit"
 endif
 
 .PHONY: rtt
