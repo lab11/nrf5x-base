@@ -10,9 +10,13 @@ INCLUDES_MAKEFILE = 1
 REPO_HEADER_PATHS += $(NRF_BASE_DIR)/lib/
 REPO_HEADER_PATHS += $(dir $(wildcard $(NRF_BASE_DIR)/lib/*/))
 REPO_HEADER_PATHS += $(dir $(wildcard $(NRF_BASE_DIR)/lib/simple_logger/*/))
+REPO_HEADER_PATHS += $(dir $(wildcard $(NRF_BASE_DIR)/lib/simple_thread/*/))
+REPO_HEADER_PATHS += $(dir $(wildcard $(NRF_BASE_DIR)/lib/ntpclient/source/c/*/))
 REPO_SOURCE_PATHS += $(NRF_BASE_DIR)/lib/
 REPO_SOURCE_PATHS += $(dir $(wildcard $(NRF_BASE_DIR)/lib/*/))
 REPO_SOURCE_PATHS += $(dir $(wildcard $(NRF_BASE_DIR)/lib/simple_logger/*/))
+REPO_SOURCE_PATHS += $(dir $(wildcard $(NRF_BASE_DIR)/lib/simple_thread/*/))
+REPO_SOURCE_PATHS += $(dir $(wildcard $(NRF_BASE_DIR)/lib/ntpclient/source/c/*/))
 
 # ---- SDK files
 
