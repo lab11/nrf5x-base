@@ -35,6 +35,17 @@ SOFTDEVICE_TEST_LEN = 0x10
 
 TERMINAL ?= x-terminal-emulator
 
+# ---- ID FLASH LOCATION
+ifdef ID
+  # Write the ID to flash as well
+  ID_BYTES = $(subst :, ,$(ID))
+  NUM_ID_BYTES = $(words $(ID_BYTES))
+  ifneq ($(NUM_ID_BYTES),6)
+    $(error "Invalid number of bytes in ID string (expecting 6)")
+  endif
+  ID_FIRST = $(word 1,$(ID_BYTES))$(word 2,$(ID_BYTES))
+  ID_SECON = $(word 3,$(ID_BYTES))$(word 4,$(ID_BYTES))$(word 5,$(ID_BYTES))$(word 6,$(ID_BYTES))
+endif
 
 # ---- JTAG rules
 
