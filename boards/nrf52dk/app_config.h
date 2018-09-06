@@ -3,6 +3,8 @@
 
 #pragma once
 
+#define SIMPLE_BLE_ENABLED 1
+
 #define BLE_ADVERTISING_ENABLED 1
 #define NRF_BLE_CONN_PARAMS_ENABLED 1
 #define NRF_BLE_GATT_ENABLED 1

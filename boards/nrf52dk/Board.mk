@@ -27,6 +27,7 @@ BOARD_VARS = \
 
 # Default SDK source files to be included
 BOARD_SOURCES += \
+	app_error.c\
 	app_error_handler_gcc.c\
 	app_scheduler.c\
 	app_timer.c\
@@ -38,10 +39,12 @@ BOARD_SOURCES += \
 	nrf_assert.c\
 	nrf_atomic.c\
 	nrf_balloc.c\
+	nrf_ble_gatt.c\
 	nrf_drv_twi.c\
 	nrf_drv_uart.c\
 	nrf_fprintf.c\
 	nrf_fprintf_format.c\
+	nrf_fstorage.c\
 	nrf_log_backend_rtt.c\
 	nrf_log_backend_serial.c\
 	nrf_log_backend_uart.c\
@@ -52,6 +55,7 @@ BOARD_SOURCES += \
 	nrf_memobj.c\
 	nrf_section_iter.c\
 	nrf_sdh.c\
+	nrf_sdh_ble.c\
 	nrf_serial.c\
 	nrf_strerror.c\
 	nrf_queue.c\
@@ -68,6 +72,11 @@ BOARD_SOURCES += \
 	SEGGER_RTT.c\
 	SEGGER_RTT_Syscalls_GCC.c\
 	SEGGER_RTT_printf.c\
+	ble_advertising.c\
+	ble_advdata.c\
+	ble_conn_params.c\
+	ble_srv_common.c\
+	simple_ble.c\
 
 endif
 

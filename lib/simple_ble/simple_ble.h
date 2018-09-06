@@ -43,12 +43,12 @@ typedef struct simple_ble_char_s {
  *   FUNCTION PROTOTYPES
  ******************************************************************************/
 // Implement for callbacks
-extern void ble_evt_connected(ble_evt_t* p_ble_evt);
-extern void ble_evt_disconnected(ble_evt_t* p_ble_evt);
-extern void ble_evt_write(ble_evt_t* p_ble_evt);
-extern void ble_evt_rw_auth(ble_evt_t* p_ble_evt);
-extern void ble_evt_user_handler(ble_evt_t* p_ble_evt);
-extern void ble_evt_adv_report(ble_evt_t* p_ble_evt);
+extern void ble_evt_connected(ble_evt_t const* p_ble_evt);
+extern void ble_evt_disconnected(ble_evt_t const* p_ble_evt);
+extern void ble_evt_write(ble_evt_t const* p_ble_evt);
+extern void ble_evt_rw_auth(ble_evt_t const* p_ble_evt);
+extern void ble_evt_user_handler(ble_evt_t const* p_ble_evt);
+extern void ble_evt_adv_report(ble_evt_t const* p_ble_evt);
 extern void ble_error(uint32_t error_code);
 
 // Overwrite to change functionality
@@ -143,30 +143,6 @@ extern const int FIRST_CONN_PARAMS_UPDATE_DELAY;      // APP_TIMER_TICKS(5000)  
 // Size of op queues
 #define APP_TIMER_OP_QUEUE_SIZE         8
 
-// Timeout for pairing or sec requests secs
-#define SEC_PARAM_TIMEOUT               30
-
-// Perform bonding
-#define SEC_PARAM_BOND                  1
-
-// No man in the middle
-#define SEC_PARAM_MITM                  0
-
-// Disable le secure connection pairing
-#define SEC_PARAM_LESC                  0
-
-// Disable keypress notifications
-#define SEC_PARAM_KEYPRESS              0
-
-// No I/O capability
-#define SEC_PARAM_IO_CAPABILITIES       BLE_GAP_IO_CAPS_NONE
-
-// No out of bound data
-#define SEC_PARAM_OOB                   0
-
-#define SEC_PARAM_MIN_KEY_SIZE          7
-
-#define SEC_PARAM_MAX_KEY_SIZE          16
 
 // Max scheduler event size
 #define SCHED_MAX_EVENT_DATA_SIZE       sizeof(app_timer_event_t)

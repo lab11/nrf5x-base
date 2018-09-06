@@ -9,11 +9,11 @@
 #include <string.h>
 
 // Nordic Libraries
+#include "sdk_common.h"
 #include "nordic_common.h"
 #include "nrf.h"
 #include "nrf_ble_es.h"
 #include "nrf_ble_gatt.h"
-#include "nrf_ble_qwr.h"
 #include "nrf_delay.h"
 #include "nrf_gpio.h"
 #include "nrf_log.h"
@@ -54,8 +54,7 @@
 // Simple BLE files
 #include "simple_ble.h"
 
-#define SIMPLE_BLE_ENABLED
-#ifdef SIMPLE_BLE_ENABLED
+#if NRF_MODULE_ENABLED(SIMPLE_BLE)
 
 /*******************************************************************************
  *   STATIC AND GLOBAL VARIABLES
@@ -63,20 +62,13 @@
 static const simple_ble_config_t* ble_config;
 
 simple_ble_app_t app;
-ble_gap_adv_params_t m_adv_params;
-ble_gap_sec_params_t m_sec_params = {
-        SEC_PARAM_BOND,
-        SEC_PARAM_MITM,
-        SEC_PARAM_IO_CAPABILITIES,
-        SEC_PARAM_OOB,
-        SEC_PARAM_MIN_KEY_SIZE,
-        SEC_PARAM_MAX_KEY_SIZE,
-};
+
+static ble_uuid_t PHYSWEB_SERVICE_UUID[] = {{PHYSWEB_SERVICE_ID, BLE_UUID_TYPE_BLE}};
+static const ble_advdata_uuid_list_t PHYSWEB_SERVICE_LIST = {1, PHYSWEB_SERVICE_UUID};
 
 // Module instances
 // ATTENTION: Those also instanciate event handlers for BLE and SYS events
 NRF_BLE_GATT_DEF(m_gatt);                                                       /**< GATT module instance. */
-NRF_BLE_QWR_DEF(m_qwr);                                                         /**< Context for the Queued Write module.*/
 BLE_ADVERTISING_DEF(m_advertising);                                             /**< Advertising module instance. */
 
 // Configuration settings that can be redefined by application
@@ -102,7 +94,7 @@ static void conn_params_error_handler(uint32_t nrf_error);
 static void ble_evt_dispatch(ble_evt_t * p_ble_evt);
 static void sys_evt_dispatch(uint32_t sys_evt);
 static void on_conn_params_evt(ble_conn_params_evt_t * p_evt);
-static void on_ble_evt(ble_evt_t * p_ble_evt);
+static void on_ble_evt(ble_evt_t const * p_ble_evt, void * p_context);
 #ifdef ENABLE_DFU
 static void dfu_reset();
 #endif
@@ -123,16 +115,16 @@ void assert_nrf_callback(uint16_t line_num, const uint8_t * p_file_name);
 // rather than link time failures.
 //
 // Run-time code must check that these functions are valid before calling.
-void __attribute__((weak)) ble_evt_connected(ble_evt_t* p_ble_evt);
-void __attribute__((weak)) ble_evt_disconnected(ble_evt_t* p_ble_evt);
-void __attribute__((weak)) ble_evt_write(ble_evt_t* p_ble_evt);
-void __attribute__((weak)) ble_evt_rw_auth(ble_evt_t* p_ble_evt);
-void __attribute__((weak)) ble_evt_user_handler(ble_evt_t* p_ble_evt);
-void __attribute__((weak)) ble_evt_adv_report(ble_evt_t* p_ble_evt);
+void __attribute__((weak)) ble_evt_connected(ble_evt_t const * p_ble_evt);
+void __attribute__((weak)) ble_evt_disconnected(ble_evt_t const* p_ble_evt);
+void __attribute__((weak)) ble_evt_write(ble_evt_t const* p_ble_evt);
+void __attribute__((weak)) ble_evt_rw_auth(ble_evt_t const* p_ble_evt);
+void __attribute__((weak)) ble_evt_user_handler(ble_evt_t const* p_ble_evt);
+void __attribute__((weak)) ble_evt_adv_report(ble_evt_t const* p_ble_evt);
 void __attribute__((weak)) ble_error(uint32_t error_code);
 
 
-void app_error_handler(uint32_t error_code, uint32_t line_num, const uint8_t * p_file_name) {
+void __attribute__((weak)) app_error_handler(uint32_t error_code, uint32_t line_num, const uint8_t * p_file_name) {
     // APPL_LOG("[APPL]: ASSERT: %s, %d, error 0x%08x\r\n", p_file_name, line_num, error_code);
 
     // This call can be used for debug purposes during development of an application.
@@ -148,7 +140,7 @@ void app_error_handler(uint32_t error_code, uint32_t line_num, const uint8_t * p
     //NVIC_SystemReset();
 
     // TODO: Include "better_error_handling.c" for all platforms
-    printf("ERROR: APP ERROR on line %i, file %s!\n", line_num, p_file_name);
+    printf("ERROR: APP ERROR on line %li, file %s!\n", line_num, p_file_name);
 
     // callback for user
     if (ble_error) {
@@ -172,8 +164,7 @@ static void conn_params_error_handler(uint32_t nrf_error) {
 
 static void ble_evt_dispatch(ble_evt_t * p_ble_evt) {
 
-    ble_conn_params_on_ble_evt(p_ble_evt);
-    on_ble_evt(p_ble_evt);
+    on_ble_evt(p_ble_evt, NULL);
     ble_advertising_on_ble_evt(p_ble_evt, &m_advertising);
 
     // Call ble_our_service_on_ble_evt() to do housekeeping of ble connections related to our service and characteristic
@@ -215,7 +206,7 @@ static void interrupts_disable(void) {
 }
 #endif
 
-static void on_ble_evt(ble_evt_t * p_ble_evt) {
+static void on_ble_evt(ble_evt_t const * p_ble_evt, void * p_context) {
     uint32_t err_code;
 
     switch (p_ble_evt->header.evt_id)
@@ -225,7 +216,7 @@ static void on_ble_evt(ble_evt_t * p_ble_evt) {
             app.conn_handle = p_ble_evt->evt.gap_evt.conn_handle;
 
             // Continue advertising, but nonconnectably
-            m_adv_params.properties.type = BLE_GAP_ADV_TYPE_NONCONNECTABLE_SCANNABLE_UNDIRECTED;
+            m_advertising.adv_params.properties.type = BLE_GAP_ADV_TYPE_NONCONNECTABLE_SCANNABLE_UNDIRECTED;
 
             advertising_start();
 
@@ -254,7 +245,7 @@ static void on_ble_evt(ble_evt_t * p_ble_evt) {
                 }
 #endif
             // Go back to advertising connectably
-            m_adv_params.properties.type = BLE_GAP_ADV_TYPE_CONNECTABLE_SCANNABLE_UNDIRECTED;
+            m_advertising.adv_params.properties.type = BLE_GAP_ADV_TYPE_CONNECTABLE_SCANNABLE_UNDIRECTED;
             advertising_start();
 
             // Callback for user. Weak reference, so check validity first
@@ -288,9 +279,8 @@ static void on_ble_evt(ble_evt_t * p_ble_evt) {
             break;
         }
         case BLE_GAP_EVT_SEC_PARAMS_REQUEST: {
-            // Pairing
-            err_code = sd_ble_gap_sec_params_reply(app.conn_handle,
-                                                   BLE_GAP_SEC_STATUS_SUCCESS, &m_sec_params, NULL);
+            // Pairing not supported
+            err_code = sd_ble_gap_sec_params_reply(app.conn_handle, BLE_GAP_SEC_STATUS_PAIRING_NOT_SUPP, NULL, NULL);
             APP_ERROR_CHECK(err_code);
             break;
         }
@@ -346,7 +336,7 @@ static void on_ble_evt(ble_evt_t * p_ble_evt) {
                   data[3] == DFU_ADV_DATA_VERS)
               {
                 ble_gap_addr_t gap_addr;
-                sd_ble_gap_address_get(&gap_addr);
+                sd_ble_gap_addr_get(&gap_addr);
 
                 if (memcmp(data+4, gap_addr.addr, 6) == 0) {
                   dfu_reset();
@@ -397,9 +387,8 @@ void __attribute__((weak)) ble_address_set(void) {
     ble_gap_addr_t gap_addr = {.addr_type = BLE_GAP_ADDR_TYPE_PUBLIC};
 
     // Default is a combination of Michigan OUI and Platform ID
-    uint8_t new_mac_addr[6] = {0x00, 0x00, ble_config->platform_id, 0xe5, 0x98, 0xc0};
-    uint8_t default_ble_addr[6] = {0x00};
-    memcpy(gap_addr.addr, default_ble_addr, 6);
+    uint8_t new_ble_addr[6] = {0x00, 0x00, ble_config->platform_id, 0xe5, 0x98, 0xc0};
+    memcpy(gap_addr.addr, new_ble_addr, 6);
 
     // get BLE address from Flash
 #ifdef BLE_FLASH_ADDRESS
@@ -410,16 +399,16 @@ void __attribute__((weak)) ble_address_set(void) {
         // Check if we should use the Nordic assigned random value for the
         // lower two bytes or use a user configured value.
         if (ble_config->device_id != DEVICE_ID_DEFAULT) {
-            new_mac_addr[0] = ble_config->device_id & 0xFF;
-            new_mac_addr[1] = (ble_config->device_id >> 8) & 0xFF;
-            memcpy(gap_addr.addr, new_mac_addr, sizeof(gap_addr.addr));
+            new_ble_addr[0] = ble_config->device_id & 0xFF;
+            new_ble_addr[1] = (ble_config->device_id >> 8) & 0xFF;
+            memcpy(gap_addr.addr, new_ble_addr, sizeof(gap_addr.addr));
 
         } else {
             // Set the new BLE address with the Michigan OUI, Platform ID, and
             //  bottom two octets from the original gap address
             // Get the current original address
-            sd_ble_gap_address_get(&gap_addr);
-            memcpy(gap_addr.addr+2, new_mac_addr+2, sizeof(gap_addr.addr)-2);
+            sd_ble_gap_addr_get(&gap_addr);
+            memcpy(gap_addr.addr+2, new_ble_addr+2, sizeof(gap_addr.addr)-2);
         }
     } else {
         // User-defined address stored in flash
@@ -450,7 +439,7 @@ void __attribute__((weak)) ble_address_set(void) {
     memcpy((uint8_t*)BOOTLOADER_BLE_ADDR_START, gap_addr.addr, 6);
 #endif
 
-    err_code = sd_ble_gap_address_set(&gap_addr);
+    err_code = sd_ble_gap_addr_set(&gap_addr);
     APP_ERROR_CHECK(err_code);
 }
 
@@ -515,9 +504,9 @@ void __attribute__((weak)) ble_stack_init(void) {
     APP_ERROR_CHECK(err_code);
 
     // Register a handler for BLE events.
-    NRF_SDH_BLE_OBSERVER(m_ble_observer, APP_BLE_OBSERVER_PRIO, ble_evt_handler, NULL);
+    NRF_SDH_BLE_OBSERVER(m_ble_observer, APP_BLE_OBSERVER_PRIO, on_ble_evt, NULL);
 
-    // And set the MAC address in the init phase
+    // And set the address in the init phase
     ble_address_set();
 }
 
@@ -526,7 +515,6 @@ void __attribute__((weak)) gap_params_init(void) {
     uint32_t                err_code;
     ble_gap_conn_params_t   gap_conn_params;
     ble_gap_conn_sec_mode_t sec_mode;
-    uint8_t                 device_name[] = APP_DEVICE_NAME;
 
     // Full strength signal
     #define TX_POWER_0DBM 0
@@ -544,8 +532,8 @@ void __attribute__((weak)) gap_params_init(void) {
     // Connection parameters
     memset(&gap_conn_params, 0, sizeof(gap_conn_params));
 
-    gap_conn_params.min_conn_interval = ble_config->min_conn_interval
-    gap_conn_params.max_conn_interval = ble_config->max_conn_interval
+    gap_conn_params.min_conn_interval = ble_config->min_conn_interval;
+    gap_conn_params.max_conn_interval = ble_config->max_conn_interval;
     gap_conn_params.slave_latency     = SLAVE_LATENCY;
     gap_conn_params.conn_sup_timeout  = CONN_SUP_TIMEOUT;
 
@@ -612,22 +600,18 @@ void __attribute__((weak)) advertising_init(void) {
     // Define Event handler
     init.evt_handler = m_advertising.evt_handler;
 
+    // Setup advertisement settings for future resets (see advertisement_start)
+    memset(&m_advertising.adv_params, 0, sizeof(m_advertising.adv_params));
+    m_advertising.adv_params.interval        = ble_config->adv_interval;
+    m_advertising.adv_params.duration        = APP_ADV_TIMEOUT_IN_SECONDS; // 0 : Never time out
+    m_advertising.adv_params.properties.type = BLE_GAP_ADV_TYPE_NONCONNECTABLE_SCANNABLE_UNDIRECTED;
+    m_advertising.adv_params.p_peer_addr     = NULL; // Undirected advertisement
+    m_advertising.adv_params.filter_policy   = BLE_GAP_ADV_FP_ANY;
+
     err_code = ble_advertising_init(&m_advertising, &init);
     APP_ERROR_CHECK(err_code);
 
     ble_advertising_conn_cfg_tag_set(&m_advertising, APP_BLE_CONN_CFG_TAG);
-
-    // Setup advertisement settings for future resets (see advertisement_start)
-    memset(&m_adv_params, 0, sizeof(m_adv_params));
-    m_adv_params.interval        = ble_config->adv_interval;
-    m_adv_params.duration        = APP_ADV_TIMEOUT_IN_SECONDS; // 0 : Never time out
-    m_adv_params.properties.type = BLE_GAP_ADV_TYPE_NONCONNECTABLE_SCANNABLE_UNDIRECTED;
-    m_adv_params.p_peer_addr     = NULL; // Undirected advertisement
-    m_adv_params.filter_policy   = BLE_GAP_ADV_FP_ANY;
-    m_adv_params.properties.include_tx_power = true;
-
-    err_code = sd_ble_gap_adv_set_configure(&m_advertising.adv_handle, &init.advdata, &m_adv_params);
-    APP_ERROR_CHECK(err_code);
 }
 
 void __attribute__((weak)) conn_params_init(void) {
@@ -1065,14 +1049,8 @@ uint32_t simple_ble_stack_char_set(simple_ble_char_t* char_handle, uint16_t len,
  *   EDDYSTONE
  ******************************************************************************/
 
-void simple_ble_es_adv(const char* url_str, const ble_advdata_t* scan_response_data) {
+void simple_ble_es_adv(const char* url_str, const ble_advdata_t* scan_rsp_data) {
     uint32_t err_code;
-
-    // These have been moved into this function to fix a bleeding-edge
-    // issue with compiling this for Tock. They should be moved back to global
-    // static at some point.
-    ble_uuid_t PHYSWEB_SERVICE_UUID[] = {{PHYSWEB_SERVICE_ID, BLE_UUID_TYPE_BLE}};
-    ble_advdata_uuid_list_t PHYSWEB_SERVICE_LIST = {1, PHYSWEB_SERVICE_UUID};
 
     // Physical Web data
     const uint8_t header_len = 3;
@@ -1080,7 +1058,7 @@ void simple_ble_es_adv(const char* url_str, const ble_advdata_t* scan_response_d
     uint8_t m_url_frame[url_frame_length];
     m_url_frame[0] = PHYSWEB_URL_TYPE;
     m_url_frame[1] = PHYSWEB_TX_POWER;
-    m_url_frame[2] = PHYSWEB_URLSCHEME_HTTP;
+    m_url_frame[2] = PHYSWEB_URLSCHEME_HTTPS;
     for (uint8_t i=0; i<strlen((char*)url_str); i++) {
         m_url_frame[i + header_len] = url_str[i];
     }
@@ -1090,20 +1068,28 @@ void simple_ble_es_adv(const char* url_str, const ble_advdata_t* scan_response_d
 
     // Physical web service
     ble_advdata_service_data_t service_data;
-    service_data.service_uuid   = PHYSWEB_SERVICE_ID;
-    service_data.data.p_data    = m_url_frame;
-    service_data.data.size      = url_frame_length;
+    service_data.service_uuid = PHYSWEB_SERVICE_ID;
+    service_data.data.p_data  = m_url_frame;
+    service_data.data.size    = url_frame_length;
 
     // Build and set advertising data
     ble_advdata_t advdata;
     memset(&advdata, 0, sizeof(advdata));
-    advdata.flags                   = BLE_GAP_ADV_FLAGS_LE_ONLY_GENERAL_DISC_MODE;
-    advdata.p_service_data_array    = &service_data;
-    advdata.service_data_count      = 1;
-    advdata.uuids_complete          = PHYSWEB_SERVICE_LIST;
+    advdata.include_appearance   = false;
+    advdata.flags                = BLE_GAP_ADV_FLAGS_LE_ONLY_GENERAL_DISC_MODE;
+    advdata.p_service_data_array = &service_data;
+    advdata.service_data_count   = 1;
+    advdata.uuids_complete       = PHYSWEB_SERVICE_LIST;
 
-    // Actually set advertisement data
-    err_code = ble_advdata_set(&advdata, scan_response_data);
+    // Set advertisement data
+    err_code = ble_advdata_encode(&advdata, m_advertising.adv_data.adv_data.p_data, &m_advertising.adv_data.adv_data.len);
+    APP_ERROR_CHECK(err_code);
+
+    // Set scan response data
+    err_code = ble_advdata_encode(scan_rsp_data, m_advertising.adv_data.scan_rsp_data.p_data, &m_advertising.adv_data.scan_rsp_data.len);
+    APP_ERROR_CHECK(err_code);
+
+    err_code = sd_ble_gap_adv_set_configure(&m_advertising.adv_handle, &m_advertising.adv_data, &m_advertising.adv_params);
     APP_ERROR_CHECK(err_code);
 
     // Start the advertisement
