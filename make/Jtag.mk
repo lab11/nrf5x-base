@@ -33,7 +33,12 @@ endif
 SOFTDEVICE_TEST_ADDR = 0x3000
 SOFTDEVICE_TEST_LEN = 0x10
 
-TERMINAL ?= x-terminal-emulator
+UNAME_S := $(shell uname -s)
+ifeq ($(UNAME_S),Darwin)
+    TERMINAL ?= xterm
+else
+    TERMINAL ?= x-terminal-emulator
+endif
 
 # ---- ID FLASH LOCATION
 ifdef ID
@@ -91,6 +96,18 @@ erase: $(BUILDDIR)
 
 .PHONY: gdb
 gdb:
+ifeq ($(UNAME_S),Darwin)
+	$(Q)$(TERMINAL) -e "$(JLINK_GDBSERVER) $(JLINK_FLAGS) $(JLINK_GDBSERVER_FLAGS)" &
+	$(Q)sleep 1
+	$(Q)printf "target remote localhost:$(GDB_PORT_NUMBER)\nload\nmon reset\nbreak main\ncontinue\n" > .gdbinit
+ifneq ("$(wildcard $(DEBUG_ELF))","")
+	$(Q)$(TERMINAL) -e "$(GDB) -x .gdbinit $(DEBUG_ELF)" &
+else ifneq ("$(wildcard $(ELF))","")
+	$(Q)$(TERMINAL) -e "$(GDB) -x .gdbinit $(ELF)" &
+else
+	$(Q)$(TERMINAL) -e "$(GDB) -x .gdbinit" &
+endif
+else
 	$(Q)$(TERMINAL) -e "$(JLINK_GDBSERVER) $(JLINK_FLAGS) $(JLINK_GDBSERVER_FLAGS)"
 	$(Q)sleep 1
 	$(Q)printf "target remote localhost:$(GDB_PORT_NUMBER)\nload\nmon reset\nbreak main\ncontinue\n" > .gdbinit
@@ -101,12 +118,19 @@ else ifneq ("$(wildcard $(ELF))","")
 else
 	$(Q)$(TERMINAL) -e "$(GDB) -x .gdbinit"
 endif
+endif
 
 .PHONY: rtt
 rtt:
+ifeq ($(UNAME_S),Darwin)
+	$(Q)$(TERMINAL) -e "$(JLINK) $(JLINK_FLAGS) -AutoConnect 1" &
+	$(Q)sleep 1
+	$(Q)$(TERMINAL) -e "$(JLINK_RTTCLIENT)" &
+else
 	$(Q)$(TERMINAL) -e "$(JLINK) $(JLINK_FLAGS) -AutoConnect 1"
 	$(Q)sleep 1
 	$(Q)$(TERMINAL) -e "$(JLINK_RTTCLIENT)"
+endif
 
 .PHONY: clean
 clean::
