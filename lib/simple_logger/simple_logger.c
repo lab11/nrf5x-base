@@ -110,13 +110,24 @@ uint8_t simple_logger_init(const char *filename, const char *permissions) {
 	file = filename;
 
 	// We must have not timed out and a card is available
-	if((permissions[0] != 'w' && permissions[0] != 'a') || permissions[1] != '\0') {
+	if((permissions[0] != 'w'  && permissions[0] != 'a') ||
+	   (permissions[1] != '\0' && permissions[2] != 'r') ) {
 		// We didn't set the right permissions
 		return SIMPLE_LOGGER_BAD_PERMISSIONS;
-	} else if(permissions[0] == 'w') {
+	}
+
+	// Set write/append permissions
+	if(permissions[0] == 'w') {
 		simple_logger_opts = (FA_WRITE | FA_CREATE_ALWAYS);
-	} else {
+	} else if (permissions[0] == 'a'){
 		simple_logger_opts = (FA_WRITE | FA_OPEN_ALWAYS);
+	} else {
+		return SIMPLE_LOGGER_BAD_PERMISSIONS;
+	}
+
+	// Set read permission
+	if (permissions[1] == ',' && permissions[2] == 'r') {
+		simple_logger_opts |= FA_READ;
 	}
 
 	uint8_t err_code = logger_init();
@@ -227,6 +238,9 @@ uint8_t simple_logger_log_header(const char *format, ...) {
 // Log data
 uint8_t simple_logger_log(const char *format, ...) {
 
+	// ATTENTION: Make sure all strings are <= 255 bytes; the nRF SPI implementation does not allow longer transaction
+	// Note: This is due to the underlying DMA being restricted to 255 bytes; for more information, see https://devzone.nordicsemi.com/f/nordic-q-a/16580/send-more-than-255-bytes-by-spi-nrf52
+
 	va_list argptr;
 	va_start(argptr, format);
 	vsnprintf(buffer, buffer_size, format, argptr);
@@ -249,21 +263,28 @@ uint8_t simple_logger_log(const char *format, ...) {
 }
 
 // Read data
-uint8_t simple_logger_read(const uint8_t* buf, uint16_t buf_len) {
+uint8_t simple_logger_read(const uint8_t* buf, uint8_t buf_len) {
 
     // Buffer should be cleared before calling this function
 	UINT read_len = 0;
 
 	// Set read/write pointer back by amount we want to read
-	simple_logger_fpointer.fptr -= buf_len;
-
-	// Read string
-	f_read(&simple_logger_fpointer, buf, buf_len, &read_len);
-	FRESULT res = f_sync(&simple_logger_fpointer);
+	FRESULT res = f_lseek(&simple_logger_fpointer, f_size(&simple_logger_fpointer) - buf_len);
 
 	if(res != FR_OK) {
+		printf("ERROR: Failed reverting R/W pointer: %i\n", res);
+		error();
+	}
 
-		printf("ERROR: Failed reading from SD card");
+	// Read string
+	res = f_read(&simple_logger_fpointer, buf, buf_len, &read_len);
+
+	if (read_len != buf_len) {
+		printf("ERROR: Should have read %i bytes, but only read %i\n", buf_len, read_len);
+	}
+
+	if(res != FR_OK) {
+		printf("ERROR: Failed reading from SD card: %i\n", res);
 		error();
 	}
 
