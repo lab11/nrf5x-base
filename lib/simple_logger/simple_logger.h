@@ -48,5 +48,6 @@ uint8_t simple_logger_log(const char *format, ...)
 		__attribute__ ((format (printf, 1, 2)));
 uint8_t simple_logger_log_header(const char *format, ...)
 		__attribute__ ((format (printf, 1, 2)));
+uint8_t simple_logger_read(const uint8_t* buf, uint16_t buf_len);
 
 #endif

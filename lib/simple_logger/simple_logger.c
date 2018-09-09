@@ -248,4 +248,28 @@ uint8_t simple_logger_log(const char *format, ...) {
 	return res;
 }
 
+// Read data
+uint8_t simple_logger_read(const uint8_t* buf, uint16_t buf_len) {
+
+    // Buffer should be cleared before calling this function
+	UINT read_len = 0;
+
+	// Set read/write pointer back by amount we want to read
+	simple_logger_fpointer.fptr -= buf_len;
+
+	// Read string
+	f_read(&simple_logger_fpointer, buf, buf_len, &read_len);
+	FRESULT res = f_sync(&simple_logger_fpointer);
+
+	if(res != FR_OK) {
+
+		printf("ERROR: Failed reading from SD card");
+		error();
+	}
+
+	// File pointer must be at EOF again; should be correct
+
+	return res;
+}
+
 
