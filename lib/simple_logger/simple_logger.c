@@ -263,7 +263,7 @@ uint8_t simple_logger_log(const char *format, ...) {
 }
 
 // Read data
-uint8_t simple_logger_read(const uint8_t* buf, uint8_t buf_len) {
+uint8_t simple_logger_read(uint8_t* buf, uint8_t buf_len) {
 
     // Buffer should be cleared before calling this function
 	UINT read_len = 0;
@@ -277,7 +277,7 @@ uint8_t simple_logger_read(const uint8_t* buf, uint8_t buf_len) {
 	}
 
 	// Read string
-	res = f_read(&simple_logger_fpointer, buf, buf_len, &read_len);
+	res = f_read(&simple_logger_fpointer, (void*)buf, buf_len, &read_len);
 
 	if (read_len != buf_len) {
 		printf("ERROR: Should have read %i bytes, but only read %i\n", buf_len, read_len);
