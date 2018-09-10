@@ -3,4 +3,4 @@
 	url = https://github.com/openthread/openthread.git
 [submodule "lib/ntpclient"]
 	path = lib/ntpclient
-	url = https://github.com/lab11/ntpclient.git
+	url = https://github.com/vrtsystems/ntpclient.git
