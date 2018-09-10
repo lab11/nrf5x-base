@@ -1,5 +1,11 @@
 #pragma once
 
+#include <stdbool.h>
+#include <stdint.h>
+
+#include <openthread/openthread.h>
+#include <openthread/platform/platform.h>
+
 typedef struct {
   uint8_t   channel;
   uint16_t  panid;

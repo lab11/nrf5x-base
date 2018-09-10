@@ -1,9 +1,6 @@
 #include "nrf_log.h"
 #include "nrf_timer.h"
 
-#include <openthread/openthread.h>
-#include <openthread/platform/platform.h>
-
 #include "simple_thread.h"
 
 static otInstance * m_ot_instance;
