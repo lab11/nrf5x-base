@@ -35,7 +35,7 @@ SOFTDEVICE_TEST_LEN = 0x10
 
 UNAME_S := $(shell uname -s)
 ifeq ($(UNAME_S),Darwin)
-    TERMINAL ?= xterm
+    TERMINAL ?= osascript -e 'tell application "Terminal" to do script
 else
     TERMINAL ?= x-terminal-emulator
 endif
@@ -97,15 +97,15 @@ erase: $(BUILDDIR)
 .PHONY: gdb
 gdb:
 ifeq ($(UNAME_S),Darwin)
-	$(Q)$(TERMINAL) -e "$(JLINK_GDBSERVER) $(JLINK_FLAGS) $(JLINK_GDBSERVER_FLAGS)" &
+	$(Q)$(TERMINAL) "$(JLINK_GDBSERVER) $(JLINK_FLAGS) $(JLINK_GDBSERVER_FLAGS)"'
 	$(Q)sleep 1
 	$(Q)printf "target remote localhost:$(GDB_PORT_NUMBER)\nload\nmon reset\nbreak main\ncontinue\n" > .gdbinit
 ifneq ("$(wildcard $(DEBUG_ELF))","")
-	$(Q)$(TERMINAL) -e "$(GDB) -x .gdbinit $(DEBUG_ELF)" &
+	$(Q)$(TERMINAL) "$(GDB) -x .gdbinit $(DEBUG_ELF)"'
 else ifneq ("$(wildcard $(ELF))","")
-	$(Q)$(TERMINAL) -e "$(GDB) -x .gdbinit $(ELF)" &
+	$(Q)$(TERMINAL) "$(GDB) -x .gdbinit $(ELF)"'
 else
-	$(Q)$(TERMINAL) -e "$(GDB) -x .gdbinit" &
+	$(Q)$(TERMINAL) "$(GDB) -x .gdbinit"'
 endif
 else
 	$(Q)$(TERMINAL) -e "$(JLINK_GDBSERVER) $(JLINK_FLAGS) $(JLINK_GDBSERVER_FLAGS)"
@@ -123,9 +123,9 @@ endif
 .PHONY: rtt
 rtt:
 ifeq ($(UNAME_S),Darwin)
-	$(Q)$(TERMINAL) -e "$(JLINK) $(JLINK_FLAGS) -AutoConnect 1" &
+	$(Q)$(TERMINAL) "$(JLINK) $(JLINK_FLAGS) -AutoConnect 1"'
 	$(Q)sleep 1
-	$(Q)$(TERMINAL) -e "$(JLINK_RTTCLIENT)" &
+	$(Q)$(TERMINAL) "$(JLINK_RTTCLIENT)"'
 else
 	$(Q)$(TERMINAL) -e "$(JLINK) $(JLINK_FLAGS) -AutoConnect 1"
 	$(Q)sleep 1
