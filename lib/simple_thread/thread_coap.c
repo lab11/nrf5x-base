@@ -1,6 +1,7 @@
 #include "nrf_log.h"
 
 #include "thread_coap.h"
+#include "app_error.h"
 
 static const otIp6Address m_unspecified_ipv6 =
 {
@@ -54,6 +55,8 @@ void thread_coap_send(otInstance* instance, otCoapCode req, otCoapType type, con
         if (message == NULL)
         {
             NRF_LOG_INFO("Failed to allocate message for CoAP Request\r\n");
+            // Force an app error and subsequent reset - this shouldn't happen!
+            APP_ERROR_CHECK_BOOL(message != NULL);
             break;
         }
 
@@ -80,4 +83,5 @@ void thread_coap_send(otInstance* instance, otCoapCode req, otCoapType type, con
         NRF_LOG_INFO("Failed to send CoAP Request: %d\r\n", error);
         otMessageFree(message);
     }
+
 }

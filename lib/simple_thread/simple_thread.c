@@ -34,7 +34,7 @@ void __attribute__((weak)) thread_init(const thread_config_t* config)
 {
     otError error;
 
-    PlatformInit(0, NULL);
+    otSysInit(0, NULL);
 
     m_ot_instance = otInstanceInitSingle();
     ASSERT(m_ot_instance != NULL);
@@ -130,7 +130,7 @@ void __attribute__((weak)) thread_process(void)
 {
     ASSERT(m_ot_instance != NULL);
     otTaskletsProcess(m_ot_instance);
-    PlatformProcessDrivers(m_ot_instance);
+    otSysProcessDrivers(m_ot_instance);
 }
 
 otInstance * thread_get_instance(void) {

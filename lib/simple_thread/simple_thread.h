@@ -5,6 +5,8 @@
 
 #include <openthread/openthread.h>
 #include <openthread/platform/platform.h>
+#include <openthread/tasklet.h>
+#include "openthread/platform/openthread-system.h"
 
 typedef struct {
   uint8_t   channel;
