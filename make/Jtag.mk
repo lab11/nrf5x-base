@@ -17,7 +17,7 @@ JLINK_RTTCLIENT = JLinkRTTClient
 GDB_PORT_NUMBER ?= 2331
 
 # Configuration flags for JTAG tools
-JLINK_FLAGS = -device $(FULL_IC) -if swd -speed 1000
+JLINK_FLAGS = -device $(FULL_IC) -if swd -speed 4000
 JLINK_GDBSERVER_FLAGS = -port $(GDB_PORT_NUMBER)
 
 # Allow users to select a specific JTAG device with a variable
