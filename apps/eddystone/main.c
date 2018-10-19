@@ -4,7 +4,7 @@
  */
 
 // Global libraries
-#include <stdint.h>
+//#include <stdint.h>
 
 // Nordic libraries
 #include "ble_advdata.h"
@@ -14,8 +14,8 @@
 #include "eddystone.h"
 
 // Define constants about this beacon.
-#define DEVICE_NAME "nRFtest"
-#define PHYSWEB_URL "goo.gl/83C7Ho"
+#define DEVICE_NAME "test"
+#define PHYSWEB_URL "j2x.us/12345"
 
 // Intervals for advertising and connections
 static simple_ble_config_t ble_config = {
@@ -35,7 +35,7 @@ int main(void) {
     simple_ble_init(&ble_config);
 
     // Advertise a URL
-    eddystone_adv(PHYSWEB_URL, NULL);
+    eddystone_with_name(PHYSWEB_URL);
 
     while (1) {
         power_manage();
