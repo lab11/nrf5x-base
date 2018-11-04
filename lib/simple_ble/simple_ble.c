@@ -66,6 +66,13 @@ simple_ble_app_t app;
 static ble_uuid_t PHYSWEB_SERVICE_UUID[] = {{PHYSWEB_SERVICE_ID, BLE_UUID_TYPE_BLE}};
 static const ble_advdata_uuid_list_t PHYSWEB_SERVICE_LIST = {1, PHYSWEB_SERVICE_UUID};
 
+// Buffer for scan data
+static uint8_t scan_buffer[BLE_GAP_SCAN_BUFFER_MAX];
+static ble_data_t m_scan_buffer = {
+    .p_data = scan_buffer,
+    .len = BLE_GAP_SCAN_BUFFER_MAX,
+};
+
 // Module instances
 // ATTENTION: Those also instanciate event handlers for BLE and SYS events
 NRF_BLE_GATT_DEF(m_gatt);                                                       /**< GATT module instance. */
@@ -348,6 +355,10 @@ static void on_ble_evt(ble_evt_t const * p_ble_evt, void * p_context) {
             if (ble_evt_adv_report) {
                 ble_evt_adv_report(p_ble_evt);
             }
+
+            // continue scanning
+            err_code = sd_ble_gap_scan_start(NULL, &m_scan_buffer);
+            APP_ERROR_CHECK(err_code);
             break;
         }
         case BLE_GAP_EVT_PHY_UPDATE_REQUEST: {
@@ -390,32 +401,38 @@ void __attribute__((weak)) ble_address_set(void) {
     uint8_t new_ble_addr[6] = {0x00, 0x00, ble_config->platform_id, 0xe5, 0x98, 0xc0};
     memcpy(gap_addr.addr, new_ble_addr, 6);
 
+    if (ble_config->device_id != DEVICE_ID_DEFAULT) {
+        new_ble_addr[0] = ble_config->device_id & 0xFF;
+        new_ble_addr[1] = (ble_config->device_id >> 8) & 0xFF;
+        memcpy(gap_addr.addr, new_ble_addr, sizeof(gap_addr.addr));
+    } else {
+
     // get BLE address from Flash
 #ifdef BLE_FLASH_ADDRESS
-    uint8_t* _ble_address = (uint8_t*)BLE_FLASH_ADDRESS;
-    if (_ble_address[1] == 0xFF && _ble_address[0] == 0xFF) {
-        // No user-defined address stored in flash
+        uint8_t* _ble_address = (uint8_t*)BLE_FLASH_ADDRESS;
+        if (_ble_address[1] == 0xFF && _ble_address[0] == 0xFF) {
+            // No user-defined address stored in flash
 
-        // Check if we should use the Nordic assigned random value for the
-        // lower two bytes or use a user configured value.
-        if (ble_config->device_id != DEVICE_ID_DEFAULT) {
-            new_ble_addr[0] = ble_config->device_id & 0xFF;
-            new_ble_addr[1] = (ble_config->device_id >> 8) & 0xFF;
-            memcpy(gap_addr.addr, new_ble_addr, sizeof(gap_addr.addr));
+            // Check if we should use the Nordic assigned random value for the
+            // lower two bytes or use a user configured value.
+            if (ble_config->device_id != DEVICE_ID_DEFAULT) {
+                new_ble_addr[0] = ble_config->device_id & 0xFF;
+                new_ble_addr[1] = (ble_config->device_id >> 8) & 0xFF;
+                memcpy(gap_addr.addr, new_ble_addr, sizeof(gap_addr.addr));
 
+            } else {
+                // Set the new BLE address with the Michigan OUI, Platform ID, and
+                //  bottom two octets from the original gap address
+                // Get the current original address
+                sd_ble_gap_addr_get(&gap_addr);
+                memcpy(gap_addr.addr+2, new_ble_addr+2, sizeof(gap_addr.addr)-2);
+            }
         } else {
-            // Set the new BLE address with the Michigan OUI, Platform ID, and
-            //  bottom two octets from the original gap address
-            // Get the current original address
-            sd_ble_gap_addr_get(&gap_addr);
-            memcpy(gap_addr.addr+2, new_ble_addr+2, sizeof(gap_addr.addr)-2);
-        }
-    } else {
-        // User-defined address stored in flash
+            // User-defined address stored in flash
 
-        // Set the new BLE address with the user-defined address
-        memcpy(gap_addr.addr, _ble_address, 6);
-    }
+            // Set the new BLE address with the user-defined address
+            memcpy(gap_addr.addr, _ble_address, 6);
+        }
 #endif
 
 // If defined either over command line, in makefile or directly in ble_config.h
@@ -424,20 +441,21 @@ void __attribute__((weak)) ble_address_set(void) {
 #define ID_STR(ID) #ID
 #define BLE_ADDRESS_LENGTH 6
 
-    const char ble_address_string[] = XID_STR(BLE_ADDRESS);
-    for (int i=0; i < BLE_ADDRESS_LENGTH; i++) {
-        // For each 8bits, read the string and convert it from hex to a long; store it in LSB-first order
-        ble_address[(BLE_ADDRESS_LENGTH-1) - i] = (uint8_t)strtoul(&ble_address_string[3*i], NULL, 16);
-    }
+        const char ble_address_string[] = XID_STR(BLE_ADDRESS);
+        for (int i=0; i < BLE_ADDRESS_LENGTH; i++) {
+            // For each 8bits, read the string and convert it from hex to a long; store it in LSB-first order
+            ble_address[(BLE_ADDRESS_LENGTH-1) - i] = (uint8_t)strtoul(&ble_address_string[3*i], NULL, 16);
+        }
 
-    printf("Bluetooth address: %02x:%02x:%02x:%02x:%02x:%02x\n", ble_address[5], ble_address[4], ble_address[3], ble_address[2], ble_address[1], ble_address[0]);
-    memcpy(gap_addr.addr, ble_address, BLE_ADDRESS_LENGTH);
+        printf("Bluetooth address: %02x:%02x:%02x:%02x:%02x:%02x\n", ble_address[5], ble_address[4], ble_address[3], ble_address[2], ble_address[1], ble_address[0]);
+        memcpy(gap_addr.addr, ble_address, BLE_ADDRESS_LENGTH);
 #endif
 
 #ifdef ENABLE_DFU
-    // Write ble address to memory to share with bootloader
-    memcpy((uint8_t*)BOOTLOADER_BLE_ADDR_START, gap_addr.addr, 6);
+        // Write ble address to memory to share with bootloader
+        memcpy((uint8_t*)BOOTLOADER_BLE_ADDR_START, gap_addr.addr, 6);
 #endif
+    }
 
     err_code = sd_ble_gap_addr_set(&gap_addr);
     APP_ERROR_CHECK(err_code);
@@ -701,6 +719,20 @@ void __attribute__((weak)) advertising_stop(void) {
         // Ignore Invalid State responses. Occurs when stop is called although advertising is not running
         APP_ERROR_CHECK(err_code);
     }
+}
+
+void __attribute__((weak)) scanning_start(void) {
+    static ble_gap_scan_params_t m_scan_params = {
+        .active            = false, // passive scanning (no scan response)
+        .interval          = MSEC_TO_UNITS(100, UNIT_0_625_MS), // interval 100 ms
+        .window            = MSEC_TO_UNITS(100, UNIT_0_625_MS), // window 100 ms
+        .timeout           = BLE_GAP_SCAN_TIMEOUT_UNLIMITED,
+        .scan_phys         = BLE_GAP_PHY_1MBPS,
+        .filter_policy     = BLE_GAP_SCAN_FP_ACCEPT_ALL,
+    };
+
+    ret_code_t err_code = sd_ble_gap_scan_start(&m_scan_params, &m_scan_buffer);
+    APP_ERROR_CHECK(err_code);
 }
 
 void __attribute__((weak)) power_manage(void) {
@@ -1044,6 +1076,45 @@ uint32_t simple_ble_stack_char_set(simple_ble_char_t* char_handle, uint16_t len,
     };
     return sd_ble_gatts_value_set(app.conn_handle, char_handle->char_handle.value_handle, &value);
 }
+
+
+/*******************************************************************************
+ *   Advertising
+ ******************************************************************************/
+
+void simple_ble_set_adv(ble_advdata_t* adv_data, ble_advdata_t* scan_rsp_data) {
+    uint32_t err_code;
+
+    // stop advertising. We must do this before changing the advertisement data
+    advertising_stop();
+
+    // encode advertisement data
+    if (adv_data != NULL) {
+        m_advertising.adv_data.adv_data.p_data = m_advertising.enc_advdata;
+        m_advertising.adv_data.adv_data.len = BLE_GAP_ADV_SET_DATA_SIZE_MAX;
+        err_code = ble_advdata_encode(adv_data, m_advertising.adv_data.adv_data.p_data, &m_advertising.adv_data.adv_data.len);
+        APP_ERROR_CHECK(err_code);
+    }
+
+    // encode scan response data
+    if (scan_rsp_data != NULL) {
+        m_advertising.adv_data.scan_rsp_data.p_data = m_advertising.enc_scan_rsp_data;
+        m_advertising.adv_data.scan_rsp_data.len = BLE_GAP_ADV_SET_DATA_SIZE_MAX;
+        err_code = ble_advdata_encode(scan_rsp_data, m_advertising.adv_data.scan_rsp_data.p_data, &m_advertising.adv_data.scan_rsp_data.len);
+        APP_ERROR_CHECK(err_code);
+    } else {
+        m_advertising.adv_data.scan_rsp_data.p_data = NULL;
+        m_advertising.adv_data.scan_rsp_data.len = 0;
+    }
+
+    // actually set advertisement
+    err_code = sd_ble_gap_adv_set_configure(&m_advertising.adv_handle, &m_advertising.adv_data, &m_advertising.adv_params);
+    APP_ERROR_CHECK(err_code);
+
+    // Start the advertisement
+    advertising_start();
+}
+
 
 /*******************************************************************************
  *   EDDYSTONE
