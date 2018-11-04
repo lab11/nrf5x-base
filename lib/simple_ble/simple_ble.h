@@ -65,6 +65,7 @@ void dfu_reset_prepare (void);
 void initialize_app_timer(void);
 void advertising_start(void);
 void advertising_stop(void);
+void scanning_start(void);
 void power_manage(void);
 
 // Call to initialize
@@ -169,6 +170,14 @@ extern const int FIRST_CONN_PARAMS_UPDATE_DELAY;      // APP_TIMER_TICKS(5000)  
 // Priority of the application BLE event handler.
 #define APP_BLE_OBSERVER_PRIO               3
 #define APP_BLE_CONN_CFG_TAG                1                                           /**< A tag identifying the SoftDevice BLE configuration. */
+
+
+/*******************************************************************************
+ *   Advertising
+ ******************************************************************************/
+
+// Functions
+void simple_ble_set_adv(ble_advdata_t* adv_data, ble_advdata_t* scan_rsp_data);
 
 
 /*******************************************************************************
