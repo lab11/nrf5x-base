@@ -116,15 +116,9 @@ extern const int FIRST_CONN_PARAMS_UPDATE_DELAY;      // APP_TIMER_TICKS(5000)  
  *   DEFINES
  ******************************************************************************/
 
-#ifndef DEVICE_NAME
-#define DEVICE_NAME "LAB11"
-#warning "DEVICE_NAME not specified! Using default: LAB11"
-#endif
-
 #define APP_COMPANY_IDENTIFIER          0x02E0
 #define APP_SERVICE_ID                  0x0022
 #define MANUFACTURER_NAME 				"Lab11"
-#define MODEL_NUMBER 					DEVICE_NAME
 #define HARDWARE_REVISION 				"A"
 #define FIRMWARE_REVISION 				"0.1"
 
@@ -155,8 +149,6 @@ extern const int FIRST_CONN_PARAMS_UPDATE_DELAY;      // APP_TIMER_TICKS(5000)  
 
 
 // BLE CONFIGS
-#define APP_DEVICE_NAME                     DEVICE_NAME                                 //!< Advertised device name in the scan response when in connectable mode.
-
 #define CENTRAL_LINK_COUNT                  0                                           //!< Number of central links used by the application. When changing this number, remember to adjust the RAM settings.
 #define PERIPHERAL_LINK_COUNT               1                                           //!< Number of peripheral links used by the application. When changing this number, remember to adjust the RAM settings.
 
