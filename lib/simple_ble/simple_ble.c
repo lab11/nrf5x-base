@@ -98,8 +98,6 @@ static bool pending_dfu = 0;
  *   FUNCTION PROTOTYPES
  ******************************************************************************/
 static void conn_params_error_handler(uint32_t nrf_error);
-static void ble_evt_dispatch(ble_evt_t * p_ble_evt);
-static void sys_evt_dispatch(uint32_t sys_evt);
 static void on_conn_params_evt(ble_conn_params_evt_t * p_evt);
 static void on_ble_evt(ble_evt_t const * p_ble_evt, void * p_context);
 #ifdef ENABLE_DFU
@@ -167,20 +165,6 @@ void assert_nrf_callback(uint16_t line_num, const uint8_t * p_file_name) {
 
 static void conn_params_error_handler(uint32_t nrf_error) {
     APP_ERROR_HANDLER(nrf_error);
-}
-
-static void ble_evt_dispatch(ble_evt_t * p_ble_evt) {
-
-    on_ble_evt(p_ble_evt, NULL);
-    ble_advertising_on_ble_evt(p_ble_evt, &m_advertising);
-
-    // Call ble_our_service_on_ble_evt() to do housekeeping of ble connections related to our service and characteristic
-    // ble_our_service_on_ble_evt(&m_our_service, p_ble_evt);
-}
-
-static void sys_evt_dispatch(__attribute__ ((unused)) uint32_t sys_evt) {
-
-    ble_advertising_on_sys_evt(sys_evt, &m_advertising);
 }
 
 // Can also simply use "cp_init.disconnect_on_fail = true;
