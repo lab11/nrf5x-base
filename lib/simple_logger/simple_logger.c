@@ -26,9 +26,10 @@ static char header_buffer[SIMPLE_LOGGER_BUFFER_SIZE];
 static uint32_t buffer_size = SIMPLE_LOGGER_BUFFER_SIZE;
 
 
-static FIL 		simple_logger_fpointer;
-static FATFS 	simple_logger_fs;
+static FIL 		simple_logger_fpointer;	/* File object */
+static FATFS 	simple_logger_fs;		/* Filesystem object */
 static uint8_t 	simple_logger_opts;
+static BYTE		work[FF_MAX_SS];		/* Work area (larger is better for processing time) */
 
 extern void disk_timerproc(void);
 extern void disk_restart(void);
@@ -151,7 +152,7 @@ static uint8_t logger_init() {
 			}
 			case FR_NO_FILESYSTEM: {
 				// No existing file system
-				res = f_mkfs("", !_MULTI_PARTITION, _MAX_SS);
+				res = f_mkfs("", FM_ANY, 0, work, sizeof(work));
 
 				if (res != FR_OK) {
 					printf("Failed to make a new filesystem: %d\n", res);
