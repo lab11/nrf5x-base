@@ -246,7 +246,10 @@ uint8_t simple_logger_log(const char *format, ...) {
 	va_start(argptr, format);
 	vsnprintf(buffer, buffer_size, format, argptr);
 	va_end(argptr);
-	
+
+	// As we are power-gaiting, we need to initiate the logger again and mount the file-system
+	logger_init();
+
 	f_puts(buffer, &simple_logger_fpointer);
 	FRESULT res = f_sync(&simple_logger_fpointer);
 
