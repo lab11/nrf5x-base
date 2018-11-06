@@ -44,6 +44,7 @@ enum {
 uint8_t simple_logger_init(const char *filename, const char *permissions);
 uint8_t simple_logger_ready(void);
 void simple_logger_update();
+uint8_t simple_logger_power_on();
 uint8_t simple_logger_log(const char *format, ...)
 		__attribute__ ((format (printf, 1, 2)));
 uint8_t simple_logger_log_header(const char *format, ...)
