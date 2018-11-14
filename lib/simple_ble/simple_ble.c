@@ -9,21 +9,6 @@
 #include <string.h>
 
 // Nordic Libraries
-#include "sdk_common.h"
-#include "nordic_common.h"
-#include "nrf.h"
-#include "nrf_ble_es.h"
-#include "nrf_ble_gatt.h"
-#include "nrf_delay.h"
-#include "nrf_gpio.h"
-#include "nrf_log.h"
-#include "nrf_log_ctrl.h"
-#include "nrf_log_default_backends.h"
-#include "nrf_pwr_mgmt.h"
-#include "nrf_sdh.h"
-#include "nrf_sdh_ble.h"
-#include "nrf_sdh_soc.h"
-
 #include "app_error.h"
 #include "app_timer.h"
 #include "app_util.h"
@@ -35,6 +20,23 @@
 #include "ble_gatts.h"
 #include "ble_hci.h"
 #include "ble_srv_common.h"
+#include "fds.h"
+#include "nordic_common.h"
+#include "nrf.h"
+#include "nrf_ble_es.h"
+#include "nrf_ble_gatt.h"
+#include "nrf_ble_qwr.h"
+#include "nrf_delay.h"
+#include "nrf_gpio.h"
+#include "nrf_log.h"
+#include "nrf_log_ctrl.h"
+#include "nrf_log_default_backends.h"
+#include "nrf_pwr_mgmt.h"
+#include "nrf_sdh.h"
+#include "nrf_sdh_ble.h"
+#include "nrf_sdh_soc.h"
+#include "peer_manager.h"
+#include "sdk_common.h"
 
 // device firmware update code
 #ifdef ENABLE_DFU
@@ -76,6 +78,7 @@ static ble_data_t m_scan_buffer = {
 // Module instances
 // ATTENTION: Those also instanciate event handlers for BLE and SYS events
 NRF_BLE_GATT_DEF(m_gatt);                                                       /**< GATT module instance. */
+NRF_BLE_QWR_DEF(m_qwr);                                                         /**< Context for the Queued Write module.*/
 BLE_ADVERTISING_DEF(m_advertising);                                             /**< Advertising module instance. */
 
 // Configuration settings that can be redefined by application
@@ -97,9 +100,11 @@ static bool pending_dfu = 0;
 /*******************************************************************************
  *   FUNCTION PROTOTYPES
  ******************************************************************************/
+static void qwr_error_handler(uint32_t nrf_error);
 static void conn_params_error_handler(uint32_t nrf_error);
 static void on_conn_params_evt(ble_conn_params_evt_t * p_evt);
 static void on_ble_evt(ble_evt_t const * p_ble_evt, void * p_context);
+static void on_adv_evt(ble_adv_evt_t ble_adv_evt);
 #ifdef ENABLE_DFU
 static void dfu_reset();
 #endif
@@ -163,6 +168,10 @@ void assert_nrf_callback(uint16_t line_num, const uint8_t * p_file_name) {
     app_error_handler(0xDEADBEEF, line_num, p_file_name);
 }
 
+static void qwr_error_handler(uint32_t nrf_error) {
+    APP_ERROR_HANDLER(nrf_error);
+}
+
 static void conn_params_error_handler(uint32_t nrf_error) {
     APP_ERROR_HANDLER(nrf_error);
 }
@@ -197,6 +206,101 @@ static void interrupts_disable(void) {
 }
 #endif
 
+static void on_adv_evt(ble_adv_evt_t ble_adv_evt) {
+    // do nothing
+}
+
+static void on_pm_evt(pm_evt_t const* p_evt) {
+    ret_code_t err_code;
+
+    switch (p_evt->evt_id)
+    {
+        case PM_EVT_BONDED_PEER_CONNECTED:
+        {
+            NRF_LOG_INFO("Connected to a previously bonded device.");
+        } break;
+
+        case PM_EVT_CONN_SEC_SUCCEEDED:
+        {
+            NRF_LOG_INFO("Connection secured: role: %d, conn_handle: 0x%x, procedure: %d.",
+                         ble_conn_state_role(p_evt->conn_handle),
+                         p_evt->conn_handle,
+                         p_evt->params.conn_sec_succeeded.procedure);
+        } break;
+
+        case PM_EVT_CONN_SEC_FAILED:
+        {
+            /* Often, when securing fails, it shouldn't be restarted, for security reasons.
+             * Other times, it can be restarted directly.
+             * Sometimes it can be restarted, but only after changing some Security Parameters.
+             * Sometimes, it cannot be restarted until the link is disconnected and reconnected.
+             * Sometimes it is impossible, to secure the link, or the peer device does not support it.
+             * How to handle this error is highly application dependent. */
+        } break;
+
+        case PM_EVT_CONN_SEC_CONFIG_REQ:
+        {
+            // Reject pairing request from an already bonded peer.
+            pm_conn_sec_config_t conn_sec_config = {.allow_repairing = false};
+            pm_conn_sec_config_reply(p_evt->conn_handle, &conn_sec_config);
+        } break;
+
+        case PM_EVT_STORAGE_FULL:
+        {
+            // Run garbage collection on the flash.
+            err_code = fds_gc();
+            if (err_code == FDS_ERR_NO_SPACE_IN_QUEUES)
+            {
+                // Retry.
+            }
+            else
+            {
+                APP_ERROR_CHECK(err_code);
+            }
+        } break;
+
+        case PM_EVT_PEERS_DELETE_SUCCEEDED:
+        {
+            advertising_start();
+        } break;
+
+        case PM_EVT_PEER_DATA_UPDATE_FAILED:
+        {
+            // Assert.
+            APP_ERROR_CHECK(p_evt->params.peer_data_update_failed.error);
+        } break;
+
+        case PM_EVT_PEER_DELETE_FAILED:
+        {
+            // Assert.
+            APP_ERROR_CHECK(p_evt->params.peer_delete_failed.error);
+        } break;
+
+        case PM_EVT_PEERS_DELETE_FAILED:
+        {
+            // Assert.
+            APP_ERROR_CHECK(p_evt->params.peers_delete_failed_evt.error);
+        } break;
+
+        case PM_EVT_ERROR_UNEXPECTED:
+        {
+            // Assert.
+            APP_ERROR_CHECK(p_evt->params.error_unexpected.error);
+        } break;
+
+        case PM_EVT_CONN_SEC_START:
+        case PM_EVT_PEER_DATA_UPDATE_SUCCEEDED:
+        case PM_EVT_PEER_DELETE_SUCCEEDED:
+        case PM_EVT_LOCAL_DB_CACHE_APPLIED:
+        case PM_EVT_LOCAL_DB_CACHE_APPLY_FAILED:
+            // This can happen when the local DB has changed.
+        case PM_EVT_SERVICE_CHANGED_IND_SENT:
+        case PM_EVT_SERVICE_CHANGED_IND_CONFIRMED:
+        default:
+            break;
+    }
+}
+
 static void on_ble_evt(ble_evt_t const * p_ble_evt, void * p_context) {
     uint32_t err_code;
 
@@ -206,14 +310,18 @@ static void on_ble_evt(ble_evt_t const * p_ble_evt, void * p_context) {
 
             app.conn_handle = p_ble_evt->evt.gap_evt.conn_handle;
 
-            // Continue advertising, but nonconnectably
-            m_advertising.adv_params.properties.type = BLE_GAP_ADV_TYPE_NONCONNECTABLE_SCANNABLE_UNDIRECTED;
+            err_code = nrf_ble_qwr_conn_handle_assign(&m_qwr, app.conn_handle);
+            APP_ERROR_CHECK(err_code);
 
-            advertising_start();
+            // Continue advertising, but nonconnectably
+            //m_advertising.adv_params.properties.type = BLE_GAP_ADV_TYPE_NONCONNECTABLE_SCANNABLE_UNDIRECTED;
+            //advertising_start();
 
             // Connected to device. Set initial CCCD attributes to NULL
             err_code = sd_ble_gatts_sys_attr_set(app.conn_handle, NULL, 0, 0);
             APP_ERROR_CHECK(err_code);
+
+            printf("I'm connected!\n");
 
             // Callback for user. Weak reference, so check validity first
             if (ble_evt_connected) {
@@ -226,7 +334,7 @@ static void on_ble_evt(ble_evt_t const * p_ble_evt, void * p_context) {
             // Invalidate handle
             app.conn_handle = BLE_CONN_HANDLE_INVALID;
 
-            advertising_stop();
+            //advertising_stop();
 
 #ifdef ENABLE_DFU
             // If pending dfu, clear and disable irq and then reset to bootloader
@@ -236,8 +344,10 @@ static void on_ble_evt(ble_evt_t const * p_ble_evt, void * p_context) {
                 }
 #endif
             // Go back to advertising connectably
-            m_advertising.adv_params.properties.type = BLE_GAP_ADV_TYPE_CONNECTABLE_SCANNABLE_UNDIRECTED;
-            advertising_start();
+            //m_advertising.adv_params.properties.type = BLE_GAP_ADV_TYPE_CONNECTABLE_SCANNABLE_UNDIRECTED;
+            //advertising_start();
+
+            printf("I'm disconnected\n");
 
             // Callback for user. Weak reference, so check validity first
             if (ble_evt_disconnected) {
@@ -452,6 +562,12 @@ void __attribute__((weak)) ble_stack_init(void) {
     err_code = nrf_sdh_enable_request();
     APP_ERROR_CHECK(err_code);
 
+    // Configure the BLE stack using the default settings.
+    // Fetch the start address of the application RAM.
+    uint32_t ram_start = 0;
+    err_code = nrf_sdh_ble_default_cfg_set(APP_BLE_CONN_CFG_TAG, &ram_start);
+    APP_ERROR_CHECK(err_code);
+/*
     uint32_t ram_start = 0;
     err_code = nrf_sdh_ble_app_ram_start_get(&ram_start);
     APP_ERROR_CHECK(err_code);
@@ -469,9 +585,9 @@ void __attribute__((weak)) ble_stack_init(void) {
 
     // Configure the connection roles
     memset(&ble_cfg, 0, sizeof(ble_cfg));
-    ble_cfg.gap_cfg.role_count_cfg.periph_role_count  = 1;
-    ble_cfg.gap_cfg.role_count_cfg.central_role_count = 0;
-    ble_cfg.gap_cfg.role_count_cfg.central_sec_count  = 0;
+    ble_cfg.gap_cfg.role_count_cfg.periph_role_count  = NRF_SDH_BLE_PERIPHERAL_LINK_COUNT;
+    ble_cfg.gap_cfg.role_count_cfg.central_role_count = NRF_SDH_BLE_CENTRAL_LINK_COUNT;
+    ble_cfg.gap_cfg.role_count_cfg.central_sec_count  = BLE_GAP_ROLE_COUNT_CENTRAL_SEC_DEFAULT;
     err_code = sd_ble_cfg_set(BLE_GAP_CFG_ROLE_COUNT, &ble_cfg, ram_start);
     APP_ERROR_CHECK(err_code);
 
@@ -499,7 +615,7 @@ void __attribute__((weak)) ble_stack_init(void) {
     ble_cfg.gatts_cfg.service_changed.service_changed = NRF_SDH_BLE_SERVICE_CHANGED;
     err_code = sd_ble_cfg_set(BLE_GATTS_CFG_SERVICE_CHANGED, &ble_cfg, ram_start);
     APP_ERROR_CHECK(err_code);
-
+*/
 
     // Enable BLE stack.
     err_code = nrf_sdh_ble_enable(&ram_start);
@@ -517,10 +633,6 @@ void __attribute__((weak)) gap_params_init(void) {
     uint32_t                err_code;
     ble_gap_conn_params_t   gap_conn_params;
     ble_gap_conn_sec_mode_t sec_mode;
-
-    // Full strength signal
-    #define TX_POWER_0DBM 0
-    sd_ble_gap_tx_power_set(BLE_GAP_TX_POWER_ROLE_ADV, m_advertising.adv_handle, TX_POWER_0DBM);
 
     // Let anyone connect and set the name given the platform
     BLE_GAP_CONN_SEC_MODE_SET_OPEN(&sec_mode);
@@ -550,30 +662,45 @@ static void gatt_init(void)
     APP_ERROR_CHECK(err_code);
 }
 
+static ble_uuid_t m_adv_uuids[] =                                               /**< Universally unique service identifiers. */
+{
+    {BLE_UUID_DEVICE_INFORMATION_SERVICE, BLE_UUID_TYPE_BLE}
+};
 void __attribute__((weak)) advertising_init(void) {
 
+    //XXX: Copied from template app
     ret_code_t             err_code;
     ble_advertising_init_t init;
 
     memset(&init, 0, sizeof(init));
 
-    // Custom advertisement data
-    /*ble_advdata_manuf_data_t             manuf_data_adv;
-    #define MANUF_ADV_LENGTH             8
-    uint8_t data_adv[MANUF_ADV_LENGTH]   = {0};
-    data_adv[0]                          = APP_SERVICE_ID; // TotTag's service identifier, expected to be first byte of advertisement
-    manuf_data_adv.company_identifier    = APP_COMPANY_IDENTIFIER; // UMich's Company ID
-    manuf_data_adv.data.p_data           = data_adv;
-    manuf_data_adv.data.size             = sizeof(data_adv);
-    init.advdata.p_manuf_specific_data   = &manuf_data_adv;*/
+    init.advdata.name_type               = BLE_ADVDATA_FULL_NAME;
+    init.advdata.include_appearance      = true;
+    init.advdata.flags                   = BLE_GAP_ADV_FLAGS_LE_ONLY_GENERAL_DISC_MODE;
+    init.advdata.uuids_complete.uuid_cnt = sizeof(m_adv_uuids) / sizeof(m_adv_uuids[0]);
+    init.advdata.uuids_complete.p_uuids  = m_adv_uuids;
+
+    init.config.ble_adv_fast_enabled  = true;
+    init.config.ble_adv_fast_interval = APP_ADV_INTERVAL;
+    init.config.ble_adv_fast_timeout  = 18000;
+
+    init.evt_handler = on_adv_evt;
+
+    err_code = ble_advertising_init(&m_advertising, &init);
+    APP_ERROR_CHECK(err_code);
+
+    ble_advertising_conn_cfg_tag_set(&m_advertising, APP_BLE_CONN_CFG_TAG);
+
+    /*
+    ret_code_t             err_code;
+    ble_advertising_init_t init;
+
+    memset(&init, 0, sizeof(init));
 
     // General Advertisement settings
 
     // Add device name in advertisements
-    // init.advdata.name_type               = BLE_ADVDATA_FULL_NAME;
-    // For shorter names, adjust as follows. The full name will still be displayed in connections
-    init.advdata.name_type               = BLE_ADVDATA_SHORT_NAME;
-    init.advdata.short_name_len          = 4; // Advertise the first X letters of the name
+    init.advdata.name_type               = BLE_ADVDATA_FULL_NAME;
 
     // Set Advertisement setting
     init.advdata.include_appearance      = false;
@@ -581,39 +708,24 @@ void __attribute__((weak)) advertising_init(void) {
     //init.advdata.uuids_complete.uuid_cnt = sizeof(m_adv_uuids) / sizeof(m_adv_uuids[0]);
     //init.advdata.uuids_complete.p_uuids  = m_adv_uuids;
 
-    // Scan response
-    /*ble_advdata_manuf_data_t             manuf_data_resp;
-    #define MANUF_RESP_LENGTH            20
-    uint8_t data_resp[MANUF_RESP_LENGTH] = {0};
-    manuf_data_resp.company_identifier   = APP_COMPANY_IDENTIFIER;
-    manuf_data_resp.data.p_data          = data_resp;
-    manuf_data_resp.data.size            = sizeof(data_resp);
-    init.srdata.p_manuf_specific_data    = &manuf_data_resp;*/
-    init.srdata.name_type                = BLE_ADVDATA_FULL_NAME;
-    //init.srdata.uuids_complete.uuid_cnt  = sizeof(m_sr_uuids) / sizeof(m_sr_uuids[0]);
-    //init.srdata.uuids_complete.p_uuids   = m_sr_uuids;
-
     // Configure advertisements
     init.config.ble_adv_fast_enabled  = true;
     init.config.ble_adv_fast_interval = ble_config->adv_interval;
-    init.config.ble_adv_fast_timeout  = APP_ADV_TIMEOUT_IN_SECONDS;
+    init.config.ble_adv_fast_timeout  = 0; // Never time out
     init.config.ble_adv_whitelist_enabled = false; // equivalent with BLE_GAP_ADV_FP_ANY
 
     // Define Event handler
-    init.evt_handler = m_advertising.evt_handler;
-
-    // Setup advertisement settings for future resets (see advertisement_start)
-    memset(&m_advertising.adv_params, 0, sizeof(m_advertising.adv_params));
-    m_advertising.adv_params.interval        = ble_config->adv_interval;
-    m_advertising.adv_params.duration        = APP_ADV_TIMEOUT_IN_SECONDS; // 0 : Never time out
-    m_advertising.adv_params.properties.type = BLE_GAP_ADV_TYPE_NONCONNECTABLE_SCANNABLE_UNDIRECTED;
-    m_advertising.adv_params.p_peer_addr     = NULL; // Undirected advertisement
-    m_advertising.adv_params.filter_policy   = BLE_GAP_ADV_FP_ANY;
+    init.evt_handler = on_adv_evt;
 
     err_code = ble_advertising_init(&m_advertising, &init);
     APP_ERROR_CHECK(err_code);
 
     ble_advertising_conn_cfg_tag_set(&m_advertising, APP_BLE_CONN_CFG_TAG);
+
+    // Full strength signal, 0 dBm
+    err_code = sd_ble_gap_tx_power_set(BLE_GAP_TX_POWER_ROLE_ADV, m_advertising.adv_handle, 0);
+    APP_ERROR_CHECK(err_code);
+    */
 }
 
 void __attribute__((weak)) conn_params_init(void) {
@@ -637,6 +749,53 @@ void __attribute__((weak)) conn_params_init(void) {
 }
 
 void __attribute__((weak)) services_init(void) {
+    ret_code_t         err_code;
+    nrf_ble_qwr_init_t qwr_init = {0};
+
+    // Initialize Queued Write Module.
+    qwr_init.error_handler = qwr_error_handler;
+
+    err_code = nrf_ble_qwr_init(&m_qwr, &qwr_init);
+    APP_ERROR_CHECK(err_code);
+}
+
+#define SEC_PARAM_BOND                  1                                       /**< Perform bonding. */
+#define SEC_PARAM_MITM                  0                                       /**< Man In The Middle protection not required. */
+#define SEC_PARAM_LESC                  0                                       /**< LE Secure Connections not enabled. */
+#define SEC_PARAM_KEYPRESS              0                                       /**< Keypress notifications not enabled. */
+#define SEC_PARAM_IO_CAPABILITIES       BLE_GAP_IO_CAPS_NONE                    /**< No I/O capabilities. */
+#define SEC_PARAM_OOB                   0                                       /**< Out Of Band data not available. */
+#define SEC_PARAM_MIN_KEY_SIZE          7                                       /**< Minimum encryption key size. */
+#define SEC_PARAM_MAX_KEY_SIZE          16                                      /**< Maximum encryption key size. */
+static void peer_manager_init(void)
+{
+    ble_gap_sec_params_t sec_param;
+    ret_code_t           err_code;
+
+    err_code = pm_init();
+    APP_ERROR_CHECK(err_code);
+
+    memset(&sec_param, 0, sizeof(ble_gap_sec_params_t));
+
+    // Security parameters to be used for all security procedures.
+    sec_param.bond           = SEC_PARAM_BOND;
+    sec_param.mitm           = SEC_PARAM_MITM;
+    sec_param.lesc           = SEC_PARAM_LESC;
+    sec_param.keypress       = SEC_PARAM_KEYPRESS;
+    sec_param.io_caps        = SEC_PARAM_IO_CAPABILITIES;
+    sec_param.oob            = SEC_PARAM_OOB;
+    sec_param.min_key_size   = SEC_PARAM_MIN_KEY_SIZE;
+    sec_param.max_key_size   = SEC_PARAM_MAX_KEY_SIZE;
+    sec_param.kdist_own.enc  = 1;
+    sec_param.kdist_own.id   = 1;
+    sec_param.kdist_peer.enc = 1;
+    sec_param.kdist_peer.id  = 1;
+
+    err_code = pm_sec_params_set(&sec_param);
+    APP_ERROR_CHECK(err_code);
+
+    err_code = pm_register(on_pm_evt);
+    APP_ERROR_CHECK(err_code);
 }
 
 #ifdef ENABLE_DFU
@@ -732,26 +891,33 @@ void __attribute__((weak)) power_manage(void) {
 simple_ble_app_t* simple_ble_init(const simple_ble_config_t* conf) {
     ble_config = conf;
 
+    // Initialize power management
+    ret_code_t err_code = NRF_SUCCESS;
+    err_code = nrf_pwr_mgmt_init();
+    APP_ERROR_CHECK(err_code);
+
+    // APP_TIMER_INIT must be called before BLE setup that relies on it
+    initialize_app_timer();
+
     // Setup BLE and services
     ble_stack_init();
     gap_params_init();
     gatt_init();
-    services_init();
     advertising_init();
+    services_init();
 
     // Create device information service
 #if defined(HW_REVISION) || defined(FW_REVISION)
-    simple_ble_device_info_service_automatic();
+    //simple_ble_device_info_service_automatic();
 #endif
 
     // Enable device firmware updates
 #ifdef ENABLE_DFU
-    dfu_init();
+    //dfu_init();
 #endif
 
-    // APP_TIMER_INIT must be called before conn_params_init since it uses timers
-    initialize_app_timer();
     conn_params_init();
+    //peer_manager_init();
 
     // Initialize our connection state to "not in a connection"
     app.conn_handle = BLE_CONN_HANDLE_INVALID;
@@ -881,8 +1047,8 @@ uint32_t simple_ble_notify_char(simple_ble_char_t* char_handle) {
     return err_code;
 }
 
-bool simple_ble_is_char_event(ble_evt_t* p_ble_evt, simple_ble_char_t* char_handle) {
-    ble_gatts_evt_write_t* p_evt_write = &(p_ble_evt->evt.gatts_evt.params.write);
+bool simple_ble_is_char_event(ble_evt_t const* p_ble_evt, simple_ble_char_t* char_handle) {
+    ble_gatts_evt_write_t const* p_evt_write = &(p_ble_evt->evt.gatts_evt.params.write);
 
     return (bool)(p_evt_write->handle == char_handle->char_handle.value_handle);
 }
@@ -1065,6 +1231,31 @@ uint32_t simple_ble_stack_char_set(simple_ble_char_t* char_handle, uint16_t len,
 /*******************************************************************************
  *   Advertising
  ******************************************************************************/
+
+void simple_ble_adv_only_name(void) {
+    ret_code_t err_code;
+
+    // stop advertising. We must do this before changing the advertisement data
+    advertising_stop();
+
+    // create adv data
+    ble_advdata_t adv_data = {0};
+    adv_data.name_type = BLE_ADVDATA_FULL_NAME; // include full name
+    adv_data.flags = BLE_GAP_ADV_FLAGS_LE_ONLY_GENERAL_DISC_MODE; // BLE Low energy advertisement
+
+    // encode advertisement data
+    m_advertising.adv_data.adv_data.p_data = m_advertising.enc_advdata;
+    m_advertising.adv_data.adv_data.len = BLE_GAP_ADV_SET_DATA_SIZE_MAX;
+    err_code = ble_advdata_encode(&adv_data, m_advertising.adv_data.adv_data.p_data, &m_advertising.adv_data.adv_data.len);
+    APP_ERROR_CHECK(err_code);
+
+    // actually set advertisement
+    err_code = sd_ble_gap_adv_set_configure(&m_advertising.adv_handle, &m_advertising.adv_data, &m_advertising.adv_params);
+    APP_ERROR_CHECK(err_code);
+
+    // Start the advertisement
+    advertising_start();
+}
 
 void simple_ble_set_adv(ble_advdata_t* adv_data, ble_advdata_t* scan_rsp_data) {
     uint32_t err_code;

@@ -81,7 +81,7 @@ void simple_ble_add_characteristic(uint8_t read, uint8_t write, uint8_t notify, 
 
 uint32_t simple_ble_update_char_len(simple_ble_char_t* char_handle, uint16_t len);
 uint32_t simple_ble_notify_char(simple_ble_char_t* char_handle);
-bool simple_ble_is_char_event(ble_evt_t* p_ble_evt, simple_ble_char_t* char_handle);
+bool simple_ble_is_char_event(ble_evt_t const* p_ble_evt, simple_ble_char_t* char_handle);
 
 // Enable read/write authorization on a characteristic
 void simple_ble_add_auth_characteristic(uint8_t read, uint8_t write, uint8_t notify, uint8_t vlen,
@@ -127,9 +127,6 @@ extern const int FIRST_CONN_PARAMS_UPDATE_DELAY;      // APP_TIMER_TICKS(5000)  
 // Cannot change server database
 #define IS_SRVC_CHANGED_CHARACT_PRESENT 0
 
-// Advertising timeout sec
-#define APP_ADV_TIMEOUT_IN_SECONDS      0
-
 // RTC1_Prescale
 #define APP_TIMER_PRESCALER             0
 
@@ -170,7 +167,7 @@ extern const int FIRST_CONN_PARAMS_UPDATE_DELAY;      // APP_TIMER_TICKS(5000)  
 
 // Functions
 void simple_ble_set_adv(ble_advdata_t* adv_data, ble_advdata_t* scan_rsp_data);
-
+void simple_ble_adv_only_name(void);
 
 /*******************************************************************************
  *   EDDYSTONE
