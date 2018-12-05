@@ -50,6 +50,12 @@ void __attribute__((weak)) thread_init(const thread_config_t* config)
         ASSERT(error == OT_ERROR_NONE);
         NRF_LOG_INFO("Thread Channel: %d", otLinkGetChannel(m_ot_instance));
 
+        error = otPlatRadioSetTransmitPower(m_ot_instance, config->tx_power);
+        ASSERT(error == OT_ERROR_NONE);
+        int8_t tx_power_set;
+        otPlatRadioGetTransmitPower(m_ot_instance, &tx_power_set);
+        NRF_LOG_INFO("TX Power: %d dBm", tx_power_set);
+
         error = otLinkSetPanId(m_ot_instance, config->panid);
         ASSERT(error == OT_ERROR_NONE);
         NRF_LOG_INFO("Thread PANID: 0x%lx", (uint32_t)otLinkGetPanId(m_ot_instance));
@@ -57,6 +63,7 @@ void __attribute__((weak)) thread_init(const thread_config_t* config)
 
     otLinkModeConfig mode;
     memset(&mode, 0, sizeof(mode));
+
     if (config->sed) {
       // sleepy end device
       mode.mSecureDataRequests = true;
@@ -64,7 +71,7 @@ void __attribute__((weak)) thread_init(const thread_config_t* config)
       otLinkSetPollPeriod(m_ot_instance, config->poll_period);
     }
     else {
-      // regular end device
+      // regular device
       mode.mRxOnWhenIdle       = true;
       mode.mSecureDataRequests = true;
       mode.mDeviceType         = true;
@@ -74,7 +81,9 @@ void __attribute__((weak)) thread_init(const thread_config_t* config)
     error = otThreadSetLinkMode(m_ot_instance, mode);
     ASSERT(error == OT_ERROR_NONE);
 
-    otThreadSetChildTimeout(m_ot_instance, config->child_period);
+    if (config->child_period != 0) {
+        otThreadSetChildTimeout(m_ot_instance, config->child_period);
+    }
 
     error = otIp6SetEnabled(m_ot_instance, true);
     ASSERT(error == OT_ERROR_NONE);

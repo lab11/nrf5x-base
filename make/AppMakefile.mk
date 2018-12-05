@@ -30,7 +30,7 @@ include $(NRF_BASE_DIR)/make/Configuration.mk
 include $(NRF_BASE_DIR)/make/Includes.mk
 
 # JTAG flashing configuration and rules
-include $(NRF_BASE_DIR)/make/Jtag.mk
+include $(NRF_BASE_DIR)/make/Program.mk
 
 
 # ---- Rules for building apps

@@ -13,12 +13,20 @@ JLINK = JLinkExe
 JLINK_GDBSERVER = JLinkGDBServer
 JLINK_RTTCLIENT = JLinkRTTClient
 
+# nrfutil tools
+NRFUTIL = nrfutil
+
 # Default port for GDB
 GDB_PORT_NUMBER ?= 2331
 
 # Configuration flags for JTAG tools
 JLINK_FLAGS = -device $(FULL_IC) -if swd -speed 4000
 JLINK_GDBSERVER_FLAGS = -port $(GDB_PORT_NUMBER)
+
+# Configuration flags for nrfutil tools
+BOOTLOADER_DEV = /dev/ttyACM0
+NRFUTIL_PKG_GEN_FLAGS = pkg generate --hw-version 52 --sd-req 0x0 --application-version 1 --application $(BUILDDIR)$(OUTPUT_NAME).hex $(BUILDDIR)$(OUTPUT_NAME).zip
+NRFUTIL_PKG_DFU_FLAGS = dfu usb-serial -pkg out.zip -p $(BOOTLOADER_DEV) -b 115200
 
 # Allow users to select a specific JTAG device with a variable
 ifdef SEGGER_SERIAL
@@ -131,6 +139,13 @@ else
 	$(Q)sleep 1
 	$(Q)$(TERMINAL) -e "$(JLINK_RTTCLIENT)"
 endif
+
+# ---- nrfutil bootloader rules
+pkg: all
+	$(NRFUTIL) $(NRFUTIL_PKG_GEN_FLAGS)
+.PHONY: dfu
+dfu: all pkg
+	until $(NRFUTIL) $(NRFUTIL_PKG_DFU_FLAGS); do sleep 0.5; done;
 
 .PHONY: clean
 clean::

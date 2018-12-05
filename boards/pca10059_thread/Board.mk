@@ -18,6 +18,8 @@ BOARD_AS = $(notdir $(wildcard $(BOARD_DIR)/./*.s))
 BOARD = PCA10040
 USE_BLE = 0
 
+LINKER_SCRIPT = gcc_$(NRF_IC)_bootloader_$(SOFTDEVICE_MODEL)_$(SOFTDEVICE_VERSION)_$(RAM_KB)_$(FLASH_KB).ld
+
 # Additional #define's to be added to code by the compiler
 BOARD_VARS = \
 	BOARD_$(BOARD)\
