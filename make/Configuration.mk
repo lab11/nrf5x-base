@@ -88,6 +88,12 @@ endif
 FULL_IC_UPPER = $(shell echo $(FULL_IC) | tr a-z A-Z)
 CONFIGURATION_VARS += $(FULL_IC_UPPER)
 
+ifdef BOARD
+  ifeq ($(BOARD), pca10059)
+    CONFIGURATION_VARS += BOARD_PCA10059
+  endif
+endif
+
 # Default SDK and softdevice versions
 SDK_VERSION ?= 15
 ifeq ($(SDK_VERSION), 15)

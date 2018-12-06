@@ -26,7 +26,7 @@ JLINK_GDBSERVER_FLAGS = -port $(GDB_PORT_NUMBER)
 # Configuration flags for nrfutil tools
 BOOTLOADER_DEV = /dev/ttyACM0
 NRFUTIL_PKG_GEN_FLAGS = pkg generate --hw-version 52 --sd-req 0x0 --application-version 1 --application $(BUILDDIR)$(OUTPUT_NAME).hex $(BUILDDIR)$(OUTPUT_NAME).zip
-NRFUTIL_PKG_DFU_FLAGS = dfu usb-serial -pkg out.zip -p $(BOOTLOADER_DEV) -b 115200
+NRFUTIL_PKG_DFU_FLAGS = dfu usb-serial -pkg $(BUILDDIR)$(OUTPUT_NAME).zip -p $(BOOTLOADER_DEV) -b 115200
 
 # Allow users to select a specific JTAG device with a variable
 ifdef SEGGER_SERIAL

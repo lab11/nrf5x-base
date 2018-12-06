@@ -72,6 +72,7 @@ ifneq (,$(filter $(NRF_IC),nrf52832 nrf52840))
     SDK_HEADER_PATHS += $(SDK_ROOT)components/libraries/balloc/
     SDK_HEADER_PATHS += $(SDK_ROOT)components/libraries/block_dev/
     SDK_HEADER_PATHS += $(SDK_ROOT)components/libraries/bootloader/
+    SDK_HEADER_PATHS += $(SDK_ROOT)components/libraries/bootloader/dfu/
     SDK_HEADER_PATHS += $(SDK_ROOT)components/libraries/bsp/
     SDK_HEADER_PATHS += $(SDK_ROOT)components/libraries/button/
     SDK_HEADER_PATHS += $(SDK_ROOT)components/libraries/cli/
@@ -122,7 +123,10 @@ ifneq (,$(filter $(NRF_IC),nrf52832 nrf52840))
     SDK_HEADER_PATHS += $(SDK_ROOT)components/libraries/twi_sensor/
     SDK_HEADER_PATHS += $(SDK_ROOT)components/libraries/uart/
     SDK_HEADER_PATHS += $(SDK_ROOT)components/libraries/usbd/
+    SDK_HEADER_PATHS += $(SDK_ROOT)components/drivers_nrf/usbd/
+    SDK_HEADER_PATHS += $(SDK_ROOT)components/libraries/usbd/class/nrf_dfu_trigger/
     SDK_HEADER_PATHS += $(SDK_ROOT)components/libraries/util/
+    SDK_HEADER_PATHS += $(SDK_ROOT)components/boards/
     SDK_HEADER_PATHS += $(wildcard $(SDK_ROOT)components/libraries/experimental_log/src/)
     SDK_HEADER_PATHS += $(wildcard $(SDK_ROOT)components/libraries/crypto/backend/*/)
     SDK_HEADER_PATHS += $(wildcard $(SDK_ROOT)components/drivers_nrf/adc/)
@@ -177,6 +181,7 @@ ifneq (,$(filter $(NRF_IC),nrf52832 nrf52840))
     SDK_SOURCE_PATHS += $(SDK_ROOT)components/libraries/balloc/
     SDK_SOURCE_PATHS += $(SDK_ROOT)components/libraries/block_dev/
     SDK_SOURCE_PATHS += $(SDK_ROOT)components/libraries/bootloader/
+    SDK_SOURCE_PATHS += $(SDK_ROOT)components/libraries/bootloader/dfu/
     SDK_SOURCE_PATHS += $(SDK_ROOT)components/libraries/bsp/
     SDK_SOURCE_PATHS += $(SDK_ROOT)components/libraries/button/
     SDK_SOURCE_PATHS += $(SDK_ROOT)components/libraries/cli/
@@ -227,6 +232,8 @@ ifneq (,$(filter $(NRF_IC),nrf52832 nrf52840))
     SDK_SOURCE_PATHS += $(SDK_ROOT)components/libraries/twi_sensor/
     SDK_SOURCE_PATHS += $(SDK_ROOT)components/libraries/uart/
     SDK_SOURCE_PATHS += $(SDK_ROOT)components/libraries/usbd/
+    SDK_SOURCE_PATHS += $(SDK_ROOT)components/drivers_nrf/usbd/
+    SDK_SOURCE_PATHS += $(SDK_ROOT)components/libraries/usbd/class/nrf_dfu_trigger/
     SDK_SOURCE_PATHS += $(SDK_ROOT)components/libraries/util/
     SDK_SOURCE_PATHS += $(wildcard $(SDK_ROOT)components/libraries/experimental_log/src/)
     SDK_SOURCE_PATHS += $(wildcard $(SDK_ROOT)components/libraries/crypto/backend/*/)
