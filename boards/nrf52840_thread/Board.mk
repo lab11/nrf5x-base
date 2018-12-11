@@ -64,6 +64,7 @@ BOARD_SOURCES += \
 	SEGGER_RTT_printf.c\
 	simple_thread.c\
 	thread_coap.c\
+	thread_dns.c\
 	ntp.c\
 
 endif
