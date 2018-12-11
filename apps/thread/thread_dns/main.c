@@ -21,7 +21,7 @@
 APP_TIMER_DEF(coap_send_timer);
 
 #define COAP_SERVER_HOSTNAME "coap.permamote.com"
-#define DNS_SERVER_ADDR "fd11:22::ee:eb64:aefe:3351"
+#define DNS_SERVER_ADDR "fdaa:bb:1::2"
 
 #define LED0 NRF_GPIO_PIN_MAP(0,4)
 #define LED1 NRF_GPIO_PIN_MAP(0,5)
