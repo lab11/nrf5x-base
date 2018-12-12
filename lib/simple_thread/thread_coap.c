@@ -49,7 +49,7 @@ otError thread_coap_send(otInstance* instance, otCoapCode req, otCoapType type, 
   otCoapHeaderAppendUriPathOptions(&header, path);
   otCoapHeaderSetPayloadMarker(&header);
 
-  message = otCoapNewMessage(instance, &header);
+  message = otCoapNewMessage(instance, &header, NULL);
   if (message == NULL)
   {
     NRF_LOG_INFO("Failed to allocate message for CoAP Request\r\n");

@@ -3,10 +3,10 @@
 #include <stdbool.h>
 #include <stdint.h>
 
-#include <openthread/openthread.h>
-#include <openthread/platform/platform.h>
+#include <openthread/thread.h>
+#include <openthread/platform/openthread-system.h>
+#include <openthread/ip6.h>
 #include <openthread/tasklet.h>
-#include "openthread/platform/openthread-system.h"
 
 typedef struct {
   uint8_t   channel;

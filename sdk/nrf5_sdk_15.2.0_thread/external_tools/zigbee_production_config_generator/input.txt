@@ -1,0 +1,31 @@
+generic_device
+# First - device type
+
+# After that go parameters in key-value pairs
+            
+# channel mask as hexadecimal 32-bit value
+# default value equals full channel mask
+aps_channel_mask = 0x100000
+
+# Extended MAC address as hexadecimal 8-byte array
+# Use empty value (all 0) to do not modify MAC address
+# default value is all 0
+#extended_address = AABBCCDDEEFF0011
+
+# mac_tx_power
+# default value is 0
+#mac_tx_power = 9
+
+# install code as hexadecimal 16-byte array (without CRC)
+#installcode = 83FED3407A939723A5C639B26916D505
+
+##############################################################
+# Application specific starts here
+
+#manufacturer_name = DSR
+#model_id = SPv313p691
+#manufacturer_code = 0x1234
+# Overcurrent protection threshold, in 0.001A
+#overcurrent_ma = 11000
+# Overvoltage protection threshold, in 0.1V
+#overvoltage_dv = 2700

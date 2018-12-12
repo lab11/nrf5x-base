@@ -14,7 +14,7 @@ otError thread_dns_hostname_resolve(otInstance         * p_instance,
 
     memset(&message_info, 0, sizeof(message_info));
     message_info.mInterfaceId = OT_NETIF_INTERFACE_ID_THREAD;
-    message_info.mPeerPort    = OT_DNS_DEFAULT_DNS_SERVER_PORT;
+    message_info.mPeerPort    = OT_DNS_DEFAULT_SERVER_PORT;
     error = otIp6AddressFromString(p_dns_host, &message_info.mPeerAddr);
 
     if (error == OT_ERROR_NONE)

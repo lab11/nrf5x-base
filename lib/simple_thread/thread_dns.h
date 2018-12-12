@@ -1,6 +1,5 @@
 #pragma once
 
-#include <openthread/openthread.h>
 #include <openthread/dns.h>
 
 otError thread_dns_hostname_resolve(otInstance         * p_instance,

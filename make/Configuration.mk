@@ -98,9 +98,9 @@ endif
 SDK_VERSION ?= 15
 ifeq ($(SDK_VERSION), 15)
   ifeq ($(SOFTDEVICE_MODEL), s132)
-    SOFTDEVICE_VERSION = 6.0.0
+    SOFTDEVICE_VERSION = 6.1.0
   else ifeq ($(SOFTDEVICE_MODEL), s140)
-    SOFTDEVICE_VERSION = 6.0.0
+    SOFTDEVICE_VERSION = 6.1.0
   else ifeq ($(SOFTDEVICE_MODEL), blank)
     SOFTDEVICE_VERSION = 0
     USE_BLE = 0 # can't have BLE without a softdevice

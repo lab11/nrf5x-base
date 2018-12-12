@@ -12,15 +12,13 @@
 #include "nrf_log_ctrl.h"
 #include "nrf_log_default_backends.h"
 
-#include <openthread/openthread.h>
-
 #include "thread_dns.h"
 #include "simple_thread.h"
 #include "thread_coap.h"
 
 APP_TIMER_DEF(coap_send_timer);
 
-#define COAP_SERVER_HOSTNAME "coap.permamote.com"
+#define COAP_SERVER_HOSTNAME "google.com"
 #define DNS_SERVER_ADDR "fdaa:bb:1::2"
 
 #define LED0 NRF_GPIO_PIN_MAP(0,4)
@@ -70,7 +68,7 @@ static void dns_response_handler(void         * p_context,
     }
 
     NRF_LOG_INFO("Successfully resolved address");
-    memcpy(&m_peer_address, p_resolved_address, sizeof(otIp6Address));
+    m_peer_address = *p_resolved_address;
 }
 
 void send_timer_callback() {
@@ -88,9 +86,10 @@ void send_timer_callback() {
         return;
     }
   }
-
-  thread_coap_send(thread_instance, OT_COAP_CODE_PUT, OT_COAP_TYPE_NON_CONFIRMABLE, &m_peer_address, "test", data, strnlen((char*)data, 6));
-  NRF_LOG_INFO("Sent test message!");
+  else {
+      thread_coap_send(thread_instance, OT_COAP_CODE_PUT, OT_COAP_TYPE_NON_CONFIRMABLE, &m_peer_address, "test", data, strnlen((char*)data, 6));
+      NRF_LOG_INFO("Sent test message!");
+  }
 }
 
 int main(void) {

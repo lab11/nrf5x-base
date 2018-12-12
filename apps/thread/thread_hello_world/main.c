@@ -14,8 +14,6 @@
 #include "nrf_log_ctrl.h"
 #include "nrf_log_default_backends.h"
 
-#include <openthread/openthread.h>
-
 #include "simple_thread.h"
 
 #define LED0 NRF_GPIO_PIN_MAP(0,4)
@@ -46,7 +44,7 @@ int main(void) {
     nrf_gpio_pin_set(LED2);
 
     thread_config_t thread_config = {
-      .channel = 11,
+      .channel = 25,
       .panid = 0xFACE,
       .sed = true,
       .poll_period = DEFAULT_POLL_PERIOD,

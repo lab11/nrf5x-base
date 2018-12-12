@@ -29,9 +29,9 @@ ifneq (,$(filter $(NRF_IC),nrf52832 nrf52840))
 
     # Set the path
     ifeq ($(USE_THREAD), 1)
-      SDK_ROOT = $(NRF_BASE_DIR)/sdk/nrf5_sdk_15.0.0_thread/
+      SDK_ROOT = $(NRF_BASE_DIR)/sdk/nrf5_sdk_15.2.0_thread/
     else
-      SDK_ROOT = $(NRF_BASE_DIR)/sdk/nrf5_sdk_15.0.0/
+      SDK_ROOT = $(NRF_BASE_DIR)/sdk/nrf5_sdk_15.2.0_thread/
     endif
 
     # default files for ICs
@@ -83,14 +83,14 @@ ifneq (,$(filter $(NRF_IC),nrf52832 nrf52840))
     SDK_HEADER_PATHS += $(SDK_ROOT)components/libraries/csense_drv/
     SDK_HEADER_PATHS += $(SDK_ROOT)components/libraries/delay/
     SDK_HEADER_PATHS += $(SDK_ROOT)components/libraries/ecc/
-    SDK_HEADER_PATHS += $(SDK_ROOT)components/libraries/experimental_libuarte/
-    SDK_HEADER_PATHS += $(SDK_ROOT)components/libraries/experimental_log/
-    SDK_HEADER_PATHS += $(SDK_ROOT)components/libraries/experimental_memobj/
-    SDK_HEADER_PATHS += $(SDK_ROOT)components/libraries/experimental_mpu/
-    SDK_HEADER_PATHS += $(SDK_ROOT)components/libraries/experimental_ringbuf/
+    SDK_HEADER_PATHS += $(SDK_ROOT)components/libraries/libuarte/
+    SDK_HEADER_PATHS += $(SDK_ROOT)components/libraries//log/
+    SDK_HEADER_PATHS += $(SDK_ROOT)components/libraries/memobj/
+    SDK_HEADER_PATHS += $(SDK_ROOT)components/libraries/mpu/
+    SDK_HEADER_PATHS += $(SDK_ROOT)components/libraries/ringbuf/
     SDK_HEADER_PATHS += $(SDK_ROOT)components/libraries/experimental_section_vars/
-    SDK_HEADER_PATHS += $(SDK_ROOT)components/libraries/experimental_stack_guard/
-    SDK_HEADER_PATHS += $(SDK_ROOT)components/libraries/experimental_task_manager/
+    SDK_HEADER_PATHS += $(SDK_ROOT)components/libraries/stack_guard/
+    SDK_HEADER_PATHS += $(SDK_ROOT)components/libraries/task_manager/
     SDK_HEADER_PATHS += $(SDK_ROOT)components/libraries/fds/
     SDK_HEADER_PATHS += $(SDK_ROOT)components/libraries/fifo/
     SDK_HEADER_PATHS += $(SDK_ROOT)components/libraries/fstorage/
@@ -127,7 +127,7 @@ ifneq (,$(filter $(NRF_IC),nrf52832 nrf52840))
     SDK_HEADER_PATHS += $(SDK_ROOT)components/libraries/usbd/class/nrf_dfu_trigger/
     SDK_HEADER_PATHS += $(SDK_ROOT)components/libraries/util/
     SDK_HEADER_PATHS += $(SDK_ROOT)components/boards/
-    SDK_HEADER_PATHS += $(wildcard $(SDK_ROOT)components/libraries/experimental_log/src/)
+    SDK_HEADER_PATHS += $(wildcard $(SDK_ROOT)components/libraries/log/src/)
     SDK_HEADER_PATHS += $(wildcard $(SDK_ROOT)components/libraries/crypto/backend/*/)
     SDK_HEADER_PATHS += $(wildcard $(SDK_ROOT)components/drivers_nrf/adc/)
     SDK_HEADER_PATHS += $(wildcard $(SDK_ROOT)components/drivers_nrf/ble_flash/)
@@ -192,14 +192,14 @@ ifneq (,$(filter $(NRF_IC),nrf52832 nrf52840))
     SDK_SOURCE_PATHS += $(SDK_ROOT)components/libraries/csense_drv/
     SDK_SOURCE_PATHS += $(SDK_ROOT)components/libraries/delay/
     SDK_SOURCE_PATHS += $(SDK_ROOT)components/libraries/ecc/
-    SDK_SOURCE_PATHS += $(SDK_ROOT)components/libraries/experimental_libuarte/
-    SDK_SOURCE_PATHS += $(SDK_ROOT)components/libraries/experimental_log/
-    SDK_SOURCE_PATHS += $(SDK_ROOT)components/libraries/experimental_memobj/
-    SDK_SOURCE_PATHS += $(SDK_ROOT)components/libraries/experimental_mpu/
-    SDK_SOURCE_PATHS += $(SDK_ROOT)components/libraries/experimental_ringbuf/
+    SDK_SOURCE_PATHS += $(SDK_ROOT)components/libraries/libuarte/
+    SDK_SOURCE_PATHS += $(SDK_ROOT)components/libraries/log/
+    SDK_SOURCE_PATHS += $(SDK_ROOT)components/libraries/memobj/
+    SDK_SOURCE_PATHS += $(SDK_ROOT)components/libraries/mpu/
+    SDK_SOURCE_PATHS += $(SDK_ROOT)components/libraries/ringbuf/
     SDK_SOURCE_PATHS += $(SDK_ROOT)components/libraries/experimental_section_vars/
-    SDK_SOURCE_PATHS += $(SDK_ROOT)components/libraries/experimental_stack_guard/
-    SDK_SOURCE_PATHS += $(SDK_ROOT)components/libraries/experimental_task_manager/
+    SDK_SOURCE_PATHS += $(SDK_ROOT)components/libraries/stack_guard/
+    SDK_SOURCE_PATHS += $(SDK_ROOT)components/libraries/task_manager/
     SDK_SOURCE_PATHS += $(SDK_ROOT)components/libraries/fds/
     SDK_SOURCE_PATHS += $(SDK_ROOT)components/libraries/fifo/
     SDK_SOURCE_PATHS += $(SDK_ROOT)components/libraries/fstorage/
@@ -235,7 +235,7 @@ ifneq (,$(filter $(NRF_IC),nrf52832 nrf52840))
     SDK_SOURCE_PATHS += $(SDK_ROOT)components/drivers_nrf/usbd/
     SDK_SOURCE_PATHS += $(SDK_ROOT)components/libraries/usbd/class/nrf_dfu_trigger/
     SDK_SOURCE_PATHS += $(SDK_ROOT)components/libraries/util/
-    SDK_SOURCE_PATHS += $(wildcard $(SDK_ROOT)components/libraries/experimental_log/src/)
+    SDK_SOURCE_PATHS += $(wildcard $(SDK_ROOT)components/libraries/log/src/)
     SDK_SOURCE_PATHS += $(wildcard $(SDK_ROOT)components/libraries/crypto/backend/*/)
     SDK_SOURCE_PATHS += $(wildcard $(SDK_ROOT)components/drivers_nrf/*/)
     SDK_SOURCE_PATHS += $(wildcard $(SDK_ROOT)components/drivers_ext/*/)
@@ -339,7 +339,7 @@ ifneq (,$(filter $(NRF_IC),nrf52832 nrf52840))
       THREAD_LIB_FILES += $(SDK_ROOT)external/openthread/lib/gcc/libopenthread-nrf52840-sdk.a
       THREAD_LIB_FILES += $(SDK_ROOT)external/openthread/lib/gcc/libopenthread-diag.a
       THREAD_LIB_FILES += $(SDK_ROOT)external/openthread/lib/gcc/libmbedcrypto.a
-      THREAD_LIB_FILES += $(SDK_ROOT)external/nrf_cc310/lib/libnrf_cc310_0.9.9.a
+      THREAD_LIB_FILES += $(SDK_ROOT)external/nrf_cc310/lib/libnrf_cc310_0.9.10.a
       LIBS += $(THREAD_LIB_FILES)
 
       SDK_HEADER_PATHS += $(SDK_ROOT)external/openthread/include/

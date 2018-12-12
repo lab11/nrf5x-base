@@ -14,7 +14,6 @@
 #include "nrf_log_ctrl.h"
 #include "nrf_log_default_backends.h"
 
-#include <openthread/openthread.h>
 #include <openthread/dataset_ftd.h>
 #include <openthread/thread_ftd.h>
 

@@ -2,7 +2,6 @@
 
 #include <stdint.h>
 
-#include <openthread/openthread.h>
 #include <openthread/coap.h>
 
 void thread_coap_client_init(otInstance* instance);
