@@ -53,6 +53,7 @@ BOARD_SOURCES += \
 	nrf_log_str_formatter.c\
 	nrf_pwr_mgmt.c\
 	nrf_memobj.c\
+	nrf_ringbuf.c\
 	nrf_section_iter.c\
 	nrf_sdh.c\
 	nrf_sdh_ble.c\
