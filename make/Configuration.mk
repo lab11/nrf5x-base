@@ -104,6 +104,10 @@ ifeq ($(SDK_VERSION), 15)
   else ifeq ($(SOFTDEVICE_MODEL), blank)
     SOFTDEVICE_VERSION = 0
     USE_BLE = 0 # can't have BLE without a softdevice
+    # if we want to use the MBR to manage a bootloader without a softdevice:
+    ifeq ($(USE_MBR), 1)
+      MBR_VERSION = 2.3.0
+    endif
   endif
 endif
 CONFIGURATION_VARS += SDK_VERSION_$(SDK_VERSION)
@@ -181,9 +185,13 @@ override CFLAGS += \
     -s\
     -ffunction-sections\
     -fdata-sections\
+    -fno-strict-aliasing\
+    -fno-builtin\
+    -fshort-enums\
     $(HEADER_INCLUDES)\
     -MD\
     -fomit-frame-pointer\
+    #-flto\
     #-D$(FULL_IC_UPPER)\
     #-DSDK_VERSION_$(SDK_VERSION)\
     #-DSOFTDEVICE_$(SOFTDEVICE_MODEL)\

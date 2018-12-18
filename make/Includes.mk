@@ -45,7 +45,7 @@ ifneq (,$(filter $(NRF_IC),nrf52832 nrf52840))
 
     # default C files necessary for any application
     #XXX: are there other C files that I can include here?
-    SDK_SOURCES += app_error.c
+    #SDK_SOURCES += app_error.c
     SDK_SOURCES += app_error_weak.c
 
     # To make SEGGER RTT retarget to printf correctly, you need to get around
@@ -56,7 +56,9 @@ ifneq (,$(filter $(NRF_IC),nrf52832 nrf52840))
     SDK_LINKER_PATHS += $(SDK_ROOT)modules/nrfx/mdk/
 
     # Path for default sdk_config.h
-    SDK_HEADER_PATHS += $(NRF_BASE_DIR)/make/config/$(NRF_IC)/config/
+    SDK_CONFIG_DEFAULT ?= $(NRF_BASE_DIR)/make/config/$(NRF_IC)/config/
+    SDK_HEADER_PATHS += $(SDK_CONFIG_DEFAULT)
+    #SDK_HEADER_PATHS += $(NRF_BASE_DIR)/make/config/$(NRF_IC)/config/
 
     # Need to add the paths for all the directories in the SDK.
     # Note that we do not use * because some folders have conflicting files.
@@ -88,6 +90,7 @@ ifneq (,$(filter $(NRF_IC),nrf52832 nrf52840))
     SDK_HEADER_PATHS += $(SDK_ROOT)components/libraries/memobj/
     SDK_HEADER_PATHS += $(SDK_ROOT)components/libraries/mpu/
     SDK_HEADER_PATHS += $(SDK_ROOT)components/libraries/ringbuf/
+    SDK_HEADER_PATHS += $(SDK_ROOT)external/nano-pb/
     SDK_HEADER_PATHS += $(SDK_ROOT)components/libraries/experimental_section_vars/
     SDK_HEADER_PATHS += $(SDK_ROOT)components/libraries/stack_guard/
     SDK_HEADER_PATHS += $(SDK_ROOT)components/libraries/task_manager/
@@ -128,6 +131,8 @@ ifneq (,$(filter $(NRF_IC),nrf52832 nrf52840))
     SDK_HEADER_PATHS += $(SDK_ROOT)components/libraries/util/
     SDK_HEADER_PATHS += $(SDK_ROOT)components/boards/
     SDK_HEADER_PATHS += $(wildcard $(SDK_ROOT)components/libraries/log/src/)
+    SDK_HEADER_PATHS += $(SDK_ROOT)components/libraries/crypto/backend/cc310/
+    SDK_HEADER_PATHS += $(SDK_ROOT)components/libraries/crypto/backend/cc310_bl/
     SDK_HEADER_PATHS += $(wildcard $(SDK_ROOT)components/libraries/crypto/backend/*/)
     SDK_HEADER_PATHS += $(wildcard $(SDK_ROOT)components/drivers_nrf/adc/)
     SDK_HEADER_PATHS += $(wildcard $(SDK_ROOT)components/drivers_nrf/ble_flash/)
@@ -197,6 +202,7 @@ ifneq (,$(filter $(NRF_IC),nrf52832 nrf52840))
     SDK_SOURCE_PATHS += $(SDK_ROOT)components/libraries/memobj/
     SDK_SOURCE_PATHS += $(SDK_ROOT)components/libraries/mpu/
     SDK_SOURCE_PATHS += $(SDK_ROOT)components/libraries/ringbuf/
+    SDK_SOURCE_PATHS += $(SDK_ROOT)external/nano-pb/
     SDK_SOURCE_PATHS += $(SDK_ROOT)components/libraries/experimental_section_vars/
     SDK_SOURCE_PATHS += $(SDK_ROOT)components/libraries/stack_guard/
     SDK_SOURCE_PATHS += $(SDK_ROOT)components/libraries/task_manager/
@@ -236,7 +242,8 @@ ifneq (,$(filter $(NRF_IC),nrf52832 nrf52840))
     SDK_SOURCE_PATHS += $(SDK_ROOT)components/libraries/usbd/class/nrf_dfu_trigger/
     SDK_SOURCE_PATHS += $(SDK_ROOT)components/libraries/util/
     SDK_SOURCE_PATHS += $(wildcard $(SDK_ROOT)components/libraries/log/src/)
-    SDK_SOURCE_PATHS += $(wildcard $(SDK_ROOT)components/libraries/crypto/backend/*/)
+    SDK_SOURCE_PATHS += $(SDK_ROOT)components/libraries/crypto/backend/cc310/
+    SDK_SOURCE_PATHS += $(SDK_ROOT)components/libraries/crypto/backend/cc310_bl/
     SDK_SOURCE_PATHS += $(wildcard $(SDK_ROOT)components/drivers_nrf/*/)
     SDK_SOURCE_PATHS += $(wildcard $(SDK_ROOT)components/drivers_ext/*/)
     SDK_SOURCE_PATHS += $(SDK_ROOT)components/toolchain/gcc/
@@ -303,6 +310,7 @@ ifneq (,$(filter $(NRF_IC),nrf52832 nrf52840))
       endif
     else
       SDK_HEADER_PATHS += $(wildcard $(SDK_ROOT)components/drivers_nrf/nrf_soc_nosd/)
+      SDK_HEADER_PATHS += $(SDK_ROOT)components/softdevice/mbr/$(NRF_IC)/headers
     endif
 
     ifeq ($(USE_ANT),1)
@@ -340,6 +348,7 @@ ifneq (,$(filter $(NRF_IC),nrf52832 nrf52840))
       THREAD_LIB_FILES += $(SDK_ROOT)external/openthread/lib/gcc/libopenthread-diag.a
       THREAD_LIB_FILES += $(SDK_ROOT)external/openthread/lib/gcc/libmbedcrypto.a
       THREAD_LIB_FILES += $(SDK_ROOT)external/nrf_cc310/lib/libnrf_cc310_0.9.10.a
+      THREAD_LIB_FILES += $(SDK_ROOT)external/nrf_cc310_bl/lib/libnrf_cc310_bl_0.9.10.a
       LIBS += $(THREAD_LIB_FILES)
 
       SDK_HEADER_PATHS += $(SDK_ROOT)external/openthread/include/
@@ -354,7 +363,8 @@ endif # nrf52
 # ---- Create variables for Configuration use
 
 # Location of softdevice
-SOFTDEVICE_PATH ?= $(SDK_ROOT)/components/softdevice/$(SOFTDEVICE_MODEL)/hex/$(SOFTDEVICE_MODEL)_nrf52_$(SOFTDEVICE_VERSION)_softdevice.hex
+SOFTDEVICE_PATH ?= $(SDK_ROOT)components/softdevice/$(SOFTDEVICE_MODEL)/hex/$(SOFTDEVICE_MODEL)_nrf52_$(SOFTDEVICE_VERSION)_softdevice.hex
+MBR_PATH ?= $(SDK_ROOT)components/softdevice/mbr/$(NRF_IC)/hex/mbr_$(NRF_MODEL)_$(MBR_VERSION)_mbr.hex
 
 # Flags for compiler
 HEADER_INCLUDES = $(addprefix -I,$(SDK_HEADER_PATHS)) $(addprefix -I,$(REPO_HEADER_PATHS)) $(addprefix -I,$(BOARD_HEADER_PATHS)) $(addprefix -I,$(APP_HEADER_PATHS))
