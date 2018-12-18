@@ -63,7 +63,7 @@ endif
 # ---- JTAG rules
 
 .PHONY: flash
-flash: all test_softdevice
+flash: all test_softdevice flash_mbr
 	$(Q)printf "r\n" > $(BUILDDIR)flash.jlink
 ifdef ID
 	$(Q)printf "w4 $(ID_FLASH_LOCATION), 0x$(ID_SECON) 0x$(ID_FIRST)\n" >> $(BUILDDIR)flash.jlink
@@ -97,6 +97,13 @@ flash_softdevice: $(BUILDDIR) $(SOFTDEVICE_PATH)
 	$(Q)printf "w4 4001e504 1\nloadfile $(SOFTDEVICE_PATH) \nr\ng\nexit\n" > $(BUILDDIR)flash_softdevice.jlink
 	$(Q)$(JLINK) $(JLINK_FLAGS) $(BUILDDIR)flash_softdevice.jlink
 
+.PHONY: flash_mbr
+ifdef USE_MBR
+flash_mbr: $(BUILDDIR) $(MBR_PATH)
+	$(Q)printf "loadfile $(MBR_PATH) \nr\ng\nexit\n" > $(BUILDDIR)flash_mbr.jlink
+	$(Q)$(JLINK) $(JLINK_FLAGS) $(BUILDDIR)flash_mbr.jlink
+endif
+
 .PHONY: erase
 erase: $(BUILDDIR)
 	$(Q)printf "w4 4001e504 2\nw4 4001e50c 1\nsleep 100\nr\nexit\n" > $(BUILDDIR)erase.jlink
@@ -105,15 +112,15 @@ erase: $(BUILDDIR)
 .PHONY: gdb
 gdb:
 ifeq ($(UNAME_S),Darwin)
-	$(Q)$(TERMINAL) "$(JLINK_GDBSERVER) $(JLINK_FLAGS) $(JLINK_GDBSERVER_FLAGS)"'
+	$(Q)$(TERMINAL) "cd $(PWD) && $(JLINK_GDBSERVER) $(JLINK_FLAGS) $(JLINK_GDBSERVER_FLAGS)"'
 	$(Q)sleep 1
 	$(Q)printf "target remote localhost:$(GDB_PORT_NUMBER)\nload\nmon reset\nbreak main\ncontinue\n" > .gdbinit
 ifneq ("$(wildcard $(DEBUG_ELF))","")
-	$(Q)$(TERMINAL) "$(GDB) -x .gdbinit $(DEBUG_ELF)"'
+	$(Q)$(TERMINAL) "cd $(PWD) && $(GDB) -x .gdbinit $(DEBUG_ELF)"'
 else ifneq ("$(wildcard $(ELF))","")
-	$(Q)$(TERMINAL) "$(GDB) -x .gdbinit $(ELF)"'
+	$(Q)$(TERMINAL) "cd $(PWD) && $(GDB) -x .gdbinit $(ELF)"'
 else
-	$(Q)$(TERMINAL) "$(GDB) -x .gdbinit"'
+	$(Q)$(TERMINAL) "cd $(PWD) && $(GDB) -x .gdbinit"'
 endif
 else
 	$(Q)$(TERMINAL) -e "$(JLINK_GDBSERVER) $(JLINK_FLAGS) $(JLINK_GDBSERVER_FLAGS)"
@@ -150,6 +157,8 @@ dfu: all pkg
 .PHONY: clean
 clean::
 	$(Q)rm -rf JLink.log .gdbinit
+
+print-%  : ; @echo $* = $($*)
 
 endif
 
