@@ -153,7 +153,7 @@ static void dfu_operation_callback(nrf_dfu_response_t * p_res, void * p_context)
 
             case NRF_DFU_OP_OBJECT_WRITE:
                 if (!((p_bm->currently_stored_block + 1) % BLOCKS_PER_DFU_OBJECT) ||
-                    ((p_bm->currently_stored_block + 1) == BLOCKS_PER_SIZE(p_bm->image_size)))
+                    ((uint32_t)(p_bm->currently_stored_block + 1) == BLOCKS_PER_SIZE(p_bm->image_size)))
                 {
                     res_code = background_dfu_op_crc(dfu_operation_callback, p_bm);
 
@@ -391,7 +391,7 @@ bool block_manager_is_image_complete(const background_dfu_block_manager_t * p_bm
 
     NRF_LOG_DEBUG("Is image complete (o:%d n:%d).", p_bm->last_block_stored, image_blocks);
 
-    if (p_bm->last_block_stored + 1 == image_blocks)
+    if ((uint32_t)(p_bm->last_block_stored + 1) == image_blocks)
     {
         return true;
     }
@@ -437,7 +437,7 @@ bool block_manager_increment_current_block(background_dfu_block_manager_t * p_bm
 {
     uint32_t image_blocks = BLOCKS_PER_SIZE(p_bm->image_size);
 
-    if (p_bm->current_block + 1 == image_blocks)
+    if ((uint32_t) (p_bm->current_block + 1) == image_blocks)
     {
         // Already on last block.
         return false;

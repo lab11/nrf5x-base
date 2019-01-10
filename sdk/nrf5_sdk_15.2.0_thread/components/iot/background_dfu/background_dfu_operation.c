@@ -108,7 +108,6 @@ ret_code_t background_dfu_op_write(const uint8_t             * p_payload,
     dfu_req.write.len         = payload_length;
     dfu_req.p_context         = p_context;
     dfu_req.callback.response = callback;
-
     return nrf_dfu_req_handler_on_req(&dfu_req);
 }
 

@@ -483,7 +483,8 @@ static void on_data_obj_write_request(nrf_dfu_request_t * p_req, nrf_dfu_respons
 
     uint32_t const write_addr = m_firmware_start_addr + s_dfu_settings.write_offset;
 
-    ASSERT(p_req->callback.write);
+    // Background DFU doesn't actually have a write callback, so this assert will aways trigger
+    //ASSERT(p_req->callback.write);
 
     ret_code_t ret =
         nrf_dfu_flash_store(write_addr, p_req->write.p_data, p_req->write.len, p_req->callback.write);

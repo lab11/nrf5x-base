@@ -75,6 +75,12 @@ ifneq (,$(filter $(NRF_IC),nrf52832 nrf52840))
     SDK_HEADER_PATHS += $(SDK_ROOT)components/libraries/block_dev/
     SDK_HEADER_PATHS += $(SDK_ROOT)components/libraries/bootloader/
     SDK_HEADER_PATHS += $(SDK_ROOT)components/libraries/bootloader/dfu/
+    SDK_HEADER_PATHS += $(SDK_ROOT)components/iot/background_dfu/
+    SDK_HEADER_PATHS += $(SDK_ROOT)components/iot/background_dfu/transport/
+    SDK_HEADER_PATHS += $(SDK_ROOT)components/iot/background_dfu/transport/coap/
+    SDK_HEADER_PATHS += $(SDK_ROOT)components/iot/coap/
+    SDK_HEADER_PATHS += $(SDK_ROOT)components/iot/common/
+    SDK_HEADER_PATHS += $(wildcard $(SDK_ROOT)components/libraries/log/src/)
     SDK_HEADER_PATHS += $(SDK_ROOT)components/libraries/bsp/
     SDK_HEADER_PATHS += $(SDK_ROOT)components/libraries/button/
     SDK_HEADER_PATHS += $(SDK_ROOT)components/libraries/cli/
@@ -113,7 +119,7 @@ ifneq (,$(filter $(NRF_IC),nrf52832 nrf52840))
     SDK_HEADER_PATHS += $(SDK_ROOT)components/libraries/sdcard/
     SDK_HEADER_PATHS += $(SDK_ROOT)components/libraries/sensorsim/
     SDK_HEADER_PATHS += $(SDK_ROOT)components/libraries/serial/
-    #SDK_HEADER_PATHS += $(SDK_ROOT)components/libraries/sha256/  # <-- Conflicts with mbedtls
+    SDK_HEADER_PATHS += $(SDK_ROOT)components/libraries/sha256/  # <-- Conflicts with mbedtls
     SDK_HEADER_PATHS += $(SDK_ROOT)components/libraries/simple_timer/
     SDK_HEADER_PATHS += $(SDK_ROOT)components/libraries/slip/
     SDK_HEADER_PATHS += $(SDK_ROOT)components/libraries/sortlist/
@@ -168,8 +174,9 @@ ifneq (,$(filter $(NRF_IC),nrf52832 nrf52840))
     SDK_HEADER_PATHS += $(SDK_ROOT)components/toolchain/cmsis/include/
     SDK_HEADER_PATHS += $(SDK_ROOT)components/softdevice/common/
     SDK_HEADER_PATHS += $(SDK_ROOT)external/cifra_AES128-EAX/
-    SDK_HEADER_PATHS += $(SDK_ROOT)external/mbedtls/library/
-    SDK_HEADER_PATHS += $(SDK_ROOT)external/nrf_tls/mbedtls/nrf_crypto/config/
+    #SDK_HEADER_PATHS += $(SDK_ROOT)external/mbedtls/library/
+    SDK_HEADER_PATHS += $(SDK_ROOT)external/nrf_tls/
+    #SDK_HEADER_PATHS += $(SDK_ROOT)external/nrf_tls/mbedtls/nrf_crypto/config/
 
     SDK_SOURCE_PATHS += $(SDK_ROOT)components/
     SDK_SOURCE_PATHS += $(SDK_ROOT)modules/nrfx/
@@ -187,6 +194,10 @@ ifneq (,$(filter $(NRF_IC),nrf52832 nrf52840))
     SDK_SOURCE_PATHS += $(SDK_ROOT)components/libraries/block_dev/
     SDK_SOURCE_PATHS += $(SDK_ROOT)components/libraries/bootloader/
     SDK_SOURCE_PATHS += $(SDK_ROOT)components/libraries/bootloader/dfu/
+    SDK_SOURCE_PATHS += $(SDK_ROOT)components/iot/background_dfu/
+    SDK_SOURCE_PATHS += $(SDK_ROOT)components/iot/background_dfu/transport/coap/
+    SDK_SOURCE_PATHS += $(SDK_ROOT)components/iot/coap/
+    SDK_SOURCE_PATHS += $(SDK_ROOT)components/iot/common/
     SDK_SOURCE_PATHS += $(SDK_ROOT)components/libraries/bsp/
     SDK_SOURCE_PATHS += $(SDK_ROOT)components/libraries/button/
     SDK_SOURCE_PATHS += $(SDK_ROOT)components/libraries/cli/
@@ -225,7 +236,7 @@ ifneq (,$(filter $(NRF_IC),nrf52832 nrf52840))
     SDK_SOURCE_PATHS += $(SDK_ROOT)components/libraries/sdcard/
     SDK_SOURCE_PATHS += $(SDK_ROOT)components/libraries/sensorsim/
     SDK_SOURCE_PATHS += $(SDK_ROOT)components/libraries/serial/
-    #SDK_SOURCE_PATHS += $(SDK_ROOT)components/libraries/sha256/  # <-- Conflicts with mbedtls
+    SDK_SOURCE_PATHS += $(SDK_ROOT)components/libraries/sha256/  # <-- Conflicts with mbedtls
     SDK_SOURCE_PATHS += $(SDK_ROOT)components/libraries/simple_timer/
     SDK_SOURCE_PATHS += $(SDK_ROOT)components/libraries/slip/
     SDK_SOURCE_PATHS += $(SDK_ROOT)components/libraries/sortlist/
@@ -251,7 +262,7 @@ ifneq (,$(filter $(NRF_IC),nrf52832 nrf52840))
     SDK_SOURCE_PATHS += $(SDK_ROOT)external/fprintf/
     SDK_SOURCE_PATHS += $(SDK_ROOT)external/segger_rtt/
     SDK_SOURCE_PATHS += $(SDK_ROOT)external/cifra_AES128-EAX/
-    SDK_SOURCE_PATHS += $(SDK_ROOT)external/mbedtls/library/
+    #SDK_SOURCE_PATHS += $(SDK_ROOT)external/mbedtls/library/
 
     ifdef SERIALIZATION_MODE
       SDK_HEADER_PATHS += $(wildcard $(SDK_ROOT)components/serialization/*/)

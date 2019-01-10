@@ -131,7 +131,7 @@ uint32_t coap_transport_write(const coap_port_t    * p_port,
     }
 
     do {
-        p_msg = otUdpNewMessage(m_pinstance, true);
+        p_msg = otUdpNewMessage(m_pinstance, NULL);
 		if (p_msg == NULL)
 		{
 			NRF_LOG_ERROR("Failed to allocate message\r\n");

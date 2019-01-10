@@ -671,7 +671,6 @@ uint32_t nrf_mem_reserve(uint8_t ** pp_buffer, uint32_t * p_size)
     NULL_PARAM_CHECK(p_size);
 
     const uint32_t requested_size = (*p_size);
-
     VERIFY_REQUESTED_SIZE(requested_size);
 
     NRF_LOG_DEBUG(">> %s, size 0x%04lX.", (uint32_t)__func__, requested_size);
