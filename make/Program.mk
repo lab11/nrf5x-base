@@ -14,6 +14,7 @@ JLINK_GDBSERVER = JLinkGDBServer
 JLINK_RTTCLIENT = JLinkRTTClient
 
 # nrfutil tools
+MERGEHEX = mergehex
 NRFUTIL = nrfutil
 
 # Default port for GDB
@@ -25,8 +26,11 @@ JLINK_GDBSERVER_FLAGS = -port $(GDB_PORT_NUMBER)
 
 # Configuration flags for nrfutil tools
 BOOTLOADER_DEV = /dev/ttyACM0
-NRFUTIL_PKG_GEN_FLAGS = pkg generate --hw-version 52 --sd-req 0x0 --application-version 1 --application $(BUILDDIR)$(OUTPUT_NAME).hex $(BUILDDIR)$(OUTPUT_NAME).zip
-NRFUTIL_PKG_DFU_FLAGS = dfu usb-serial -pkg $(BUILDDIR)$(OUTPUT_NAME).zip -p $(BOOTLOADER_DEV) -b 115200
+NRFUTIL_SETTINGS_GEN_FLAGS = settings generate --family $(NRF_IC_UPPER) --application-version 1 --bootloader-version 1 --bl-settings-version 1 --application $(HEX) $(BUILDDIR)$(OUTPUT_NAME)_settings.hex
+MERGEHEX_SETTINGS_FLAGS = -m $(HEX) $(BUILDDIR)$(OUTPUT_NAME)_settings.hex -o $(FIRST_DFU_HEX)
+NRFUTIL_PKG_GEN_FLAGS = pkg generate --hw-version 52 --sd-req 0x0 --application-version 1 --application $(HEX) $(BUILDDIR)$(OUTPUT_NAME).zip
+NRFUTIL_PKG_SIGNED_GEN_FLAGS = pkg generate --hw-version 52 --sd-req 0x0 --application-version 1 --key-file private.pem --application $(HEX) $(BUILDDIR)$(OUTPUT_NAME).zip
+NRFUTIL_PKG_USB_DFU_FLAGS = dfu usb-serial -pkg $(BUILDDIR)$(OUTPUT_NAME).zip -p $(BOOTLOADER_DEV) -b 115200
 
 # Allow users to select a specific JTAG device with a variable
 ifdef SEGGER_SERIAL
@@ -104,6 +108,15 @@ flash_mbr: $(BUILDDIR) $(MBR_PATH)
 	$(Q)$(JLINK) $(JLINK_FLAGS) $(BUILDDIR)flash_mbr.jlink
 endif
 
+.PHONY: flash_first_dfu
+flash_first_dfu: all first_dfu
+	$(Q)printf "r\n" > $(BUILDDIR)flash.jlink
+ifdef ID
+	$(Q)printf "w4 $(ID_FLASH_LOCATION), 0x$(ID_SECON) 0x$(ID_FIRST)\n" >> $(BUILDDIR)flash.jlink
+endif
+	$(Q)printf "loadfile $(FIRST_DFU_HEX) \nr\ng\nexit\n" >> $(BUILDDIR)flash.jlink
+	$(Q)$(JLINK) $(JLINK_FLAGS) $(BUILDDIR)flash.jlink
+
 .PHONY: erase
 erase: $(BUILDDIR)
 	$(Q)printf "w4 4001e504 2\nw4 4001e50c 1\nsleep 100\nr\nexit\n" > $(BUILDDIR)erase.jlink
@@ -148,11 +161,19 @@ else
 endif
 
 # ---- nrfutil bootloader rules
+.PHONY: first_dfu
+first_dfu: all
+	$(Q)$(NRFUTIL) $(NRFUTIL_SETTINGS_GEN_FLAGS)
+	$(Q)$(MERGEHEX) $(MERGEHEX_SETTINGS_FLAGS)
+.PHONY: pkg
 pkg: all
 	$(NRFUTIL) $(NRFUTIL_PKG_GEN_FLAGS)
+.PHONY: pkg_signed
+pkg_signed: all
+	$(NRFUTIL) $(NRFUTIL_PKG_SIGNED_GEN_FLAGS)
 .PHONY: dfu
-dfu: all pkg
-	until $(NRFUTIL) $(NRFUTIL_PKG_DFU_FLAGS); do sleep 0.5; done;
+usb-dfu: all pkg
+	until $(NRFUTIL) $(NRFUTIL_PKG_USB_DFU_FLAGS); do sleep 0.5; done;
 
 .PHONY: clean
 clean::

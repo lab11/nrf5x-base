@@ -86,6 +86,7 @@ else
   $(error NRF_IC unspecified. Add it to app Makefile!)
 endif
 FULL_IC_UPPER = $(shell echo $(FULL_IC) | tr a-z A-Z)
+NRF_IC_UPPER = $(shell echo $(NRF_IC) | tr a-z A-Z)
 CONFIGURATION_VARS += $(FULL_IC_UPPER)
 
 ifdef BOARD
@@ -176,6 +177,7 @@ override CFLAGS += \
     $(CPUFLAGS)\
     -Wall\
     -Wextra\
+    -Wno-date-time\
     -Wno-unused-parameter\
     -Werror=return-type\
     -Wno-expansion-to-defined\
