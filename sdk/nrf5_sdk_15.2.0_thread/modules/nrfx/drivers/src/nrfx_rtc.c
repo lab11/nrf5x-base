@@ -296,8 +296,8 @@ static void irq_handler(NRF_RTC_Type * p_reg,
     {
         if (nrf_rtc_int_is_enabled(p_reg,int_mask) && nrf_rtc_event_pending(p_reg,event))
         {
-            nrf_rtc_event_disable(p_reg,int_mask);
-            nrf_rtc_int_disable(p_reg,int_mask);
+            //nrf_rtc_event_disable(p_reg,int_mask);
+            //nrf_rtc_int_disable(p_reg,int_mask);
             nrf_rtc_event_clear(p_reg,event);
             NRFX_LOG_DEBUG("Event: %s, instance id: %lu.", EVT_TO_STR(event), instance_id);
             m_handlers[instance_id]((nrfx_rtc_int_type_t)i);
