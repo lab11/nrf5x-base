@@ -3,8 +3,6 @@
 #include <string.h>
 #include "nrf_log.h"
 
-#include "config.h"
-
 void __attribute__((weak)) dns_response_handler(void         * p_context,
                                  const char   * p_hostname,
                                  otIp6Address * p_resolved_address,

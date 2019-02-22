@@ -1,3 +1,4 @@
+#include "nrf.h"
 #include "nrf_log.h"
 #include "nrf_timer.h"
 
@@ -115,6 +116,11 @@ void fix_errata_78_in_nrf_802154(void)
     {
         nrf_timer_task_trigger(NRF_TIMER1, NRF_TIMER_TASK_SHUTDOWN);
     }
+    #if (__FPU_USED == 1)
+    __set_FPSCR(__get_FPSCR() & ~(0x0000009F));
+    (void) __get_FPSCR();
+    NVIC_ClearPendingIRQ(FPU_IRQn);
+    #endif
 }
 
 void __attribute__((weak)) thread_sleep(void)
