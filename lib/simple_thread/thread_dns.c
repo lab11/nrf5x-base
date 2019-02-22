@@ -3,7 +3,25 @@
 #include <string.h>
 #include "nrf_log.h"
 
-otError thread_dns_hostname_resolve(otInstance         * p_instance,
+#include "config.h"
+
+void __attribute__((weak)) dns_response_handler(void         * p_context,
+                                 const char   * p_hostname,
+                                 otIp6Address * p_resolved_address,
+                                 uint32_t       ttl,
+                                 otError        error)
+{
+    if (error != OT_ERROR_NONE)
+    {
+        NRF_LOG_INFO("DNS response error %d.", error);
+        return;
+    }
+
+    NRF_LOG_INFO("Successfully resolved address");
+    memcpy(p_context, p_resolved_address, sizeof(otIp6Address));
+}
+
+otError thread_dns_hostname_resolve(otInstance * p_instance,
                                     const char         * p_dns_host,
                                     const char         * p_hostname,
                                     otDnsResponseHandler p_dns_response_handler,
