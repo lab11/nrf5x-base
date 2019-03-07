@@ -25,29 +25,23 @@ a Makefile that looks like this:
 ```make
 PROJECT_NAME = $(shell basename "$(realpath ./)")
 
-APPLICATION_SRCS = $(notdir $(wildcard ./*.c))
-APPLICATION_SRCS += app_timer.c
-APPLICATION_SRCS += app_error.c
-APPLICATION_SRCS += app_error_weak.c
-APPLICATION_SRCS += nrf_sdh.c
-APPLICATION_SRCS += nrf_section_iter.c
-APPLICATION_SRCS += nrf_sdh_ble.c
-APPLICATION_SRCS += app_util_platform.c
-
-NRF_MODEL = nrf52
-
+# Configurations
+NRF_IC = nrf52832
 SDK_VERSION = 15
-SOFTDEVICE_MODEL = s140
+SOFTDEVICE_MODEL = s132
 
-NRF_BASE_PATH ?= ../..
+# Source and header files
+APP_HEADER_PATHS += .
+APP_SOURCE_PATHS += .
+APP_SOURCES = $(notdir $(wildcard ./*.c))
 
-LIBRARY_PATHS += .  ../../include
-SOURCE_PATHS += ../../src
+# Include board Makefile (if any)
+#include $(NRF_BASE_DIR)/boards/<BOARD_NAME_HERE>
 
-include $(NRF_BASE_PATH)/make/Makefile
+# Include main Makefile
+NRF_BASE_DIR ?= ../../
+include $(NRF_BASE_DIR)/make/AppMakefile.mk
 ```
-An example Makefile is included in this repo as Makefile.example. Copy to your
-own application directory and modify as desired.
 
 Generally, the expected directory structure for your project is:
 ```
@@ -83,13 +77,17 @@ you must do.
         sudo apt-get update
         sudo apt-get install gcc-arm-embedded
 
-2. Install the JLink [software](https://www.segger.com/jlink-software.html)
+2. Install Nordic's [command line
+   tools](https://www.nordicsemi.com/DocLib/Content/User_Guides/nrf5x_cltools/latest/UG/cltools/nrf5x_installation)
+   `mergehex` and `nrfjprog`. Ensure these tools are extracted and added to your path.
+
+3. Install the JLink [software](https://www.segger.com/jlink-software.html)
 for your platform. You want the "Software and documentation pack".
 
-3. Acquire a [JLink JTAG programmer](https://www.segger.com/jlink-general-info.html).
+4. Acquire a [JLink JTAG programmer](https://www.segger.com/jlink-general-info.html).
 The "EDU" edition works fine.
 
-4. Program an app! With the JLink box attached to the target board:
+5. Program an app! With the JLink box attached to the target board:
 
         make flash
 
