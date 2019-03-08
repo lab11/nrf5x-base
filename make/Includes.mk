@@ -29,9 +29,9 @@ ifneq (,$(filter $(NRF_IC),nrf52832 nrf52840))
 
     # Set the path
     ifeq ($(USE_THREAD), 1)
-      SDK_ROOT = $(NRF_BASE_DIR)/sdk/nrf5_sdk_15.2.0_thread/
+      SDK_ROOT = $(NRF_BASE_DIR)/sdk/nrf5_sdk_15.3.0_thread/
     else
-      SDK_ROOT = $(NRF_BASE_DIR)/sdk/nrf5_sdk_15.2.0_thread/
+      SDK_ROOT = $(NRF_BASE_DIR)/sdk/nrf5_sdk_15.3.0/
     endif
 
     # default files for ICs
