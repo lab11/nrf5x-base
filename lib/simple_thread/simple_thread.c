@@ -5,26 +5,12 @@
 #include "simple_thread.h"
 
 static otInstance * m_ot_instance;
-static otNetifAddress m_slaac_addresses[6];               /**< Buffer containing addresses resolved by SLAAC */
 
 void __attribute__((weak)) thread_state_changed_callback(uint32_t flags, void * p_context)
 {
     NRF_LOG_INFO("State changed! Flags: 0x%08lx Current role: %d\r\n",
                  flags, otThreadGetDeviceRole(p_context));
 
-    if (flags & OT_CHANGED_THREAD_NETDATA)
-    {
-        /**
-         * Whenever Thread Network Data is changed, it is necessary to check if generation of global
-         * addresses is needed. This operation is performed internally by the OpenThread CLI module.
-         * To lower power consumption, the examples that implement Thread Sleepy End Device role
-         * don't use the OpenThread CLI module. Therefore otIp6SlaacUpdate util is used to create
-         * IPv6 addresses.
-         */
-         otIp6SlaacUpdate(m_ot_instance, m_slaac_addresses,
-                          sizeof(m_slaac_addresses) / sizeof(m_slaac_addresses[0]),
-                          otIp6CreateRandomIid, NULL);
-    }
 }
 
 

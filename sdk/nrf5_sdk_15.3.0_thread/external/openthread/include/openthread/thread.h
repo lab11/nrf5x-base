@@ -166,7 +166,7 @@ typedef struct otMleCounters
     uint16_t mRouterRole;                    ///< Number of times device entered OT_DEVICE_ROLE_ROUTER role.
     uint16_t mLeaderRole;                    ///< Number of times device entered OT_DEVICE_ROLE_LEADER role.
     uint16_t mAttachAttempts;                ///< Number of attach attempts while device was detached.
-    uint16_t mParitionIdChanges;             ///< Number of changes to partition ID.
+    uint16_t mPartitionIdChanges;            ///< Number of changes to partition ID.
     uint16_t mBetterPartitionAttachAttempts; ///< Number of attempts to attach to a better partition.
 
     /**
@@ -733,7 +733,7 @@ OTAPI const otIpCounters *OTCALL otThreadGetIp6Counters(otInstance *aInstance);
  * @returns A pointer to the Thread MLE counters.
  *
  */
-const otMleCounters *otThreadGetMleCounters(otInstance *aInstance);
+OTAPI const otMleCounters *OTCALL otThreadGetMleCounters(otInstance *aInstance);
 
 /**
  * Reset the Thread MLE counters.

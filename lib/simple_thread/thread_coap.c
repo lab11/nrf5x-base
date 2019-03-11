@@ -13,12 +13,10 @@ static const otIp6Address m_unspecified_ipv6 =
 
 void __attribute__((weak)) thread_coap_handler(
                                 void                * p_context,
-                                otCoapHeader        * p_header,
                                 otMessage           * p_message,
                                 const otMessageInfo * p_message_info)
 {
     (void)p_context;
-    (void)p_header;
     (void)p_message;
     (void)p_message_info;
 
@@ -36,7 +34,6 @@ otError thread_coap_send(otInstance* instance, otCoapCode req, otCoapType type, 
   otError       error = OT_ERROR_NONE;
   otMessage   * message;
   otMessageInfo message_info;
-  otCoapHeader  header;
 
   if (otIp6IsAddressEqual(dest, &m_unspecified_ipv6))
   {
@@ -44,18 +41,19 @@ otError thread_coap_send(otInstance* instance, otCoapCode req, otCoapType type, 
     return OT_ERROR_INVALID_ARGS;
   }
 
-  otCoapHeaderInit(&header, type, req);
-  otCoapHeaderGenerateToken(&header, 2);
-  otCoapHeaderAppendUriPathOptions(&header, path);
-  otCoapHeaderSetPayloadMarker(&header);
-
-  message = otCoapNewMessage(instance, &header, NULL);
+  message = otCoapNewMessage(instance, NULL);
   if (message == NULL)
   {
     NRF_LOG_INFO("Failed to allocate message for CoAP Request\r\n");
     // Force an app error and subsequent reset - this shouldn't happen!
     return OT_ERROR_NO_BUFS;
   }
+
+  otCoapMessageInit(message, type, req);
+  otCoapMessageGenerateToken(message, 2);
+  otCoapMessageAppendUriPathOptions(message, path);
+  otCoapMessageSetPayloadMarker(message);
+
 
   error = otMessageAppend(message, data, len);
   if (error != OT_ERROR_NONE)
