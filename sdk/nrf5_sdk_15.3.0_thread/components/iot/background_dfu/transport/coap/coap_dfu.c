@@ -1248,6 +1248,7 @@ void coap_dfu_diagnostic_get(struct background_dfu_diagnostic *p_diag)
     {
         memcpy(p_diag, &m_dfu_ctx.dfu_diag, sizeof(background_dfu_diagnostic_t));
         p_diag->state = m_dfu_ctx.dfu_state;
+        p_diag->block_num = m_dfu_ctx.block_num;
     }
 }
 
