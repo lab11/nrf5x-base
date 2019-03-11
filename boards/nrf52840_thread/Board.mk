@@ -66,6 +66,7 @@ BOARD_SOURCES += \
 	simple_thread.c\
 	thread_coap.c\
 	thread_dns.c\
+	thread_ntp.c\
 	ntp.c\
 
 endif
