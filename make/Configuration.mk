@@ -30,6 +30,9 @@ RANLIB := $(TOOLCHAIN)-ranlib
 READELF := $(TOOLCHAIN)-readelf
 SIZE := $(TOOLCHAIN)-size
 
+# Git version
+GIT_VERSION := $(shell git describe --abbrev=4 --dirty --always --tags)
+
 # Pretty-printing rules
 # If environment variable V is non-empty, be verbose
 ifneq ($(V),)
@@ -183,6 +186,7 @@ override CFLAGS += \
     -Wno-expansion-to-defined\
     $(CONFIGURATION_DEFINES)\
     $(SDK_DEFINES)\
+    -DGIT_VERSION=\"$(GIT_VERSION)\"\
     -DCONFIG_GPIO_AS_PINRESET\
     -s\
     -ffunction-sections\
