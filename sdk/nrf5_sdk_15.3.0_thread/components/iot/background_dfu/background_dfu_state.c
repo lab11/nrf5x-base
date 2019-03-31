@@ -73,7 +73,7 @@ NRF_LOG_MODULE_REGISTER();
 #define BLOCK_REQUEST_JITTER_MAX    2000    /**< Maximum jitter value when sending bitmap with requested blocks in multicast DFU. */
 #define BLOCK_RECEIVE_TIMEOUT       2000    /**< Timeout value after which block is considered missing in multicast DFU. */
 
-#define DFU_DATE_TIME               (__DATE__ " " __TIME__)
+#define DFU_DATE_TIME               "DFU"   // Don't use this! Unreproducable builds! (__DATE__ " " __TIME__)
 
 /**@brief DFU trigger packet version. */
 #define TRIGGER_VERSION         1
