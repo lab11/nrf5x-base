@@ -135,6 +135,7 @@ USE_ESB ?= 0
 space :=
 space +=
 $(info BUILD OPTIONS:)
+$(info $(space) Version     $(GIT_VERSION))
 $(info $(space) Chip        $(NRF_IC))
 $(info $(space) RAM         $(RAM_KB) kB)
 $(info $(space) FLASH       $(FLASH_KB) kB)
