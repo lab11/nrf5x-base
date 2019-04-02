@@ -28,8 +28,8 @@ JLINK_GDBSERVER_FLAGS = -port $(GDB_PORT_NUMBER)
 BOOTLOADER_DEV = /dev/ttyACM0
 NRFUTIL_SETTINGS_GEN_FLAGS = settings generate --family $(NRF_IC_UPPER) --application-version 1 --bootloader-version 1 --bl-settings-version 2 --key-file private.pem --app-boot-validation='VALIDATE_ECDSA_P256_SHA256' --application $(HEX) $(BUILDDIR)$(OUTPUT_NAME)_settings.hex
 MERGEHEX_SETTINGS_FLAGS = -m $(HEX) $(BUILDDIR)$(OUTPUT_NAME)_settings.hex -o $(FIRST_DFU_HEX)
-NRFUTIL_PKG_GEN_FLAGS = pkg generate --hw-version 52 --sd-req 0x0 --application-version 1 --application $(HEX) $(BUILDDIR)$(OUTPUT_NAME).zip
-NRFUTIL_PKG_SIGNED_GEN_FLAGS = pkg generate --hw-version 52 --sd-req 0x0 --application-version 1 --key-file private.pem --application $(HEX) $(BUILDDIR)$(OUTPUT_NAME).zip --app-boot-validation='VALIDATE_ECDSA_P256_SHA256'
+NRFUTIL_PKG_GEN_FLAGS = pkg generate --hw-version 52 --sd-req 0x0 --application-version-string "$(BARE_VERSION)" --application $(HEX) $(BUILDDIR)$(OUTPUT_NAME).zip
+NRFUTIL_PKG_SIGNED_GEN_FLAGS = pkg generate --hw-version 52 --sd-req 0x0 --application-version-string "$(BARE_VERSION)" --key-file private.pem --application $(HEX) $(BUILDDIR)$(OUTPUT_NAME).zip --app-boot-validation='VALIDATE_ECDSA_P256_SHA256'
 NRFUTIL_PKG_USB_DFU_FLAGS = dfu usb-serial -pkg $(BUILDDIR)$(OUTPUT_NAME).zip -p $(BOOTLOADER_DEV) -b 115200
 
 # Allow users to select a specific JTAG device with a variable
