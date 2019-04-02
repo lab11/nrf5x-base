@@ -31,7 +31,7 @@ READELF := $(TOOLCHAIN)-readelf
 SIZE := $(TOOLCHAIN)-size
 
 # Git version
-GIT_VERSION := $(shell git describe --abbrev=4 --dirty --always --tags)
+GIT_VERSION := $(shell git describe --abbrev=4 --always --tags)
 BARE_VERSION := $(lastword $(subst v, , $(firstword $(subst -, ,$(GIT_VERSION)))))
 
 # Pretty-printing rules
