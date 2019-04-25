@@ -17,6 +17,8 @@ APPLICATION_SRCS += simple_adv.c
 NRF_MODEL = nrf51
 SDK_VERSION = 10
 SOFTDEVICE_MODEL = s110
+FLASH_KB = 128
+RAM_KB = 16
 
 LIBRARY_PATHS += . ../../include
 SOURCE_PATHS += ../../src

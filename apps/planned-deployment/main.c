@@ -52,8 +52,8 @@ static void advertise_with_next_parameter_set (bool init) {
 
         // advertising interval
         //advertising_interval = interval_list[interval_list_index];
-        //advertising_interval = MSEC_TO_UNITS(333, UNIT_0_625_MS);
-        advertising_interval = 533; // 333.125 ms
+        //advertising_interval = 533; // 333.125 ms
+        advertising_interval = 180; // 112.5 ms
         adv_parameters.interval = advertising_interval;
 
         err_code = sd_ble_gap_adv_start(&adv_parameters);
