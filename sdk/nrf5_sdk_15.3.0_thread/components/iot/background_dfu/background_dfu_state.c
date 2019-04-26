@@ -94,7 +94,9 @@ APP_TIMER_DEF(m_missing_block_timer);
 APP_TIMER_DEF(m_block_timeout_timer);
 
 /**@brief Defines how many retries are performed in case no response is received. */
-#define DEFAULT_RETRIES         3
+#ifndef BACKGROUND_DFU_RETRIES
+#define BACKGROUND_DFU_RETRIES         3
+#endif
 
 /**@brief DFU error handler.
  *
@@ -381,7 +383,7 @@ static void dfu_block_manager_result_handler(background_dfu_block_result_t resul
 static void setup_download_init_command(background_dfu_context_t * p_dfu_ctx)
 {
     p_dfu_ctx->p_resource_size = &p_dfu_ctx->init_cmd_size;
-    p_dfu_ctx->retry_count     = DEFAULT_RETRIES;
+    p_dfu_ctx->retry_count     = BACKGROUND_DFU_RETRIES;
     p_dfu_ctx->block_num       = 0;
 
     background_dfu_transport_state_update(p_dfu_ctx);
@@ -484,7 +486,7 @@ static void dfu_data_select_callback(nrf_dfu_response_t * p_res, void * p_contex
 
     p_dfu_ctx->dfu_state       = BACKGROUND_DFU_DOWNLOAD_FIRMWARE;
     p_dfu_ctx->p_resource_size = &p_dfu_ctx->firmware_size;
-    p_dfu_ctx->retry_count     = DEFAULT_RETRIES;
+    p_dfu_ctx->retry_count     = BACKGROUND_DFU_RETRIES;
     p_dfu_ctx->block_num       = (p_res->select.offset / DEFAULT_BLOCK_SIZE);
     p_dfu_ctx->max_obj_size    = p_res->select.max_size;
 
@@ -619,7 +621,7 @@ uint32_t background_dfu_handle_event(background_dfu_context_t * p_dfu_ctx,
 
                 p_dfu_ctx->dfu_state     = BACKGROUND_DFU_DOWNLOAD_TRIG;
                 p_dfu_ctx->block_num     = 0;
-                p_dfu_ctx->retry_count   = DEFAULT_RETRIES;
+                p_dfu_ctx->retry_count   = BACKGROUND_DFU_RETRIES;
 
                 background_dfu_transport_state_update(p_dfu_ctx);
             }

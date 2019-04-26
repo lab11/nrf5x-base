@@ -31,7 +31,7 @@ READELF := $(TOOLCHAIN)-readelf
 SIZE := $(TOOLCHAIN)-size
 
 # Git version
-GIT_VERSION := $(shell git describe --abbrev=4 --dirty --always --tags)
+GIT_VERSION := $(shell git describe --abbrev=4 --always --tags)
 BARE_VERSION := $(lastword $(subst v, , $(firstword $(subst -, ,$(GIT_VERSION)))))
 
 # Pretty-printing rules
@@ -75,16 +75,16 @@ ifdef NRF_IC
     RAM_KB ?= 64
     FLASH_KB ?= 512
     FULL_IC = nrf52832_xxaa
-    CONFIGURATION_VARS += NRF52 ID_FLASH_LOCATION=0x77FF8
-    ID_FLASH_LOCATION=0x77FF8
+    CONFIGURATION_VARS += NRF52 ID_FLASH_LOCATION=0x7FFF8
+    ID_FLASH_LOCATION=0x7FFF8
   else ifeq ($(NRF_IC), nrf52840)
     NRF_MODEL = nrf52
     SOFTDEVICE_MODEL ?= s140
     RAM_KB ?= 256
     FLASH_KB ?= 1024
     FULL_IC = nrf52840_xxaa
-    CONFIGURATION_VARS += ID_FLASH_LOCATION=0xF7FF8
-    ID_FLASH_LOCATION=0xF7FF8
+    CONFIGURATION_VARS += ID_FLASH_LOCATION=0xFFFF8
+    ID_FLASH_LOCATION=0xFFFF8
   endif
 else
   $(error NRF_IC unspecified. Add it to app Makefile!)
@@ -135,6 +135,7 @@ USE_ESB ?= 0
 space :=
 space +=
 $(info BUILD OPTIONS:)
+$(info $(space) Version     $(GIT_VERSION))
 $(info $(space) Chip        $(NRF_IC))
 $(info $(space) RAM         $(RAM_KB) kB)
 $(info $(space) FLASH       $(FLASH_KB) kB)
