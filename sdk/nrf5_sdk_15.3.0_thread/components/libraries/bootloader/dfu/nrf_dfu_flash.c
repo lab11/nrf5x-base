@@ -54,7 +54,7 @@ NRF_LOG_MODULE_REGISTER();
 void dfu_fstorage_evt_handler(nrf_fstorage_evt_t * p_evt);
 
 
-NRF_FSTORAGE_DEF(nrf_fstorage_t m_fs) =
+NRF_FSTORAGE_DEF(nrf_fstorage_t m_fs_dfu) =
 {
     .evt_handler = dfu_fstorage_evt_handler,
     .start_addr  = MBR_SIZE,
@@ -110,7 +110,7 @@ ret_code_t nrf_dfu_flash_init(bool sd_irq_initialized)
         p_api_impl = &nrf_fstorage_nvmc;
     }
 
-    return nrf_fstorage_init(&m_fs, p_api_impl, NULL);
+    return nrf_fstorage_init(&m_fs_dfu, p_api_impl, NULL);
 }
 
 
@@ -125,7 +125,7 @@ ret_code_t nrf_dfu_flash_store(uint32_t                   dest,
                   dest, p_src, len, m_flash_operations_pending);
 
     //lint -save -e611 (Suspicious cast)
-    rc = nrf_fstorage_write(&m_fs, dest, p_src, len, (void *)callback);
+    rc = nrf_fstorage_write(&m_fs_dfu, dest, p_src, len, (void *)callback);
     //lint -restore
 
     if ((NRF_LOG_ENABLED) && (rc == NRF_SUCCESS))
@@ -151,7 +151,7 @@ ret_code_t nrf_dfu_flash_erase(uint32_t                 page_addr,
                   page_addr, num_pages, m_flash_operations_pending);
 
     //lint -save -e611 (Suspicious cast)
-    rc = nrf_fstorage_erase(&m_fs, page_addr, num_pages, (void *)callback);
+    rc = nrf_fstorage_erase(&m_fs_dfu, page_addr, num_pages, (void *)callback);
     //lint -restore
 
     if ((NRF_LOG_ENABLED) && (rc == NRF_SUCCESS))
