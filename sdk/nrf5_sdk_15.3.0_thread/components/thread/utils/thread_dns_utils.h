@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2017 - 2018, Nordic Semiconductor ASA
+ * Copyright (c) 2017 - 2019, Nordic Semiconductor ASA
  *
  * All rights reserved.
  *
@@ -38,27 +38,25 @@
  *
  */
 
-#ifndef APP_THREAD_DNS_UTILS_H
-#define APP_THREAD_DNS_UTILS_H
+#ifndef THREAD_DNS_UTILS_H__
+#define THREAD_DNS_UTILS_H__
 
 #include <openthread/dns.h>
 #include <openthread/error.h>
 #include <openthread/instance.h>
 
-#define DNS_SERVER_IP "fdaa:bb:1::1" /**< IPv6 of the DNS server (DNS64). */
+#define DNS_SERVER_IP "fdaa:bb:1::2" /**< IPv6 of the DNS server (DNS64). */
 
 /**@brief Function that resolves hostname and executes the passed callback function.
  *
- * @param[in] p_instance             OpenThread instance structure pointer.
  * @param[in] p_hostname             String containing the hostname URL.
  * @param[in] dns_response_callback  Function that is executed when the DNS response is received.
  * @param[in] p_context              Context passed to the dns_response_callback.
  *
- * @return                           An OpenThread error value. OT_ERROR_NONE in case of success.
+ * @return  An OpenThread error value. OT_ERROR_NONE in case of success.
  */
-otError thread_dns_utils_hostname_resolve(otInstance         * p_instance,
-                                          const char         * p_hostname,
+otError thread_dns_utils_hostname_resolve(const char         * p_hostname,
                                           otDnsResponseHandler p_dns_response_callback,
                                           void               * p_context);
 
-#endif /* APP_THREAD_DNS_UTILS_H */
+#endif /* THREAD_DNS_UTILS_H__ */

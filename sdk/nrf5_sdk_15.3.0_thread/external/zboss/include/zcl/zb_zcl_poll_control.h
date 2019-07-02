@@ -129,9 +129,9 @@ enum zb_zcl_poll_control_attr_e
   ZB_ZCL_ATTR_POLL_CONTROL_FAST_POLL_TIMEOUT_MAX_ID = 0x0006,
 
   /*! @brief Status Data - custom non-spec parameters  */
-  ZB_ZCL_ATTR_POLL_CONTROL_STATUS_DATA_ID = 0xffff,
+  ZB_ZCL_ATTR_POLL_CONTROL_STATUS_DATA_ID = 0xefff,
   /*! @brief Status Data - custom non-spec parameters for server side */
-  ZB_ZCL_ATTR_POLL_CONTROL_ADDR_DATA_ID = 0xfffe,
+  ZB_ZCL_ATTR_POLL_CONTROL_ADDR_DATA_ID = 0xeffe,
 };
 
 /** @brief Value for stop Check-in process for Check-in Interval attribute */
@@ -245,7 +245,7 @@ enum zb_zcl_poll_control_attr_e
 {                                                       \
   ZB_ZCL_ATTR_POLL_CONTROL_STATUS_DATA_ID,              \
   ZB_ZCL_ATTR_TYPE_NULL,                                \
-  ZB_ZCL_ATTR_ACCESS_READ_WRITE,                        \
+  ZB_ZCL_ATTR_ACCESS_INTERNAL,                          \
   (zb_voidp_t) data_ptr                                 \
 }
 
@@ -254,7 +254,7 @@ enum zb_zcl_poll_control_attr_e
 {                                                       \
   ZB_ZCL_ATTR_POLL_CONTROL_ADDR_DATA_ID,                \
   ZB_ZCL_ATTR_TYPE_NULL,                                \
-  ZB_ZCL_ATTR_ACCESS_READ_WRITE,                        \
+  ZB_ZCL_ATTR_ACCESS_INTERNAL,                          \
   (zb_voidp_t) data_ptr                                 \
 }
 
@@ -290,8 +290,14 @@ zb_zcl_poll_control_srv_cfg_data_t;
 /** @brief Default value for Fast Poll Timeout for Client command */
 #define ZB_ZCL_POLL_CONTROL_FAST_POLL_TIMEOUT_CLIENT_DEFAULT_VALUE   0x00f0
 
-/** @internal @brief Declare attribute list for Poll Control cluster - server side
-    @param attr_list - attribure list name
+/*! @internal Number of attributes mandatory for reporting in Poll Control cluster */
+#define ZB_ZCL_POLL_CONTROL_REPORT_ATTR_COUNT 0
+
+/*! @}
+    @endcond */ /* Poll Control cluster internals */
+
+/** @brief Declare attribute list for Poll Control cluster - server side
+    @param attr_list - attribute list name
     @param checkin_interval - pointer to variable to store Check-in Interval attribute
     @param long_poll_interval - pointer to variable to store Long Poll Interval attribute
     @param short_poll_interval - pointer to variable to store Short Poll Interval attribute
@@ -316,8 +322,8 @@ zb_zcl_poll_control_srv_cfg_data_t;
   ZB_ZCL_SET_ATTR_DESC(ZB_ZCL_ATTR_POLL_CONTROL_ADDR_DATA_ID, &(srv_cfg_data_ctx_##attr_list))        \
   ZB_ZCL_FINISH_DECLARE_ATTRIB_LIST
 
-/** @internal @brief Declare attribute list for Poll Control cluster - client side
-    @param attr_list - attribure list name
+/** @brief Declare attribute list for Poll Control cluster - client side
+    @param attr_list - attribute list name
 */
 #define ZB_ZCL_DECLARE_POLL_CONTROL_ATTRIB_LIST_CLIENT(attr_list)                             \
     zb_zcl_poll_control_client_status_t client_status_data_ctx_##attr_list =                  \
@@ -326,13 +332,6 @@ zb_zcl_poll_control_srv_cfg_data_t;
     ZB_ZCL_SET_ATTR_DESC(ZB_ZCL_ATTR_POLL_CONTROL_STATUS_DATA_ID,                             \
                          (&(client_status_data_ctx_##attr_list)))                             \
   ZB_ZCL_FINISH_DECLARE_ATTRIB_LIST
-
-
-/*! @internal Number of attributes mandatory for reporting in Poll Control cluster */
-#define ZB_ZCL_POLL_CONTROL_REPORT_ATTR_COUNT 0
-
-/*! @}
-    @endcond */ /* Poll Control cluster internals */
 
 /*! @} */ /* Poll Control cluster attributes */
 
@@ -359,6 +358,7 @@ enum zb_zcl_poll_control_resp_cmd_e
   ZB_ZCL_CMD_POLL_CONTROL_SET_SHORT_POLL_INTERVAL_ID  = 0x03, /**< "Set Short Poll Interval" command, HA spec 9.5.5.6 */
 };
 
+/** @cond internals_doc */
 /* Poll control cluster commands list : only for information - do not modify */
 #define ZB_ZCL_CLUSTER_ID_POLL_CONTROL_SERVER_ROLE_GENERATED_CMD_LIST ZB_ZCL_CMD_POLL_CONTROL_CHECK_IN_ID
 
@@ -371,6 +371,9 @@ enum zb_zcl_poll_control_resp_cmd_e
                                       ZB_ZCL_CMD_POLL_CONTROL_SET_SHORT_POLL_INTERVAL_ID
 
 #define ZB_ZCL_CLUSTER_ID_POLL_CONTROL_SERVER_ROLE_RECEIVED_CMD_LIST ZB_ZCL_CLUSTER_ID_POLL_CONTROL_CLIENT_ROLE_GENERATED_CMD_LIST
+/*! @}
+ *  @endcond */ /* internals_doc */
+
 /******************************* Check-in ******************************/
 
 /*! @brief Send Check-in command, see HA spec 9.5.4.4
@@ -404,7 +407,7 @@ typedef struct zb_zcl_poll_control_check_in_cli_param_s
 }
 zb_zcl_poll_control_check_in_cli_param_t;
 
-
+/** @cond internals_doc */
 #define ZB_ZCL_POLL_CONTROL_CLI_CALL_USER_APP(                              \
   _buffer, _short_addr, _ep, _fast_poll_timeout, _result)                   \
 {                                                                           \
@@ -429,7 +432,8 @@ zb_zcl_poll_control_check_in_cli_param_t;
     _result = RET_OK;                                                       \
   }                                                                         \
 }
-
+/*! @}
+ *  @endcond */ /* internals_doc */
 
 /******************************* Check-in response ******************************/
 

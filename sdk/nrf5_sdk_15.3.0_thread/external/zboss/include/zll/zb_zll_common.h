@@ -388,6 +388,8 @@ enum zb_zll_key_value_e
   ZB_ZLL_CERTIFICATION_KEY = 0x8000 //AT: fix (see: Table 67 Key encryption algorithms)
 };
 
+/** @cond touchlink */
+
 /** @brief Enumeration of touchlink actions, that should be approved
  * by end user application */
 enum zb_zll_touchlink_action_e
@@ -396,6 +398,8 @@ enum zb_zll_touchlink_action_e
   ZB_ZLL_ACTION_JOIN_ROUTER,
   ZB_ZLL_ACTION_JOIN_ED
 };
+
+/** @endcond */ /* touchlink */
 
 /** Sets user identify start/stop handle callback. */
 #define ZB_ZLL_REGISTER_IDENTIFYCALLBACK(callback) (ZLL_DEVICE_INFO().identify_handler = (callback))

@@ -1,0 +1,1122 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
+
+
+<project>
+  <fileVersion>2</fileVersion>  <configuration>
+    <name>libopenthread_mtd_nrf52840</name>
+    <toolchain>
+      <name>ARM</name>
+    </toolchain>
+    <debug>0</debug>
+    <settings>
+      <name>General</name>
+      <archiveVersion>3</archiveVersion>
+      <data>
+        <version>22</version>
+        <wantNonLocal>1</wantNonLocal>
+        <debug>0</debug>
+        <option>
+          <name>ExePath</name>
+          <state>_build</state>
+        </option>
+        <option>
+          <name>ObjPath</name>
+          <state>_build</state>
+        </option>
+        <option>
+          <name>ListPath</name>
+          <state>_build</state>
+        </option>
+        <option>
+          <name>Variant</name>
+          <version>20</version>
+          <state>39</state>
+        </option>
+        <option>
+          <name>GEndianMode</name>
+          <state>0</state>
+        </option>
+        <option>
+          <name>Input variant</name>
+          <version>3</version>
+          <state>1</state>
+        </option>
+        <option>
+          <name>Input description</name>
+          <state>Full formatting.</state>
+        </option>
+        <option>
+          <name>Output variant</name>
+          <version>2</version>
+          <state>1</state>
+        </option>
+        <option>
+          <name>Output description</name>
+          <state>Full formatting.</state>
+        </option>
+        <option>
+          <name>GOutputBinary</name>
+          <state>1</state>
+        </option>
+        <option>
+          <name>FPU</name>
+          <version>2</version>
+          <state>5</state>
+        </option>
+        <option>
+          <name>OGCoreOrChip</name>
+          <state>1</state>
+        </option>
+        <option>
+          <name>GRuntimeLibSelect</name>
+          <version>0</version>
+          <state>2</state>
+        </option>
+        <option>
+          <name>GRuntimeLibSelectSlave</name>
+          <version>0</version>
+          <state>2</state>
+        </option>
+        <option>
+          <name>RTDescription</name>
+          <state>Use the full configuration of the C/C++ runtime library. Full locale interface, C locale, file descriptor support, multibytes in printf and scanf, and hex floats in strtod.</state>
+        </option>
+        <option>
+          <name>OGProductVersion</name>
+          <state>6.10.3.52260</state>
+        </option>
+        <option>
+          <name>OGLastSavedByProductVersion</name>
+          <state>7.20.2.7418</state>
+        </option>
+        <option>
+          <name>GeneralEnableMisra</name>
+          <state>0</state>
+        </option>
+        <option>
+          <name>GeneralMisraVerbose</name>
+          <state>0</state>
+        </option>
+        <option>
+          <name>OGChipSelectEditMenu</name>
+          <state>nrf52840_xxaa	nRF52840_xxAA</state>
+        </option>
+        <option>
+          <name>GenLowLevelInterface</name>
+          <state>0</state>
+        </option>
+        <option>
+          <name>GEndianModeBE</name>
+          <state>1</state>
+        </option>
+        <option>
+          <name>OGBufferedTerminalOutput</name>
+          <state>0</state>
+        </option>
+        <option>
+          <name>GenStdoutInterface</name>
+          <state>0</state>
+        </option>
+        <option>
+          <name>GeneralMisraRules98</name>
+          <version>0</version>
+          <state>1000111110110101101110011100111111101110011011000101110111101101100111111111111100110011111001110111001111111111111111111111111</state>
+        </option>
+        <option>
+          <name>GeneralMisraVer</name>
+          <state>0</state>
+        </option>
+        <option>
+          <name>GeneralMisraRules04</name>
+          <version>0</version>
+          <state>111101110010111111111000110111111111111111111111111110010111101111010101111111111111111111111111101111111011111001111011111011111111111111111</state>
+        </option>
+        <option>
+          <name>RTConfigPath2</name>
+          <state>$TOOLKIT_DIR$\INC\c\DLib_Config_Full.h</state>
+        </option>
+        <option>
+          <name>GFPUCoreSlave</name>
+          <version>20</version>
+          <state>39</state>
+        </option>
+        <option>
+          <name>GBECoreSlave</name>
+          <version>20</version>
+          <state>39</state>
+        </option>
+        <option>
+          <name>OGUseCmsis</name>
+          <state>0</state>
+        </option>
+        <option>
+          <name>OGUseCmsisDspLib</name>
+          <state>0</state>
+        </option>
+        <option>
+          <name>GRuntimeLibThreads</name>
+          <state>0</state>
+        </option>
+      </data>
+    </settings>
+    <settings>
+      <name>ICCARM</name>
+      <archiveVersion>2</archiveVersion>
+      <data>
+        <version>31</version>
+        <wantNonLocal>1</wantNonLocal>
+        <debug>0</debug>
+        <option>
+          <name>CCGuardCalls</name>
+          <state>1</state>
+        </option>
+        <option>
+          <name>CCOptimizationNoSizeConstraints</name>
+          <state>0</state>
+        </option>
+        <option>
+          <name>CCDefines</name>
+          <state>FLOAT_ABI_HARD</state>
+          <state>HAVE_CONFIG_H</state>
+          <state>MBEDTLS_CONFIG_FILE="mbedtls-config.h"</state>
+          <state>MBEDTLS_USER_CONFIG_FILE="nrf52840-mbedtls-config.h"</state>
+          <state>NRF52840_XXAA</state>
+          <state>OPENTHREAD_CONFIG_ENABLE_SLAAC=1</state>
+          <state>OPENTHREAD_CONFIG_LOG_OUTPUT=OPENTHREAD_CONFIG_LOG_OUTPUT_PLATFORM_DEFINED</state>
+          <state>OPENTHREAD_MTD=1</state>
+          <state>OPENTHREAD_PROJECT_CORE_CONFIG_FILE="openthread-core-nrf52840-config.h"</state>
+          <state>UART_AS_SERIAL_TRANSPORT=1</state>
+          <state>_BSD_SOURCE=1</state>
+          <state>_DEFAULT_SOURCE=1</state>
+        </option>
+        <option>
+          <name>CCPreprocFile</name>
+          <state>0</state>
+        </option>
+        <option>
+          <name>CCPreprocComments</name>
+          <state>0</state>
+        </option>
+        <option>
+          <name>CCPreprocLine</name>
+          <state>0</state>
+        </option>
+        <option>
+          <name>CCListCFile</name>
+          <state>0</state>
+        </option>
+        <option>
+          <name>CCListCMnemonics</name>
+          <state>0</state>
+        </option>
+        <option>
+          <name>CCListCMessages</name>
+          <state>0</state>
+        </option>
+        <option>
+          <name>CCListAssFile</name>
+          <state>0</state>
+        </option>
+        <option>
+          <name>CCListAssSource</name>
+          <state>0</state>
+        </option>
+        <option>
+          <name>CCEnableRemarks</name>
+          <state>0</state>
+        </option>
+        <option>
+          <name>CCDiagSuppress</name>
+          <state></state>
+        </option>
+        <option>
+          <name>CCDiagRemark</name>
+          <state></state>
+        </option>
+        <option>
+          <name>CCDiagWarning</name>
+          <state></state>
+        </option>
+        <option>
+          <name>CCDiagError</name>
+          <state></state>
+        </option>
+        <option>
+          <name>CCObjPrefix</name>
+          <state>1</state>
+        </option>
+        <option>
+          <name>CCAllowList</name>
+          <version>1</version>
+          <state>11111110</state>
+        </option>
+        <option>
+          <name>CCDebugInfo</name>
+          <state>1</state>
+        </option>
+        <option>
+          <name>IEndianMode</name>
+          <state>1</state>
+        </option>
+        <option>
+          <name>IProcessor</name>
+          <state>1</state>
+        </option>
+        <option>
+          <name>IExtraOptionsCheck</name>
+          <state>0</state>
+        </option>
+        <option>
+          <name>IExtraOptions</name>
+          <state></state>
+        </option>
+        <option>
+          <name>CCLangConformance</name>
+          <state>0</state>
+        </option>
+        <option>
+          <name>CCSignedPlainChar</name>
+          <state>0</state>
+        </option>
+        <option>
+          <name>CCRequirePrototypes</name>
+          <state>0</state>
+        </option>
+        <option>
+          <name>CCMultibyteSupport</name>
+          <state>0</state>
+        </option>
+        <option>
+          <name>CCDiagWarnAreErr</name>
+          <state>1</state>
+        </option>
+        <option>
+          <name>CCCompilerRuntimeInfo</name>
+          <state>0</state>
+        </option>
+        <option>
+          <name>IFpuProcessor</name>
+          <state>1</state>
+        </option>
+        <option>
+          <name>OutputFile</name>
+          <state>$FILE_BNAME$.o</state>
+        </option>
+        <option>
+          <name>CCLibConfigHeader</name>
+          <state>1</state>
+        </option>
+        <option>
+          <name>PreInclude</name>
+          <state></state>
+        </option>
+        <option>
+          <name>CompilerMisraOverride</name>
+          <state>0</state>
+        </option>
+        <option>
+          <name>CCIncludePath2</name>
+          <state>$PROJ_DIR$\..\..\..\config</state>
+          <state>$PROJ_DIR$\..\..\..\..\..\..\..\components\toolchain\cmsis\include</state>
+          <state>$PROJ_DIR$\..\..\..</state>
+          <state>$PROJ_DIR$\..\..\..\..\openthread\examples\platforms\nrf52840</state>
+          <state>$PROJ_DIR$\..\..\..\..\openthread\include</state>
+          <state>$PROJ_DIR$\..\..\..\..\openthread\src\core</state>
+          <state>$PROJ_DIR$\..\..\..\..\openthread\third_party\NordicSemiconductor\cmsis</state>
+          <state>$PROJ_DIR$\..\..\..\..\openthread\third_party\NordicSemiconductor\libraries\crypto</state>
+          <state>$PROJ_DIR$\..\..\..\..\openthread\third_party\NordicSemiconductor\libraries\nrf_cc310\include</state>
+          <state>$PROJ_DIR$\..\..\..\..\openthread\third_party\NordicSemiconductor\nrfx\mdk</state>
+          <state>$PROJ_DIR$\..\..\..\..\openthread\third_party\mbedtls</state>
+          <state>$PROJ_DIR$\..\..\..\..\openthread\third_party\mbedtls\repo\include</state>
+          <state>$PROJ_DIR$\..\..\..\..\openthread\third_party\mbedtls\repo\include\mbedtls</state>
+        </option>
+        <option>
+          <name>CCStdIncCheck</name>
+          <state>0</state>
+        </option>
+        <option>
+          <name>CCCodeSection</name>
+          <state>.text</state>
+        </option>
+        <option>
+          <name>IInterwork2</name>
+          <state>0</state>
+        </option>
+        <option>
+          <name>IProcessorMode2</name>
+          <state>1</state>
+        </option>
+        <option>
+          <name>CCOptLevel</name>
+          <state>3</state>
+        </option>
+        <option>
+          <name>CCOptStrategy</name>
+          <version>0</version>
+          <state>1</state>
+        </option>
+        <option>
+          <name>CCOptLevelSlave</name>
+          <state>3</state>
+        </option>
+        <option>
+          <name>CompilerMisraRules98</name>
+          <version>0</version>
+          <state>1000111110110101101110011100111111101110011011000101110111101101100111111111111100110011111001110111001111111111111111111111111</state>
+        </option>
+        <option>
+          <name>CompilerMisraRules04</name>
+          <version>0</version>
+          <state>111101110010111111111000110111111111111111111111111110010111101111010101111111111111111111111111101111111011111001111011111011111111111111111</state>
+        </option>
+        <option>
+          <name>CCPosIndRopi</name>
+          <state>0</state>
+        </option>
+        <option>
+          <name>CCPosIndRwpi</name>
+          <state>0</state>
+        </option>
+        <option>
+          <name>CCPosIndNoDynInit</name>
+          <state>0</state>
+        </option>
+        <option>
+          <name>IccLang</name>
+          <state>2</state>
+        </option>
+        <option>
+          <name>IccCDialect</name>
+          <state>1</state>
+        </option>
+        <option>
+          <name>IccAllowVLA</name>
+          <state>0</state>
+        </option>
+        <option>
+          <name>IccCppDialect</name>
+          <state>1</state>
+        </option>
+        <option>
+          <name>IccExceptions</name>
+          <state>1</state>
+        </option>
+        <option>
+          <name>IccRTTI</name>
+          <state>1</state>
+        </option>
+        <option>
+          <name>IccStaticDestr</name>
+          <state>1</state>
+        </option>
+        <option>
+          <name>IccCppInlineSemantics</name>
+          <state>0</state>
+        </option>
+        <option>
+          <name>IccCmsis</name>
+          <state>1</state>
+        </option>
+        <option>
+          <name>IccFloatSemantics</name>
+          <state>0</state>
+        </option>
+        <option>
+          <name>CCNoLiteralPool</name>
+          <state>0</state>
+        </option>
+        <option>
+          <name>CCOptStrategySlave</name>
+          <version>0</version>
+          <state>1</state>
+        </option>
+      </data>
+    </settings>
+    <settings>
+      <name>AARM</name>
+      <archiveVersion>2</archiveVersion>
+      <data>
+        <version>9</version>
+        <wantNonLocal>1</wantNonLocal>
+        <debug>0</debug>
+        <option>
+          <name>AObjPrefix</name>
+          <state>1</state>
+        </option>
+        <option>
+          <name>AEndian</name>
+          <state>1</state>
+        </option>
+        <option>
+          <name>ACaseSensitivity</name>
+          <state>1</state>
+        </option>
+        <option>
+          <name>MacroChars</name>
+          <version>0</version>
+          <state>0</state>
+        </option>
+        <option>
+          <name>AWarnEnable</name>
+          <state>0</state>
+        </option>
+        <option>
+          <name>AWarnWhat</name>
+          <state>0</state>
+        </option>
+        <option>
+          <name>AWarnOne</name>
+          <state></state>
+        </option>
+        <option>
+          <name>AWarnRange1</name>
+          <state></state>
+        </option>
+        <option>
+          <name>AWarnRange2</name>
+          <state></state>
+        </option>
+        <option>
+          <name>ADebug</name>
+          <state></state>
+        </option>
+        <option>
+          <name>AltRegisterNames</name>
+          <state>0</state>
+        </option>
+        <option>
+      <name>ADefines</name>
+          <state>FLOAT_ABI_HARD</state>
+          <state>HAVE_CONFIG_H</state>
+          <state>MBEDTLS_CONFIG_FILE="mbedtls-config.h"</state>
+          <state>MBEDTLS_USER_CONFIG_FILE="nrf52840-mbedtls-config.h"</state>
+          <state>NRF52840_XXAA</state>
+          <state>OPENTHREAD_CONFIG_ENABLE_SLAAC=1</state>
+          <state>OPENTHREAD_CONFIG_LOG_OUTPUT=OPENTHREAD_CONFIG_LOG_OUTPUT_PLATFORM_DEFINED</state>
+          <state>OPENTHREAD_MTD=1</state>
+          <state>OPENTHREAD_PROJECT_CORE_CONFIG_FILE="openthread-core-nrf52840-config.h"</state>
+          <state>UART_AS_SERIAL_TRANSPORT=1</state>
+          <state>_BSD_SOURCE=1</state>
+          <state>_DEFAULT_SOURCE=1</state>
+        </option>
+        <option>
+          <name>AList</name>
+          <state>0</state>
+        </option>
+        <option>
+          <name>AListHeader</name>
+          <state>1</state>
+        </option>
+        <option>
+          <name>AListing</name>
+          <state>1</state>
+        </option>
+        <option>
+          <name>Includes</name>
+          <state>0</state>
+        </option>
+        <option>
+          <name>MacDefs</name>
+          <state>0</state>
+        </option>
+        <option>
+          <name>MacExps</name>
+          <state>1</state>
+        </option>
+        <option>
+          <name>MacExec</name>
+          <state>0</state>
+        </option>
+        <option>
+          <name>OnlyAssed</name>
+          <state>0</state>
+        </option>
+        <option>
+          <name>MultiLine</name>
+          <state>0</state>
+        </option>
+        <option>
+          <name>PageLengthCheck</name>
+          <state>0</state>
+        </option>
+        <option>
+          <name>PageLength</name>
+          <state>80</state>
+        </option>
+        <option>
+          <name>TabSpacing</name>
+          <state>8</state>
+        </option>
+        <option>
+          <name>AXRef</name>
+          <state>0</state>
+        </option>
+        <option>
+          <name>AXRefDefines</name>
+          <state>0</state>
+        </option>
+        <option>
+          <name>AXRefInternal</name>
+          <state>0</state>
+        </option>
+        <option>
+          <name>AXRefDual</name>
+          <state>0</state>
+        </option>
+        <option>
+          <name>AProcessor</name>
+          <state>1</state>
+        </option>
+        <option>
+          <name>AFpuProcessor</name>
+          <state>1</state>
+        </option>
+        <option>
+          <name>AOutputFile</name>
+          <state>$FILE_BNAME$.o</state>
+        </option>
+        <option>
+          <name>AMultibyteSupport</name>
+          <state>0</state>
+        </option>
+        <option>
+          <name>ALimitErrorsCheck</name>
+          <state>0</state>
+        </option>
+        <option>
+          <name>ALimitErrorsEdit</name>
+          <state>100</state>
+        </option>
+        <option>
+          <name>AIgnoreStdInclude</name>
+          <state>0</state>
+        </option>
+        <option>
+          <name>AUserIncludes</name>
+          <state>$PROJ_DIR$\..\..\..\config</state>
+          <state>$PROJ_DIR$\..\..\..\..\..\..\..\components\toolchain\cmsis\include</state>
+          <state>$PROJ_DIR$\..\..\..</state>
+          <state>$PROJ_DIR$\..\..\..\..\openthread\examples\platforms\nrf52840</state>
+          <state>$PROJ_DIR$\..\..\..\..\openthread\include</state>
+          <state>$PROJ_DIR$\..\..\..\..\openthread\src\core</state>
+          <state>$PROJ_DIR$\..\..\..\..\openthread\third_party\NordicSemiconductor\cmsis</state>
+          <state>$PROJ_DIR$\..\..\..\..\openthread\third_party\NordicSemiconductor\libraries\crypto</state>
+          <state>$PROJ_DIR$\..\..\..\..\openthread\third_party\NordicSemiconductor\libraries\nrf_cc310\include</state>
+          <state>$PROJ_DIR$\..\..\..\..\openthread\third_party\NordicSemiconductor\nrfx\mdk</state>
+          <state>$PROJ_DIR$\..\..\..\..\openthread\third_party\mbedtls</state>
+          <state>$PROJ_DIR$\..\..\..\..\openthread\third_party\mbedtls\repo\include</state>
+          <state>$PROJ_DIR$\..\..\..\..\openthread\third_party\mbedtls\repo\include\mbedtls</state>
+        </option>
+        <option>
+          <name>AExtraOptionsCheckV2</name>
+          <state>0</state>
+        </option>
+        <option>
+          <name>AExtraOptionsV2</name>
+          <state></state>
+        </option>
+        <option>
+          <name>AsmNoLiteralPool</name>
+          <state>0</state>
+        </option>
+      </data>
+    </settings>
+    <settings>
+      <name>OBJCOPY</name>
+      <archiveVersion>0</archiveVersion>
+      <data>
+        <version>1</version>
+        <wantNonLocal>1</wantNonLocal>
+        <debug>0</debug>
+        <option>
+          <name>OOCOutputFormat</name>
+          <version>2</version>
+          <state>1</state>
+        </option>
+        <option>
+          <name>OCOutputOverride</name>
+          <state>1</state>
+        </option>
+        <option>
+          <name>OOCOutputFile</name>
+          <state>ot_nrf52840_libopenthread_mtd_nrf52840.hex</state>
+        </option>
+        <option>
+          <name>OOCCommandLineProducer</name>
+          <state>1</state>
+        </option>
+        <option>
+          <name>OOCObjCopyEnable</name>
+          <state>1</state>
+        </option>
+      </data>
+    </settings>
+    <settings>
+      <name>CUSTOM</name>
+      <archiveVersion>3</archiveVersion>
+      <data>
+        <extensions></extensions>
+        <cmdline></cmdline>
+      </data>
+    </settings>
+    <settings>
+      <name>BICOMP</name>
+      <archiveVersion>0</archiveVersion>
+      <data/>
+    </settings>
+    <settings>
+      <name>BUILDACTION</name>
+      <archiveVersion>1</archiveVersion>
+      <data>
+        <prebuild></prebuild>
+        <postbuild></postbuild>
+      </data>
+    </settings>
+    <settings>
+      <name>ILINK</name>
+      <archiveVersion>0</archiveVersion>
+      <data>
+        <version>16</version>
+        <wantNonLocal>1</wantNonLocal>
+        <debug>0</debug>
+        <option>
+          <name>IlinkLibIOConfig</name>
+          <state>1</state>
+        </option>
+        <option>
+          <name>XLinkMisraHandler</name>
+          <state>0</state>
+        </option>
+        <option>
+          <name>IlinkInputFileSlave</name>
+          <state>0</state>
+        </option>
+        <option>
+          <name>IlinkOutputFile</name>
+          <state>ot_nrf52840_libopenthread_mtd_nrf52840.out</state>
+        </option>
+        <option>
+          <name>IlinkDebugInfoEnable</name>
+          <state>1</state>
+        </option>
+        <option>
+          <name>IlinkKeepSymbols</name>
+          <state></state>
+        </option>
+        <option>
+          <name>IlinkRawBinaryFile</name>
+          <state></state>
+        </option>
+        <option>
+          <name>IlinkRawBinarySymbol</name>
+          <state></state>
+        </option>
+        <option>
+          <name>IlinkRawBinarySegment</name>
+          <state></state>
+        </option>
+        <option>
+          <name>IlinkRawBinaryAlign</name>
+          <state></state>
+        </option>
+        <option>
+          <name>IlinkDefines</name>
+          <state></state>
+        </option>
+        <option>
+          <name>IlinkConfigDefines</name>
+          <state></state>
+        </option>
+        <option>
+          <name>IlinkMapFile</name>
+          <state>1</state>
+        </option>
+        <option>
+          <name>IlinkLogFile</name>
+          <state>0</state>
+        </option>
+        <option>
+          <name>IlinkLogInitialization</name>
+          <state>0</state>
+        </option>
+        <option>
+          <name>IlinkLogModule</name>
+          <state>0</state>
+        </option>
+        <option>
+          <name>IlinkLogSection</name>
+          <state>0</state>
+        </option>
+        <option>
+          <name>IlinkLogVeneer</name>
+          <state>0</state>
+        </option>
+        <option>
+          <name>IlinkIcfOverride</name>
+          <state>1</state>
+        </option>
+        <option>
+          <name>IlinkIcfFile</name>
+      <state>$PROJ_DIR$\ot_nrf52840_iar_nRF5x.icf</state>
+        </option>
+        <option>
+          <name>IlinkIcfFileSlave</name>
+          <state></state>
+        </option>
+        <option>
+          <name>IlinkEnableRemarks</name>
+          <state>0</state>
+        </option>
+        <option>
+          <name>IlinkSuppressDiags</name>
+          <state></state>
+        </option>
+        <option>
+          <name>IlinkTreatAsRem</name>
+          <state></state>
+        </option>
+        <option>
+          <name>IlinkTreatAsWarn</name>
+          <state></state>
+        </option>
+        <option>
+          <name>IlinkTreatAsErr</name>
+          <state></state>
+        </option>
+        <option>
+          <name>IlinkWarningsAreErrors</name>
+          <state>1</state>
+        </option>
+        <option>
+          <name>IlinkUseExtraOptions</name>
+          <state>0</state>
+        </option>
+        <option>
+          <name>IlinkExtraOptions</name>
+          <state></state>
+        </option>
+        <option>
+          <name>IlinkLowLevelInterfaceSlave</name>
+          <state>1</state>
+        </option>
+        <option>
+          <name>IlinkAutoLibEnable</name>
+          <state>1</state>
+        </option>
+        <option>
+          <name>IlinkAdditionalLibs</name>
+          <state></state>
+        </option>
+        <option>
+          <name>IlinkOverrideProgramEntryLabel</name>
+          <state>0</state>
+        </option>
+        <option>
+          <name>IlinkProgramEntryLabelSelect</name>
+          <state>0</state>
+        </option>
+        <option>
+          <name>IlinkProgramEntryLabel</name>
+          <state>__iar_program_start</state>
+        </option>
+        <option>
+          <name>DoFill</name>
+          <state>0</state>
+        </option>
+        <option>
+          <name>FillerByte</name>
+          <state>0xFF</state>
+        </option>
+        <option>
+          <name>FillerStart</name>
+          <state>0x0</state>
+        </option>
+        <option>
+          <name>FillerEnd</name>
+          <state>0x0</state>
+        </option>
+        <option>
+          <name>CrcSize</name>
+          <version>0</version>
+          <state>1</state>
+        </option>
+        <option>
+          <name>CrcAlign</name>
+          <state>1</state>
+        </option>
+        <option>
+          <name>CrcPoly</name>
+          <state>0x11021</state>
+        </option>
+        <option>
+          <name>CrcCompl</name>
+          <version>0</version>
+          <state>0</state>
+        </option>
+        <option>
+          <name>CrcBitOrder</name>
+          <version>0</version>
+          <state>0</state>
+        </option>
+        <option>
+          <name>CrcInitialValue</name>
+          <state>0x0</state>
+        </option>
+        <option>
+          <name>DoCrc</name>
+          <state>0</state>
+        </option>
+        <option>
+          <name>IlinkBE8Slave</name>
+          <state>1</state>
+        </option>
+        <option>
+          <name>IlinkBufferedTerminalOutput</name>
+          <state>1</state>
+        </option>
+        <option>
+          <name>IlinkStdoutInterfaceSlave</name>
+          <state>1</state>
+        </option>
+        <option>
+          <name>CrcFullSize</name>
+          <state>0</state>
+        </option>
+        <option>
+          <name>IlinkIElfToolPostProcess</name>
+          <state>0</state>
+        </option>
+        <option>
+          <name>IlinkLogAutoLibSelect</name>
+          <state>0</state>
+        </option>
+        <option>
+          <name>IlinkLogRedirSymbols</name>
+          <state>0</state>
+        </option>
+        <option>
+          <name>IlinkLogUnusedFragments</name>
+          <state>0</state>
+        </option>
+        <option>
+          <name>IlinkCrcReverseByteOrder</name>
+          <state>0</state>
+        </option>
+        <option>
+          <name>IlinkCrcUseAsInput</name>
+          <state>1</state>
+        </option>
+        <option>
+          <name>IlinkOptInline</name>
+          <state>1</state>
+        </option>
+        <option>
+          <name>IlinkOptExceptionsAllow</name>
+          <state>1</state>
+        </option>
+        <option>
+          <name>IlinkOptExceptionsForce</name>
+          <state>0</state>
+        </option>
+        <option>
+          <name>IlinkCmsis</name>
+          <state>1</state>
+        </option>
+        <option>
+          <name>IlinkOptMergeDuplSections</name>
+          <state>0</state>
+        </option>
+        <option>
+          <name>IlinkOptUseVfe</name>
+          <state>1</state>
+        </option>
+        <option>
+          <name>IlinkOptForceVfe</name>
+          <state>0</state>
+        </option>
+        <option>
+          <name>IlinkStackAnalysisEnable</name>
+          <state>0</state>
+        </option>
+        <option>
+          <name>IlinkStackControlFile</name>
+          <state></state>
+        </option>
+        <option>
+          <name>IlinkStackCallGraphFile</name>
+          <state></state>
+        </option>
+        <option>
+          <name>CrcAlgorithm</name>
+          <version>0</version>
+          <state>1</state>
+        </option>
+        <option>
+          <name>CrcUnitSize</name>
+          <version>0</version>
+          <state>0</state>
+        </option>
+        <option>
+          <name>IlinkThreadsSlave</name>
+          <state>1</state>
+        </option>
+      </data>
+    </settings>
+    <settings>
+      <name>IARCHIVE</name>
+      <archiveVersion>0</archiveVersion>
+      <data>
+        <version>0</version>
+        <wantNonLocal>1</wantNonLocal>
+        <debug>0</debug>
+        <option>
+          <name>IarchiveInputs</name>
+          <state></state>
+        </option>
+        <option>
+          <name>IarchiveOverride</name>
+          <state>0</state>
+        </option>
+        <option>
+          <name>IarchiveOutput</name>
+          <state>###Unitialized###</state>
+        </option>
+      </data>
+    </settings>
+    <settings>
+      <name>BILINK</name>
+      <archiveVersion>0</archiveVersion>
+      <data/>
+    </settings>
+  </configuration>  <group>
+  <name>openthread</name>    <file>
+    <name>$PROJ_DIR$\..\..\..\..\openthread\src\core\thread\address_resolver.cpp</name>    </file>    <file>
+    <name>$PROJ_DIR$\..\..\..\..\openthread\src\core\crypto\aes_ccm.cpp</name>    </file>    <file>
+    <name>$PROJ_DIR$\..\..\..\..\openthread\src\core\crypto\aes_ecb.cpp</name>    </file>    <file>
+    <name>$PROJ_DIR$\..\..\..\..\openthread\src\core\meshcop\announce_begin_client.cpp</name>    </file>    <file>
+    <name>$PROJ_DIR$\..\..\..\..\openthread\src\core\thread\announce_begin_server.cpp</name>    </file>    <file>
+    <name>$PROJ_DIR$\..\..\..\..\openthread\src\core\thread\announce_sender.cpp</name>    </file>    <file>
+    <name>$PROJ_DIR$\..\..\..\..\openthread\src\core\meshcop\border_agent.cpp</name>    </file>    <file>
+    <name>$PROJ_DIR$\..\..\..\..\openthread\src\core\api\border_router_api.cpp</name>    </file>    <file>
+    <name>$PROJ_DIR$\..\..\..\..\openthread\src\core\utils\channel_manager.cpp</name>    </file>    <file>
+    <name>$PROJ_DIR$\..\..\..\..\openthread\src\core\api\channel_manager_api.cpp</name>    </file>    <file>
+    <name>$PROJ_DIR$\..\..\..\..\openthread\src\core\mac\channel_mask.cpp</name>    </file>    <file>
+    <name>$PROJ_DIR$\..\..\..\..\openthread\src\core\utils\channel_monitor.cpp</name>    </file>    <file>
+    <name>$PROJ_DIR$\..\..\..\..\openthread\src\core\api\channel_monitor_api.cpp</name>    </file>    <file>
+    <name>$PROJ_DIR$\..\..\..\..\openthread\src\core\utils\child_supervision.cpp</name>    </file>    <file>
+    <name>$PROJ_DIR$\..\..\..\..\openthread\src\core\api\child_supervision_api.cpp</name>    </file>    <file>
+    <name>$PROJ_DIR$\..\..\..\..\openthread\src\core\thread\child_table.cpp</name>    </file>    <file>
+    <name>$PROJ_DIR$\..\..\..\..\openthread\src\core\coap\coap.cpp</name>    </file>    <file>
+    <name>$PROJ_DIR$\..\..\..\..\openthread\src\core\api\coap_api.cpp</name>    </file>    <file>
+    <name>$PROJ_DIR$\..\..\..\..\openthread\src\core\coap\coap_message.cpp</name>    </file>    <file>
+    <name>$PROJ_DIR$\..\..\..\..\openthread\src\core\coap\coap_secure.cpp</name>    </file>    <file>
+    <name>$PROJ_DIR$\..\..\..\..\openthread\src\core\api\coap_secure_api.cpp</name>    </file>    <file>
+    <name>$PROJ_DIR$\..\..\..\..\openthread\src\core\meshcop\commissioner.cpp</name>    </file>    <file>
+    <name>$PROJ_DIR$\..\..\..\..\openthread\src\core\api\commissioner_api.cpp</name>    </file>    <file>
+    <name>$PROJ_DIR$\..\..\..\..\openthread\src\core\common\crc16.cpp</name>    </file>    <file>
+    <name>$PROJ_DIR$\..\..\..\..\openthread\src\core\api\crypto_api.cpp</name>    </file>    <file>
+    <name>$PROJ_DIR$\..\..\..\..\openthread\src\core\thread\data_poll_manager.cpp</name>    </file>    <file>
+    <name>$PROJ_DIR$\..\..\..\..\openthread\src\core\meshcop\dataset.cpp</name>    </file>    <file>
+    <name>$PROJ_DIR$\..\..\..\..\openthread\src\core\api\dataset_api.cpp</name>    </file>    <file>
+    <name>$PROJ_DIR$\..\..\..\..\openthread\src\core\api\dataset_ftd_api.cpp</name>    </file>    <file>
+    <name>$PROJ_DIR$\..\..\..\..\openthread\src\core\meshcop\dataset_local.cpp</name>    </file>    <file>
+    <name>$PROJ_DIR$\..\..\..\..\openthread\src\core\meshcop\dataset_manager.cpp</name>    </file>    <file>
+    <name>$PROJ_DIR$\..\..\..\..\openthread\src\core\meshcop\dataset_manager_ftd.cpp</name>    </file>    <file>
+    <name>$PROJ_DIR$\..\..\..\..\openthread\src\core\net\dhcp6_client.cpp</name>    </file>    <file>
+    <name>$PROJ_DIR$\..\..\..\..\openthread\src\core\net\dhcp6_server.cpp</name>    </file>    <file>
+    <name>$PROJ_DIR$\..\..\..\..\openthread\src\core\api\dns_api.cpp</name>    </file>    <file>
+    <name>$PROJ_DIR$\..\..\..\..\openthread\src\core\net\dns_client.cpp</name>    </file>    <file>
+    <name>$PROJ_DIR$\..\..\..\..\openthread\src\core\meshcop\dtls.cpp</name>    </file>    <file>
+    <name>$PROJ_DIR$\..\..\..\..\openthread\src\core\crypto\ecdsa.cpp</name>    </file>    <file>
+    <name>$PROJ_DIR$\..\..\..\..\openthread\src\core\meshcop\energy_scan_client.cpp</name>    </file>    <file>
+    <name>$PROJ_DIR$\..\..\..\..\openthread\src\core\thread\energy_scan_server.cpp</name>    </file>    <file>
+    <name>$PROJ_DIR$\..\..\..\..\openthread\src\core\common\entropy.cpp</name>    </file>    <file>
+    <name>$PROJ_DIR$\..\..\..\..\openthread\src\core\api\entropy_api.cpp</name>    </file>    <file>
+    <name>$PROJ_DIR$\..\..\..\..\openthread\src\core\utils\heap.cpp</name>    </file>    <file>
+    <name>$PROJ_DIR$\..\..\..\..\openthread\src\core\crypto\hmac_sha256.cpp</name>    </file>    <file>
+    <name>$PROJ_DIR$\..\..\..\..\openthread\src\core\net\icmp6.cpp</name>    </file>    <file>
+    <name>$PROJ_DIR$\..\..\..\..\openthread\src\core\api\icmp6_api.cpp</name>    </file>    <file>
+    <name>$PROJ_DIR$\..\..\..\..\openthread\src\core\common\instance.cpp</name>    </file>    <file>
+    <name>$PROJ_DIR$\..\..\..\..\openthread\src\core\api\instance_api.cpp</name>    </file>    <file>
+    <name>$PROJ_DIR$\..\..\..\..\openthread\src\core\net\ip6.cpp</name>    </file>    <file>
+    <name>$PROJ_DIR$\..\..\..\..\openthread\src\core\net\ip6_address.cpp</name>    </file>    <file>
+    <name>$PROJ_DIR$\..\..\..\..\openthread\src\core\api\ip6_api.cpp</name>    </file>    <file>
+    <name>$PROJ_DIR$\..\..\..\..\openthread\src\core\net\ip6_filter.cpp</name>    </file>    <file>
+    <name>$PROJ_DIR$\..\..\..\..\openthread\src\core\net\ip6_headers.cpp</name>    </file>    <file>
+    <name>$PROJ_DIR$\..\..\..\..\openthread\src\core\net\ip6_mpl.cpp</name>    </file>    <file>
+    <name>$PROJ_DIR$\..\..\..\..\openthread\src\core\net\ip6_routes.cpp</name>    </file>    <file>
+    <name>$PROJ_DIR$\..\..\..\..\openthread\src\core\api\jam_detection_api.cpp</name>    </file>    <file>
+    <name>$PROJ_DIR$\..\..\..\..\openthread\src\core\utils\jam_detector.cpp</name>    </file>    <file>
+    <name>$PROJ_DIR$\..\..\..\..\openthread\src\core\meshcop\joiner.cpp</name>    </file>    <file>
+    <name>$PROJ_DIR$\..\..\..\..\openthread\src\core\api\joiner_api.cpp</name>    </file>    <file>
+    <name>$PROJ_DIR$\..\..\..\..\openthread\src\core\meshcop\joiner_router.cpp</name>    </file>    <file>
+    <name>$PROJ_DIR$\..\..\..\..\openthread\src\core\thread\key_manager.cpp</name>    </file>    <file>
+    <name>$PROJ_DIR$\..\..\..\..\openthread\src\core\meshcop\leader.cpp</name>    </file>    <file>
+    <name>$PROJ_DIR$\..\..\..\..\openthread\src\core\api\link_api.cpp</name>    </file>    <file>
+    <name>$PROJ_DIR$\..\..\..\..\openthread\src\core\thread\link_quality.cpp</name>    </file>    <file>
+    <name>$PROJ_DIR$\..\..\..\..\openthread\src\core\mac\link_raw.cpp</name>    </file>    <file>
+    <name>$PROJ_DIR$\..\..\..\..\openthread\src\core\api\link_raw_api.cpp</name>    </file>    <file>
+    <name>$PROJ_DIR$\..\..\..\..\openthread\src\core\common\logging.cpp</name>    </file>    <file>
+    <name>$PROJ_DIR$\..\..\..\..\openthread\src\core\api\logging_api.cpp</name>    </file>    <file>
+    <name>$PROJ_DIR$\..\..\..\..\openthread\src\core\thread\lowpan.cpp</name>    </file>    <file>
+    <name>$PROJ_DIR$\..\..\..\..\openthread\src\core\mac\mac.cpp</name>    </file>    <file>
+    <name>$PROJ_DIR$\..\..\..\..\openthread\src\core\mac\mac_filter.cpp</name>    </file>    <file>
+    <name>$PROJ_DIR$\..\..\..\..\openthread\src\core\mac\mac_frame.cpp</name>    </file>    <file>
+    <name>$PROJ_DIR$\..\..\..\..\openthread\src\core\crypto\mbedtls.cpp</name>    </file>    <file>
+    <name>$PROJ_DIR$\..\..\..\..\openthread\src\core\thread\mesh_forwarder.cpp</name>    </file>    <file>
+    <name>$PROJ_DIR$\..\..\..\..\openthread\src\core\thread\mesh_forwarder_ftd.cpp</name>    </file>    <file>
+    <name>$PROJ_DIR$\..\..\..\..\openthread\src\core\thread\mesh_forwarder_mtd.cpp</name>    </file>    <file>
+    <name>$PROJ_DIR$\..\..\..\..\openthread\src\core\meshcop\meshcop.cpp</name>    </file>    <file>
+    <name>$PROJ_DIR$\..\..\..\..\openthread\src\core\meshcop\meshcop_tlvs.cpp</name>    </file>    <file>
+    <name>$PROJ_DIR$\..\..\..\..\openthread\src\core\common\message.cpp</name>    </file>    <file>
+    <name>$PROJ_DIR$\..\..\..\..\openthread\src\core\api\message_api.cpp</name>    </file>    <file>
+    <name>$PROJ_DIR$\..\..\..\..\openthread\src\core\utils\missing_strlcat.c</name>    </file>    <file>
+    <name>$PROJ_DIR$\..\..\..\..\openthread\src\core\utils\missing_strlcpy.c</name>    </file>    <file>
+    <name>$PROJ_DIR$\..\..\..\..\openthread\src\core\utils\missing_strnlen.c</name>    </file>    <file>
+    <name>$PROJ_DIR$\..\..\..\..\openthread\src\core\thread\mle.cpp</name>    </file>    <file>
+    <name>$PROJ_DIR$\..\..\..\..\openthread\src\core\thread\mle_router.cpp</name>    </file>    <file>
+    <name>$PROJ_DIR$\..\..\..\..\openthread\src\core\api\netdata_api.cpp</name>    </file>    <file>
+    <name>$PROJ_DIR$\..\..\..\..\openthread\src\core\net\netif.cpp</name>    </file>    <file>
+    <name>$PROJ_DIR$\..\..\..\..\openthread\src\core\thread\network_data.cpp</name>    </file>    <file>
+    <name>$PROJ_DIR$\..\..\..\..\openthread\src\core\thread\network_data_leader.cpp</name>    </file>    <file>
+    <name>$PROJ_DIR$\..\..\..\..\openthread\src\core\thread\network_data_leader_ftd.cpp</name>    </file>    <file>
+    <name>$PROJ_DIR$\..\..\..\..\openthread\src\core\thread\network_data_local.cpp</name>    </file>    <file>
+    <name>$PROJ_DIR$\..\..\..\..\openthread\src\core\thread\network_diagnostic.cpp</name>    </file>    <file>
+    <name>$PROJ_DIR$\..\..\..\..\openthread\src\core\api\network_time_api.cpp</name>    </file>    <file>
+    <name>$PROJ_DIR$\..\..\..\..\openthread\src\core\common\notifier.cpp</name>    </file>    <file>
+    <name>$PROJ_DIR$\..\..\..\..\openthread\src\core\meshcop\panid_query_client.cpp</name>    </file>    <file>
+    <name>$PROJ_DIR$\..\..\..\..\openthread\src\core\thread\panid_query_server.cpp</name>    </file>    <file>
+    <name>$PROJ_DIR$\..\..\..\..\openthread\src\core\utils\parse_cmdline.cpp</name>    </file>    <file>
+    <name>$PROJ_DIR$\..\..\..\..\openthread\src\core\crypto\pbkdf2_cmac.cpp</name>    </file>    <file>
+    <name>$PROJ_DIR$\..\..\..\..\openthread\src\core\phy\radio_weak.cpp</name>    </file>    <file>
+    <name>$PROJ_DIR$\..\..\..\..\openthread\src\core\common\random_crypto.cpp</name>    </file>    <file>
+    <name>$PROJ_DIR$\..\..\..\..\openthread\src\core\api\random_crypto_api.cpp</name>    </file>    <file>
+    <name>$PROJ_DIR$\..\..\..\..\openthread\src\core\common\random_manager.cpp</name>    </file>    <file>
+    <name>$PROJ_DIR$\..\..\..\..\openthread\src\core\common\random_noncrypto.cpp</name>    </file>    <file>
+    <name>$PROJ_DIR$\..\..\..\..\openthread\src\core\api\random_noncrypto_api.cpp</name>    </file>    <file>
+    <name>$PROJ_DIR$\..\..\..\..\openthread\src\core\thread\router_table.cpp</name>    </file>    <file>
+    <name>$PROJ_DIR$\..\..\..\..\openthread\src\core\api\server_api.cpp</name>    </file>    <file>
+    <name>$PROJ_DIR$\..\..\..\..\openthread\src\core\common\settings.cpp</name>    </file>    <file>
+    <name>$PROJ_DIR$\..\..\..\..\openthread\src\core\crypto\sha256.cpp</name>    </file>    <file>
+    <name>$PROJ_DIR$\..\..\..\..\openthread\src\core\utils\slaac_address.cpp</name>    </file>    <file>
+    <name>$PROJ_DIR$\..\..\..\..\openthread\src\core\api\sntp_api.cpp</name>    </file>    <file>
+    <name>$PROJ_DIR$\..\..\..\..\openthread\src\core\net\sntp_client.cpp</name>    </file>    <file>
+    <name>$PROJ_DIR$\..\..\..\..\openthread\src\core\thread\src_match_controller.cpp</name>    </file>    <file>
+    <name>$PROJ_DIR$\..\..\..\..\openthread\src\core\common\string.cpp</name>    </file>    <file>
+    <name>$PROJ_DIR$\..\..\..\..\openthread\src\core\mac\sub_mac.cpp</name>    </file>    <file>
+    <name>$PROJ_DIR$\..\..\..\..\openthread\src\core\mac\sub_mac_callbacks.cpp</name>    </file>    <file>
+    <name>$PROJ_DIR$\..\..\..\..\openthread\src\core\common\tasklet.cpp</name>    </file>    <file>
+    <name>$PROJ_DIR$\..\..\..\..\openthread\src\core\api\tasklet_api.cpp</name>    </file>    <file>
+    <name>$PROJ_DIR$\..\..\..\..\openthread\src\core\api\thread_api.cpp</name>    </file>    <file>
+    <name>$PROJ_DIR$\..\..\..\..\openthread\src\core\api\thread_ftd_api.cpp</name>    </file>    <file>
+    <name>$PROJ_DIR$\..\..\..\..\openthread\src\core\thread\thread_netif.cpp</name>    </file>    <file>
+    <name>$PROJ_DIR$\..\..\..\..\openthread\src\core\thread\time_sync_service.cpp</name>    </file>    <file>
+    <name>$PROJ_DIR$\..\..\..\..\openthread\src\core\common\timer.cpp</name>    </file>    <file>
+    <name>$PROJ_DIR$\..\..\..\..\openthread\src\core\meshcop\timestamp.cpp</name>    </file>    <file>
+    <name>$PROJ_DIR$\..\..\..\..\openthread\src\core\common\tlvs.cpp</name>    </file>    <file>
+    <name>$PROJ_DIR$\..\..\..\..\openthread\src\core\thread\topology.cpp</name>    </file>    <file>
+    <name>$PROJ_DIR$\..\..\..\..\openthread\src\core\common\trickle_timer.cpp</name>    </file>    <file>
+    <name>$PROJ_DIR$\..\..\..\..\openthread\src\core\net\udp6.cpp</name>    </file>    <file>
+    <name>$PROJ_DIR$\..\..\..\..\openthread\src\core\api\udp_api.cpp</name>    </file>  </group></project>
+
+

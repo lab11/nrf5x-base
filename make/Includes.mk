@@ -349,17 +349,17 @@ ifneq (,$(filter $(NRF_IC),nrf52832 nrf52840))
 
     ifeq ($(USE_THREAD),1)
       ifdef THREAD_FTD
-        THREAD_LIB_FILES += $(SDK_ROOT)external/openthread/lib/gcc/libopenthread-ftd.a
+        THREAD_LIB_FILES += $(SDK_ROOT)external/openthread/lib/nrf52840/gcc/libopenthread-ftd.a
       else
-        THREAD_LIB_FILES += $(SDK_ROOT)external/openthread/lib/gcc/libopenthread-mtd.a
+        THREAD_LIB_FILES += $(SDK_ROOT)external/openthread/lib/nrf52840/gcc/libopenthread-mtd.a
       endif
 
-      THREAD_LIB_FILES += $(SDK_ROOT)external/openthread/lib/gcc/libopenthread-platform-utils.a
-      THREAD_LIB_FILES += $(SDK_ROOT)external/openthread/lib/gcc/libopenthread-nrf52840-sdk.a
-      THREAD_LIB_FILES += $(SDK_ROOT)external/openthread/lib/gcc/libopenthread-diag.a
-      THREAD_LIB_FILES += $(SDK_ROOT)external/openthread/lib/gcc/libopenthread-radio.a
-      THREAD_LIB_FILES += $(SDK_ROOT)external/openthread/lib/gcc/libnordicsemi-nrf52840-radio-driver.a
-      THREAD_LIB_FILES += $(SDK_ROOT)external/openthread/lib/gcc/libmbedcrypto.a
+      THREAD_LIB_FILES += $(SDK_ROOT)external/openthread/lib/nrf52840/gcc/libopenthread-platform-utils.a
+      THREAD_LIB_FILES += $(SDK_ROOT)external/openthread/lib/nrf52840/gcc/libopenthread-nrf52840-sdk.a
+      THREAD_LIB_FILES += $(SDK_ROOT)external/openthread/lib/nrf52840/gcc/libopenthread-diag.a
+      THREAD_LIB_FILES += $(SDK_ROOT)external/openthread/lib/nrf52840/gcc/libopenthread-radio.a
+      THREAD_LIB_FILES += $(SDK_ROOT)external/openthread/lib/nrf52840/gcc/libnordicsemi-nrf52840-radio-driver.a
+      THREAD_LIB_FILES += $(SDK_ROOT)external/openthread/lib/nrf52840/gcc/libmbedcrypto.a
       THREAD_LIB_FILES += $(SDK_ROOT)external/nrf_cc310/lib/libnrf_cc310_0.9.10.a
       THREAD_LIB_FILES += $(SDK_ROOT)external/nrf_cc310_bl/lib/libnrf_cc310_bl_0.9.10.a
       LIBS += $(THREAD_LIB_FILES)

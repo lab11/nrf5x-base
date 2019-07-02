@@ -185,6 +185,27 @@ typedef enum zb_zcl_meter_identification_data_quality_e
 /** @brief Max length of POD (Poinf of Delivery) attribute */
 #define ZB_ZCl_ATTR_METER_IDENTIFICATION_POD_MAX_LENGTH 16
 
+/** @brief Declare attribute list for Thermostat cluster
+    @param attr_list - attribute list name
+    @param company_name - pointer to variable to store Company Name attribute value
+    @param meter_type_id - pointer to variable to store Meter Type ID attribute value
+    @param data_quality_id - pointer to variable to store Data Quality ID attribute value
+    @param pod - pointer to variable to store POD (Point of Delivery) attribute value
+    @param available_power - pointer to variable to store Availabe Power attribute value
+    @param power_threshold - pointer to variable to store Power Threshold attribute value
+*/
+#define ZB_ZCL_DECLARE_METER_IDENTIFICATION_ATTRIB_LIST(attr_list,                           \
+  company_name, meter_type_id, data_quality_id,                                              \
+  pod, available_power, power_threshold)                                                     \
+  ZB_ZCL_START_DECLARE_ATTRIB_LIST(attr_list)                                                \
+  ZB_ZCL_SET_ATTR_DESC(ZB_ZCL_ATTR_METER_IDENTIFICATION_COMPANY_NAME, (company_name))        \
+  ZB_ZCL_SET_ATTR_DESC(ZB_ZCL_ATTR_METER_IDENTIFICATION_METER_TYPE_ID, (meter_type_id))      \
+  ZB_ZCL_SET_ATTR_DESC(ZB_ZCL_ATTR_METER_IDENTIFICATION_DATA_QUALITY_ID, (data_quality_id))  \
+  ZB_ZCL_SET_ATTR_DESC(ZB_ZCL_ATTR_METER_IDENTIFICATION_POD, (pod))                          \
+  ZB_ZCL_SET_ATTR_DESC(ZB_ZCL_ATTR_METER_IDENTIFICATION_AVAILABLE_POWER, (available_power))  \
+  ZB_ZCL_SET_ATTR_DESC(ZB_ZCL_ATTR_METER_IDENTIFICATION_POWER_THRESHOLD, (power_threshold))  \
+  ZB_ZCL_FINISH_DECLARE_ATTRIB_LIST
+
 /** @} */ /* Meter Identification cluster attributes */
 
 
@@ -250,27 +271,6 @@ typedef enum zb_zcl_meter_identification_data_quality_e
   ZB_ZCL_ATTR_ACCESS_READ_ONLY,                                                               \
   (zb_voidp_t) data_ptr                                                                       \
 }
-
-/** @internal @brief Declare attribute list for Thermostat cluster
-    @param attr_list - attribute list name
-    @param company_name - pointer to variable to store Company Name attribute value
-    @param meter_type_id - pointer to variable to store Meter Type ID attribute value
-    @param data_quality_id - pointer to variable to store Data Quality ID attribute value
-    @param pod - pointer to variable to store POD (Point of Delivery) attribute value
-    @param available_power - pointer to variable to store Availabe Power attribute value
-    @param power_threshold - pointer to variable to store Power Threshold attribute value
-*/
-#define ZB_ZCL_DECLARE_METER_IDENTIFICATION_ATTRIB_LIST(attr_list,                           \
-  company_name, meter_type_id, data_quality_id,                                              \
-  pod, available_power, power_threshold)                                                     \
-  ZB_ZCL_START_DECLARE_ATTRIB_LIST(attr_list)                                                \
-  ZB_ZCL_SET_ATTR_DESC(ZB_ZCL_ATTR_METER_IDENTIFICATION_COMPANY_NAME, (company_name))        \
-  ZB_ZCL_SET_ATTR_DESC(ZB_ZCL_ATTR_METER_IDENTIFICATION_METER_TYPE_ID, (meter_type_id))      \
-  ZB_ZCL_SET_ATTR_DESC(ZB_ZCL_ATTR_METER_IDENTIFICATION_DATA_QUALITY_ID, (data_quality_id))  \
-  ZB_ZCL_SET_ATTR_DESC(ZB_ZCL_ATTR_METER_IDENTIFICATION_POD, (pod))                          \
-  ZB_ZCL_SET_ATTR_DESC(ZB_ZCL_ATTR_METER_IDENTIFICATION_AVAILABLE_POWER, (available_power))  \
-  ZB_ZCL_SET_ATTR_DESC(ZB_ZCL_ATTR_METER_IDENTIFICATION_POWER_THRESHOLD, (power_threshold))  \
-  ZB_ZCL_FINISH_DECLARE_ATTRIB_LIST
 
 /*! @internal Number of attributes mandatory for reporting in Meter Identification cluster */
 #define ZB_ZCL_METER_IDENTIFICATION_REPORT_ATTR_COUNT 0

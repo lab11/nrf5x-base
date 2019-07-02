@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2017 - 2018, Nordic Semiconductor ASA
+ * Copyright (c) 2017-2019, Nordic Semiconductor ASA
  *
  * All rights reserved.
  *
@@ -38,103 +38,93 @@
  *
  */
 
-#ifndef APP_THREAD_UTILS_H
-#define APP_THREAD_UTILS_H
+#ifndef THREAD_UTILS_H__
+#define THREAD_UTILS_H__
 
 #include <openthread/instance.h>
 
-/**@brief Enumeration describing thread roles.
+/**@brief Enumeration describing Thread radio receiver mode.
  *
- * @details RX_ON_WHEN_IDLE causes the device to keep its receiver on when it is idle.
- *          Selecting RX_OFF_WHEN_IDLE results in creating the Sleepy End Device.
+ * @details THREAD_RADIO_MODE_RX_ON_WHEN_IDLE causes the device to keep its receiver on, when it is in idle state.
+ *          Selecting THREAD_RADIO_MODE_RX_OFF_WHEN_IDLE results in creating the Thread Sleepy End Device.
  */
 typedef enum
 {
-    RX_ON_WHEN_IDLE = 0,  /**< Powered device */
-    RX_OFF_WHEN_IDLE,     /**< Sleepy End Device */
-} thread_role_t;
+    THREAD_RADIO_MODE_RX_ON_WHEN_IDLE = 0, /**< Powered device */
+    THREAD_RADIO_MODE_RX_OFF_WHEN_IDLE,    /**< Sleepy End Device */
+} thread_radio_receiver_mode_t;
 
-/**@brief Structure holding Thread configuration parameters.
- */
+
+/**@brief Structure holding Thread configuration parameters. */
 typedef struct
 {
-    thread_role_t role;                    /**< Selected Thread role. */
-    bool          autostart_disable;       /**< If node should not start the Thread operation automatically. */
-    bool          autocommissioning;       /**< If node should be commissioned automatically. */
-    uint32_t      poll_period;             /**< Default SED poll period in miliseconds. */
-    uint32_t      default_child_timeout;   /**< Thread child timeout value in seconds. */
+    thread_radio_receiver_mode_t radio_mode;              /**< Selected Thread radio receiver mode. */
+    bool                         autostart_disable;       /**< Determines if node should attempt to join the
+                                                               Thread network automatically. */
+    bool                         autocommissioning;       /**< Determines if node should use pre-commissioned
+                                                               data to join the Thread network. */
+    uint32_t                     poll_period;             /**< Default SED poll period in miliseconds. */
+    uint32_t                     default_child_timeout;   /**< Thread child timeout value in seconds. */
 } thread_configuration_t;
 
-/**@brief Type definition of the function used to handle Thread Network state change taking taking uint32_t flags and void context pointer and returning void.
- *
- * @param[in] flags     Bit-field indicating state that has changed.
- * @param[in] p_context Context pointer to be used by the callback function.
- */
-typedef void (*thread_state_change_callback_t)(uint32_t flags, void * p_context);
 
-/**@brief Type definition of the function used to inform the application if the commissioning should can performed by the Joiner.
+/**@brief Function for initializing the Thread Stack.
  *
- * @param[in] value     Set to true if the commissioning should can performed by the Joiner.
+ * @details This function is used to initialize the OpenThread's platform and stack.
+ *
+ * @param[in] p_config Thread configuration structure pointer.
+ *
  */
-typedef void (*thread_joiner_allow_start_function_set_t)(bool value);
+void thread_init(const thread_configuration_t * p_config);
 
-/**@brief Function that initializes the Thread Stack.
- *
- * @details This function is used to obtain and store the OpenThread Instance structure pointer internally,
- *          initialize the Uart Commandline Interface, and set Thread Channel and PANID.
- *
- * @param[in] p_thread_configuration Thread configuration structure pointer.
- */
-void thread_init(const thread_configuration_t * p_thread_configuration);
 
-/**@brief Function that deinitializes the Thread Stack.
- */
+/**@brief Function for deinitializing the Thread Stack. */
 void thread_deinit(void);
 
-/**@brief Function that deinitializes the Thread Stack (without platform).
- */
+
+/**@brief Function for deinitializing the Thread Stack (without re-initialization of the platform). */
 void thread_soft_deinit(void);
 
-/**@brief Function that initializes the UART Command Line Interface together with a diagnostic module.
- */
+
+/**@brief Function for initializing the Command Line Interface module together with a diagnostic module. */
 void thread_cli_init(void);
 
-/**@brief Function that processess the Thread Stack.
+
+/**@brief Function for processing the Thread Stack pending tasks.
  *
- * @details This function needs to be periodically executed to ensure the Thread operation.
+ * @details This function must be periodically executed to process the Thread Stack pending tasks.
  */
 void thread_process(void);
 
-/**@brief Function that puts the NRF to sleep in order to save energy.
- */
+
+/**@brief Function for putting the device to the sleep mode in order to save energy. */
 void thread_sleep(void);
 
-/**@brief Function that returns OpenThread Instance pointer.
+
+/**@brief Function for returning OpenThread Instance pointer.
  *
- * @details The thread_init() function needs to be executed before calling this function.
+ * @details The @p thread_init function must be executed before calling this function.
  *
  * @return otInstance OpenThread instance structure pointer.
  */
 otInstance * thread_ot_instance_get(void);
 
-/**@brief Function that returns Thread configuration structure instance pointer.
- *
- * @return Thread_configuration structure instance pointer.
- */
-thread_configuration_t * thread_configuration_get(void);
 
-/**@brief Function used to set the thread_state_changed_callback function.
+/**@brief Function for registering a callback to indicate when certain configuration or state
+ *        changes within OpenThread.
  *
- * @details Sets function that is exectuted when the state of the node changes.
+ * @details Sets function that is executed when the state of the node changes.
  *
- * @param[in] handler Pointer to the function used as Thread State Changed callback taking uint32_t flags and void context pointer and returning void.
+ * @param[in] handler Pointer to the function that registers a callback to indicate when certain
+ *            configuration or state changes within OpenThread.
  */
-void thread_state_changed_callback_set(thread_state_change_callback_t handler);
+void thread_state_changed_callback_set(otStateChangedCallback handler);
 
-/**@brief Check if soft reset was requested (stack only).
+
+/**@brief Function for checking if soft reset was requested (stack only).
  *
  * @return True if soft reset was requested, false otherwise.
  */
 bool thread_soft_reset_was_requested(void);
 
-#endif /* APP_THREAD_UTILS_H */
+#endif /* THREAD_UTILS_H__ */

@@ -46,6 +46,8 @@ PURPOSE: Touchlink Commissioning cluster
 
 /** @cond DOXYGEN_ZCL_SECTION */
 
+/** @cond touchlink */
+
 /** @addtogroup ZB_ZCL_TOUCHLINK_COMMISSIONING
     Touchlink Commissioning cluster
     @{
@@ -2051,6 +2053,8 @@ typedef ZB_PACKED_PRE struct zb_zll_commissioning_endpoint_information_s
 /*! @} */ /* Touchlink Commissioning cluster commands */
 
 /*! @} */ /* Touchlink Commissioning cluster */
+
+/** @endcond touchlink */
 
 /** @endcond */ /* DOXYGEN_ZCL_SECTION */
 

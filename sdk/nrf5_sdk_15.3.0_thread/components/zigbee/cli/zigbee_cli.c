@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2018, Nordic Semiconductor ASA
+ * Copyright (c) 2018 - 2019, Nordic Semiconductor ASA
  *
  * All rights reserved.
  *
@@ -41,6 +41,7 @@
 #include <stdbool.h>
 #include <stddef.h>
 
+#include "sdk_config.h"
 #include "nrf.h"
 #include "nrf_drv_clock.h"
 #include "nrf_gpio.h"
@@ -53,7 +54,6 @@
 #include "app_util.h"
 
 #include "nrf_cli.h"
-#include "nrf_cli_rtt.h"
 #include "nrf_cli_types.h"
 
 #include "boards.h"
@@ -63,7 +63,6 @@
 #include "nrf_log_ctrl.h"
 #include "nrf_log_default_backends.h"
 #include "nrf_log_backend_flash.h"
-
 
 #if defined(APP_USBD_ENABLED) && APP_USBD_ENABLED
 #define CLI_OVER_USB_CDC_ACM 1
@@ -78,6 +77,7 @@
 #include "app_usbd.h"
 #include "app_usbd_string_desc.h"
 #include "app_usbd_cdc_acm.h"
+#include "app_usbd_serial_num.h"
 #endif //CLI_OVER_USB_CDC_ACM
 
 #if defined(TX_PIN_NUMBER) && defined(RX_PIN_NUMBER)
@@ -93,6 +93,7 @@
 #include "zigbee_cli.h"
 
 #if CLI_OVER_USB_CDC_ACM
+#if NRF_LOG_ENABLED
 /** @brief Name of the submodule used for logger messaging.
  */
 #define NRF_LOG_SUBMODULE_NAME cli
@@ -113,6 +114,7 @@ typedef struct {
 static log_ctx_t m_log = {
     NRF_LOG_INSTANCE_PTR_INIT(p_log, ZIGBEE_CLI_LOG_NAME, NRF_LOG_SUBMODULE_NAME)
 };
+#endif // NRF_LOG_ENABLED
 #endif // CLI_OVER_USB_CDC_ACM
 
 /**@file
@@ -127,6 +129,16 @@ static zb_uint8_t cli_ep;
 
 /* Counter timer. */
 APP_TIMER_DEF(m_timer_0);
+
+#ifdef ZIGBEE_CLI_DEBUG
+/* Debug mode indicator. */
+static zb_bool_t m_debug_mode = ZB_FALSE;
+#endif
+
+#ifdef ZIGBEE_CLI_DEBUG
+/* Zigbee stack processing suspension indicator. */
+static zb_bool_t m_suspended = ZB_FALSE;
+#endif
 
 #if CLI_OVER_USB_CDC_ACM
 
@@ -222,9 +234,11 @@ static void cli_init(void)
     nrf_drv_uart_config_t uart_config = NRF_DRV_UART_DEFAULT_CONFIG;
     uart_config.pseltxd = TX_PIN_NUMBER;
     uart_config.pselrxd = RX_PIN_NUMBER;
+    #ifdef HWFC
     uart_config.pselcts = CTS_PIN_NUMBER;
     uart_config.pselrts = RTS_PIN_NUMBER;
     uart_config.hwfc    = NRF_UART_HWFC_ENABLED;
+    #endif
     ret = nrf_cli_init(&m_cli_uart, &uart_config, true, true, NRF_LOG_SEVERITY_ERROR);
     APP_ERROR_CHECK(ret);
 #endif
@@ -239,6 +253,9 @@ static void usbd_init(void)
         .ev_handler = app_usbd_event_execute,
         .ev_state_proc = usbd_user_ev_handler
     };
+
+    app_usbd_serial_num_generate();
+
     ret = app_usbd_init(&usbd_config);
     APP_ERROR_CHECK(ret);
 
@@ -307,10 +324,56 @@ void zb_cli_process(void)
         cli_process();
 }
 
-/**@brief Returns the number of the Endpoint used by the CLI
+/**@brief Returns the number of the Endpoint used by the CLI.
  */
 zb_uint8_t zb_get_cli_endpoint(void)
 {
     return cli_ep;
 }
+
+#ifdef ZIGBEE_CLI_DEBUG
+/**@brief Sets the debug mode.
+ */
+zb_void_t zb_cli_debug_set(zb_bool_t debug)
+{
+    m_debug_mode = debug;
+}
+#endif
+
+#ifdef ZIGBEE_CLI_DEBUG
+/**@brief Gets the debug mode.
+ */
+zb_bool_t zb_cli_debug_get(zb_void_t)
+{
+    return m_debug_mode;
+}
+#endif
+
+#ifdef ZIGBEE_CLI_DEBUG
+/**@brief Function for suspending the processing of the Zigbee main loop.
+ */
+zb_void_t zb_cli_suspend(zb_void_t)
+{
+    m_suspended = ZB_TRUE;
+}
+#endif
+
+#ifdef ZIGBEE_CLI_DEBUG
+/**@brief Function for resuming the processing of the Zigbee main loop.
+ */
+zb_void_t zb_cli_resume(zb_void_t)
+{
+    m_suspended = ZB_FALSE;
+}
+#endif
+
+#ifdef ZIGBEE_CLI_DEBUG
+/**@brief Function for getting the state of the Zigbee stack processing suspension.
+ */
+zb_bool_t zb_cli_stack_is_suspended(zb_void_t)
+{
+    return m_suspended;
+}
+#endif
+
 /** @} */

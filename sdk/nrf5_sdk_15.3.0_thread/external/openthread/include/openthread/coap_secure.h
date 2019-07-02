@@ -128,8 +128,8 @@ otError otCoapSecureSetPsk(otInstance *   aInstance,
  */
 otError otCoapSecureGetPeerCertificateBase64(otInstance *   aInstance,
                                              unsigned char *aPeerCert,
-                                             uint64_t *     aCertLength,
-                                             uint64_t       aCertBufferSize);
+                                             size_t *       aCertLength,
+                                             size_t         aCertBufferSize);
 
 /**
  * This method sets the authentication mode for the coap secure connection.
@@ -175,7 +175,7 @@ otError otCoapSecureSetCertificate(otInstance *   aInstance,
  * @param[in]  aX509CaCertificateChain  A pointer to the PEM formatted X509 CA chain.
  * @param[in]  aX509CaCertChainLength   The length of chain.
  *
- * @retval OT_ERROR_NONE  Successfully set the the trusted top level CAs.
+ * @retval OT_ERROR_NONE  Successfully set the trusted top level CAs.
  *
  */
 otError otCoapSecureSetCaCertificateChain(otInstance *   aInstance,

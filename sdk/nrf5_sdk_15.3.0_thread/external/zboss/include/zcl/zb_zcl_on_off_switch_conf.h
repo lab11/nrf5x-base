@@ -153,8 +153,14 @@ enum zb_zcl_on_off_switch_configuration_switch_actions_e
     (zb_voidp_t) data_ptr                                                   \
   }
 
+/** @internal Number of attributes mandatory for reporting on On/Off switch configuration cluster */
+#define ZB_ZCL_ON_OFF_SWITCH_CONFIG_REPORT_ATTR_COUNT 0
+
+/*! @}
+ *  @endcond */ /* internals_doc */
+
 /** @brief Declare attribute list for ON/OFF Swith configuration cluster
-    @param attr_list - attribure list name
+    @param attr_list - attribute list name
     @param switch_type - pointer to variable to store switch type attribute value
     @param switch_actions - pointer to variable to store switch action attribute value
 */
@@ -163,11 +169,6 @@ enum zb_zcl_on_off_switch_configuration_switch_actions_e
   ZB_ZCL_SET_ATTR_DESC(ZB_ZCL_ATTR_ON_OFF_SWITCH_CONFIGURATION_SWITCH_TYPE_ID, (switch_type))       \
   ZB_ZCL_SET_ATTR_DESC(ZB_ZCL_ATTR_ON_OFF_SWITCH_CONFIGURATION_SWITCH_ACTIONS_ID, (switch_actions)) \
   ZB_ZCL_FINISH_DECLARE_ATTRIB_LIST
-
-
-
-/** @internal Number of attributes mandatory for reporting on On/Off switch configuration cluster */
-#define ZB_ZCL_ON_OFF_SWITCH_CONFIG_REPORT_ATTR_COUNT 0
 
 /*! @}
     @endcond */ /* On/off switch configuration cluster attribute structures */

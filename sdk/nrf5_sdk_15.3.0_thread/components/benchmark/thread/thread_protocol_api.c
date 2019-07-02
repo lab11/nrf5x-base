@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2018, Nordic Semiconductor ASA
+ * Copyright (c) 2018 - 2019, Nordic Semiconductor ASA
  *
  * All rights reserved.
  *
@@ -56,12 +56,10 @@ static void thread_bsp_init(void)
 }
 
 static void thread_coap_handler_default(void                * p_context,
-                                        otCoapHeader        * p_header,
                                         otMessage           * p_message,
                                         const otMessageInfo * p_message_info)
 {
     UNUSED_VARIABLE(p_context);
-    UNUSED_VARIABLE(p_header);
     UNUSED_VARIABLE(p_message);
     UNUSED_VARIABLE(p_message_info);
 
@@ -90,10 +88,9 @@ static void thread_instance_init(void)
 {
     thread_configuration_t thread_configuration =
     {
-        .role                  = RX_ON_WHEN_IDLE,
+        .radio_mode            = THREAD_RADIO_MODE_RX_ON_WHEN_IDLE,
         .autocommissioning     = true,
-        .poll_period           = 2500,
-        .default_child_timeout = 10,
+        .autostart_disable     = true,
     };
 
     thread_init(&thread_configuration);

@@ -105,6 +105,7 @@ enum zb_zcl_rel_humidity_measurement_attr_e
 /** @brief Default value for MeasurementMaxValue attribute */
 #define ZB_ZCL_REL_HUMIDITY_MEASUREMENT_MAX_VALUE_DEFAULT_VALUE ((zb_uint16_t)0xFFFF)
 
+/** @cond internals_doc */
 /*! @internal @name Relative Humidity Measurement cluster internals
     Internal structures for attribute representation in cluster definitions.
     @{
@@ -134,8 +135,14 @@ enum zb_zcl_rel_humidity_measurement_attr_e
   (zb_voidp_t) data_ptr                                 \
 }
 
-/** @internal @brief Declare attribute list for Relative Humidity Measurement cluster - server side
-    @param attr_list - attribure list name
+#define ZB_ZCL_REL_HUMIDITY_MEASUREMENT_REPORT_ATTR_COUNT 1
+
+/*! @} */ /* Relative Humidity Measurement cluster internals */
+/*! @}
+ *  @endcond */ /* internals_doc */
+
+/** @brief Declare attribute list for Relative Humidity Measurement cluster - server side
+    @param attr_list - attribute list name
     @param value - pointer to variable to store MeasuredValue attribute
     @param min_value - pointer to variable to store MinMeasuredValue attribute
     @param max_value - pointer to variable to store MAxMeasuredValue attribute
@@ -148,9 +155,6 @@ enum zb_zcl_rel_humidity_measurement_attr_e
   ZB_ZCL_SET_ATTR_DESC(ZB_ZCL_ATTR_REL_HUMIDITY_MEASUREMENT_MAX_VALUE_ID, (max_value))  \
   ZB_ZCL_FINISH_DECLARE_ATTRIB_LIST
 
-
-/*! @} */ /* Relative Humidity Measurement cluster internals */
-
 /*! @} */ /* Relative Humidity Measurement cluster attributes */
 
 /*! @name Relative Humidity Measurement cluster commands
@@ -158,8 +162,6 @@ enum zb_zcl_rel_humidity_measurement_attr_e
 */
 
 /*! @} */ /* Relative Humidity Measurement cluster commands */
-
-#define ZB_ZCL_REL_HUMIDITY_MEASUREMENT_REPORT_ATTR_COUNT 1
 
 /*! @} */ /* ZCL Relative Humidity Measurement cluster definitions */
 

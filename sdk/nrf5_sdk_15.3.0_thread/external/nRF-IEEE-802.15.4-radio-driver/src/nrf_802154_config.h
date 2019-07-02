@@ -60,7 +60,7 @@ extern "C" {
  *
  */
 #ifndef NRF_802154_CCA_MODE_DEFAULT
-#define NRF_802154_CCA_MODE_DEFAULT  NRF_RADIO_CCA_MODE_ED
+#define NRF_802154_CCA_MODE_DEFAULT NRF_RADIO_CCA_MODE_ED
 #endif
 
 /**
@@ -70,7 +70,7 @@ extern "C" {
  *
  */
 #ifndef NRF_802154_CCA_ED_THRESHOLD_DEFAULT
-#define NRF_802154_CCA_ED_THRESHOLD_DEFAULT  0x14
+#define NRF_802154_CCA_ED_THRESHOLD_DEFAULT 0x14
 #endif
 
 /**
@@ -80,7 +80,7 @@ extern "C" {
  *
  */
 #ifndef NRF_802154_CCA_CORR_THRESHOLD_DEFAULT
-#define NRF_802154_CCA_CORR_THRESHOLD_DEFAULT  0x14
+#define NRF_802154_CCA_CORR_THRESHOLD_DEFAULT 0x14
 #endif
 
 /**
@@ -90,7 +90,7 @@ extern "C" {
  *
  */
 #ifndef NRF_802154_CCA_CORR_LIMIT_DEFAULT
-#define NRF_802154_CCA_CORR_LIMIT_DEFAULT  0x02
+#define NRF_802154_CCA_CORR_LIMIT_DEFAULT 0x02
 #endif
 
 /**
@@ -103,11 +103,11 @@ extern "C" {
 
 #ifndef NRF_802154_INTERNAL_RADIO_IRQ_HANDLING
 
-#if RAAL_SOFTDEVICE
+#if RAAL_SOFTDEVICE || RAAL_REM
 #define NRF_802154_INTERNAL_RADIO_IRQ_HANDLING 0
-#else // RAAL_SOFTDEVICE
+#else // RAAL_SOFTDEVICE || RAAL_REM
 #define NRF_802154_INTERNAL_RADIO_IRQ_HANDLING 1
-#endif // RAAL_SOFTDEVICE
+#endif  // RAAL_SOFTDEVICE || RAAL_REM
 
 #endif // NRF_802154_INTERNAL_RADIO_IRQ_HANDLING
 
@@ -120,7 +120,7 @@ extern "C" {
  *
  */
 #ifndef NRF_802154_IRQ_PRIORITY
-#define NRF_802154_IRQ_PRIORITY  0
+#define NRF_802154_IRQ_PRIORITY 0
 #endif
 
 /**
@@ -213,7 +213,7 @@ extern "C" {
  *
  */
 #ifndef NRF_802154_PENDING_SHORT_ADDRESSES
-#define NRF_802154_PENDING_SHORT_ADDRESSES  10
+#define NRF_802154_PENDING_SHORT_ADDRESSES 10
 #endif
 
 /**
@@ -223,7 +223,7 @@ extern "C" {
  *
  */
 #ifndef NRF_802154_PENDING_EXTENDED_ADDRESSES
-#define NRF_802154_PENDING_EXTENDED_ADDRESSES  10
+#define NRF_802154_PENDING_EXTENDED_ADDRESSES 10
 #endif
 
 /**
@@ -233,7 +233,7 @@ extern "C" {
  *
  */
 #ifndef NRF_802154_RX_BUFFERS
-#define NRF_802154_RX_BUFFERS  16
+#define NRF_802154_RX_BUFFERS 16
 #endif
 
 /**
@@ -256,7 +256,7 @@ extern "C" {
  *
  */
 #ifndef NRF_802154_NOTIFY_CRCERROR
-#define NRF_802154_NOTIFY_CRCERROR  1
+#define NRF_802154_NOTIFY_CRCERROR 1
 #endif
 
 /**
@@ -330,7 +330,7 @@ extern "C" {
  *
  */
 #ifndef NRF_802154_RTC_IRQ_PRIORITY
-#define NRF_802154_RTC_IRQ_PRIORITY  6
+#define NRF_802154_RTC_IRQ_PRIORITY 6
 #endif
 
 /**
@@ -343,7 +343,7 @@ extern "C" {
  *
  */
 #ifndef NRF_802154_RTC_INSTANCE
-#define NRF_802154_RTC_INSTANCE  NRF_RTC2
+#define NRF_802154_RTC_INSTANCE NRF_RTC2
 #endif
 
 /**
@@ -356,9 +356,8 @@ extern "C" {
  *
  */
 #ifndef NRF_802154_RTC_IRQ_HANDLER
-#define NRF_802154_RTC_IRQ_HANDLER  RTC2_IRQHandler
+#define NRF_802154_RTC_IRQ_HANDLER RTC2_IRQHandler
 #endif
-
 
 /**
  * @def NRF_802154_RTC_IRQN
@@ -370,9 +369,8 @@ extern "C" {
  *
  */
 #ifndef NRF_802154_RTC_IRQN
-#define NRF_802154_RTC_IRQN  RTC2_IRQn
+#define NRF_802154_RTC_IRQN RTC2_IRQn
 #endif
-
 
 /**
  * @}
@@ -425,15 +423,31 @@ extern "C" {
 #endif
 
 /**
+ * @def NRF_802154_CSMA_CA_WAIT_FOR_TIMESLOT
+ *
+ * Indicates whether the CSMA-CA algorithm waits for an available timeslot before it performs the CCA procedure.
+ *
+ * @note When this option is enabled, the CSMA-CA procedure may be synchronized with timeslots of
+ *       other protocols. It decreases robustness of the CSMA-CA procedure and is not recommended.
+ *       This option may be used as a workaround to problems with higher layers that do not correctly handle
+ *       multiple CHANNEL_BUSY errors in a row. This potentially problematic situation may
+ *       happen during activity of other protocols.
+ *
+ */
+#ifndef NRF_802154_CSMA_CA_WAIT_FOR_TIMESLOT
+#define NRF_802154_CSMA_CA_WAIT_FOR_TIMESLOT 0
+#endif
+
+/**
  * @}
- * @defgroup nrf_802154_config_timeout ACK time-out feature configuration
+ * @defgroup nrf_802154_config_timeout ACK timeout feature configuration
  * @{
  */
 
 /**
  * @def NRF_802154_ACK_TIMEOUT_ENABLED
  *
- * If the ACK time-out feature should be enabled in the driver.
+ * If the ACK timeout feature should be enabled in the driver.
  *
  */
 #ifndef NRF_802154_ACK_TIMEOUT_ENABLED
@@ -443,11 +457,31 @@ extern "C" {
 /**
  * @def NRF_802154_ACK_TIMEOUT_DEFAULT_TIMEOUT
  *
- * Default time-out in us for the ACK time-out feature.
+ * Default timeout in us for the ACK timeout feature.
  *
  */
 #ifndef NRF_802154_ACK_TIMEOUT_DEFAULT_TIMEOUT
 #define NRF_802154_ACK_TIMEOUT_DEFAULT_TIMEOUT 7000
+#endif
+
+/**
+ * @def NRF_802154_ACK_TIMEOUT_DEFAULT_TIMEOUT
+ *
+ * Default time-out in us for the precise ACK time-out feature.
+ *
+ */
+#ifndef NRF_802154_PRECISE_ACK_TIMEOUT_DEFAULT_TIMEOUT
+#define NRF_802154_PRECISE_ACK_TIMEOUT_DEFAULT_TIMEOUT 210
+#endif
+
+/**
+ * @def NRF_802154_MAX_ACK_IE_SIZE
+ *
+ * Maximum supported size of 802.15.4-2015 IE header and content fields in an Enh-Ack.
+ *
+ */
+#ifndef NRF_802154_MAX_ACK_IE_SIZE
+#define NRF_802154_MAX_ACK_IE_SIZE 8
 #endif
 
 /**
@@ -461,7 +495,7 @@ extern "C" {
  *
  * If notifications of started transmissions should be enabled in the driver.
  *
- * @note This feature is enabled by default if the ACK time-out feature or CSMA-CA is enabled.
+ * @note This feature is enabled by default if the ACK timeout feature or CSMA-CA is enabled.
  *       These features depend on notifications of transmission start.
  */
 #ifndef NRF_802154_TX_STARTED_NOTIFY_ENABLED

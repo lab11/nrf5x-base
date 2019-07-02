@@ -73,7 +73,7 @@ PURPOSE: ZBOSS Zigbee cluster library API header
 #include "zcl/zb_zcl_ias_zone.h"
 #include "zcl/zb_zcl_diagnostics.h"
 
-#include "zcl/zb_zcl_custom_attributes.h"
+#include "zcl/zb_zcl_custom_cluster.h"
 
 #include "zcl/zb_zcl_time.h"
 #include "zcl/zb_zcl_dehumidification_control.h"
@@ -87,26 +87,14 @@ PURPOSE: ZBOSS Zigbee cluster library API header
 #include "zcl/zb_zcl_occupancy_sensing.h"
 #include "zcl/zb_zcl_meter_identification.h"
 
-#if defined ZB_ENABLE_HA
 #include "zcl/zb_zcl_poll_control.h"
 #include "zcl/zb_zcl_ota_upgrade.h"
-
-#include "ha/zb_zcl_basic_ha_adds.h"
-#include "ha/zb_zcl_ias_zone_ha_adds.h"
-#include "ha/zb_zcl_power_config_ha_adds.h"
-#include "ha/zb_zcl_thermostat_ha_adds.h"
-#include "ha/zb_zcl_identify_ha_adds.h"
-#endif
 
 #include "zcl/zb_zcl_price.h"
 #include "zcl/zb_zcl_drlc.h"
 #include "zcl/zb_zcl_metering.h"
 #include "zcl/zb_zcl_messaging.h"
 #include "zcl/zb_zcl_tunneling.h"
-
-#if defined ZB_HA_SUPPORT_EZ_MODE
-#include "ha/zb_ha_ez_mode_comissioning.h"
-#endif
 
 #if defined ZB_BDB_MODE
 //#include "zb_bdb_comissioning.h"
@@ -1187,6 +1175,29 @@ typedef enum zb_zcl_device_callback_id_e
    *
    */
   ZB_ZCL_DOOR_LOCK_UNLOCK_DOOR_RESP_CB_ID,
+  /** @b Server. Inform user about Alarams Reset Alarm command.
+   *
+   * User's application callback is initialized by RET_OK status of device
+   * callback parameters.
+   * @param[in] param_in @ref zb_zcl_alarms_reset_alarm_req_t
+   *
+   * One of the following statuses must be returned:
+   * @return RET_OK - successfully handle command. Default Response will be send if requested.
+   * @return RET_ERROR - command is handled with errors.
+   *
+   */
+  ZB_ZCL_ALARMS_RESET_ALARM_CB_ID,
+  /** @b Server. Inform user about Alarams Reset All Alarms command.
+   *
+   * User's application callback is initialized by RET_OK status of device
+   * callback parameters.
+   *
+   * One of the following statuses must be returned:
+   * @return RET_OK - successfully handle command. Default Response will be send if requested.
+   * @return RET_ERROR - command is handled with errors.
+   *
+   */
+  ZB_ZCL_ALARMS_RESET_ALL_ALARMS_CB_ID,
   /** @b Client. Inform user about Alarms Alarm command.
    *
    * User's application callback is initialized by RET_OK status of device
@@ -1352,16 +1363,6 @@ zb_uint8_t zb_zcl_handle(zb_uint8_t param);
 */
 zb_uint8_t zb_zcl_get_tsn_from_packet(zb_buf_t *buffer);
 
-zb_void_t zb_zcl_adjust_reporting_timer(zb_uint8_t param);
-
-zb_void_t zb_zcl_update_reporting_info(zb_zcl_reporting_info_t *rep_info);
-
-zb_ret_t zb_zcl_put_default_reporting_info(zb_zcl_reporting_info_t* default_rep_info_ptr);
-
-zb_void_t zb_zcl_remove_default_reporting_info(zb_uint16_t cluster_id, zb_uint8_t cluster_role);
-
-zb_void_t zb_zcl_mark_report_not_sent(zb_zcl_reporting_info_t *rep_info);
-
 /**
    Register device context.
    @param _device_ctx - pointer to device context
@@ -1412,9 +1413,9 @@ A node has not joined a network when requested during touchlink.
 FORMATION_FAILURE
 A network could not be formed during network formation.
 NO_IDENTIFY_QUERY_-RESPONSE
-No response to an identify query command has been received during finding & binding.
+No response to an identify query command has been received during finding and binding.
 BINDING_TABLE_FULL
-A binding table entry could not be created due to insufficient space in the binding table during finding & binding.
+A binding table entry could not be created due to insufficient space in the binding table during finding and binding.
 NO_SCAN_RESPONSE
 No response to a scan request inter-PAN command has been received during touchlink.
 NOT_PERMITTED
@@ -1445,10 +1446,14 @@ typedef enum zb_bdb_commissioning_mode_mask_e
 {
   /* Used internally */
   ZB_BDB_INITIALIZATION = 0,
+
+  /** @cond touchlink */
   /** Touchlink: 0 = Do not attempt Touchlink commissioning;
                   1 = Attempt Touchlink commissioning
    */
   ZB_BDB_TOUCHLINK_COMMISSIONING = 1,
+  /** @endcond */ /* touchlink */
+
   /** Network steering: 0 = Do not attempt network steering;
                          1 = Attempt network steering
    */
@@ -1457,9 +1462,9 @@ typedef enum zb_bdb_commissioning_mode_mask_e
                           1 = Attempt to form a network, according to device type2
    */
   ZB_BDB_NETWORK_FORMATION = 4,
-  /** Finding & binding: 0 = Do not attempt finding & binding;
-                          1 = Attempt finding & binding
-    @note actually this mode does not call Finding & Binding procedure. Use
+  /** Finding and binding: 0 = Do not attempt finding and binding;
+                          1 = Attempt finding and binding
+    @note actually this mode does not call finding and binding procedure. Use
           @ref zb_bdb_finding_binding_target or @ref zb_bdb_finding_binding_initiator.
    */
   ZB_BDB_FINDING_N_BINDING = 8,
@@ -1467,13 +1472,19 @@ typedef enum zb_bdb_commissioning_mode_mask_e
   ZB_BDB_LAST_COMMISSIONING_STEP = 0x10,
   /* Used internally */
   ZB_BDB_COMMISSIONING_STOP = 0x20,
+
+  /** @cond touchlink */
   /* Used internally */
   ZB_BDB_TOUCHLINK_TARGET = 0x40,
+  /** @endcond */ /* touchlink */
 } zb_bdb_commissioning_mode_mask_t;
 
 /**
    @brief Start top level commissioning procedure with specified mode mask.
-
+   When the selected commissioning procedure finishes one of the following ZBOSS signals is generated:
+    - @ref ZB_BDB_SIGNAL_STEERING 
+    - @ref ZB_BDB_SIGNAL_FORMATION
+    
    @param mode_mask - commissioning modes, see @ref zb_bdb_commissioning_mode_mask_e
 
    @b Example:
@@ -1547,7 +1558,7 @@ typedef enum zb_bdb_comm_binding_cb_state_e
 } zb_bdb_comm_binding_cb_state_t;
 
 /**
- *  @brief BDB finding & binding callback template.
+ *  @brief BDB finding and binding callback template.
  *
  *  Function is used both to interact with user application, get decision
  *  if new binding is needed or not, and to report the binding result
@@ -1565,7 +1576,7 @@ typedef zb_bool_t (ZB_CODE * zb_bdb_comm_binding_callback_t)(
   zb_int16_t status, zb_ieee_addr_t addr, zb_uint8_t ep, zb_uint16_t cluster);
 
 /**
- *  @brief Start BDB finding & binding procedure on initiator.
+ *  @brief Start BDB finding and binding procedure on initiator.
  *
  *  Summary: Finding and binding as initiator zb_bdb_finding_binding_initiator()
  *  returns RET_OK if procedure was started successfully, error code otherwise. To report procedure
@@ -1581,8 +1592,11 @@ typedef zb_bool_t (ZB_CODE * zb_bdb_comm_binding_callback_t)(
  */
 zb_ret_t zb_bdb_finding_binding_initiator(zb_uint8_t endpoint, zb_bdb_comm_binding_callback_t user_binding_cb);
 
-/** Cancel previously started Finding & Binding procedure on target */
+/** Cancel previously started finding and binding procedure on target */
 void zb_bdb_finding_binding_target_cancel(void);
+
+/** Cancel previously started finding and binding procedure on initiator */
+void zb_bdb_finding_binding_initiator_cancel(void);
 
 /** @} */
 
@@ -1630,15 +1644,10 @@ zb_void_t zb_bdb_set_legacy_device_support(zb_uint8_t state);
    @{
 */
 /**
-   Set commissioning mode.
-   @param  commissioning_mode - bitfield with the bdbCommissioningMode
-   attribute. Set 1 to the corresponding bit to enable, 0 to disable:
-   Bit number                   Description
-       0              Enables/disables Touchlink commissioning
-       1              Attempt network steering
-       2              Attempt to form a network
-       3              Attempt finding & binding
-   @see zb_bdb_commissioning_mode_mask_t
+  * @brief Set commissioning mode.
+  * @param  commissioning_mode - bitfield with the bdbCommissioningMode
+  * attribute. Set 1 to the corresponding bit to enable, 0 to disable. 
+  * All the possible mask bits are stored in @ref zb_bdb_commissioning_mode_mask_t
  */
 zb_void_t zb_set_bdb_commissioning_mode(zb_uint8_t commissioning_mode);
 
@@ -1796,10 +1805,6 @@ typedef struct zb_zcl_globals_s
 #ifdef ZB_HA_ENABLE_OTA_UPGRADE_CLIENT
   zb_zcl_ota_upgrade_cli_ctx_t ota_cli;
 #endif
-#if defined ZB_HA_SUPPORT_EZ_MODE
-  /** @internal HA EZ-Mode commissioning context */
-  zb_ha_ez_mode_ctx_t ha_ez_mode_ctx;
-#endif /*ZB_HA_SUPPORT_EZ_MODE*/
 #if defined ZB_BDB_MODE
   /** @internal BDB commissioning context */
   zb_bdb_comm_ctx_t bdb_comm_ctx;

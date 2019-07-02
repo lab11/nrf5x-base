@@ -248,14 +248,6 @@ void nrf_dfu_validation_init(void)
 }
 
 
-static void dfu_progress_reset(void)
-{
-    memset(s_dfu_settings.init_command, 0xFF, INIT_COMMAND_MAX_SIZE); // Remove the last init command
-    memset(&s_dfu_settings.progress, 0, sizeof(dfu_progress_t));
-    s_dfu_settings.write_offset = 0;
-}
-
-
 nrf_dfu_result_t nrf_dfu_validation_init_cmd_create(uint32_t size)
 {
     nrf_dfu_result_t ret_val = NRF_DFU_RES_CODE_SUCCESS;
@@ -273,7 +265,7 @@ nrf_dfu_result_t nrf_dfu_validation_init_cmd_create(uint32_t size)
         m_valid_init_cmd_present = false;
 
         // Reset all progress.
-        dfu_progress_reset();
+        nrf_dfu_settings_progress_reset();
 
         // Set the init command size.
         s_dfu_settings.progress.command_size = size;
@@ -623,7 +615,7 @@ nrf_dfu_result_t nrf_dfu_validation_init_cmd_execute(uint32_t * p_dst_data_addr,
         }
         else
         {
-            dfu_progress_reset();
+            nrf_dfu_settings_progress_reset();
         }
     }
     else
@@ -1048,7 +1040,7 @@ nrf_dfu_result_t postvalidate(uint32_t data_addr, uint32_t data_len, bool is_tru
         }
         else
         {
-            dfu_progress_reset();
+            nrf_dfu_settings_progress_reset();
         }
     }
     else
@@ -1064,7 +1056,7 @@ nrf_dfu_result_t postvalidate(uint32_t data_addr, uint32_t data_len, bool is_tru
             nrf_dfu_bank_invalidate(&s_dfu_settings.bank_1);
         }
 
-        dfu_progress_reset();
+        nrf_dfu_settings_progress_reset();
         s_dfu_settings.progress.update_start_address = data_addr;
     }
 

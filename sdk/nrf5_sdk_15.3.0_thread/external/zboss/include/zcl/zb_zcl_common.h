@@ -222,8 +222,9 @@ typedef enum zb_zcl_cluster_id_e
   ZB_ZCL_CLUSTER_ID_ELECTRICAL_MEASUREMENT = 0x0b04, /**< Electrical Measurement cluster identifier. */
   ZB_ZCL_CLUSTER_ID_DIAGNOSTICS = 0x0b05,           /**< Home Automation Diagnostics */
 
-  /* Touchlink */
+  /** @cond touchlink */
   ZB_ZCL_CLUSTER_ID_TOUCHLINK_COMMISSIONING = 0x1000,  /**< Touchlink Commissioning cluster identifier */
+  /** @endcond */ /* touchlink */
 
   /************** Manufacturer specific clusters ****************/
 
@@ -282,6 +283,7 @@ typedef enum zb_zcl_status_e
   ZB_ZCL_STATUS_NOT_FOUND                = 0x8b, /*!< Not found */
   ZB_ZCL_STATUS_UNREPORTABLE_ATTRIB      = 0x8c, /*!< Unreportable attribute */
   ZB_ZCL_STATUS_INVALID_TYPE             = 0x8d, /*!< Invalid type */
+  ZB_ZCL_STATUS_WRITE_ONLY               = 0x8f, /*!< Write only */
   ZB_ZCL_STATUS_INCONSISTENT             = 0x92, /*!< Supplied values are inconsistent */
   ZB_ZCL_STATUS_ACTION_DENIED            = 0x93, /*!< The credentials presented by the device sending the
                                                        command are not sufficient to perform this action. */
@@ -299,6 +301,11 @@ typedef enum zb_zcl_status_e
   ZB_ZCL_STATUS_CALIB_ERR                = 0xc2, /*!< Calibration error */
   ZB_ZCL_STATUS_UNSUP_CLUST              = 0xc3, /*!< Cluster is not found on the target endpoint */
 } zb_zcl_status_t;
+
+/** @brief ZCL global attibute: cluster version returned by default. 
+    Used if the GLOBAL_CLUSTER_REVISION attribute is undefined for the cluster/role.
+*/
+#define ZB_ZCL_GLOBAL_CLUSTER_VERSION_DEFAULT 1
 
 #if defined ZB_ENABLE_HA
 
@@ -331,11 +338,10 @@ typedef void (*zb_zcl_modify_attr_value_cb_t)(
 /*! @defgroup zb_zcl_common_attrs General attributes' description
     Types and macros shared among all attributes' definitions.
     @{
-        @par Example
-        Use ZB_ZCL_SET_ATTRIBUTE
-        @snippet scenes_dut_563.c ZB_ZCL_SET_ATTRIBUTE
-        @par
-
+    @par Example
+    Use ZB_ZCL_SET_ATTRIBUTE
+    @snippet scenes_dut_563.c ZB_ZCL_SET_ATTRIBUTE
+    @par
     For more information see 5.6.3_scenes and other HA samples
 */
 
@@ -469,7 +475,7 @@ typedef enum zb_zcl_attr_type_e
   ZB_ZCL_ATTR_TYPE_S64            = 0x2f, /*!< Signed 64-bit value data type */
   ZB_ZCL_ATTR_TYPE_8BIT_ENUM      = 0x30, /*!< 8-bit enumeration (U8 discrete) data type */
   ZB_ZCL_ATTR_TYPE_16BIT_ENUM     = 0x31, /*!< 16-bit enumeration (U16 discrete) data type */
-  ZB_ZCL_ATTR_TYPE_BYTE_ARRAY     = 0x41, /*!< Byte array == octet string data type, */
+  ZB_ZCL_ATTR_TYPE_OCTET_STRING   = 0x41, /*!< Octet string data type, */
   ZB_ZCL_ATTR_TYPE_CHAR_STRING    = 0x42, /*!< Charactery string (array) data type */
   ZB_ZCL_ATTR_TYPE_LONG_OCTET_STRING = 0x43, /*!< Long octet string */
   ZB_ZCL_ATTR_TYPE_LONG_CHAR_STRING  = 0x44, /*!< Long character string */
@@ -487,14 +493,16 @@ typedef enum zb_zcl_attr_type_e
 /*! @brief ZCL attribute access values */
 typedef enum zb_zcl_attr_access_e
 {
-  ZB_ZCL_ATTR_ACCESS_READ_ONLY    = 0x00, /*!< Attribute is read only */
-  ZB_ZCL_ATTR_ACCESS_READ_WRITE   = 0x01, /*!< Attribute is read/write */
-  ZB_ZCL_ATTR_ACCESS_REPORTING    = 0x02, /*!< Attribute is allowed for reporting */
-  ZB_ZCL_ATTR_ACCESS_WRITE_OPTIONAL = 0x04, /*!< Attribute is read/write */
-  ZB_ZCL_ATTR_ACCESS_SINGLETON    = 0x08, /*!< Attribute is singleton */
-  ZB_ZCL_ATTR_ACCESS_SCENE        = 0x10, /*!< Attribute is accessed through scene */
+  ZB_ZCL_ATTR_ACCESS_READ_ONLY      = 0x01,
+  ZB_ZCL_ATTR_ACCESS_WRITE_ONLY     = 0x02,  /*!< Attribute is read/write */
+  ZB_ZCL_ATTR_ACCESS_READ_WRITE     = ZB_ZCL_ATTR_ACCESS_READ_ONLY | ZB_ZCL_ATTR_ACCESS_WRITE_ONLY,  /*!< Attribute is read/write */
+  ZB_ZCL_ATTR_ACCESS_REPORTING      = 0x04,  /*!< Attribute is allowed for reporting */
+  ZB_ZCL_ATTR_ACCESS_WRITE_OPTIONAL = ZB_ZCL_ATTR_ACCESS_READ_ONLY,  /*!< Attribute is read/write */
+  ZB_ZCL_ATTR_ACCESS_SINGLETON      = 0x08,  /*!< Attribute is singleton */
+  ZB_ZCL_ATTR_ACCESS_SCENE          = 0x10,  /*!< Attribute is accessed through scene */
   /* Use free bit in access attribute field to save RAM */
-  ZB_ZCL_ATTR_MANUF_SPEC          = 0x20, /*!< Attribute is manufacturer specific */
+  ZB_ZCL_ATTR_MANUF_SPEC            = 0x20,  /*!< Attribute is manufacturer specific */
+  ZB_ZCL_ATTR_ACCESS_INTERNAL       = 0x40,  /*!< ZBOSS Internal accsess only Attribute */
 } zb_zcl_attr_access_t;
 
 #define ZB_ZCL_ATTR_SET_WITH_ATTR_ID(_set, _id) ((_set << 8) | (_id & 0xFF))
@@ -510,7 +518,7 @@ typedef enum zb_zcl_attr_access_e
 {                                                            \
   if (attr_desc->access & ZB_ZCL_ATTR_ACCESS_WRITE_OPTIONAL) \
   {                                                          \
-    attr_desc->access |= ZB_ZCL_ATTR_ACCESS_READ_WRITE;      \
+    attr_desc->access |= ZB_ZCL_ATTR_ACCESS_WRITE_ONLY;      \
   }                                                          \
 }
 
@@ -701,6 +709,10 @@ enum zb_zcl_attr_global_e
 #define ZB_ZCL_GET_ATTRIBUTE_VAL_8(attr_desc)           \
   (*(zb_uint8_t*)attr_desc->data_p)
 
+/*! Get 8-bit signed attribute value (without any check) */
+#define ZB_ZCL_GET_ATTRIBUTE_VAL_S8(attr_desc)           \
+  (*(zb_int8_t*)attr_desc->data_p)
+
 /*! Get 16-bit unsigned attribute value (without any check) */
 #define ZB_ZCL_GET_ATTRIBUTE_VAL_16(attr_desc)          \
   (*(zb_uint16_t*)attr_desc->data_p)
@@ -712,6 +724,10 @@ enum zb_zcl_attr_global_e
 /*! Get 32-bit unsigned attribute value (without any check) */
 #define ZB_ZCL_GET_ATTRIBUTE_VAL_32(attr_desc)          \
   (*(zb_uint32_t*)attr_desc->data_p)
+
+/*! Get 32-bit unsigned attribute value (without any check) */
+#define ZB_ZCL_GET_ATTRIBUTE_VAL_S32(attr_desc)          \
+  (*(zb_int32_t*)attr_desc->data_p)
 
 
 /*! @} */ /* General attributes' description */
@@ -1587,9 +1603,11 @@ zb_ret_t zb_zcl_finish_and_send_packet_frag(zb_buf_t *buffer, zb_uint8_t *ptr,
 zb_uint16_t zb_zcl_attr_get16(zb_uint8_t *value);
 zb_int16_t zb_zcl_attr_gets16(zb_uint8_t *value);
 zb_uint32_t zb_zcl_attr_get32(zb_uint8_t *value);
+zb_int32_t zb_zcl_attr_gets32(zb_uint8_t *value);
 #define ZB_ZCL_ATTR_GET16(value) zb_zcl_attr_get16(value)
 #define ZB_ZCL_ATTR_GETS16(value) zb_zcl_attr_gets16(value)
 #define ZB_ZCL_ATTR_GET32(value) zb_zcl_attr_get32(value)
+#define ZB_ZCL_ATTR_GETS32(value) zb_zcl_attr_gets32(value)
 
 zb_int24_t zb_zcl_attr_get24(zb_uint8_t *value);
 zb_uint48_t zb_zcl_attr_get48(zb_uint8_t *value);
@@ -1601,6 +1619,7 @@ zb_uint48_t zb_zcl_attr_get48(zb_uint8_t *value);
 #define ZB_ZCL_ATTR_GET16(value) (*((zb_uint16_t *)value))
 #define ZB_ZCL_ATTR_GETS16(value) (*((zb_int16_t *)value))
 #define ZB_ZCL_ATTR_GET32(value) (*((zb_uint32_t *)value))
+#define ZB_ZCL_ATTR_GETS32(value) (*((zb_int32_t *)value))
 
 #define ZB_ZCL_ATTR_GET24(value) (*((zb_int24_t *)value))
 #define ZB_ZCL_ATTR_GET48(value) (*((zb_uint48_t *)value))
@@ -1614,13 +1633,13 @@ zb_uint48_t zb_zcl_attr_get48(zb_uint8_t *value);
 #define ZB_ZCL_ARRAY_SIZE(ar, type) (sizeof(ar)/sizeof(type))
 
 /** @internal @brief Calculates byte array size (add 2 bytes for full length). */
-#define ZB_BYTE_ARRAY_GET_SIZE(ar, val) ZB_LETOH16(ar, val)
-#define ZB_BYTE_ARRAY_SET_SIZE(ar, val) ZB_HTOLE16_VAL(ar, val)
+#define ZB_ZCL_ARRAY_GET_SIZE(ar, val) ZB_LETOH16(ar, val)
+#define ZB_ZCL_ARRAY_SET_SIZE(ar, val) ZB_HTOLE16_VAL(ar, val)
 
 /** @internal @brief Calculates 32-byte array size (add 2 bytes for full length). */
 /* [EE] 04/09/2015 CR:MAJOR never cast byte* to int* */
-#define ZB_BYTE_32ARRAY_GET_SIZE(ar, val) { ZB_BYTE_ARRAY_GET_SIZE(ar, val); *(zb_uint16_t*)(ar) *= 4; }
-#define ZB_BYTE_32ARRAY_SET_SIZE(ar, val) { ZB_BYTE_ARRAY_SET_SIZE(ar, val); *(zb_uint16_t*)(ar) /= 4; }
+#define ZB_BYTE_32ARRAY_GET_SIZE(ar, val) { ZB_ZCL_ARRAY_GET_SIZE(ar, val); *(zb_uint16_t*)(ar) *= 4; }
+#define ZB_BYTE_32ARRAY_SET_SIZE(ar, val) { ZB_ZCL_ARRAY_SET_SIZE(ar, val); *(zb_uint16_t*)(ar) /= 4; }
 
 #define ZB_ZCL_NULL_EP_ID (zb_uint8_t)(-1)
 #define ZB_ZCL_NULL_ID (zb_uint16_t)(-1)
@@ -1700,6 +1719,7 @@ typedef zb_void_t (*zb_zcl_set_default_value_attr_cb_t)(zb_uint8_t ep);
 
 /** @brief Check attribute value callback
     @param cluster_id - Cluster ID
+    @param cluster_role - cluster role (@ref zb_zcl_cluster_role_e)
     @param endpoint - endpoint number
     @param attr_id - attribute ID
     @param value - new attribute value
@@ -1708,7 +1728,7 @@ typedef zb_void_t (*zb_zcl_set_default_value_attr_cb_t)(zb_uint8_t ep);
             RET_IGNORE - if use default Check attribute functions
 */
 typedef zb_ret_t (*zb_zcl_app_check_attr_value_cb_t)
-    (zb_uint16_t cluster_id, zb_uint8_t endpoint, zb_uint16_t attr_id, zb_uint8_t *value);
+    (zb_uint16_t cluster_id, zb_uint8_t cluster_role, zb_uint8_t endpoint, zb_uint16_t attr_id, zb_uint8_t *value);
 
 /* ZCL common functions */
 
@@ -1723,6 +1743,7 @@ zb_zcl_attr_t* zb_zcl_get_attr_desc(zb_zcl_cluster_desc_t *cluster_desc, zb_uint
     @param attr_desc - attribute descriptor
     @param endpoint - endpoint
     @param cluster_id - cluster identifier
+    @param cluster_role - cluster role (@ref zb_zcl_cluster_role_e)
     @param new_value - new value for an attribute
     @param check_access - check READ_ONLY access or not
     @returns ZB_ZCL_STATUS_SUCCESS on success, error status otherwise
@@ -1731,6 +1752,7 @@ zb_uint8_t zb_zcl_check_attribute_writable(
   zb_zcl_attr_t* attr_desc,
   zb_uint8_t endpoint,
   zb_uint16_t cluster_id,
+  zb_uint8_t cluster_role,
   zb_uint8_t *new_value,
   zb_bool_t check_access);
 
@@ -1738,10 +1760,11 @@ zb_uint8_t zb_zcl_check_attribute_writable(
   Hook on Write Attribute command
   @param endpoint - endpoint
   @param cluster_id - cluster ID
+  @param cluster_role - cluster role (@ref zb_zcl_cluster_role_e)
   @param attr_id - attribute ID
   @param new_value - pointer to newly assigned value
 */
-zb_void_t zb_zcl_write_attr_hook(zb_uint8_t endpoint, zb_uint16_t cluster_id, zb_uint16_t attr_id, zb_uint8_t *new_value);
+zb_void_t zb_zcl_write_attr_hook(zb_uint8_t endpoint, zb_uint16_t cluster_id, zb_uint8_t cluster_role, zb_uint16_t attr_id, zb_uint8_t *new_value);
 
 /**
  * @brief Get size of value of given attribute type
@@ -1773,14 +1796,14 @@ zb_bool_t zb_zcl_is_analog_data_type(zb_uint8_t attr_type);
  * @brief Check if attribute value is valid or not
  *
  * @param cluster_id - cluster ID
+ * @param cluster_role - cluster role (@ref zb_zcl_cluster_role_e)
  * @param endpoint - endpoint
  * @param attr_id - attribute ID
  * @param value - pointer to attribute data
  *
  * @return ZB_TRUE if data value is valid, ZB_FALSE otherwise
  */
-zb_bool_t zb_zcl_check_attr_value(zb_uint16_t cluster_id, zb_uint8_t endpoint, zb_uint16_t attr_id, zb_uint8_t *value);
-
+zb_bool_t zb_zcl_check_attr_value(zb_uint16_t cluster_id, zb_uint8_t cluster_role, zb_uint8_t endpoint, zb_uint16_t attr_id, zb_uint8_t *value);
 
 zb_bool_t zb_zcl_is_target_endpoint(zb_af_endpoint_desc_t *ep_desc, zb_uint16_t profile_id);
 
@@ -1982,7 +2005,7 @@ typedef struct zb_zcl_set_attr_value_param_s
                                                                                \
     switch ((zb_zcl_attr_type_t)(attrDesc)->type)                              \
     {                                                                          \
-      case ZB_ZCL_ATTR_TYPE_BYTE_ARRAY:                                        \
+      case ZB_ZCL_ATTR_TYPE_OCTET_STRING:                                      \
       case ZB_ZCL_ATTR_TYPE_CHAR_STRING:                                       \
       {                                                                        \
         zb_uint8_t *ptr =                                                      \
@@ -2034,7 +2057,7 @@ typedef struct zb_zcl_set_attr_value_param_s
                                                                                \
     switch ((zb_zcl_attr_type_t)(attrDesc)->type)                              \
     {                                                                          \
-      case ZB_ZCL_ATTR_TYPE_BYTE_ARRAY:                                        \
+      case ZB_ZCL_ATTR_TYPE_OCTET_STRING:                                      \
       case ZB_ZCL_ATTR_TYPE_CHAR_STRING:                                       \
       {                                                                        \
         zb_uint8_t *ptr =                                                      \

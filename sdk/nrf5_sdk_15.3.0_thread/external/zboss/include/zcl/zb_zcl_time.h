@@ -225,6 +225,33 @@ enum zb_zcl_time_time_status_e
 /** @brief Default value for Valid Until Time attribute */
 #define ZB_ZCL_TIME_VALID_UNTIL_TIME_DEFAULT_VALUE 0xffffffff
 
+/** @brief Declare attribute list for Time cluster
+    @param attr_list - attribute list name
+    @param time - pointer to variable to store Time attribute value
+    @param time_status - pointer to variable to store Time Status attribute value
+    @param time_zone - pointer to variable to store Time Zone attribute value
+    @param dst_start - pointer to variable to store Dst Start attribute value
+    @param dst_end - pointer to variable to store Dst End attribute value
+    @param dst_shift - pointer to variable to store Dst Shift attribute value
+    @param standard_time - pointer to variable to store Standard Time attribute value
+    @param local_time - pointer to variable to store Local Time attribute value
+    @param last_set_time - pointer to variable to store Last Set Time attribute value
+    @param valid_until_time - pointer to variable to store Valid Until Time attribute value
+*/
+#define ZB_ZCL_DECLARE_TIME_ATTRIB_LIST(attr_list, time, time_status, time_zone,             \
+  dst_start, dst_end, dst_shift, standard_time, local_time, last_set_time, valid_until_time) \
+  ZB_ZCL_START_DECLARE_ATTRIB_LIST(attr_list)                                                \
+  ZB_ZCL_SET_ATTR_DESC(ZB_ZCL_ATTR_TIME_TIME_ID, (time))                                     \
+  ZB_ZCL_SET_ATTR_DESC(ZB_ZCL_ATTR_TIME_TIME_STATUS_ID, (time_status))                       \
+  ZB_ZCL_SET_ATTR_DESC(ZB_ZCL_ATTR_TIME_TIME_ZONE_ID, (time_zone))                           \
+  ZB_ZCL_SET_ATTR_DESC(ZB_ZCL_ATTR_TIME_DST_START_ID, (dst_start))                           \
+  ZB_ZCL_SET_ATTR_DESC(ZB_ZCL_ATTR_TIME_DST_END_ID, (dst_end))                               \
+  ZB_ZCL_SET_ATTR_DESC(ZB_ZCL_ATTR_TIME_DST_SHIFT_ID, (dst_shift))                           \
+  ZB_ZCL_SET_ATTR_DESC(ZB_ZCL_ATTR_TIME_STANDARD_TIME_ID, (standard_time))                   \
+  ZB_ZCL_SET_ATTR_DESC(ZB_ZCL_ATTR_TIME_LOCAL_TIME_ID, (local_time))                         \
+  ZB_ZCL_SET_ATTR_DESC(ZB_ZCL_ATTR_TIME_LAST_SET_TIME_ID, (last_set_time))                   \
+  ZB_ZCL_SET_ATTR_DESC(ZB_ZCL_ATTR_TIME_VALID_UNTIL_TIME_ID, (valid_until_time))             \
+  ZB_ZCL_FINISH_DECLARE_ATTRIB_LIST
 
 /** @} */ /* ZB_ZCL_TIME_ATTRS */
 
@@ -317,34 +344,6 @@ enum zb_zcl_time_time_status_e
   (zb_voidp_t) data_ptr                                                       \
 }
 
-/** @internal @brief Declare attribute list for Time cluster
-    @param attr_list - attribute list name
-    @param time - pointer to variable to store Time attribute value
-    @param time_status - pointer to variable to store Time Status attribute value
-    @param time_zone - pointer to variable to store Time Zone attribute value
-    @param dst_start - pointer to variable to store Dst Start attribute value
-    @param dst_end - pointer to variable to store Dst End attribute value
-    @param dst_shift - pointer to variable to store Dst Shift attribute value
-    @param standard_time - pointer to variable to store Standard Time attribute value
-    @param local_time - pointer to variable to store Local Time attribute value
-    @param last_set_time - pointer to variable to store Last Set Time attribute value
-    @param valid_until_time - pointer to variable to store Valid Until Time attribute value
-*/
-#define ZB_ZCL_DECLARE_TIME_ATTR_LIST_FULL(attr_list, time, time_status, time_zone,             \
-  dst_start, dst_end, dst_shift, standard_time, local_time, last_set_time, valid_until_time) \
-  ZB_ZCL_START_DECLARE_ATTRIB_LIST(attr_list)                                                \
-  ZB_ZCL_SET_ATTR_DESC(ZB_ZCL_ATTR_TIME_TIME_ID, (time))                                     \
-  ZB_ZCL_SET_ATTR_DESC(ZB_ZCL_ATTR_TIME_TIME_STATUS_ID, (time_status))                       \
-  ZB_ZCL_SET_ATTR_DESC(ZB_ZCL_ATTR_TIME_TIME_ZONE_ID, (time_zone))                           \
-  ZB_ZCL_SET_ATTR_DESC(ZB_ZCL_ATTR_TIME_DST_START_ID, (dst_start))                           \
-  ZB_ZCL_SET_ATTR_DESC(ZB_ZCL_ATTR_TIME_DST_END_ID, (dst_end))                               \
-  ZB_ZCL_SET_ATTR_DESC(ZB_ZCL_ATTR_TIME_DST_SHIFT_ID, (dst_shift))                           \
-  ZB_ZCL_SET_ATTR_DESC(ZB_ZCL_ATTR_TIME_STANDARD_TIME_ID, (standard_time))                   \
-  ZB_ZCL_SET_ATTR_DESC(ZB_ZCL_ATTR_TIME_LOCAL_TIME_ID, (local_time))                         \
-  ZB_ZCL_SET_ATTR_DESC(ZB_ZCL_ATTR_TIME_LAST_SET_TIME_ID, (last_set_time))                   \
-  ZB_ZCL_SET_ATTR_DESC(ZB_ZCL_ATTR_TIME_VALID_UNTIL_TIME_ID, (valid_until_time))             \
-  ZB_ZCL_FINISH_DECLARE_ATTRIB_LIST
-
 /*! @internal Number of attributes mandatory for reporting in Time cluster */
 #define ZB_ZCL_TIME_REPORT_ATTR_COUNT 0
 
@@ -409,12 +408,12 @@ typedef struct zb_zcl_time_attrs_s
 } zb_zcl_time_attrs_t;
 
 
-/** Declare attribute list for Time cluster
- * @param[in]  attr_list - attribute list variable name
- * @param[in]  attrs - pointer to @ref zb_zcl_time_attrs_s structure
+/** @brief Declare attribute list for Time cluster
+ *  @param[in]  attr_list - attribute list variable name
+ *  @param[in]  attrs - variable of @ref zb_zcl_time_attrs_s type (containing Time cluster attributes)
  */
 #define ZB_ZCL_DECLARE_TIME_ATTR_LIST(attr_list, attrs)    \
-  ZB_ZCL_DECLARE_TIME_ATTR_LIST_FULL(attr_list,            \
+  ZB_ZCL_DECLARE_TIME_ATTRIB_LIST(attr_list,               \
      &attrs.time, &attrs.time_status, &attrs.time_zone,    \
      &attrs.dst_start, &attrs.dst_end, &attrs.dst_shift,   \
      &attrs.standard_time, &attrs.local_time,              \
@@ -422,13 +421,13 @@ typedef struct zb_zcl_time_attrs_s
 
 /** @} */  /** ZB_ZCL_TIME */
 
+/** @endcond */ /* DOXYGEN_ZCL_SECTION */
+
 zb_void_t zb_zcl_time_update_current_time(zb_uint8_t endpoint);
 
 zb_void_t zb_zcl_time_init_server(void);
 zb_void_t zb_zcl_time_init_client(void);
 #define ZB_ZCL_CLUSTER_ID_TIME_SERVER_ROLE_INIT zb_zcl_time_init_server
 #define ZB_ZCL_CLUSTER_ID_TIME_CLIENT_ROLE_INIT zb_zcl_time_init_client
-
-/** @endcond */ /* DOXYGEN_ZCL_SECTION */
 
 #endif /* defined ZB_ZCL_TIME_H */

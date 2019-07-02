@@ -172,6 +172,20 @@ void nrf_802154_receive_CMockIgnoreAndReturn(UNITY_LINE_TYPE cmock_line, bool cm
 void nrf_802154_receive_CMockExpectAndReturn(UNITY_LINE_TYPE cmock_line, bool cmock_to_return);
 typedef bool (* CMOCK_nrf_802154_receive_CALLBACK)(int cmock_num_calls);
 void nrf_802154_receive_StubWithCallback(CMOCK_nrf_802154_receive_CALLBACK Callback);
+#define nrf_802154_receive_at_IgnoreAndReturn(cmock_retval) nrf_802154_receive_at_CMockIgnoreAndReturn(__LINE__, cmock_retval)
+void nrf_802154_receive_at_CMockIgnoreAndReturn(UNITY_LINE_TYPE cmock_line, bool cmock_to_return);
+#define nrf_802154_receive_at_ExpectAndReturn(t0, dt, timeout, channel, cmock_retval) nrf_802154_receive_at_CMockExpectAndReturn(__LINE__, t0, dt, timeout, channel, cmock_retval)
+void nrf_802154_receive_at_CMockExpectAndReturn(UNITY_LINE_TYPE cmock_line, uint32_t t0, uint32_t dt, uint32_t timeout, uint8_t channel, bool cmock_to_return);
+typedef bool (* CMOCK_nrf_802154_receive_at_CALLBACK)(uint32_t t0, uint32_t dt, uint32_t timeout, uint8_t channel, int cmock_num_calls);
+void nrf_802154_receive_at_StubWithCallback(CMOCK_nrf_802154_receive_at_CALLBACK Callback);
+#define nrf_802154_receive_at_IgnoreArg_t0() nrf_802154_receive_at_CMockIgnoreArg_t0(__LINE__)
+void nrf_802154_receive_at_CMockIgnoreArg_t0(UNITY_LINE_TYPE cmock_line);
+#define nrf_802154_receive_at_IgnoreArg_dt() nrf_802154_receive_at_CMockIgnoreArg_dt(__LINE__)
+void nrf_802154_receive_at_CMockIgnoreArg_dt(UNITY_LINE_TYPE cmock_line);
+#define nrf_802154_receive_at_IgnoreArg_timeout() nrf_802154_receive_at_CMockIgnoreArg_timeout(__LINE__)
+void nrf_802154_receive_at_CMockIgnoreArg_timeout(UNITY_LINE_TYPE cmock_line);
+#define nrf_802154_receive_at_IgnoreArg_channel() nrf_802154_receive_at_CMockIgnoreArg_channel(__LINE__)
+void nrf_802154_receive_at_CMockIgnoreArg_channel(UNITY_LINE_TYPE cmock_line);
 #define nrf_802154_transmit_raw_IgnoreAndReturn(cmock_retval) nrf_802154_transmit_raw_CMockIgnoreAndReturn(__LINE__, cmock_retval)
 void nrf_802154_transmit_raw_CMockIgnoreAndReturn(UNITY_LINE_TYPE cmock_line, bool cmock_to_return);
 #define nrf_802154_transmit_raw_ExpectAndReturn(p_data, cca, cmock_retval) nrf_802154_transmit_raw_CMockExpectAndReturn(__LINE__, p_data, cca, cmock_retval)
@@ -346,6 +360,24 @@ void nrf_802154_pan_coord_get_CMockIgnoreAndReturn(UNITY_LINE_TYPE cmock_line, b
 void nrf_802154_pan_coord_get_CMockExpectAndReturn(UNITY_LINE_TYPE cmock_line, bool cmock_to_return);
 typedef bool (* CMOCK_nrf_802154_pan_coord_get_CALLBACK)(int cmock_num_calls);
 void nrf_802154_pan_coord_get_StubWithCallback(CMOCK_nrf_802154_pan_coord_get_CALLBACK Callback);
+#define nrf_802154_ack_data_set_IgnoreAndReturn(cmock_retval) nrf_802154_ack_data_set_CMockIgnoreAndReturn(__LINE__, cmock_retval)
+void nrf_802154_ack_data_set_CMockIgnoreAndReturn(UNITY_LINE_TYPE cmock_line, bool cmock_to_return);
+#define nrf_802154_ack_data_set_ExpectAndReturn(p_addr, extended, p_data, length, data_type, cmock_retval) nrf_802154_ack_data_set_CMockExpectAndReturn(__LINE__, p_addr, extended, p_data, length, data_type, cmock_retval)
+void nrf_802154_ack_data_set_CMockExpectAndReturn(UNITY_LINE_TYPE cmock_line, const uint8_t* p_addr, bool extended, const void* p_data, uint16_t length, uint8_t data_type, bool cmock_to_return);
+typedef bool (* CMOCK_nrf_802154_ack_data_set_CALLBACK)(const uint8_t* p_addr, bool extended, const void* p_data, uint16_t length, uint8_t data_type, int cmock_num_calls);
+void nrf_802154_ack_data_set_StubWithCallback(CMOCK_nrf_802154_ack_data_set_CALLBACK Callback);
+#define nrf_802154_ack_data_set_ExpectWithArrayAndReturn(p_addr, p_addr_Depth, extended, p_data, p_data_Depth, length, data_type, cmock_retval) nrf_802154_ack_data_set_CMockExpectWithArrayAndReturn(__LINE__, p_addr, p_addr_Depth, extended, p_data, p_data_Depth, length, data_type, cmock_retval)
+void nrf_802154_ack_data_set_CMockExpectWithArrayAndReturn(UNITY_LINE_TYPE cmock_line, uint8_t* p_addr, int p_addr_Depth, bool extended, void* p_data, int p_data_Depth, uint16_t length, uint8_t data_type, bool cmock_to_return);
+#define nrf_802154_ack_data_set_IgnoreArg_p_addr() nrf_802154_ack_data_set_CMockIgnoreArg_p_addr(__LINE__)
+void nrf_802154_ack_data_set_CMockIgnoreArg_p_addr(UNITY_LINE_TYPE cmock_line);
+#define nrf_802154_ack_data_set_IgnoreArg_extended() nrf_802154_ack_data_set_CMockIgnoreArg_extended(__LINE__)
+void nrf_802154_ack_data_set_CMockIgnoreArg_extended(UNITY_LINE_TYPE cmock_line);
+#define nrf_802154_ack_data_set_IgnoreArg_p_data() nrf_802154_ack_data_set_CMockIgnoreArg_p_data(__LINE__)
+void nrf_802154_ack_data_set_CMockIgnoreArg_p_data(UNITY_LINE_TYPE cmock_line);
+#define nrf_802154_ack_data_set_IgnoreArg_length() nrf_802154_ack_data_set_CMockIgnoreArg_length(__LINE__)
+void nrf_802154_ack_data_set_CMockIgnoreArg_length(UNITY_LINE_TYPE cmock_line);
+#define nrf_802154_ack_data_set_IgnoreArg_data_type() nrf_802154_ack_data_set_CMockIgnoreArg_data_type(__LINE__)
+void nrf_802154_ack_data_set_CMockIgnoreArg_data_type(UNITY_LINE_TYPE cmock_line);
 #define nrf_802154_auto_pending_bit_set_Ignore() nrf_802154_auto_pending_bit_set_CMockIgnore()
 void nrf_802154_auto_pending_bit_set_CMockIgnore(void);
 #define nrf_802154_auto_pending_bit_set_Expect(enabled) nrf_802154_auto_pending_bit_set_CMockExpect(__LINE__, enabled)

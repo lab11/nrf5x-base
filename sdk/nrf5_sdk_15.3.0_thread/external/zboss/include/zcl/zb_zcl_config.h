@@ -51,9 +51,6 @@ PURPOSE: Configuration for Zigbee cluster library
 */
 #define ZCL_TRAN_TABLE_SIZE 16
 
-/* DA: need to process it in app */
-#define ZB_DISABLE_DEVICE_ENABLED_ATTR
-
 /* DA: range check error */
 /* #define ZB_DISABLE_TEMP_MEASUREMENT_TOLERANCE_ID */
 

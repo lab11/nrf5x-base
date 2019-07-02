@@ -74,7 +74,6 @@ PURPOSE: HA global definitions
 #include "ha/zb_ha_dimmer_switch.h"
 #include "ha/zb_ha_smart_plug.h"
 #include "ha/zb_ha_thermostat.h"
-#include "ha/zb_zcl_reporting_ha_adds.h"
 
 #include "ha/zb_ha_test_device.h"
 

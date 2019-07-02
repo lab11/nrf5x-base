@@ -21,19 +21,21 @@ typedef struct _CMOCK_nrf_802154_rsch_uninit_CALL_INSTANCE
 
 } CMOCK_nrf_802154_rsch_uninit_CALL_INSTANCE;
 
-typedef struct _CMOCK_nrf_802154_rsch_continuous_mode_enter_CALL_INSTANCE
+typedef struct _CMOCK_nrf_802154_rsch_continuous_mode_priority_set_CALL_INSTANCE
+{
+  UNITY_LINE_TYPE LineNumber;
+  int CallOrder;
+  rsch_prio_t Expected_prio;
+  int IgnoreArg_prio;
+
+} CMOCK_nrf_802154_rsch_continuous_mode_priority_set_CALL_INSTANCE;
+
+typedef struct _CMOCK_nrf_802154_rsch_continuous_ended_CALL_INSTANCE
 {
   UNITY_LINE_TYPE LineNumber;
   int CallOrder;
 
-} CMOCK_nrf_802154_rsch_continuous_mode_enter_CALL_INSTANCE;
-
-typedef struct _CMOCK_nrf_802154_rsch_continuous_mode_exit_CALL_INSTANCE
-{
-  UNITY_LINE_TYPE LineNumber;
-  int CallOrder;
-
-} CMOCK_nrf_802154_rsch_continuous_mode_exit_CALL_INSTANCE;
+} CMOCK_nrf_802154_rsch_continuous_ended_CALL_INSTANCE;
 
 typedef struct _CMOCK_nrf_802154_rsch_timeslot_request_CALL_INSTANCE
 {
@@ -53,9 +55,13 @@ typedef struct _CMOCK_nrf_802154_rsch_delayed_timeslot_request_CALL_INSTANCE
   uint32_t Expected_t0;
   uint32_t Expected_dt;
   uint32_t Expected_length;
+  rsch_prio_t Expected_prio;
+  rsch_dly_ts_id_t Expected_dly_ts;
   int IgnoreArg_t0;
   int IgnoreArg_dt;
   int IgnoreArg_length;
+  int IgnoreArg_prio;
+  int IgnoreArg_dly_ts;
 
 } CMOCK_nrf_802154_rsch_delayed_timeslot_request_CALL_INSTANCE;
 
@@ -65,7 +71,9 @@ typedef struct _CMOCK_nrf_802154_rsch_prec_is_approved_CALL_INSTANCE
   bool ReturnVal;
   int CallOrder;
   rsch_prec_t Expected_prec;
+  rsch_prio_t Expected_prio;
   int IgnoreArg_prec;
+  int IgnoreArg_prio;
 
 } CMOCK_nrf_802154_rsch_prec_is_approved_CALL_INSTANCE;
 
@@ -87,14 +95,14 @@ static struct mock_nrf_802154_rschInstance
   CMOCK_nrf_802154_rsch_uninit_CALLBACK nrf_802154_rsch_uninit_CallbackFunctionPointer;
   int nrf_802154_rsch_uninit_CallbackCalls;
   CMOCK_MEM_INDEX_TYPE nrf_802154_rsch_uninit_CallInstance;
-  int nrf_802154_rsch_continuous_mode_enter_IgnoreBool;
-  CMOCK_nrf_802154_rsch_continuous_mode_enter_CALLBACK nrf_802154_rsch_continuous_mode_enter_CallbackFunctionPointer;
-  int nrf_802154_rsch_continuous_mode_enter_CallbackCalls;
-  CMOCK_MEM_INDEX_TYPE nrf_802154_rsch_continuous_mode_enter_CallInstance;
-  int nrf_802154_rsch_continuous_mode_exit_IgnoreBool;
-  CMOCK_nrf_802154_rsch_continuous_mode_exit_CALLBACK nrf_802154_rsch_continuous_mode_exit_CallbackFunctionPointer;
-  int nrf_802154_rsch_continuous_mode_exit_CallbackCalls;
-  CMOCK_MEM_INDEX_TYPE nrf_802154_rsch_continuous_mode_exit_CallInstance;
+  int nrf_802154_rsch_continuous_mode_priority_set_IgnoreBool;
+  CMOCK_nrf_802154_rsch_continuous_mode_priority_set_CALLBACK nrf_802154_rsch_continuous_mode_priority_set_CallbackFunctionPointer;
+  int nrf_802154_rsch_continuous_mode_priority_set_CallbackCalls;
+  CMOCK_MEM_INDEX_TYPE nrf_802154_rsch_continuous_mode_priority_set_CallInstance;
+  int nrf_802154_rsch_continuous_ended_IgnoreBool;
+  CMOCK_nrf_802154_rsch_continuous_ended_CALLBACK nrf_802154_rsch_continuous_ended_CallbackFunctionPointer;
+  int nrf_802154_rsch_continuous_ended_CallbackCalls;
+  CMOCK_MEM_INDEX_TYPE nrf_802154_rsch_continuous_ended_CallInstance;
   int nrf_802154_rsch_timeslot_request_IgnoreBool;
   bool nrf_802154_rsch_timeslot_request_FinalReturn;
   CMOCK_nrf_802154_rsch_timeslot_request_CALLBACK nrf_802154_rsch_timeslot_request_CallbackFunctionPointer;
@@ -130,12 +138,12 @@ void mock_nrf_802154_rsch_Verify(void)
   UNITY_TEST_ASSERT(CMOCK_GUTS_NONE == Mock.nrf_802154_rsch_uninit_CallInstance, cmock_line, "Function 'nrf_802154_rsch_uninit' called less times than expected.");
   if (Mock.nrf_802154_rsch_uninit_CallbackFunctionPointer != NULL)
     Mock.nrf_802154_rsch_uninit_CallInstance = CMOCK_GUTS_NONE;
-  UNITY_TEST_ASSERT(CMOCK_GUTS_NONE == Mock.nrf_802154_rsch_continuous_mode_enter_CallInstance, cmock_line, "Function 'nrf_802154_rsch_continuous_mode_enter' called less times than expected.");
-  if (Mock.nrf_802154_rsch_continuous_mode_enter_CallbackFunctionPointer != NULL)
-    Mock.nrf_802154_rsch_continuous_mode_enter_CallInstance = CMOCK_GUTS_NONE;
-  UNITY_TEST_ASSERT(CMOCK_GUTS_NONE == Mock.nrf_802154_rsch_continuous_mode_exit_CallInstance, cmock_line, "Function 'nrf_802154_rsch_continuous_mode_exit' called less times than expected.");
-  if (Mock.nrf_802154_rsch_continuous_mode_exit_CallbackFunctionPointer != NULL)
-    Mock.nrf_802154_rsch_continuous_mode_exit_CallInstance = CMOCK_GUTS_NONE;
+  UNITY_TEST_ASSERT(CMOCK_GUTS_NONE == Mock.nrf_802154_rsch_continuous_mode_priority_set_CallInstance, cmock_line, "Function 'nrf_802154_rsch_continuous_mode_priority_set' called less times than expected.");
+  if (Mock.nrf_802154_rsch_continuous_mode_priority_set_CallbackFunctionPointer != NULL)
+    Mock.nrf_802154_rsch_continuous_mode_priority_set_CallInstance = CMOCK_GUTS_NONE;
+  UNITY_TEST_ASSERT(CMOCK_GUTS_NONE == Mock.nrf_802154_rsch_continuous_ended_CallInstance, cmock_line, "Function 'nrf_802154_rsch_continuous_ended' called less times than expected.");
+  if (Mock.nrf_802154_rsch_continuous_ended_CallbackFunctionPointer != NULL)
+    Mock.nrf_802154_rsch_continuous_ended_CallInstance = CMOCK_GUTS_NONE;
   UNITY_TEST_ASSERT(CMOCK_GUTS_NONE == Mock.nrf_802154_rsch_timeslot_request_CallInstance, cmock_line, "Function 'nrf_802154_rsch_timeslot_request' called less times than expected.");
   if (Mock.nrf_802154_rsch_timeslot_request_CallbackFunctionPointer != NULL)
     Mock.nrf_802154_rsch_timeslot_request_CallInstance = CMOCK_GUTS_NONE;
@@ -163,10 +171,10 @@ void mock_nrf_802154_rsch_Destroy(void)
   Mock.nrf_802154_rsch_init_CallbackCalls = 0;
   Mock.nrf_802154_rsch_uninit_CallbackFunctionPointer = NULL;
   Mock.nrf_802154_rsch_uninit_CallbackCalls = 0;
-  Mock.nrf_802154_rsch_continuous_mode_enter_CallbackFunctionPointer = NULL;
-  Mock.nrf_802154_rsch_continuous_mode_enter_CallbackCalls = 0;
-  Mock.nrf_802154_rsch_continuous_mode_exit_CallbackFunctionPointer = NULL;
-  Mock.nrf_802154_rsch_continuous_mode_exit_CallbackCalls = 0;
+  Mock.nrf_802154_rsch_continuous_mode_priority_set_CallbackFunctionPointer = NULL;
+  Mock.nrf_802154_rsch_continuous_mode_priority_set_CallbackCalls = 0;
+  Mock.nrf_802154_rsch_continuous_ended_CallbackFunctionPointer = NULL;
+  Mock.nrf_802154_rsch_continuous_ended_CallbackCalls = 0;
   Mock.nrf_802154_rsch_timeslot_request_CallbackFunctionPointer = NULL;
   Mock.nrf_802154_rsch_timeslot_request_CallbackCalls = 0;
   Mock.nrf_802154_rsch_delayed_timeslot_request_CallbackFunctionPointer = NULL;
@@ -263,88 +271,106 @@ void nrf_802154_rsch_uninit_StubWithCallback(CMOCK_nrf_802154_rsch_uninit_CALLBA
   Mock.nrf_802154_rsch_uninit_CallbackFunctionPointer = Callback;
 }
 
-void nrf_802154_rsch_continuous_mode_enter(void)
+void nrf_802154_rsch_continuous_mode_priority_set(rsch_prio_t prio)
 {
   UNITY_LINE_TYPE cmock_line = TEST_LINE_NUM;
-  CMOCK_nrf_802154_rsch_continuous_mode_enter_CALL_INSTANCE* cmock_call_instance = (CMOCK_nrf_802154_rsch_continuous_mode_enter_CALL_INSTANCE*)CMock_Guts_GetAddressFor(Mock.nrf_802154_rsch_continuous_mode_enter_CallInstance);
-  Mock.nrf_802154_rsch_continuous_mode_enter_CallInstance = CMock_Guts_MemNext(Mock.nrf_802154_rsch_continuous_mode_enter_CallInstance);
-  if (Mock.nrf_802154_rsch_continuous_mode_enter_IgnoreBool)
+  CMOCK_nrf_802154_rsch_continuous_mode_priority_set_CALL_INSTANCE* cmock_call_instance = (CMOCK_nrf_802154_rsch_continuous_mode_priority_set_CALL_INSTANCE*)CMock_Guts_GetAddressFor(Mock.nrf_802154_rsch_continuous_mode_priority_set_CallInstance);
+  Mock.nrf_802154_rsch_continuous_mode_priority_set_CallInstance = CMock_Guts_MemNext(Mock.nrf_802154_rsch_continuous_mode_priority_set_CallInstance);
+  if (Mock.nrf_802154_rsch_continuous_mode_priority_set_IgnoreBool)
   {
     return;
   }
-  if (Mock.nrf_802154_rsch_continuous_mode_enter_CallbackFunctionPointer != NULL)
+  if (Mock.nrf_802154_rsch_continuous_mode_priority_set_CallbackFunctionPointer != NULL)
   {
-    Mock.nrf_802154_rsch_continuous_mode_enter_CallbackFunctionPointer(Mock.nrf_802154_rsch_continuous_mode_enter_CallbackCalls++);
+    Mock.nrf_802154_rsch_continuous_mode_priority_set_CallbackFunctionPointer(prio, Mock.nrf_802154_rsch_continuous_mode_priority_set_CallbackCalls++);
     return;
   }
-  UNITY_TEST_ASSERT_NOT_NULL(cmock_call_instance, cmock_line, "Function 'nrf_802154_rsch_continuous_mode_enter' called more times than expected.");
+  UNITY_TEST_ASSERT_NOT_NULL(cmock_call_instance, cmock_line, "Function 'nrf_802154_rsch_continuous_mode_priority_set' called more times than expected.");
   cmock_line = cmock_call_instance->LineNumber;
   if (cmock_call_instance->CallOrder > ++GlobalVerifyOrder)
-    UNITY_TEST_FAIL(cmock_line, "Function 'nrf_802154_rsch_continuous_mode_enter' called earlier than expected.");
+    UNITY_TEST_FAIL(cmock_line, "Function 'nrf_802154_rsch_continuous_mode_priority_set' called earlier than expected.");
   if (cmock_call_instance->CallOrder < GlobalVerifyOrder)
-    UNITY_TEST_FAIL(cmock_line, "Function 'nrf_802154_rsch_continuous_mode_enter' called later than expected.");
+    UNITY_TEST_FAIL(cmock_line, "Function 'nrf_802154_rsch_continuous_mode_priority_set' called later than expected.");
+  if (!cmock_call_instance->IgnoreArg_prio)
+  {
+    UNITY_TEST_ASSERT_EQUAL_MEMORY((void*)(&cmock_call_instance->Expected_prio), (void*)(&prio), sizeof(rsch_prio_t), cmock_line, "Function 'nrf_802154_rsch_continuous_mode_priority_set' called with unexpected value for argument 'prio'.");
+  }
 }
 
-void nrf_802154_rsch_continuous_mode_enter_CMockIgnore(void)
+void CMockExpectParameters_nrf_802154_rsch_continuous_mode_priority_set(CMOCK_nrf_802154_rsch_continuous_mode_priority_set_CALL_INSTANCE* cmock_call_instance, rsch_prio_t prio)
 {
-  Mock.nrf_802154_rsch_continuous_mode_enter_IgnoreBool = (int)1;
+  memcpy(&cmock_call_instance->Expected_prio, &prio, sizeof(rsch_prio_t));
+  cmock_call_instance->IgnoreArg_prio = 0;
 }
 
-void nrf_802154_rsch_continuous_mode_enter_CMockExpect(UNITY_LINE_TYPE cmock_line)
+void nrf_802154_rsch_continuous_mode_priority_set_CMockIgnore(void)
 {
-  CMOCK_MEM_INDEX_TYPE cmock_guts_index = CMock_Guts_MemNew(sizeof(CMOCK_nrf_802154_rsch_continuous_mode_enter_CALL_INSTANCE));
-  CMOCK_nrf_802154_rsch_continuous_mode_enter_CALL_INSTANCE* cmock_call_instance = (CMOCK_nrf_802154_rsch_continuous_mode_enter_CALL_INSTANCE*)CMock_Guts_GetAddressFor(cmock_guts_index);
+  Mock.nrf_802154_rsch_continuous_mode_priority_set_IgnoreBool = (int)1;
+}
+
+void nrf_802154_rsch_continuous_mode_priority_set_CMockExpect(UNITY_LINE_TYPE cmock_line, rsch_prio_t prio)
+{
+  CMOCK_MEM_INDEX_TYPE cmock_guts_index = CMock_Guts_MemNew(sizeof(CMOCK_nrf_802154_rsch_continuous_mode_priority_set_CALL_INSTANCE));
+  CMOCK_nrf_802154_rsch_continuous_mode_priority_set_CALL_INSTANCE* cmock_call_instance = (CMOCK_nrf_802154_rsch_continuous_mode_priority_set_CALL_INSTANCE*)CMock_Guts_GetAddressFor(cmock_guts_index);
   UNITY_TEST_ASSERT_NOT_NULL(cmock_call_instance, cmock_line, "CMock has run out of memory. Please allocate more.");
-  Mock.nrf_802154_rsch_continuous_mode_enter_CallInstance = CMock_Guts_MemChain(Mock.nrf_802154_rsch_continuous_mode_enter_CallInstance, cmock_guts_index);
+  Mock.nrf_802154_rsch_continuous_mode_priority_set_CallInstance = CMock_Guts_MemChain(Mock.nrf_802154_rsch_continuous_mode_priority_set_CallInstance, cmock_guts_index);
+  cmock_call_instance->LineNumber = cmock_line;
+  cmock_call_instance->CallOrder = ++GlobalExpectCount;
+  CMockExpectParameters_nrf_802154_rsch_continuous_mode_priority_set(cmock_call_instance, prio);
+}
+
+void nrf_802154_rsch_continuous_mode_priority_set_StubWithCallback(CMOCK_nrf_802154_rsch_continuous_mode_priority_set_CALLBACK Callback)
+{
+  Mock.nrf_802154_rsch_continuous_mode_priority_set_CallbackFunctionPointer = Callback;
+}
+
+void nrf_802154_rsch_continuous_mode_priority_set_CMockIgnoreArg_prio(UNITY_LINE_TYPE cmock_line)
+{
+  CMOCK_nrf_802154_rsch_continuous_mode_priority_set_CALL_INSTANCE* cmock_call_instance = cmock_call_instance = (CMOCK_nrf_802154_rsch_continuous_mode_priority_set_CALL_INSTANCE*)CMock_Guts_GetAddressFor(CMock_Guts_MemEndOfChain(Mock.nrf_802154_rsch_continuous_mode_priority_set_CallInstance));
+  UNITY_TEST_ASSERT_NOT_NULL(cmock_call_instance, cmock_line, "prio IgnoreArg called before Expect on 'nrf_802154_rsch_continuous_mode_priority_set'.");
+  cmock_call_instance->IgnoreArg_prio = 1;
+}
+
+void nrf_802154_rsch_continuous_ended(void)
+{
+  UNITY_LINE_TYPE cmock_line = TEST_LINE_NUM;
+  CMOCK_nrf_802154_rsch_continuous_ended_CALL_INSTANCE* cmock_call_instance = (CMOCK_nrf_802154_rsch_continuous_ended_CALL_INSTANCE*)CMock_Guts_GetAddressFor(Mock.nrf_802154_rsch_continuous_ended_CallInstance);
+  Mock.nrf_802154_rsch_continuous_ended_CallInstance = CMock_Guts_MemNext(Mock.nrf_802154_rsch_continuous_ended_CallInstance);
+  if (Mock.nrf_802154_rsch_continuous_ended_IgnoreBool)
+  {
+    return;
+  }
+  if (Mock.nrf_802154_rsch_continuous_ended_CallbackFunctionPointer != NULL)
+  {
+    Mock.nrf_802154_rsch_continuous_ended_CallbackFunctionPointer(Mock.nrf_802154_rsch_continuous_ended_CallbackCalls++);
+    return;
+  }
+  UNITY_TEST_ASSERT_NOT_NULL(cmock_call_instance, cmock_line, "Function 'nrf_802154_rsch_continuous_ended' called more times than expected.");
+  cmock_line = cmock_call_instance->LineNumber;
+  if (cmock_call_instance->CallOrder > ++GlobalVerifyOrder)
+    UNITY_TEST_FAIL(cmock_line, "Function 'nrf_802154_rsch_continuous_ended' called earlier than expected.");
+  if (cmock_call_instance->CallOrder < GlobalVerifyOrder)
+    UNITY_TEST_FAIL(cmock_line, "Function 'nrf_802154_rsch_continuous_ended' called later than expected.");
+}
+
+void nrf_802154_rsch_continuous_ended_CMockIgnore(void)
+{
+  Mock.nrf_802154_rsch_continuous_ended_IgnoreBool = (int)1;
+}
+
+void nrf_802154_rsch_continuous_ended_CMockExpect(UNITY_LINE_TYPE cmock_line)
+{
+  CMOCK_MEM_INDEX_TYPE cmock_guts_index = CMock_Guts_MemNew(sizeof(CMOCK_nrf_802154_rsch_continuous_ended_CALL_INSTANCE));
+  CMOCK_nrf_802154_rsch_continuous_ended_CALL_INSTANCE* cmock_call_instance = (CMOCK_nrf_802154_rsch_continuous_ended_CALL_INSTANCE*)CMock_Guts_GetAddressFor(cmock_guts_index);
+  UNITY_TEST_ASSERT_NOT_NULL(cmock_call_instance, cmock_line, "CMock has run out of memory. Please allocate more.");
+  Mock.nrf_802154_rsch_continuous_ended_CallInstance = CMock_Guts_MemChain(Mock.nrf_802154_rsch_continuous_ended_CallInstance, cmock_guts_index);
   cmock_call_instance->LineNumber = cmock_line;
   cmock_call_instance->CallOrder = ++GlobalExpectCount;
 }
 
-void nrf_802154_rsch_continuous_mode_enter_StubWithCallback(CMOCK_nrf_802154_rsch_continuous_mode_enter_CALLBACK Callback)
+void nrf_802154_rsch_continuous_ended_StubWithCallback(CMOCK_nrf_802154_rsch_continuous_ended_CALLBACK Callback)
 {
-  Mock.nrf_802154_rsch_continuous_mode_enter_CallbackFunctionPointer = Callback;
-}
-
-void nrf_802154_rsch_continuous_mode_exit(void)
-{
-  UNITY_LINE_TYPE cmock_line = TEST_LINE_NUM;
-  CMOCK_nrf_802154_rsch_continuous_mode_exit_CALL_INSTANCE* cmock_call_instance = (CMOCK_nrf_802154_rsch_continuous_mode_exit_CALL_INSTANCE*)CMock_Guts_GetAddressFor(Mock.nrf_802154_rsch_continuous_mode_exit_CallInstance);
-  Mock.nrf_802154_rsch_continuous_mode_exit_CallInstance = CMock_Guts_MemNext(Mock.nrf_802154_rsch_continuous_mode_exit_CallInstance);
-  if (Mock.nrf_802154_rsch_continuous_mode_exit_IgnoreBool)
-  {
-    return;
-  }
-  if (Mock.nrf_802154_rsch_continuous_mode_exit_CallbackFunctionPointer != NULL)
-  {
-    Mock.nrf_802154_rsch_continuous_mode_exit_CallbackFunctionPointer(Mock.nrf_802154_rsch_continuous_mode_exit_CallbackCalls++);
-    return;
-  }
-  UNITY_TEST_ASSERT_NOT_NULL(cmock_call_instance, cmock_line, "Function 'nrf_802154_rsch_continuous_mode_exit' called more times than expected.");
-  cmock_line = cmock_call_instance->LineNumber;
-  if (cmock_call_instance->CallOrder > ++GlobalVerifyOrder)
-    UNITY_TEST_FAIL(cmock_line, "Function 'nrf_802154_rsch_continuous_mode_exit' called earlier than expected.");
-  if (cmock_call_instance->CallOrder < GlobalVerifyOrder)
-    UNITY_TEST_FAIL(cmock_line, "Function 'nrf_802154_rsch_continuous_mode_exit' called later than expected.");
-}
-
-void nrf_802154_rsch_continuous_mode_exit_CMockIgnore(void)
-{
-  Mock.nrf_802154_rsch_continuous_mode_exit_IgnoreBool = (int)1;
-}
-
-void nrf_802154_rsch_continuous_mode_exit_CMockExpect(UNITY_LINE_TYPE cmock_line)
-{
-  CMOCK_MEM_INDEX_TYPE cmock_guts_index = CMock_Guts_MemNew(sizeof(CMOCK_nrf_802154_rsch_continuous_mode_exit_CALL_INSTANCE));
-  CMOCK_nrf_802154_rsch_continuous_mode_exit_CALL_INSTANCE* cmock_call_instance = (CMOCK_nrf_802154_rsch_continuous_mode_exit_CALL_INSTANCE*)CMock_Guts_GetAddressFor(cmock_guts_index);
-  UNITY_TEST_ASSERT_NOT_NULL(cmock_call_instance, cmock_line, "CMock has run out of memory. Please allocate more.");
-  Mock.nrf_802154_rsch_continuous_mode_exit_CallInstance = CMock_Guts_MemChain(Mock.nrf_802154_rsch_continuous_mode_exit_CallInstance, cmock_guts_index);
-  cmock_call_instance->LineNumber = cmock_line;
-  cmock_call_instance->CallOrder = ++GlobalExpectCount;
-}
-
-void nrf_802154_rsch_continuous_mode_exit_StubWithCallback(CMOCK_nrf_802154_rsch_continuous_mode_exit_CALLBACK Callback)
-{
-  Mock.nrf_802154_rsch_continuous_mode_exit_CallbackFunctionPointer = Callback;
+  Mock.nrf_802154_rsch_continuous_ended_CallbackFunctionPointer = Callback;
 }
 
 bool nrf_802154_rsch_timeslot_request(uint32_t length_us)
@@ -417,7 +443,7 @@ void nrf_802154_rsch_timeslot_request_CMockIgnoreArg_length_us(UNITY_LINE_TYPE c
   cmock_call_instance->IgnoreArg_length_us = 1;
 }
 
-bool nrf_802154_rsch_delayed_timeslot_request(uint32_t t0, uint32_t dt, uint32_t length)
+bool nrf_802154_rsch_delayed_timeslot_request(uint32_t t0, uint32_t dt, uint32_t length, rsch_prio_t prio, rsch_dly_ts_id_t dly_ts)
 {
   UNITY_LINE_TYPE cmock_line = TEST_LINE_NUM;
   CMOCK_nrf_802154_rsch_delayed_timeslot_request_CALL_INSTANCE* cmock_call_instance = (CMOCK_nrf_802154_rsch_delayed_timeslot_request_CALL_INSTANCE*)CMock_Guts_GetAddressFor(Mock.nrf_802154_rsch_delayed_timeslot_request_CallInstance);
@@ -431,7 +457,7 @@ bool nrf_802154_rsch_delayed_timeslot_request(uint32_t t0, uint32_t dt, uint32_t
   }
   if (Mock.nrf_802154_rsch_delayed_timeslot_request_CallbackFunctionPointer != NULL)
   {
-    return Mock.nrf_802154_rsch_delayed_timeslot_request_CallbackFunctionPointer(t0, dt, length, Mock.nrf_802154_rsch_delayed_timeslot_request_CallbackCalls++);
+    return Mock.nrf_802154_rsch_delayed_timeslot_request_CallbackFunctionPointer(t0, dt, length, prio, dly_ts, Mock.nrf_802154_rsch_delayed_timeslot_request_CallbackCalls++);
   }
   UNITY_TEST_ASSERT_NOT_NULL(cmock_call_instance, cmock_line, "Function 'nrf_802154_rsch_delayed_timeslot_request' called more times than expected.");
   cmock_line = cmock_call_instance->LineNumber;
@@ -451,10 +477,18 @@ bool nrf_802154_rsch_delayed_timeslot_request(uint32_t t0, uint32_t dt, uint32_t
   {
     UNITY_TEST_ASSERT_EQUAL_HEX32(cmock_call_instance->Expected_length, length, cmock_line, "Function 'nrf_802154_rsch_delayed_timeslot_request' called with unexpected value for argument 'length'.");
   }
+  if (!cmock_call_instance->IgnoreArg_prio)
+  {
+    UNITY_TEST_ASSERT_EQUAL_MEMORY((void*)(&cmock_call_instance->Expected_prio), (void*)(&prio), sizeof(rsch_prio_t), cmock_line, "Function 'nrf_802154_rsch_delayed_timeslot_request' called with unexpected value for argument 'prio'.");
+  }
+  if (!cmock_call_instance->IgnoreArg_dly_ts)
+  {
+    UNITY_TEST_ASSERT_EQUAL_MEMORY((void*)(&cmock_call_instance->Expected_dly_ts), (void*)(&dly_ts), sizeof(rsch_dly_ts_id_t), cmock_line, "Function 'nrf_802154_rsch_delayed_timeslot_request' called with unexpected value for argument 'dly_ts'.");
+  }
   return cmock_call_instance->ReturnVal;
 }
 
-void CMockExpectParameters_nrf_802154_rsch_delayed_timeslot_request(CMOCK_nrf_802154_rsch_delayed_timeslot_request_CALL_INSTANCE* cmock_call_instance, uint32_t t0, uint32_t dt, uint32_t length)
+void CMockExpectParameters_nrf_802154_rsch_delayed_timeslot_request(CMOCK_nrf_802154_rsch_delayed_timeslot_request_CALL_INSTANCE* cmock_call_instance, uint32_t t0, uint32_t dt, uint32_t length, rsch_prio_t prio, rsch_dly_ts_id_t dly_ts)
 {
   cmock_call_instance->Expected_t0 = t0;
   cmock_call_instance->IgnoreArg_t0 = 0;
@@ -462,6 +496,10 @@ void CMockExpectParameters_nrf_802154_rsch_delayed_timeslot_request(CMOCK_nrf_80
   cmock_call_instance->IgnoreArg_dt = 0;
   cmock_call_instance->Expected_length = length;
   cmock_call_instance->IgnoreArg_length = 0;
+  memcpy(&cmock_call_instance->Expected_prio, &prio, sizeof(rsch_prio_t));
+  cmock_call_instance->IgnoreArg_prio = 0;
+  memcpy(&cmock_call_instance->Expected_dly_ts, &dly_ts, sizeof(rsch_dly_ts_id_t));
+  cmock_call_instance->IgnoreArg_dly_ts = 0;
 }
 
 void nrf_802154_rsch_delayed_timeslot_request_CMockIgnoreAndReturn(UNITY_LINE_TYPE cmock_line, bool cmock_to_return)
@@ -475,7 +513,7 @@ void nrf_802154_rsch_delayed_timeslot_request_CMockIgnoreAndReturn(UNITY_LINE_TY
   Mock.nrf_802154_rsch_delayed_timeslot_request_IgnoreBool = (int)1;
 }
 
-void nrf_802154_rsch_delayed_timeslot_request_CMockExpectAndReturn(UNITY_LINE_TYPE cmock_line, uint32_t t0, uint32_t dt, uint32_t length, bool cmock_to_return)
+void nrf_802154_rsch_delayed_timeslot_request_CMockExpectAndReturn(UNITY_LINE_TYPE cmock_line, uint32_t t0, uint32_t dt, uint32_t length, rsch_prio_t prio, rsch_dly_ts_id_t dly_ts, bool cmock_to_return)
 {
   CMOCK_MEM_INDEX_TYPE cmock_guts_index = CMock_Guts_MemNew(sizeof(CMOCK_nrf_802154_rsch_delayed_timeslot_request_CALL_INSTANCE));
   CMOCK_nrf_802154_rsch_delayed_timeslot_request_CALL_INSTANCE* cmock_call_instance = (CMOCK_nrf_802154_rsch_delayed_timeslot_request_CALL_INSTANCE*)CMock_Guts_GetAddressFor(cmock_guts_index);
@@ -483,7 +521,7 @@ void nrf_802154_rsch_delayed_timeslot_request_CMockExpectAndReturn(UNITY_LINE_TY
   Mock.nrf_802154_rsch_delayed_timeslot_request_CallInstance = CMock_Guts_MemChain(Mock.nrf_802154_rsch_delayed_timeslot_request_CallInstance, cmock_guts_index);
   cmock_call_instance->LineNumber = cmock_line;
   cmock_call_instance->CallOrder = ++GlobalExpectCount;
-  CMockExpectParameters_nrf_802154_rsch_delayed_timeslot_request(cmock_call_instance, t0, dt, length);
+  CMockExpectParameters_nrf_802154_rsch_delayed_timeslot_request(cmock_call_instance, t0, dt, length, prio, dly_ts);
   cmock_call_instance->ReturnVal = cmock_to_return;
 }
 
@@ -513,7 +551,21 @@ void nrf_802154_rsch_delayed_timeslot_request_CMockIgnoreArg_length(UNITY_LINE_T
   cmock_call_instance->IgnoreArg_length = 1;
 }
 
-bool nrf_802154_rsch_prec_is_approved(rsch_prec_t prec)
+void nrf_802154_rsch_delayed_timeslot_request_CMockIgnoreArg_prio(UNITY_LINE_TYPE cmock_line)
+{
+  CMOCK_nrf_802154_rsch_delayed_timeslot_request_CALL_INSTANCE* cmock_call_instance = cmock_call_instance = (CMOCK_nrf_802154_rsch_delayed_timeslot_request_CALL_INSTANCE*)CMock_Guts_GetAddressFor(CMock_Guts_MemEndOfChain(Mock.nrf_802154_rsch_delayed_timeslot_request_CallInstance));
+  UNITY_TEST_ASSERT_NOT_NULL(cmock_call_instance, cmock_line, "prio IgnoreArg called before Expect on 'nrf_802154_rsch_delayed_timeslot_request'.");
+  cmock_call_instance->IgnoreArg_prio = 1;
+}
+
+void nrf_802154_rsch_delayed_timeslot_request_CMockIgnoreArg_dly_ts(UNITY_LINE_TYPE cmock_line)
+{
+  CMOCK_nrf_802154_rsch_delayed_timeslot_request_CALL_INSTANCE* cmock_call_instance = cmock_call_instance = (CMOCK_nrf_802154_rsch_delayed_timeslot_request_CALL_INSTANCE*)CMock_Guts_GetAddressFor(CMock_Guts_MemEndOfChain(Mock.nrf_802154_rsch_delayed_timeslot_request_CallInstance));
+  UNITY_TEST_ASSERT_NOT_NULL(cmock_call_instance, cmock_line, "dly_ts IgnoreArg called before Expect on 'nrf_802154_rsch_delayed_timeslot_request'.");
+  cmock_call_instance->IgnoreArg_dly_ts = 1;
+}
+
+bool nrf_802154_rsch_prec_is_approved(rsch_prec_t prec, rsch_prio_t prio)
 {
   UNITY_LINE_TYPE cmock_line = TEST_LINE_NUM;
   CMOCK_nrf_802154_rsch_prec_is_approved_CALL_INSTANCE* cmock_call_instance = (CMOCK_nrf_802154_rsch_prec_is_approved_CALL_INSTANCE*)CMock_Guts_GetAddressFor(Mock.nrf_802154_rsch_prec_is_approved_CallInstance);
@@ -527,7 +579,7 @@ bool nrf_802154_rsch_prec_is_approved(rsch_prec_t prec)
   }
   if (Mock.nrf_802154_rsch_prec_is_approved_CallbackFunctionPointer != NULL)
   {
-    return Mock.nrf_802154_rsch_prec_is_approved_CallbackFunctionPointer(prec, Mock.nrf_802154_rsch_prec_is_approved_CallbackCalls++);
+    return Mock.nrf_802154_rsch_prec_is_approved_CallbackFunctionPointer(prec, prio, Mock.nrf_802154_rsch_prec_is_approved_CallbackCalls++);
   }
   UNITY_TEST_ASSERT_NOT_NULL(cmock_call_instance, cmock_line, "Function 'nrf_802154_rsch_prec_is_approved' called more times than expected.");
   cmock_line = cmock_call_instance->LineNumber;
@@ -539,13 +591,19 @@ bool nrf_802154_rsch_prec_is_approved(rsch_prec_t prec)
   {
     UNITY_TEST_ASSERT_EQUAL_MEMORY((void*)(&cmock_call_instance->Expected_prec), (void*)(&prec), sizeof(rsch_prec_t), cmock_line, "Function 'nrf_802154_rsch_prec_is_approved' called with unexpected value for argument 'prec'.");
   }
+  if (!cmock_call_instance->IgnoreArg_prio)
+  {
+    UNITY_TEST_ASSERT_EQUAL_MEMORY((void*)(&cmock_call_instance->Expected_prio), (void*)(&prio), sizeof(rsch_prio_t), cmock_line, "Function 'nrf_802154_rsch_prec_is_approved' called with unexpected value for argument 'prio'.");
+  }
   return cmock_call_instance->ReturnVal;
 }
 
-void CMockExpectParameters_nrf_802154_rsch_prec_is_approved(CMOCK_nrf_802154_rsch_prec_is_approved_CALL_INSTANCE* cmock_call_instance, rsch_prec_t prec)
+void CMockExpectParameters_nrf_802154_rsch_prec_is_approved(CMOCK_nrf_802154_rsch_prec_is_approved_CALL_INSTANCE* cmock_call_instance, rsch_prec_t prec, rsch_prio_t prio)
 {
   memcpy(&cmock_call_instance->Expected_prec, &prec, sizeof(rsch_prec_t));
   cmock_call_instance->IgnoreArg_prec = 0;
+  memcpy(&cmock_call_instance->Expected_prio, &prio, sizeof(rsch_prio_t));
+  cmock_call_instance->IgnoreArg_prio = 0;
 }
 
 void nrf_802154_rsch_prec_is_approved_CMockIgnoreAndReturn(UNITY_LINE_TYPE cmock_line, bool cmock_to_return)
@@ -559,7 +617,7 @@ void nrf_802154_rsch_prec_is_approved_CMockIgnoreAndReturn(UNITY_LINE_TYPE cmock
   Mock.nrf_802154_rsch_prec_is_approved_IgnoreBool = (int)1;
 }
 
-void nrf_802154_rsch_prec_is_approved_CMockExpectAndReturn(UNITY_LINE_TYPE cmock_line, rsch_prec_t prec, bool cmock_to_return)
+void nrf_802154_rsch_prec_is_approved_CMockExpectAndReturn(UNITY_LINE_TYPE cmock_line, rsch_prec_t prec, rsch_prio_t prio, bool cmock_to_return)
 {
   CMOCK_MEM_INDEX_TYPE cmock_guts_index = CMock_Guts_MemNew(sizeof(CMOCK_nrf_802154_rsch_prec_is_approved_CALL_INSTANCE));
   CMOCK_nrf_802154_rsch_prec_is_approved_CALL_INSTANCE* cmock_call_instance = (CMOCK_nrf_802154_rsch_prec_is_approved_CALL_INSTANCE*)CMock_Guts_GetAddressFor(cmock_guts_index);
@@ -567,7 +625,7 @@ void nrf_802154_rsch_prec_is_approved_CMockExpectAndReturn(UNITY_LINE_TYPE cmock
   Mock.nrf_802154_rsch_prec_is_approved_CallInstance = CMock_Guts_MemChain(Mock.nrf_802154_rsch_prec_is_approved_CallInstance, cmock_guts_index);
   cmock_call_instance->LineNumber = cmock_line;
   cmock_call_instance->CallOrder = ++GlobalExpectCount;
-  CMockExpectParameters_nrf_802154_rsch_prec_is_approved(cmock_call_instance, prec);
+  CMockExpectParameters_nrf_802154_rsch_prec_is_approved(cmock_call_instance, prec, prio);
   cmock_call_instance->ReturnVal = cmock_to_return;
 }
 
@@ -581,6 +639,13 @@ void nrf_802154_rsch_prec_is_approved_CMockIgnoreArg_prec(UNITY_LINE_TYPE cmock_
   CMOCK_nrf_802154_rsch_prec_is_approved_CALL_INSTANCE* cmock_call_instance = cmock_call_instance = (CMOCK_nrf_802154_rsch_prec_is_approved_CALL_INSTANCE*)CMock_Guts_GetAddressFor(CMock_Guts_MemEndOfChain(Mock.nrf_802154_rsch_prec_is_approved_CallInstance));
   UNITY_TEST_ASSERT_NOT_NULL(cmock_call_instance, cmock_line, "prec IgnoreArg called before Expect on 'nrf_802154_rsch_prec_is_approved'.");
   cmock_call_instance->IgnoreArg_prec = 1;
+}
+
+void nrf_802154_rsch_prec_is_approved_CMockIgnoreArg_prio(UNITY_LINE_TYPE cmock_line)
+{
+  CMOCK_nrf_802154_rsch_prec_is_approved_CALL_INSTANCE* cmock_call_instance = cmock_call_instance = (CMOCK_nrf_802154_rsch_prec_is_approved_CALL_INSTANCE*)CMock_Guts_GetAddressFor(CMock_Guts_MemEndOfChain(Mock.nrf_802154_rsch_prec_is_approved_CallInstance));
+  UNITY_TEST_ASSERT_NOT_NULL(cmock_call_instance, cmock_line, "prio IgnoreArg called before Expect on 'nrf_802154_rsch_prec_is_approved'.");
+  cmock_call_instance->IgnoreArg_prio = 1;
 }
 
 uint32_t nrf_802154_rsch_timeslot_us_left_get(void)

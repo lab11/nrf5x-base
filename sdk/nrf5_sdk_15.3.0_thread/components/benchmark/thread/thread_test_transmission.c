@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2018, Nordic Semiconductor ASA
+ * Copyright (c) 2018 - 2019, Nordic Semiconductor ASA
  *
  * All rights reserved.
  *
@@ -53,11 +53,12 @@
 #include "iot_defines.h"
 
 #include <openthread/ip6.h>
+#include <openthread/platform/alarm-micro.h>
 #include <openthread/thread.h>
 #include <openthread/udp.h>
 
 #define TEST_TRANSMISSION_UDP_PAYLOAD            0xAA  /**< Sequence that is used to fill the application payload space. */
-#define TEST_TRANSMISSION_UDP_MAX_PAYLOAD_SIZE   1024  /**< Maximal size of UDP payload in the test packet [B].  */
+#define TEST_TRANSMISSION_UDP_MAX_PAYLOAD_SIZE   1200  /**< Maximum size of UDP payload in the test packet [B].  */
 #define TEST_TRANSMISSION_UDP_FREE_BUFFERS_MIN   10    /**< Minimal number of free OT buffer slots so the test does not consume all available slots.  */
 #define TEST_TRANSMISSION_UDP_SOURCE_PORT        22222 /**< Peer UDP port used as the source port for all tests. */
 #define TEST_TRANSMISSION_UDP_LISTENER_PORT      33333 /**< Peer UDP port used for the UNIDIRECTIONAL test. */
@@ -87,6 +88,8 @@ static otUdpSocket m_repeater_udp_socket;
 static otUdpSocket m_ack_responder_udp_socket;
 
 static benchmark_configuration_t * mp_test_configuration;
+
+static uint32_t m_send_timestamp;
 
 static frame_payload_t     m_frame_payload;
 static frame_information_t m_frame_information =
@@ -127,17 +130,19 @@ static void udp_source_receive_callback(void                * p_context,
     if ((mp_test_configuration->mode == BENCHMARK_MODE_ACK) ||
         (mp_test_configuration->mode == BENCHMARK_MODE_ECHO))
     {
-        int read = otMessageRead(p_message,
-                                 otMessageGetOffset(p_message),
-                                 &current_frame_number,
-                                 sizeof(current_frame_number));
+        uint16_t read = otMessageRead(p_message,
+                                      otMessageGetOffset(p_message),
+                                      &current_frame_number,
+                                      sizeof(current_frame_number));
         ASSERT(read == sizeof(current_frame_number));
 
         current_frame_number = NTOHL(current_frame_number);
 
         if (p_status->waiting_for_ack == current_frame_number)
         {
+            benchmark_update_latency(&p_status->latency, (otPlatAlarmMicroGetNow() - m_send_timestamp) / 2);
             NRF_LOG_DEBUG("ACK received: 0x%08x\r\n", current_frame_number);
+            UNUSED_RETURN_VALUE(app_timer_stop(m_ack_timer));
             p_status->waiting_for_ack = 0;
 
             if (current_frame_number == mp_test_configuration->count)
@@ -173,7 +178,7 @@ static void send_response(void * p_event_data, uint16_t event_size)
 
     do
     {
-        p_message = otUdpNewMessage(thread_ot_instance_get(), true);
+        p_message = otUdpNewMessage(thread_ot_instance_get(), NULL);
         if (p_message == NULL)
         {
             NRF_LOG_ERROR("Failed to allocate message for UDP port.\r\n");
@@ -247,7 +252,7 @@ static void udp_destination_receive_callback(void                * p_context,
     m_frame_information.message_info   = *p_message_info;
     uint32_t err_code                  = NRF_SUCCESS;
 
-    int read = otMessageRead(p_message, otMessageGetOffset(p_message), m_frame_information.p_payload->payload, m_frame_information.payload_length);
+    uint16_t read = otMessageRead(p_message, otMessageGetOffset(p_message), m_frame_information.p_payload->payload, m_frame_information.payload_length);
     ASSERT(read == m_frame_information.payload_length);
 
     if (p_status->reset_counters)
@@ -447,7 +452,7 @@ benchmark_test_state_t test_transmission_packet_transmit(benchmark_configuration
 
     do
     {
-        p_message = otUdpNewMessage(thread_ot_instance_get(), true);
+        p_message = otUdpNewMessage(thread_ot_instance_get(), NULL);
 
         if (p_message == NULL)
         {
@@ -478,6 +483,8 @@ benchmark_test_state_t test_transmission_packet_transmit(benchmark_configuration
         message_info.mPeerPort    = peer_port_get(p_test_conf->mode);
         message_info.mPeerAddr    = *(otIp6Address *)(p_selcected_peer->p_address);
         message_info.mSockAddr    = *otThreadGetMeshLocalEid(thread_ot_instance_get());
+
+        m_send_timestamp = otPlatAlarmMicroGetNow();
 
         // Use the source socket to transmit UDP message, acknowledgments will be send back to the same port.
         err_code = otUdpSend(&m_source_udp_socket, p_message, &message_info);

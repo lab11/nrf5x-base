@@ -184,6 +184,59 @@ typedef ZB_PACKED_PRE struct zb_aps_dup_tbl_ent_s
 
 
 /**
+   Global binding table - source part
+*/
+typedef ZB_PACKED_PRE struct zb_aps_bind_src_table_s
+{
+  zb_address_ieee_ref_t src_addr;   /*!< source address as ref from nwkAddressMap */
+  zb_uint8_t            src_end;    /*!< source endpoint */
+  zb_uint16_t           cluster_id; /*!< cluster id */
+} ZB_PACKED_STRUCT zb_aps_bind_src_table_t;
+
+/**
+   Global binding table - destination part with 64 bit address
+*/
+typedef ZB_PACKED_PRE struct zb_aps_bind_long_dst_addr_s
+{
+  zb_address_ieee_ref_t dst_addr;        /*!< destination address as ref from nwkAddressMap */
+  zb_uint8_t            dst_end;         /*!< destination endpoint */
+} ZB_PACKED_STRUCT zb_aps_bind_long_dst_addr_t;
+
+#ifndef ZB_CONFIGURABLE_MEM
+#define ZB_APS_BIND_TRANS_TABLE_SIZE ((ZB_IOBUF_POOL_SIZE + 15)/16 *4)
+
+/* it should be 4-byte aligned if it is stored in NVRAM */
+#define ZB_SINGLE_TRANS_INDEX_SIZE (((ZB_APS_BIND_TRANS_TABLE_SIZE + 31) / 32) * 4)
+#endif
+
+/**
+   Global binding table - destination part
+*/
+typedef ZB_PACKED_PRE struct zb_aps_bind_dst_table_s
+{
+#ifdef ZB_CONFIGURABLE_MEM
+  /* WARNING: this field will be rewritten if APS binding dataset is present in NVRAM */
+  zb_uint8_t            *trans_index;
+#endif /* defined ZB_CONFIGURABLE_MEM */
+
+  ZB_PACKED_PRE union
+  {
+    zb_uint16_t group_addr;                /*!< group address */
+    zb_aps_bind_long_dst_addr_t long_addr; /*!< @see zb_asp_long_dst_addr_t */
+  } u;
+
+#ifndef ZB_CONFIGURABLE_MEM
+  zb_uint8_t            trans_index[ZB_SINGLE_TRANS_INDEX_SIZE];
+#endif /* defined ZB_CONFIGURABLE_MEM */
+  zb_uint8_t            align;
+
+  zb_bitfield_t         dst_addr_mode:3;   /*!< destination address mode flag, 0
+                                            * - group address, otherwise long
+                                            * address plus dest endpoint */
+  zb_bitfield_t         src_table_index:5; /*!< index from zb_asp_src_table_t */
+} ZB_PACKED_STRUCT zb_aps_bind_dst_table_t;
+
+/**
    Neighbor table entry
  */
 typedef ZB_PACKED_PRE struct zb_neighbor_tbl_ent_s /* not need to pack it at IAR */

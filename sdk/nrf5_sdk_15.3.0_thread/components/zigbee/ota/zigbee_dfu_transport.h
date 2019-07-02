@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2018, Nordic Semiconductor ASA
+ * Copyright (c) 2018 - 2019, Nordic Semiconductor ASA
  *
  * All rights reserved.
  *
@@ -43,17 +43,22 @@
 #include "zboss_api.h"
 #include "background_dfu_transport.h"
 
-#define TOTAL_HEADER_LEN        sizeof(zb_zcl_ota_upgrade_file_header_t) + sizeof(zb_zcl_ota_upgrade_sub_element_t) - 1 + sizeof(background_dfu_trigger_t)
-#define SUBELEMENT_TRIGGER_TYPE 0xCDEF
+#define SUBELEMENT_TRIGGER_TYPE     0xCDEF
+#define SUBELEMENT_LEN(x)           sizeof(zb_zcl_ota_upgrade_sub_element_t) - 1 + sizeof(x)
+#define MANDATORY_HEADER_LEN        sizeof(zb_zcl_ota_upgrade_file_header_t) + SUBELEMENT_LEN(background_dfu_trigger_t)
+#define OPTIONAL_HEADER_LEN         sizeof(zb_uint8_t) + sizeof(zb_ieee_addr_t) + sizeof(zb_uint16_t) + sizeof(zb_uint16_t)
+#define TOTAL_HEADER_LEN            MANDATORY_HEADER_LEN + OPTIONAL_HEADER_LEN
+
 
 typedef struct zigbee_subelement_desc
 {
-    int start;
-    int length;
+    zb_uint32_t start;
+    zb_uint32_t length;
 } zigbee_subelement_desc_t;
 
 typedef struct zigbee_ota_dfu_context
 {
+    zb_uint32_t                        total_length;
     zb_uint8_t                         resume_buffer;
     zb_uint8_t                         endpoint;
     zb_zcl_ota_upgrade_sub_element_t * p_trigger;
@@ -63,6 +68,8 @@ typedef struct zigbee_ota_dfu_context
     zb_uint8_t                         ota_header[TOTAL_HEADER_LEN];
     uint32_t                           ota_header_fill_level;
     uint8_t                            block[BACKGROUND_DFU_DEFAULT_BLOCK_SIZE];
+    uint8_t                            scratchpad[2 * BACKGROUND_DFU_DEFAULT_BLOCK_SIZE];
+    uint32_t                           scratchpad_fill_level;
 } zigbee_ota_dfu_context_t;
 
 /** @brief Initialize DFU client.

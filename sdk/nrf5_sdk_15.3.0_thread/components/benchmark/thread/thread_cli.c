@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2018, Nordic Semiconductor ASA
+ * Copyright (c) 2018 - 2019, Nordic Semiconductor ASA
  *
  * All rights reserved.
  *
@@ -38,6 +38,7 @@
  *
  */
 
+#include <openthread/cli.h>
 #include <openthread/ip6.h>
 #include <openthread/thread.h>
 
@@ -55,18 +56,24 @@
 /**@brief CLI configuration. */
 #define CLI_UART_INSTANCE_ID        1
 #define CLI_UART_TX_BUF_SIZE        64
-#define CLI_UART_RX_BUF_SIZE        16
+#define CLI_UART_RX_BUF_SIZE        512
 #define CLI_COAP_RX_BUF_SIZE        128
 
 /**@brief CLI instance. */
 #define CLI_LOG_QUEUE_SIZE          4
+
+/**@ brief OpenThread command buffer size. */
+#define OT_CMD_BUFFER_SIZE          256
+
+static char              m_ot_cmd_buffer[OT_CMD_BUFFER_SIZE];
+static nrf_cli_t const * mp_cli_print;
 
 NRF_CLI_UART_DEF(m_cli_uart_transport,
                  CLI_UART_INSTANCE_ID,
                  CLI_UART_TX_BUF_SIZE,
                  CLI_UART_RX_BUF_SIZE);
 NRF_CLI_DEF(m_cli_uart,
-            "uart_cli:~$ ",
+            "> ",
             &m_cli_uart_transport.transport,
             '\r',
             CLI_LOG_QUEUE_SIZE);
@@ -88,6 +95,20 @@ NRF_CLI_DEF_MULTI(CLI_REMOTE_INSTANCES,
                   '\n',
                   CLI_LOG_QUEUE_SIZE);
 
+
+/**@brief OpenThread CLI output callback.
+ *
+ * Used by the OpenThread stack to return requested information.
+ */
+int ot_console_output_callback(const char * p_buff, uint16_t buff_len, void * p_context)
+{
+	UNUSED_VARIABLE(p_context);
+
+	nrf_cli_fprintf(mp_cli_print, NRF_CLI_INFO, "%s", p_buff);
+
+	return buff_len;
+}
+
 /**@brief Function for initializing the CLI.
  *
  * Serial connection and RTT console are supported.
@@ -100,10 +121,15 @@ void cli_init(void)
     nrf_drv_uart_config_t uart_config = NRF_DRV_UART_DEFAULT_CONFIG;
     uart_config.pseltxd               = TX_PIN_NUMBER;
     uart_config.pselrxd               = RX_PIN_NUMBER;
-    uart_config.hwfc                  = NRF_UART_HWFC_DISABLED;
+    uart_config.pselcts               = CTS_PIN_NUMBER;
+    uart_config.pselrts               = RTS_PIN_NUMBER;
+    uart_config.hwfc                  = NRF_UART_HWFC_ENABLED;
 
     err_code = nrf_cli_init(&m_cli_uart, &uart_config, true, true, NRF_LOG_SEVERITY_INFO);
     APP_ERROR_CHECK(err_code);
+
+    // Init OpenThread console.
+    otCliConsoleInit(thread_ot_instance_get(), ot_console_output_callback, NULL);
 }
 
 void cli_remote_init(void)
@@ -167,55 +193,43 @@ void cli_remote_peer_set(nrf_cli_t const * p_peer_cli, benchmark_address_context
     cli_coap_peer_set(p_peer_cli, (otIp6Address *)p_peer_address);
 }
 
-static void cmd_thread_buffer_info(nrf_cli_t const * p_cli, size_t argc, char ** argv)
+/**@brief  Function for passing the command to the OpenThread interpreter.
+ */
+static void cmd_ot(nrf_cli_t const * p_cli, size_t argc, char ** argv)
 {
-    otBufferInfo buff_info;
-    otMessageGetBufferInfo(thread_ot_instance_get(), &buff_info);
-    nrf_cli_fprintf(p_cli, NRF_CLI_INFO, "total: %d\r\n", buff_info.mTotalBuffers);
-    nrf_cli_fprintf(p_cli, NRF_CLI_INFO, "free: %d\r\n", buff_info.mFreeBuffers);
-    nrf_cli_fprintf(p_cli, NRF_CLI_INFO, "6lo send: %d %d\r\n", buff_info.m6loSendMessages, buff_info.m6loSendBuffers);
-    nrf_cli_fprintf(p_cli, NRF_CLI_INFO, "6lo reas: %d %d\r\n", buff_info.m6loReassemblyMessages, buff_info.m6loReassemblyBuffers);
-    nrf_cli_fprintf(p_cli, NRF_CLI_INFO, "ip6: %d %d\r\n", buff_info.mIp6Messages, buff_info.mIp6Buffers);
-    nrf_cli_fprintf(p_cli, NRF_CLI_INFO, "mpl: %d %d\r\n", buff_info.mMplMessages, buff_info.mMplBuffers);
-    nrf_cli_fprintf(p_cli, NRF_CLI_INFO, "mle: %d %d\r\n", buff_info.mMleMessages, buff_info.mMleBuffers);
-    nrf_cli_fprintf(p_cli, NRF_CLI_INFO, "arp: %d %d\r\n", buff_info.mArpMessages, buff_info.mArpBuffers);
-    nrf_cli_fprintf(p_cli, NRF_CLI_INFO, "coap: %d %d\r\n", buff_info.mCoapMessages, buff_info.mCoapBuffers);
-    nrf_cli_fprintf(p_cli, NRF_CLI_INFO, "coap secure: %d %d\r\n", buff_info.mCoapSecureMessages, buff_info.mCoapSecureBuffers);
-    nrf_cli_fprintf(p_cli, NRF_CLI_INFO, "application coap: %d %d\r\n", buff_info.mApplicationCoapMessages,
-                    buff_info.mApplicationCoapBuffers);
+    // Remeber cli used to issue a command so results can be printed on the same interface.
+    mp_cli_print    = p_cli;
+	char * p_buff   = m_ot_cmd_buffer;
+	size_t buff_len = OT_CMD_BUFFER_SIZE;
+	size_t arg_len  = 0;
+
+	memset(m_ot_cmd_buffer, 0, OT_CMD_BUFFER_SIZE);
+
+	for (size_t i = 1; i < argc; i++)
+	{
+		if (arg_len)
+		{
+			buff_len -= arg_len + 1;
+
+			if (buff_len)
+			{
+				p_buff[arg_len] = ' ';
+			}
+			p_buff += arg_len + 1;
+		}
+
+		arg_len = snprintf(p_buff, buff_len, "%s", argv[i]);
+
+		if (arg_len >= buff_len)
+		{
+			nrf_cli_fprintf(p_cli, NRF_CLI_WARNING, "OT shell buffer full.");
+			return;
+		}
+	}
+
+	buff_len -= arg_len;
+
+	otCliConsoleInputLine(m_ot_cmd_buffer, OT_CMD_BUFFER_SIZE - buff_len);
 }
 
-static void cmd_thread_start(nrf_cli_t const * p_cli, size_t argc, char ** argv)
-{
-    otError error;
-
-    error = otPlatRadioEnable(thread_ot_instance_get());
-    ASSERT(error == OT_ERROR_NONE);
-
-    error = otIp6SetEnabled(thread_ot_instance_get(), true);
-    ASSERT(error == OT_ERROR_NONE);
-
-    error = otThreadSetEnabled(thread_ot_instance_get(), true);
-    ASSERT(error == OT_ERROR_NONE);
-}
-
-static void cmd_thread_stop(nrf_cli_t const * p_cli, size_t argc, char ** argv)
-{
-    otError error;
-
-    error = otThreadSetEnabled(thread_ot_instance_get(), false);
-    ASSERT(error == OT_ERROR_NONE);
-
-    error = otIp6SetEnabled(thread_ot_instance_get(), false);
-    ASSERT(error == OT_ERROR_NONE);
-}
-
-NRF_CLI_CREATE_STATIC_SUBCMD_SET(m_thread_cmds)
-{
-    NRF_CLI_CMD(buffer_info, NULL, "Display OpenThread buffers info", cmd_thread_buffer_info),
-    NRF_CLI_CMD(start,       NULL, "Start OpenThread stack",          cmd_thread_start),
-    NRF_CLI_CMD(stop,        NULL, "Stop OpenThread stack",           cmd_thread_stop),
-    NRF_CLI_SUBCMD_SET_END
-};
-
-NRF_CLI_CMD_REGISTER(thread, &m_thread_cmds, "OpenThread commands", cmd_default);
+NRF_CLI_CMD_REGISTER(ot, NULL, "Issue an OpenThread CLI command", cmd_ot);

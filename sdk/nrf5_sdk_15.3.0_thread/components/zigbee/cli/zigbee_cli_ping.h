@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2018, Nordic Semiconductor ASA
+ * Copyright (c) 2018 - 2019, Nordic Semiconductor ASA
  *
  * All rights reserved.
  *
@@ -42,6 +42,7 @@
 
 #include "nrf_cli.h"
 #include "zboss_api.h"
+#include "zboss_api_addons.h"
 
 #define PING_CUSTOM_CLUSTER           0xBEEF
 #define PING_MAX_LENGTH               79

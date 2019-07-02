@@ -73,6 +73,7 @@ enum zb_zcl_en50523_appl_ev_and_alerts_send_cmd_e
   ZB_ZCL_CMD_EN50523_APPL_EV_AND_ALERTS_EVENT_NOTIFICATION_ID  = 0x02,
 };
 
+/** @cond internals_doc */
 /* en50523 cluster commands list : only for information - do not modify */
 #define ZB_ZCL_CLUSTER_ID_APPL_EV_AND_ALERTS_SERVER_ROLE_RECEIVED_CMD_LIST ZB_ZCL_CMD_EN50523_APPL_EV_AND_ALERTS_GET_ALERTS_ID
 
@@ -84,6 +85,8 @@ enum zb_zcl_en50523_appl_ev_and_alerts_send_cmd_e
 #define ZB_ZCL_CLUSTER_ID_APPL_EV_AND_ALERTS_CLIENT_ROLE_RECEIVED_CMD_LIST ZB_ZCL_CLUSTER_ID_APPL_EV_AND_ALERTS_SERVER_ROLE_GENERATED_CMD_LIST
 
 #define ZB_ZCL_CLUSTER_ID_APPL_EV_AND_ALERTS_CLIENT_ROLE_GENERATED_CMD_LIST ZB_ZCL_CLUSTER_ID_APPL_EV_AND_ALERTS_SERVER_ROLE_RECEIVED_CMD_LIST
+/*! @}
+ *  @endcond */ /* internals_doc */
 
 /******************************* Get Alerts Command ******************************/
 

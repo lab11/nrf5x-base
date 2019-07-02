@@ -239,6 +239,48 @@ enum zb_zcl_window_covering_mode_e
 /** @brief Default value for IntermediateSetpointsTilt attribute */
 #define ZB_ZCL_WINDOW_COVERING_INTERMEDIATE_SETPOINTS_TILT_DEFAULT_VALUE {0x31, 0x2C, 0x30, 0x78, 0x30, 0x30, 0x30, 0x30, 0x00}
 
+/** @brief Declare attribute list for Window Covering cluster
+    @param attr_list - attribute list name
+    @param window_covering_type - pointer to variable to store Window Covering Type attribute value
+    @param config_status - pointer to variable to store Config/Status attribute value
+    @param current_position_lift_percentage  - pointer to variable to store
+    Current Position Lift Percentage attribute value
+    @param current_position_tilt_percentage - pointer to variable to store
+    Current Position Tilt Percentage attribute value
+    @param installed_open_limit_lift - pointer to variable to store Installed Open Limit Lift
+    attribute value
+    @param installed_closed_limit_lift - pointer to variable to store Installed Closed Limit Lift
+    attribute value
+    @param installed_open_limit_tilt - pointer to variable to store Installed Open Limit Tilt
+    attribute value
+    @param installed_closed_limit_tilt - pointer to variable to store Installed Closed Limit Tilt
+    attribute value
+    @param mode - pointer to variable to store Mode attribute value
+*/
+#define ZB_ZCL_DECLARE_WINDOW_COVERING_CLUSTER_ATTRIB_LIST(attr_list, window_covering_type,       \
+   config_status, current_position_lift_percentage, current_position_tilt_percentage,             \
+   installed_open_limit_lift, installed_closed_limit_lift, installed_open_limit_tilt,             \
+   installed_closed_limit_tilt, mode)                                                             \
+  ZB_ZCL_START_DECLARE_ATTRIB_LIST(attr_list)                                                     \
+  ZB_ZCL_SET_ATTR_DESC(ZB_ZCL_ATTR_WINDOW_COVERING_WINDOW_COVERING_TYPE_ID,                       \
+    (window_covering_type))                                                                       \
+  ZB_ZCL_SET_ATTR_DESC(ZB_ZCL_ATTR_WINDOW_COVERING_CONFIG_STATUS_ID,                              \
+    (config_status))                                                                              \
+  ZB_ZCL_SET_ATTR_DESC(ZB_ZCL_ATTR_WINDOW_COVERING_CURRENT_POSITION_LIFT_PERCENTAGE_ID,           \
+    (current_position_lift_percentage))                                                           \
+  ZB_ZCL_SET_ATTR_DESC(ZB_ZCL_ATTR_WINDOW_COVERING_CURRENT_POSITION_TILT_PERCENTAGE_ID,           \
+    (current_position_tilt_percentage))                                                           \
+  ZB_ZCL_SET_ATTR_DESC(ZB_ZCL_ATTR_WINDOW_COVERING_INSTALLED_OPEN_LIMIT_LIFT_ID,                  \
+    (installed_open_limit_lift))                                                                  \
+  ZB_ZCL_SET_ATTR_DESC(ZB_ZCL_ATTR_WINDOW_COVERING_INSTALLED_CLOSED_LIMIT_LIFT_ID,                \
+    (installed_closed_limit_lift))                                                                \
+  ZB_ZCL_SET_ATTR_DESC(ZB_ZCL_ATTR_WINDOW_COVERING_INSTALLED_OPEN_LIMIT_TILT_ID,                  \
+    (installed_open_limit_tilt))                                                                  \
+  ZB_ZCL_SET_ATTR_DESC(ZB_ZCL_ATTR_WINDOW_COVERING_INSTALLED_CLOSED_LIMIT_TILT_ID,                \
+    (installed_closed_limit_tilt))                                                                \
+  ZB_ZCL_SET_ATTR_DESC(ZB_ZCL_ATTR_WINDOW_COVERING_MODE_ID, (mode))                               \
+  ZB_ZCL_FINISH_DECLARE_ATTRIB_LIST
+
 /** @} */ /* Window Covering cluster attributes */
 
 /**
@@ -401,48 +443,6 @@ enum zb_zcl_window_covering_mode_e
   (zb_voidp_t) data_ptr                                                                           \
 }
 
-/** @internal @brief Declare attribute list for Window Covering cluster
-    @param attr_list - attribure list name
-    @param window_covering_type - pointer to variable to store Window Covering Type attribute value
-    @param config_status - pointer to variable to store Config/Status attribute value
-    @param current_position_lift_percentage  - pointer to variable to store
-    Current Position Lift Percentage attribute value
-    @param current_position_tilt_percentage - pointer to variable to store
-    Current Position Tilt Percentage attribute value
-    @param installed_open_limit_lift - pointer to variable to store Installed Open Limit Lift
-    attribute value
-    @param installed_closed_limit_lift - pointer to variable to store Installed Closed Limit Lift
-    attribute value
-    @param installed_open_limit_tilt - pointer to variable to store Installed Open Limit Tilt
-    attribute value
-    @param installed_closed_limit_tilt - pointer to variable to store Installed Closed Limit Tilt
-    attribute value
-    @param mode - pointer to variable to store Mode attribute value
-*/
-#define ZB_ZCL_DECLARE_WINDOW_COVERING_CLUSTER_ATTRIB_LIST(attr_list, window_covering_type,       \
-   config_status, current_position_lift_percentage, current_position_tilt_percentage,             \
-   installed_open_limit_lift, installed_closed_limit_lift, installed_open_limit_tilt,             \
-   installed_closed_limit_tilt, mode)                                                             \
-  ZB_ZCL_START_DECLARE_ATTRIB_LIST(attr_list)                                                     \
-  ZB_ZCL_SET_ATTR_DESC(ZB_ZCL_ATTR_WINDOW_COVERING_WINDOW_COVERING_TYPE_ID,                       \
-    (window_covering_type))                                                                       \
-  ZB_ZCL_SET_ATTR_DESC(ZB_ZCL_ATTR_WINDOW_COVERING_CONFIG_STATUS_ID,                              \
-    (config_status))                                                                              \
-  ZB_ZCL_SET_ATTR_DESC(ZB_ZCL_ATTR_WINDOW_COVERING_CURRENT_POSITION_LIFT_PERCENTAGE_ID,           \
-    (current_position_lift_percentage))                                                           \
-  ZB_ZCL_SET_ATTR_DESC(ZB_ZCL_ATTR_WINDOW_COVERING_CURRENT_POSITION_TILT_PERCENTAGE_ID,           \
-    (current_position_tilt_percentage))                                                           \
-  ZB_ZCL_SET_ATTR_DESC(ZB_ZCL_ATTR_WINDOW_COVERING_INSTALLED_OPEN_LIMIT_LIFT_ID,                  \
-    (installed_open_limit_lift))                                                                  \
-  ZB_ZCL_SET_ATTR_DESC(ZB_ZCL_ATTR_WINDOW_COVERING_INSTALLED_CLOSED_LIMIT_LIFT_ID,                \
-    (installed_closed_limit_lift))                                                                \
-  ZB_ZCL_SET_ATTR_DESC(ZB_ZCL_ATTR_WINDOW_COVERING_INSTALLED_OPEN_LIMIT_TILT_ID,                  \
-    (installed_open_limit_tilt))                                                                  \
-  ZB_ZCL_SET_ATTR_DESC(ZB_ZCL_ATTR_WINDOW_COVERING_INSTALLED_CLOSED_LIMIT_TILT_ID,                \
-    (installed_closed_limit_tilt))                                                                \
-  ZB_ZCL_SET_ATTR_DESC(ZB_ZCL_ATTR_WINDOW_COVERING_MODE_ID, (mode))                               \
-  ZB_ZCL_FINISH_DECLARE_ATTRIB_LIST
-
 /** @internal Number of attributes mandatory for reporting in window covering cluster */
 #define ZB_ZCL_WINDOW_COVERING_REPORT_ATTR_COUNT 2
 
@@ -475,6 +475,7 @@ enum zb_zcl_window_covering_cmd_e
   ZB_ZCL_CMD_WINDOW_COVERING_GO_TO_TILT_PERCENTAGE = 0x08
 };
 
+/** @cond internals_doc */
 /* Window covering cluster commands list : only for information - do not modify */
 #define ZB_ZCL_CLUSTER_ID_WINDOW_COVERING_SERVER_ROLE_GENERATED_CMD_LIST
 
@@ -488,6 +489,8 @@ enum zb_zcl_window_covering_cmd_e
                                   ZB_ZCL_CMD_WINDOW_COVERING_GO_TO_TILT_PERCENTAGE
 
 #define ZB_ZCL_CLUSTER_ID_WINDOW_COVERING_SERVER_ROLE_RECEIVED_CMD_LIST  ZB_ZCL_CLUSTER_ID_WINDOW_COVERING_CLIENT_ROLE_GENERATED_CMD_LIST
+/*! @}
+ *  @endcond */ /* internals_doc */
 
 /** Mandatory commands defines */
 

@@ -40,7 +40,6 @@ CFLAGS += -fno-builtin -fshort-enums -fshort-wchar -Wno-unused-function
 
 # C++ flags common to all targets
 CXXFLAGS += $(OPT)
-
 # Assembler flags common to all targets
 ASMFLAGS += -gdwarf-3
 ASMFLAGS += -mcpu=cortex-m0
@@ -60,7 +59,7 @@ micro_ecc_lib: ASMFLAGS += -D__STACK_SIZE=4096
 
 # Add standard libraries at the very end of the linker input, after all objects
 # that may need symbols provided by these libraries.
-LIB_FILES += -lc -lnosys -lm
+LIB_FILES += -lc -lnosys -lm -lstdc++
 
 
 .PHONY: default help

@@ -95,6 +95,21 @@ void zb_secur_setup_nwk_key(zb_uint8_t *key, zb_uint8_t i);
 zb_ret_t zb_secur_ic_add(zb_ieee_addr_t address, zb_uint8_t *ic);
 
 /**
+   Remove the install code for the device with specified long
+   address.
+
+   This valid is valid only for the TC (ZC).
+
+   @param address - long address of the device to remove the install
+   code.
+
+   @return RET_OK on success or RET_NO_MATCH if installcode
+   for address isn't present
+*/
+zb_ret_t zb_secur_ic_remove(zb_ieee_addr_t address);
+
+
+/**
    Add the client install code.
 
    This function is to be run at client side (not at TC).
@@ -105,6 +120,12 @@ zb_ret_t zb_secur_ic_add(zb_ieee_addr_t address, zb_uint8_t *ic);
 */
 zb_ret_t zb_secur_ic_set(zb_uint8_t *ic);
 
+/**
+   Set installcode policy flag.
+
+   @param allow_ic_only - use ZB_TRUE value to check installcodes
+*/
+void zb_set_installcode_policy(zb_bool_t allow_ic_only);
 
 /*! @} */
 /** @endcond */ /*(!DOXYGEN_ERL_SECTION) */
@@ -240,8 +261,9 @@ zb_bool_t zb_get_rx_on_when_idle(void);
   * complete @ref zboss_signal_handler callback is called, so application will know when to do
   * some useful things.
   *
-  * Precondition: stack must be inited by @ref ZB_INIT() call. @ref ZB_INIT() loads IB from NVRAM
-  * or set its defaults, so caller has a chance to change some parameters.
+  * Precondition: stack must be inited by @ref ZB_INIT() call. @ref ZB_INIT() sets default IB
+  * parameters, so caller has a chance to change some of them. Note that NVRAM will be loaded after
+  * zboss_start() call.
   * @note: ZB is not looped in this routine. Instead, it schedules callback and returns.  Caller
   * must run @ref zboss_main_loop() after this routine.
   *
@@ -275,6 +297,9 @@ zb_char_t ZB_IAR_CODE *zb_get_version(void);
    working.
    Application should later call ZBOSS commissioning initiation - for
    instance, @ref bdb_start_top_level_commissioning().
+   To finish node initialization without triggering commissioning call @ref
+   bdb_start_top_level_commissioning() with commissioning mask 0 (no steering, no formation,
+   initialization only).
 
    @return RET_OK on success.  
  */
@@ -689,8 +714,6 @@ void zb_nvram_clear(void);
    Erasing is disabled by default.
 */
 zb_void_t zb_set_nvram_erase_at_start(zb_bool_t erase);
-zb_void_t zb_set_nvram_erase_at_reset(zb_bool_t erase);
-
 
 /**
    Start NVRAM transaction.
@@ -739,7 +762,6 @@ ZB_PACKED_STRUCT zb_production_config_t;
 /*! @addtogroup sleep_api  */
 /*! @{ */
 
-/** @cond internals_doc */
 /** Default sleep threshold. Do not sleep when it is less then 1 Beacon Interval to wake up. */
 #define ZB_SCHED_SLEEP_THRESHOLD_MS 20
 
@@ -749,7 +771,7 @@ ZB_PACKED_STRUCT zb_production_config_t;
 /**
   Set sleep threshold on device; when scheduler detects that device can be put in sleep mode
   it will notify application with signal @see ZB_COMMON_SIGNAL_CAN_SLEEP.
-  Device can not be put into sleep mode when slFeep interval less than this threshold.
+  Device can not be put into sleep mode when sleep interval less than this threshold.
 
   @param threshold_ms - sleep threshold in milliseconds
              If threshold is 0, means zero threshold, application will be notified each time when stack is ready to sleep
@@ -759,13 +781,11 @@ ZB_PACKED_STRUCT zb_production_config_t;
 */
 zb_ret_t zb_sleep_set_threshold(zb_uint32_t threshold_ms);
 
-
 /**
   Get sleep threshold value from stack.
   @return threshold value in milliseconds
 */
 zb_uint32_t zb_get_sleep_threshold(void);
-/** @endcond */
 
 /**
   Blocking function responsible for putting device into sleep mode.

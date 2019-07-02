@@ -93,9 +93,9 @@ typedef ZB_PACKED_PRE struct zb_zcl_ias_ace_zone_table_s
 enum zb_zcl_ias_ace_attr_e
 {
   /*! @brief Ace table length, ZCL spec 8.3.2.3 */
-  ZB_ZCL_ATTR_IAS_ACE_ZONE_TABLE_LENGTH_ID = 0xfffe,
+  ZB_ZCL_ATTR_IAS_ACE_ZONE_TABLE_LENGTH_ID = 0xeffe,
   /*! @brief Ace table ZCL spec 8.3.2.3 */
-  ZB_ZCL_ATTR_IAS_ACE_ZONE_TABLE_ID = 0xffff,
+  ZB_ZCL_ATTR_IAS_ACE_ZONE_TABLE_ID = 0xefff,
 
 };
 
@@ -117,12 +117,18 @@ enum zb_zcl_ias_ace_attr_e
 {                                                       \
   ZB_ZCL_ATTR_IAS_ACE_ZONE_TABLE_ID,                    \
   ZB_ZCL_ATTR_TYPE_NULL,                                \
-  ZB_ZCL_ATTR_ACCESS_READ_WRITE,                        \
+  ZB_ZCL_ATTR_ACCESS_INTERNAL,                          \
   (zb_voidp_t) data_ptr                                 \
 }
 
-/** @internal @brief Declare attribute list for IAS Ace cluster - server side
-    @param attr_list - attribure list name
+/*! @internal Number of attributes mandatory for reporting in IAS Ace cluster */
+#define ZB_ZCL_IAS_ACE_REPORT_ATTR_COUNT 0
+
+/*! @}
+ *  @endcond*/ /* IAS Ace cluster internals */
+
+/** @brief Declare attribute list for IAS Ace cluster - server side
+    @param attr_list - attribute list name
     @param length - (zb_uint16_t*) pointer to variable to store Length of IAS ACE Zone Table attribute,
         see ZCL spec 8.3.2.3, table 8.11
     @param table - pointer to variable to store IAS ACE Zone Table attribute,
@@ -133,13 +139,6 @@ enum zb_zcl_ias_ace_attr_e
   ZB_ZCL_SET_ATTR_DESC(ZB_ZCL_ATTR_IAS_ACE_ZONE_TABLE_LENGTH_ID, (length))  \
   ZB_ZCL_SET_ATTR_DESC(ZB_ZCL_ATTR_IAS_ACE_ZONE_TABLE_ID, (table))          \
   ZB_ZCL_FINISH_DECLARE_ATTRIB_LIST
-
-
-/*! @internal Number of attributes mandatory for reporting in IAS Ace cluster */
-#define ZB_ZCL_IAS_ACE_REPORT_ATTR_COUNT 0
-
-/*! @}
- *  @endcond*/ /* IAS Ace cluster internals */
 
 /*! @} */ /* IAS Ace cluster attributes */
 
@@ -205,7 +204,7 @@ enum zb_zcl_ias_ace_resp_cmd_e
   ZB_ZCL_CMD_IAS_ACE_GET_ZONE_STATUS_RESPONSE_ID  = 0x08,
 };
 
-
+/** @cond internals_doc */
 /* IAS ACE cluster commands list : only for information - do not modify */
 #define ZB_ZCL_CLUSTER_ID_IAS_ACE_SERVER_ROLE_GENERATED_CMD_LIST                       \
                                       ZB_ZCL_CMD_IAS_ACE_ARM_RESP_ID,                  \
@@ -233,6 +232,8 @@ enum zb_zcl_ias_ace_resp_cmd_e
                                       ZB_ZCL_CMD_IAS_ACE_GET_ZONE_STATUS_ID
 
 #define ZB_ZCL_CLUSTER_ID_IAS_ACE_SERVER_ROLE_RECEIVED_CMD_LIST ZB_ZCL_CLUSTER_ID_IAS_ACE_CLIENT_ROLE_GENERATED_CMD_LIST
+/*! @}
+ *  @endcond */ /* internals_doc */
 
 
 /******************************* Arm Command ******************************/
@@ -1248,6 +1249,22 @@ typedef ZB_PACKED_PRE struct zb_zcl_ias_ace_set_bypassed_zone_list_s
 /*! Set Bypassed Zone List command payload size */
 #define ZB_ZCL_IAS_ACE_SET_BYPASSED_ZONE_LIST_PAYLOAD_SIZE(ptr)   (sizeof(zb_zcl_ias_ace_set_bypassed_zone_list_t)-sizeof(((zb_zcl_ias_ace_set_bypassed_zone_list_t *)(ptr))->zone_id)+ \
                                                                    ((zb_zcl_ias_ace_set_bypassed_zone_list_t *)(ptr))->length)
+
+/*! @brief Start Set Bypassed Zone List command, ZCL spec 8.3.2.4.7
+    @param buffer - to put packet to
+    @param length - Number of Zones
+    @param ptr - [out] (zb_uint8_t*) current position for @ref ZB_ZCL_IAS_ACE_SEND_SET_BYPASSED_ZONE_LIST_ADD
+    and @ref ZB_ZCL_IAS_ACE_SEND_SET_BYPASSED_ZONE_LIST_END
+*/
+#define ZB_ZCL_IAS_ACE_SEND_SET_BYPASSED_ZONE_LIST_START(       \
+    buffer, length, ptr)                                        \
+{                                                               \
+  (ptr) = ZB_ZCL_START_PACKET(buffer);                          \
+  ZB_ZCL_CONSTRUCT_SPECIFIC_COMMAND_RES_FRAME_CONTROL(ptr);     \
+  ZB_ZCL_CONSTRUCT_COMMAND_HEADER(ptr, ZB_ZCL_GET_SEQ_NUM(),    \
+      ZB_ZCL_CMD_IAS_ACE_SET_BYPASSED_ZONE_LIST_ID);            \
+  ZB_ZCL_PACKET_PUT_DATA8((ptr), (length));                     \
+}
 
 /*! @brief Start Set Bypassed Zone List command, ZCL spec 8.3.2.4.7
     (response to the Get Bypassed Zone List command)

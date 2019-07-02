@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2018, Nordic Semiconductor ASA
+ * Copyright (c) 2018 - 2019, Nordic Semiconductor ASA
  *
  * All rights reserved.
  *
@@ -44,29 +44,69 @@
 #include "ble.h"
 #include <stdint.h>
 
+/**@brief Initializes BLE ping module.
+ */
+void ble_ping_init(void);
+
 /**@brief Callback for handling BLE events.
  *
  * @param[in] p_evt   Bluetooth stack event.
  */
 void ble_ping_evt_handle(const ble_evt_t * p_evt);
 
-/**@brief Send diagnostic message with specified throughput.
+/**@brief Function for sending a single diagnostic message.
  *
  * @note  If called when there is no Bluetooth connection established, this function has no effect.
  *
  * @param[in] requested_length  Number of bytes to send.
- * @param[in] interval_ms       Frequency of messages.
  */
-void ble_ping_send(uint32_t requested_length, uint32_t interval_ms);
+void ble_ping_send(uint32_t requested_length);
 
-/**@brief Application callback for handling BLE events.
+/**@brief Function for getting maximum GATT data length.
+ *
+ * @details This function returns the maximum GATT data length used for future connections.
+ *
+ * @return GATT data length that will be used for future connections.
+ */
+uint8_t ble_ping_gatt_data_length_get(void);
+
+/**@brief Function for getting the maximum GATT data length.
+ *
+ * @details This function sets the maximum GATT data length send over the air in a single packet.
+ *          The actual maximum ATT payload length that can be sent in single packet
+ *          is smaller by L2CAP and ATT header sizes (7 octets). This value should
+ *          be set before connections are established for both central and peripherals.
+ *          The setting applies to all future connections.
+ *          Requested value must be between 27 and 251 bytes.
+ *
+ * @param[in] data_length  Requested GATT data length.
+ *
+ * @return True, if request was accepted.
+ */
+bool ble_ping_gatt_data_length_set(uint32_t data_length);
+
+/**@brief Function for continuously sending diagnostic messages with the specified size.
+ *
+ * @note  This function has no effect if called when there is no Bluetooth connection established.
+ */
+void ble_flood_start(void);
+
+/**@brief Function for setting the size of a single flood packet.
+ *
+ * @param[in] requested_length  Number of bytes to send (per ATT payload).
+ */
+uint32_t ble_flood_length_set(uint32_t requested_length);
+
+/**@brief Function for setting the BLE flood autostart.
+ *
+ * @param[in] autostart_enable  Set to true to enable BLE flood autostart on benchmark test start.
+ */
+void ble_flood_autostart_set(bool autostart_enable);
+
+/**@brief Function for stopping sending diagnostic messages.
  *
  * @note  If called when continuous data exchange is not enabled, this function has no effect.
  */
-void ble_ping_stop(void);
-
-/**@brief Callback for handling BLE timer events.
- */
-void ble_ping_timer_timeout_handle(void);
+void ble_flood_stop(void);
 
 #endif // BLE_PING_H

@@ -851,9 +851,12 @@ enum zb_zcl_on_off_cli_cmd_e
   (zb_voidp_t) data_ptr                                                                        \
 }
 
-
-/** @internal @brief Declare attribute list for Electrical Measurement cluster
-    @param attr_list - attribure list name
+/*!
+* @}
+* @endcond
+*/
+/** @brief Declare attribute list for Electrical Measurement cluster
+    @param attr_list - attribute list name
     @param measurement_type - pointer to variable to store Measurement Type attribute value
     @param dcpower - pointer to variable to store DCPower attribute value
 */
@@ -863,7 +866,11 @@ enum zb_zcl_on_off_cli_cmd_e
   ZB_ZCL_SET_ATTR_DESC(ZB_ZCL_ATTR_ELECTRICAL_MEASUREMENT_DCPOWER_ID, (dcpower))                   \
   ZB_ZCL_FINISH_DECLARE_ATTRIB_LIST
 
-/*! @internal Number of attributes mandatory for reporting in Electrical Measurement cluster */
+/*! 
+    @cond internals_doc
+  @{
+  @internal Number of attributes mandatory for reporting in Electrical Measurement cluster 
+*/
 #define ZB_ZCL_ELECTRICAL_MEASUREMENT_REPORT_ATTR_COUNT 2
 
 /*! @}

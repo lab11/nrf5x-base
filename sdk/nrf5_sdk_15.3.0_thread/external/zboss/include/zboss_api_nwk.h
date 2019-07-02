@@ -200,6 +200,29 @@ zb_nlme_permit_joining_request_t;
 void zb_nlme_permit_joining_request(zb_uint8_t param);
 /** @} */
 
+/** @cond internals_doc */
+/**
+  Change Transmit Failure Threshold for Neighbor table.
+  This threshold defines how many packets may fail the delivery before stack will start Address
+  Discovery.
+  Formula for discovery start: if device is a neighbor and packet can not be delivered, try to
+  - do "Transmit Failure Threshold" attempts of packet delivery
+  - if packet is not delivered, wait "Transmit Failure Timeout"
+  - if packet is not delivered, remove device from neighbors and start address discovery procedure
+  @param transmit_failure_cnt - new threshold (1 to 255)
+  Default value - @ref ZB_ZDO_NEIGHBOR_FAILURE_PKT_THRESHOLD
+*/
+void zb_set_nbt_transmit_failure_threshold(zb_uint8_t transmit_failure_cnt);
+/**
+  Change Transmit Failure Timeout for Neighbor table.
+  This timeout defines how much time stack will wait before starting Network Address
+  discovery. Countdown starts after Transmit Failure Threshold condition is met.
+  @param transmit_failure_timeout - new timeout in seconds (0 to 255)
+  Default value - @ref ZB_ZDO_NEIGHBOR_UNREACHABLE_TIMEOUT
+*/
+void zb_set_nbt_transmit_failure_timeout(zb_uint8_t transmit_failure_timeout);
+/** @endcond */ /* internals_doc */
+
 /** @} */
 
 #endif /*#ifndef ZB_ZBOSS_API_NWK_H*/

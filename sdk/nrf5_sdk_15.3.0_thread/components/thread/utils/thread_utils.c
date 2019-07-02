@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2018, Nordic Semiconductor ASA
+ * Copyright (c) 2018 - 2019, Nordic Semiconductor ASA
  *
  * All rights reserved.
  *
@@ -40,23 +40,38 @@
 
 #include "thread_utils.h"
 
+#include "app_util_platform.h"
 #include "nrf_assert.h"
 #include "nrf_log.h"
+#include "nrf_pwr_mgmt.h"
 #include "nrf_soc.h"
+#include "sdk_config.h"
+
+#if defined(MULTIPROTOCOL_802154_CONFIG_PRESENT)
+#include "multiprotocol_802154_config.h"
+#endif
+
 #include <openthread/cli.h>
 #include <openthread/diag.h>
 #include <openthread/link.h>
 #include <openthread/tasklet.h>
 #include <openthread/thread.h>
+#include <openthread/thread_ftd.h>
 #include <openthread/platform/openthread-system.h>
 
+/**@brief Pointer to the OpenThread instance. */
 static otInstance * mp_ot_instance;
 
-void thread_init(const thread_configuration_t * p_thread_configuration)
+void thread_init(const thread_configuration_t * p_config)
 {
     otError error;
 
     otSysInit(0, NULL);
+
+#if defined(MULTIPROTOCOL_802154_CONFIG_PRESENT) && defined(MULTIPROTOCOL_802154_MODE)
+    uint32_t retval = multiprotocol_802154_mode_set((multiprotocol_802154_mode_t)MULTIPROTOCOL_802154_MODE);
+    ASSERT(retval == NRF_SUCCESS);
+#endif
 
     mp_ot_instance = otInstanceInitSingle();
     ASSERT(mp_ot_instance != NULL);
@@ -65,7 +80,7 @@ void thread_init(const thread_configuration_t * p_thread_configuration)
     NRF_LOG_INFO("Network name:   %s",
                  (uint32_t)otThreadGetNetworkName(mp_ot_instance));
 
-    if (!otDatasetIsCommissioned(mp_ot_instance) && p_thread_configuration->autocommissioning)
+    if (!otDatasetIsCommissioned(mp_ot_instance) && p_config->autocommissioning)
     {
         error = otLinkSetChannel(mp_ot_instance, THREAD_CHANNEL);
         ASSERT(error == OT_ERROR_NONE);
@@ -74,46 +89,50 @@ void thread_init(const thread_configuration_t * p_thread_configuration)
         ASSERT(error == OT_ERROR_NONE);
     }
 
-    otLinkModeConfig mode;
-    memset(&mode, 0, sizeof(mode));
-
-    if (p_thread_configuration->role == RX_OFF_WHEN_IDLE)
+    if (!p_config->autostart_disable)
     {
-        mode.mSecureDataRequests = true;
-        mode.mRxOnWhenIdle       = false; // Join network as SED.
-        otLinkSetPollPeriod(mp_ot_instance, p_thread_configuration->poll_period);
-    }
-    else
-    {
-        mode.mRxOnWhenIdle       = true;
-        mode.mSecureDataRequests = true;
-        mode.mDeviceType         = true;
-        mode.mNetworkData        = true;
-    }
+        otLinkModeConfig mode;
+        memset(&mode, 0, sizeof(mode));
 
-    error = otThreadSetLinkMode(mp_ot_instance, mode);
-    ASSERT(error == OT_ERROR_NONE);
+        if (p_config->radio_mode == THREAD_RADIO_MODE_RX_OFF_WHEN_IDLE)
+        {
+            mode.mRxOnWhenIdle       = false; // Join network as SED.
+            mode.mSecureDataRequests = true;
 
-    if (p_thread_configuration->default_child_timeout != 0)
-    {
-        otThreadSetChildTimeout(mp_ot_instance, p_thread_configuration->default_child_timeout);
-    }
+            error = otLinkSetPollPeriod(mp_ot_instance, p_config->poll_period);
+            ASSERT(error == OT_ERROR_NONE);
+        }
+        else
+        {
+            mode.mRxOnWhenIdle       = true;
+            mode.mSecureDataRequests = true;
+#ifdef OPENTHREAD_FTD
+            mode.mDeviceType         = true;
+            mode.mNetworkData        = true;
+#endif
+        }
 
-    if (!p_thread_configuration->autostart_disable)
-    {
+        error = otThreadSetLinkMode(mp_ot_instance, mode);
+        ASSERT(error == OT_ERROR_NONE);
+
+        if (p_config->default_child_timeout != 0)
+        {
+            otThreadSetChildTimeout(mp_ot_instance, p_config->default_child_timeout);
+        }
+
         error = otIp6SetEnabled(mp_ot_instance, true);
         ASSERT(error == OT_ERROR_NONE);
 
-        if (otDatasetIsCommissioned(mp_ot_instance) || p_thread_configuration->autocommissioning)
+        if (otDatasetIsCommissioned(mp_ot_instance) || p_config->autocommissioning)
         {
             error = otThreadSetEnabled(mp_ot_instance, true);
             ASSERT(error == OT_ERROR_NONE);
 
             NRF_LOG_INFO("Thread interface has been enabled.");
-            NRF_LOG_INFO("802.15.4 Channel: %d", otLinkGetChannel(mp_ot_instance));
-            NRF_LOG_INFO("802.15.4 PAN ID:  0x%04x", otLinkGetPanId(mp_ot_instance));
-            NRF_LOG_INFO("rx-on-when-idle:  %s", otThreadGetLinkMode(mp_ot_instance).mRxOnWhenIdle ?
-                                            "enabled" : "disabled");
+            NRF_LOG_INFO("802.15.4 Channel : %d", otLinkGetChannel(mp_ot_instance));
+            NRF_LOG_INFO("802.15.4 PAN ID  : 0x%04x", otLinkGetPanId(mp_ot_instance));
+            NRF_LOG_INFO("Radio mode:      : %s", otThreadGetLinkMode(mp_ot_instance).mRxOnWhenIdle ?
+                                            "rx-on-when-idle" : "rx-off-when-idle");
         }
     }
 }
@@ -121,12 +140,15 @@ void thread_init(const thread_configuration_t * p_thread_configuration)
 void thread_cli_init(void)
 {
     ASSERT(mp_ot_instance != NULL);
+
     otCliUartInit(mp_ot_instance);
     otDiagInit(mp_ot_instance);
 }
 
 void thread_deinit(void)
 {
+    ASSERT(mp_ot_instance != NULL);
+
     otInstanceFinalize(mp_ot_instance);
     otSysDeinit();
     mp_ot_instance = NULL;
@@ -134,6 +156,8 @@ void thread_deinit(void)
 
 void thread_soft_deinit(void)
 {
+    ASSERT(mp_ot_instance != NULL);
+
     otInstanceFinalize(mp_ot_instance);
     mp_ot_instance = NULL;
 }
@@ -141,9 +165,50 @@ void thread_soft_deinit(void)
 void thread_process(void)
 {
     ASSERT(mp_ot_instance != NULL);
+
     otTaskletsProcess(mp_ot_instance);
     otSysProcessDrivers(mp_ot_instance);
 }
+
+#if (__FPU_PRESENT == 1) && (__FPU_USED == 1)
+static void fpu_sleep_prepare(void)
+{
+    uint32_t original_fpscr;
+
+    CRITICAL_REGION_ENTER();
+    original_fpscr = __get_FPSCR();
+    /*
+     * Clear FPU exceptions.
+     * Without this step, the FPU interrupt is marked as pending,
+     * preventing system from sleeping. Exceptions cleared:
+     * - IOC - Invalid Operation cumulative exception bit.
+     * - DZC - Division by Zero cumulative exception bit.
+     * - OFC - Overflow cumulative exception bit.
+     * - UFC - Underflow cumulative exception bit.
+     * - IXC - Inexact cumulative exception bit.
+     * - IDC - Input Denormal cumulative exception bit.
+     */
+    __set_FPSCR(original_fpscr & ~0x9Fu);
+    __DMB();
+    NVIC_ClearPendingIRQ(FPU_IRQn);
+    CRITICAL_REGION_EXIT();
+
+    /*
+     * The last chance to indicate an error in FPU to the user
+     * as the FPSCR is now cleared
+     *
+     * This assert is related to previous FPU operations
+     * and not power management.
+     *
+     * Critical FPU exceptions signaled:
+     * - IOC - Invalid Operation cumulative exception bit.
+     * - DZC - Division by Zero cumulative exception bit.
+     * - OFC - Overflow cumulative exception bit.
+     */
+
+    ASSERT((original_fpscr & 0x7) == 0);
+}
+#endif // (__FPU_PRESENT == 1) && (__FPU_USED == 1)
 
 void thread_sleep(void)
 {
@@ -152,6 +217,10 @@ void thread_sleep(void)
     // Enter sleep state if no more tasks are pending.
     if (!otTaskletsArePending(mp_ot_instance))
     {
+#if (__FPU_PRESENT == 1) && (__FPU_USED == 1)
+        fpu_sleep_prepare();
+#endif
+
 #ifdef SOFTDEVICE_PRESENT
         ret_code_t err_code = sd_app_evt_wait();
         ASSERT(err_code == NRF_SUCCESS);
@@ -163,10 +232,12 @@ void thread_sleep(void)
 
 otInstance * thread_ot_instance_get(void)
 {
+    ASSERT(mp_ot_instance != NULL);
+
     return mp_ot_instance;
 }
 
-void thread_state_changed_callback_set(thread_state_change_callback_t handler)
+void thread_state_changed_callback_set(otStateChangedCallback handler)
 {
     ASSERT(mp_ot_instance != NULL);
 

@@ -53,6 +53,10 @@ class nRF52840(IThci):
     LOWEST_POSSIBLE_PARTATION_ID = 0x1
     LINK_QUALITY_CHANGE_TIME = 100
 
+    # Used for reference firmware version control for Test Harness.
+    # This variable will be updated to match the OpenThread reference firmware officially released.
+    firmwarePrefix = "OPENTHREAD/"
+
     #def __init__(self, SerialPort=COMPortName, EUI=MAC_Address):
     def __init__(self, **kwargs):
         """initialize the serial port and default network parameters
@@ -283,7 +287,7 @@ class nRF52840(IThci):
            mode: thread device mode
            r: rx-on-when-idle
            s: secure IEEE 802.15.4 data request
-           d: full function device
+           d: full thread device
            n: full network data
 
         Returns:
@@ -398,7 +402,6 @@ class nRF52840(IThci):
                             self.addBlockedMAC(addr)
 
             if self.__sendCommand('ifconfig up')[0] == 'Done':
-                self.__setRouterSelectionJitter(1)
                 if self.__sendCommand('thread start')[0] == 'Done':
                     self.isPowerDown = False
                     return True
@@ -494,7 +497,7 @@ class nRF52840(IThci):
         finalMac = ':'.join(a + b + c + d for a,b,c,d in zip(hexIter, hexIter,hexIter,hexIter))
         prefix = str(finalMac)
         strIp6Prefix = prefix[:20]
-        return strIp6Prefix +':'
+        return strIp6Prefix +'::'
 
     def __convertLongToString(self, iValue):
         """convert a long hex integer to string
@@ -647,9 +650,17 @@ class nRF52840(IThci):
         """initialize the serial port with baudrate, timeout parameters"""
         print '%s call intialize' % self.port
         try:
+            self.deviceConnected = False
+
             # init serial port
             self._connect()
-            self.deviceConnected = True
+
+            if self.firmwarePrefix in self.UIStatusMsg:
+                self.deviceConnected = True
+            else:
+                self.UIStatusMsg = "Firmware Not Matching Expecting " + self.firmwarePrefix + " Now is " + self.UIStatusMsg
+                ModuleHelper.WriteIntoDebugLogger("Err: OpenThread device Firmware not matching..")
+
         except Exception, e:
             ModuleHelper.WriteIntoDebugLogger("intialize() Error: " + str(e))
             self.deviceConnected = False
@@ -996,12 +1007,14 @@ class nRF52840(IThci):
             if eRoleId == Thread_Device_Role.Leader:
                 print 'join as leader'
                 mode = 'rsdn'
+                self.__setRouterSelectionJitter(1)
                 if self.AutoDUTEnable is False:
                     # set ROUTER_DOWNGRADE_THRESHOLD
                     self.__setRouterDowngradeThreshold(33)
             elif eRoleId == Thread_Device_Role.Router:
                 print 'join as router'
                 mode = 'rsdn'
+                self.__setRouterSelectionJitter(1)
                 if self.AutoDUTEnable is False:
                     # set ROUTER_DOWNGRADE_THRESHOLD
                     self.__setRouterDowngradeThreshold(33)
@@ -1015,6 +1028,7 @@ class nRF52840(IThci):
             elif eRoleId == Thread_Device_Role.REED:
                 print 'join as REED'
                 mode = 'rsdn'
+                self.__setRouterSelectionJitter(1)
                 # set ROUTER_UPGRADE_THRESHOLD
                 self.__setRouterUpgradeThreshold(0)
             elif eRoleId == Thread_Device_Role.EndDevice_FED:
@@ -1288,7 +1302,13 @@ class nRF52840(IThci):
     def getPollingRate(self):
         """get data polling rate for sleepy end device"""
         print '%s call getPollingRate' % self.port
-        return self.__sendCommand('pollperiod')[0]
+        sPollingRate = self.__sendCommand('pollperiod')[0]
+        try:
+            iPollingRate = int(sPollingRate)/1000
+            fPollingRate = round(float(sPollingRate)/1000, 3)
+            return fPollingRate if fPollingRate > iPollingRate else iPollingRate
+        except Exception, e:
+            ModuleHelper.WriteIntoDebugLogger("getPollingRate() Error: " + str(e))
 
     def setPollingRate(self, iPollingRate):
         """set data polling rate for sleepy end device
@@ -1301,9 +1321,11 @@ class nRF52840(IThci):
             False: fail to set the data polling rate for sleepy end device
         """
         print '%s call setPollingRate' % self.port
-        print iPollingRate
+        # convert s to ms
+        iPollingRate *= 1000
+        print int(iPollingRate)
         try:
-            cmd = 'pollperiod %s' % str(iPollingRate)
+            cmd = 'pollperiod %d' % int(iPollingRate)
             print cmd
             return self.__sendCommand(cmd)[0] == 'Done'
         except Exception, e:
@@ -1522,9 +1544,10 @@ class nRF52840(IThci):
             False: fail to set the data poll period for SED
         """
         print '%s call setKeepAliveTimeOut' % self.port
-        print iTimeOut
+        iTimeOut *= 1000
+        print int(iTimeOut)
         try:
-            cmd = 'pollperiod %s' % str(iTimeOut)
+            cmd = 'pollperiod %d' % int(iTimeOut)
             print cmd
             return self.__sendCommand(cmd)[0] == 'Done'
         except Exception, e:
@@ -1818,8 +1841,7 @@ class nRF52840(IThci):
             filterByPrefix: a given expected global IPv6 prefix to be matched
 
         Returns:
-            a global IPv6 address that matches with filterByPrefix
-            or None if no matched GUA
+            a global IPv6 address
         """
         print '%s call getGUA' % self.port
         print filterByPrefix
@@ -1836,7 +1858,7 @@ class nRF52840(IThci):
                     if fullIp.startswith(filterByPrefix):
                         return fullIp
                 print 'no global address matched'
-                return None
+                return str(globalAddrs[0])
         except Exception, e:
             ModuleHelper.WriteIntoDebugLogger("getGUA() Error: " + str(e))
 
@@ -2010,10 +2032,11 @@ class nRF52840(IThci):
             False: fail to set provisioning Url
         """
         print '%s call setProvisioningUrl' % self.port
-        cmd = 'commissioner provisioningurl %s' %(strURL)
         self.provisioningUrl = strURL
-        print cmd
-        return self.__sendCommand(cmd)[0] == "Done"
+        if self.deviceRole == Thread_Device_Role.Commissioner:
+            cmd = 'commissioner provisioningurl %s' %(strURL)
+            return self.__sendCommand(cmd)[0] == "Done"
+        return True
 
     def allowCommission(self):
         """start commissioner candidate petition process

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2017 - 2018, Nordic Semiconductor ASA
+ * Copyright (c) 2017 - 2019, Nordic Semiconductor ASA
  *
  * All rights reserved.
  *
@@ -63,7 +63,7 @@
 #define MQTTSN_PACKET_WILLMSGUPD_LENGTH   4
 #define MQTTSN_PACKET_DISCONNECT_DURATION -1
 
-/**@brief Calculates next message ID. 
+/**@brief Calculates next message ID.
  *
  * @param[in]    p_client    Pointer to MQTT-SN client instance.
  *
@@ -74,9 +74,9 @@ static uint16_t next_packet_id_get(mqttsn_client_t * p_client)
     return (p_client->message_id == MQTTSN_MAX_PACKET_ID) ? 1 : (++(p_client->message_id));
 }
 
-/**@brief Sends MQTT-SN message.  
+/**@brief Sends MQTT-SN message.
  *
- * @param[inout] p_client    Pointer to initialized and connected client. 
+ * @param[inout] p_client    Pointer to initialized and connected client.
  * @param[in]    p_remote    Pointer to remote endpoint.
  * @param[in]    p_data      Buffered data to send.
  * @param[in]    datalen     Length of the buffered data.
@@ -159,7 +159,7 @@ uint32_t mqttsn_packet_sender_willtopic(mqttsn_client_t * p_client)
         }
 
         MQTTSNString will_topic;
-        
+
         memset(&will_topic, 0, sizeof(MQTTSNString));
         will_topic.lenstring.data = (char *)p_client->connect_info.p_will_topic;
         will_topic.lenstring.len  = p_client->connect_info.will_topic_len;
@@ -745,20 +745,17 @@ uint32_t mqttsn_packet_sender_disconnect(mqttsn_client_t * p_client, uint16_t du
     uint32_t              err_code = NRF_SUCCESS;
     uint16_t              packet_len;
     int16_t               disconnect_duration;
-    mqttsn_client_state_t next_state;
 
     if (duration > 0)
     {
         disconnect_duration           = duration + (MQTTSN_DEFAULT_RETRANSMISSION_CNT + 1) *
                                                     MQTTSN_DEFAULT_RETRANSMISSION_TIME_IN_MS / 1000;
-        next_state                    = MQTTSN_CLIENT_WAITING_FOR_SLEEP;
         packet_len                    = MQTTSN_PACKET_DISCONNECT_LENGTH + sizeof(duration);
         p_client->keep_alive.duration = duration * 1000;
     }
     else
     {
         disconnect_duration = MQTTSN_PACKET_DISCONNECT_DURATION;
-        next_state          = MQTTSN_CLIENT_WAITING_FOR_DISCONNECT;
         packet_len          = MQTTSN_PACKET_DISCONNECT_LENGTH;
     }
 
@@ -787,11 +784,6 @@ uint32_t mqttsn_packet_sender_disconnect(mqttsn_client_t * p_client, uint16_t du
     if (p_data)
     {
         nrf_free(p_data);
-    }
-
-    if (err_code == NRF_SUCCESS)
-    {
-        p_client->client_state = next_state;
     }
 
     return err_code;
@@ -835,9 +827,9 @@ uint32_t mqttsn_packet_sender_willtopicupd(mqttsn_client_t * p_client)
             break;
         }
         memcpy(p_packet_copy, p_data, datalen);
-        
+
         mqttsn_packet_t retransmission_packet;
-        memset(&retransmission_packet, 0, sizeof(mqttsn_packet_t)); 
+        memset(&retransmission_packet, 0, sizeof(mqttsn_packet_t));
         retransmission_packet.retransmission_cnt = MQTTSN_DEFAULT_RETRANSMISSION_CNT;
         retransmission_packet.p_data             = p_packet_copy;
         retransmission_packet.len                = datalen;
@@ -849,7 +841,7 @@ uint32_t mqttsn_packet_sender_willtopicupd(mqttsn_client_t * p_client)
             err_code = NRF_ERROR_NO_MEM;
             break;
         }
-    
+
         if (mqttsn_client_timeout_schedule(p_client) != NRF_SUCCESS)
         {
             uint32_t fifo_dequeue_rc = mqttsn_packet_fifo_elem_dequeue(p_client,
@@ -859,7 +851,7 @@ uint32_t mqttsn_packet_sender_willtopicupd(mqttsn_client_t * p_client)
             err_code = NRF_ERROR_INTERNAL;
             break;
         }
-    
+
         err_code = mqttsn_packet_sender_send(p_client, &(p_client->gateway_info.addr), p_data, datalen);
 
     } while (0);

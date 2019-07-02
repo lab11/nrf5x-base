@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2017 - 2018, Nordic Semiconductor ASA
+ * Copyright (c) 2017 - 2019, Nordic Semiconductor ASA
  *
  * All rights reserved.
  *
@@ -58,7 +58,7 @@ static bool m_gateway_discovery_started;
         return (NRF_ERROR_NULL);                                                                   \
     }
 
-/**@brief Checks if timer has already passed a scheduled event timeout.  
+/**@brief Checks if timer has already passed a scheduled event timeout.
  *
  * @param[in]    timeout     Scheduled event timeout.
  * @param[in]    now         Current timer value.
@@ -72,7 +72,7 @@ static inline bool is_earlier(uint32_t timeout, uint32_t now)
             (now & mqttsn_platform_timer_resolution_get()));
 }
 
-/**@brief Checks if MQTT-SN client has been initialized. 
+/**@brief Checks if MQTT-SN client has been initialized.
  *
  * @param[in]    p_client    Pointer to MQTT-SN client instance.
  *
@@ -84,7 +84,7 @@ static inline bool is_initialized(mqttsn_client_t * p_client)
     return p_client->client_state != MQTTSN_CLIENT_UNINITIALIZED;
 }
 
-/**@brief Checks if MQTT-SN client is connected to the network. 
+/**@brief Checks if MQTT-SN client is connected to the network.
  *
  * @param[in]    p_client    Pointer to MQTT-SN client instance.
  *
@@ -93,10 +93,10 @@ static inline bool is_initialized(mqttsn_client_t * p_client)
  */
 static inline bool is_connected(mqttsn_client_t * p_client)
 {
-    return p_client->client_state == MQTTSN_CLIENT_CONNECTED;    
+    return p_client->client_state == MQTTSN_CLIENT_CONNECTED;
 }
 
-/**@brief Checks if MQTT-SN client is in asleep state. 
+/**@brief Checks if MQTT-SN client is in asleep state.
  *
  * @param[in]    p_client    Pointer to MQTT-SN client instance.
  *
@@ -108,7 +108,7 @@ static inline bool is_asleep(mqttsn_client_t * p_client)
     return p_client->client_state == MQTTSN_CLIENT_ASLEEP;
 }
 
-/**@brief Checks if MQTT-SN client is in awake state. 
+/**@brief Checks if MQTT-SN client is in awake state.
  *
  * @param[in]    p_client    Pointer to MQTT-SN client instance.
  *
@@ -120,7 +120,7 @@ static inline bool is_awake(mqttsn_client_t * p_client)
     return p_client->client_state == MQTTSN_CLIENT_AWAKE;
 }
 
-/**@brief Checks if MQTT-SN client can try to connect to the broker. 
+/**@brief Checks if MQTT-SN client can try to connect to the broker.
  *
  * @param[in]    p_client    Pointer to MQTT-SN client instance.
  *
@@ -134,7 +134,7 @@ static inline bool is_eligible_for_establishing_connection(mqttsn_client_t * p_c
              p_client->client_state == MQTTSN_CLIENT_AWAKE);
 }
 
-/**@brief Initializes MQTT-SN client's connect options. 
+/**@brief Initializes MQTT-SN client's connect options.
  *
  * @param[in]    p_client    Pointer to MQTT-SN client instance.
  * @param[in]    p_options   Pointer to connect options.
@@ -161,7 +161,7 @@ static void connect_info_init(mqttsn_client_t * p_client, mqttsn_connect_opt_t *
     memcpy(p_client->connect_info.p_client_id, p_options->p_client_id, p_options->client_id_len);
 }
 
-/**@brief Attempts retransmission if retransmission limit has not been reached; otherwise throws event timeout. 
+/**@brief Attempts retransmission if retransmission limit has not been reached; otherwise throws event timeout.
  *
  * @param[in]    p_client    Pointer to MQTT-SN client instance.
  * @param[in]    index       Index of the message from client's packet queue to retransmit.
@@ -171,7 +171,7 @@ static void message_retransmission_attempt(mqttsn_client_t * p_client, uint8_t i
     if (p_client->packet_queue.packet[index].retransmission_cnt == 0)
     {
         mqttsn_event_t evt;
-        memset(&evt, 0, sizeof(mqttsn_event_t)); 
+        memset(&evt, 0, sizeof(mqttsn_event_t));
         evt.event_id                  = MQTTSN_EVENT_TIMEOUT;
         evt.event_data.error.error    = MQTTSN_ERROR_TIMEOUT;
         evt.event_data.error.msg_type =
@@ -184,7 +184,7 @@ static void message_retransmission_attempt(mqttsn_client_t * p_client, uint8_t i
         {
             case MQTTSN_PACKET_CONNACK:
                 err_code = mqttsn_packet_fifo_elem_dequeue(p_client,
-                                                           MQTTSN_MSGTYPE_CONNECT, 
+                                                           MQTTSN_MSGTYPE_CONNECT,
                                                            MQTTSN_MESSAGE_TYPE);
                 ASSERT(err_code == NRF_SUCCESS);
 
@@ -192,7 +192,7 @@ static void message_retransmission_attempt(mqttsn_client_t * p_client, uint8_t i
                 break;
 
             case MQTTSN_PACKET_WILLTOPICUPD:
-                err_code = mqttsn_packet_fifo_elem_dequeue(p_client, 
+                err_code = mqttsn_packet_fifo_elem_dequeue(p_client,
                                                            MQTTSN_MSGTYPE_WILLTOPICUPD,
                                                            MQTTSN_MESSAGE_TYPE);
                 ASSERT(err_code == NRF_SUCCESS);
@@ -236,7 +236,7 @@ static void message_retransmission_attempt(mqttsn_client_t * p_client, uint8_t i
     }
 }
 
-/**@brief Attempts keep-alive transmission if retransmission limit has not been reached; otherwise throws event timeout. 
+/**@brief Attempts keep-alive transmission if retransmission limit has not been reached; otherwise throws event timeout.
  *
  * @param[in]    p_client    Pointer to MQTT-SN client instance.
  */
@@ -345,6 +345,12 @@ void mqttsn_client_state_update(mqttsn_client_t * p_client, client_state_fsm_eve
 
                 case TIMEOUT_PINGREQ:
                     p_client->client_state = MQTTSN_CLIENT_DISCONNECTED;
+                    break;
+
+                case SENT_PINGREQ:
+                    break;
+
+                case RECEIVED_PINGRESP:
                     break;
 
                 default:
@@ -499,7 +505,7 @@ uint32_t mqttsn_client_connect(mqttsn_client_t      * p_client,
     {
         return NRF_ERROR_NULL;
     }
-    
+
     if (!is_initialized(p_client))
     {
         return NRF_ERROR_FORBIDDEN;
@@ -547,6 +553,11 @@ uint32_t mqttsn_client_disconnect(mqttsn_client_t * p_client)
 uint32_t mqttsn_client_sleep(mqttsn_client_t * p_client, uint16_t polling_time)
 {
     NULL_PARAM_CHECK(p_client);
+
+    if (polling_time == 0)
+    {
+        return NRF_ERROR_INVALID_PARAM;
+    }
 
     if (!is_connected(p_client))
     {
@@ -610,7 +621,7 @@ uint32_t mqttsn_client_topic_register(mqttsn_client_t * p_client,
     }
 
     mqttsn_topic_t topic = { .p_topic_name = p_topic_name };
-    
+
     uint32_t err_code = mqttsn_packet_sender_register(p_client, &topic, topic_name_len);
     if (p_msg_id)
     {
@@ -640,7 +651,7 @@ uint32_t mqttsn_client_subscribe(mqttsn_client_t * p_client,
     mqttsn_topic_t topic = { .p_topic_name = p_topic_name };
 
     uint32_t err_code = mqttsn_packet_sender_subscribe(p_client, &topic, topic_name_len);
-    
+
     if (p_msg_id)
     {
         *p_msg_id = p_client->message_id;
@@ -754,7 +765,7 @@ uint32_t mqttsn_client_timeout_schedule(mqttsn_client_t * p_client)
         {
             next_timeout = p_client->gateway_discovery.rnd_jitter_timeout - timer_value;
         }
-        else if (m_gateway_discovery_started && 
+        else if (m_gateway_discovery_started &&
                  (p_client->gateway_discovery.search_gw_timeout - timer_value < next_timeout))
         {
             next_timeout = p_client->gateway_discovery.search_gw_timeout - timer_value;

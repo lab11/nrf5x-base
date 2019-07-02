@@ -51,6 +51,8 @@ PURPOSE: ZBOSS Zigbee cluster library API header
 
 /** @cond DOXYGEN_ZCL_SECTION */
 
+/** @cond touchlink */
+
 /**
  *  @addtogroup ZB_ZCL_TOUCHLINK_COMMON
  *  @{
@@ -292,6 +294,8 @@ zb_zll_transaction_ctx_t *zb_zll_get_transaction_ctx(void);
 #define ZLL_TRAN_CTX() (*zb_zll_get_transaction_ctx())
 
 /*! @} */ /* ZB_ZCL_TOUCHLINK_COMMON */
+
+/** @endcond */ /* touchlink */
 
 /** @endcond */ /* DOXYGEN_ZCL_SECTION */
 

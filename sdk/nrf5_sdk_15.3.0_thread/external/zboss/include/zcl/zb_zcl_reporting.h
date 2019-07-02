@@ -70,14 +70,11 @@ PURPOSE: Zigbee cluster library definitions for reporting functionality
 
 /* Boundary and default values are defined by application profile */
 
-/*! Boundary value for minimum reporting interval */
-#define ZB_ZCL_MIN_REPORTING_INTERVAL         0x0001
+/*! Default value for minimum reporting interval */
+#define ZB_ZCL_MIN_REPORTING_INTERVAL_DEFAULT 0x0005
 
 /*! Default value for maximum reporting interval */
 #define ZB_ZCL_MAX_REPORTING_INTERVAL_DEFAULT 0x0000
-
-/*! Default value maximum reporting interval */
-#define ZB_ZCL_MAX_REPORTING_INTERVAL         0x003C
 
 union zb_zcl_attr_var_u
 {
@@ -85,8 +82,10 @@ union zb_zcl_attr_var_u
   zb_int8_t s8;
   zb_uint16_t u16;
   zb_int16_t s16;
+  zb_uint24_t u24;
   zb_int24_t s24;
   zb_uint32_t u32;
+  zb_int32_t s32;
   zb_uint48_t u48;
   zb_uint8_t data_buf[4];
 };
@@ -249,26 +248,18 @@ zb_void_t zb_zcl_report_attr_cmd_handler(zb_uint8_t param);
 
 void zb_zcl_report_received(zb_uint8_t ep, zb_uint16_t cluster_id, zb_uint8_t cluster_role, zb_uint16_t attr_id);
 
-/** @brief Process Default Reporting Configuration
-    @param config_rep_req - pointer to structure with Configure Reporting Request parameters
-    @param addr_info - pointer to structure represent Attribute Address Info
-    @param return status of operation (ZB_ZCL_STATUS_SUCCESS or other)
-*/
-zb_uint8_t zb_zcl_default_reporting_config(zb_zcl_configure_reporting_req_t *config_rep_req,
-                                           zb_zcl_attr_addr_info_t* addr_info);
+zb_ret_t zb_zcl_put_reporting_info(zb_zcl_reporting_info_t* rep_info_ptr, zb_bool_t override);
 
-zb_ret_t zb_zcl_put_reporting_info(zb_zcl_configure_reporting_req_t *config_rep_req,
-                                   zb_zcl_attr_addr_info_t* attr_addr_info);
-
+zb_ret_t zb_zcl_put_reporting_info_from_req(zb_zcl_configure_reporting_req_t *config_rep_req,
+                                            zb_zcl_attr_addr_info_t* attr_addr_info);
 
 void zb_zcl_init_reporting_info(void);
-
-
 
 zb_zcl_reporting_info_t* zb_zcl_find_reporting_info(  zb_uint8_t ep,
                                                       zb_uint16_t cluster_id,
                                                       zb_uint8_t cluster_role,
                                                       zb_uint16_t attr_id);
+
 zb_zcl_reporting_info_t* zb_zcl_get_next_reporting_info(
   zb_zcl_reporting_info_t *rep_info_init, zb_uint8_t is_manuf_spec);
 
@@ -308,6 +299,15 @@ zb_ret_t zb_zcl_stop_attr_reporting(zb_uint8_t ep, zb_uint16_t cluster_id, zb_ui
     @return ZB_TRUE if attribute is reported
 */
 zb_bool_t zcl_is_attr_reported(zb_uint8_t ep, zb_uint16_t cluster_id, zb_uint8_t cluster_role, zb_uint16_t attr_id);
+
+/*! Default value for minimum reporting interval */
+#define ZB_ZCL_MIN_REPORTING_INTERVAL_DEFAULT 0x0005
+
+/*! Default value for maximum reporting interval */
+#define ZB_ZCL_MAX_REPORTING_INTERVAL_DEFAULT 0x0000
+
+/* TODO: Document */
+zb_ret_t zb_zcl_put_reporting_info(zb_zcl_reporting_info_t* rep_info_ptr, zb_bool_t override);
 
 /* @} */
 

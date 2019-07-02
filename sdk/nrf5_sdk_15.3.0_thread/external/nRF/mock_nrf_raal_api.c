@@ -35,6 +35,13 @@ typedef struct _CMOCK_nrf_raal_continuous_mode_exit_CALL_INSTANCE
 
 } CMOCK_nrf_raal_continuous_mode_exit_CALL_INSTANCE;
 
+typedef struct _CMOCK_nrf_raal_continuous_ended_CALL_INSTANCE
+{
+  UNITY_LINE_TYPE LineNumber;
+  int CallOrder;
+
+} CMOCK_nrf_raal_continuous_ended_CALL_INSTANCE;
+
 typedef struct _CMOCK_nrf_raal_timeslot_request_CALL_INSTANCE
 {
   UNITY_LINE_TYPE LineNumber;
@@ -85,6 +92,10 @@ static struct mock_nrf_raal_apiInstance
   CMOCK_nrf_raal_continuous_mode_exit_CALLBACK nrf_raal_continuous_mode_exit_CallbackFunctionPointer;
   int nrf_raal_continuous_mode_exit_CallbackCalls;
   CMOCK_MEM_INDEX_TYPE nrf_raal_continuous_mode_exit_CallInstance;
+  int nrf_raal_continuous_ended_IgnoreBool;
+  CMOCK_nrf_raal_continuous_ended_CALLBACK nrf_raal_continuous_ended_CallbackFunctionPointer;
+  int nrf_raal_continuous_ended_CallbackCalls;
+  CMOCK_MEM_INDEX_TYPE nrf_raal_continuous_ended_CallInstance;
   int nrf_raal_timeslot_request_IgnoreBool;
   bool nrf_raal_timeslot_request_FinalReturn;
   CMOCK_nrf_raal_timeslot_request_CALLBACK nrf_raal_timeslot_request_CallbackFunctionPointer;
@@ -124,6 +135,9 @@ void mock_nrf_raal_api_Verify(void)
   UNITY_TEST_ASSERT(CMOCK_GUTS_NONE == Mock.nrf_raal_continuous_mode_exit_CallInstance, cmock_line, "Function 'nrf_raal_continuous_mode_exit' called less times than expected.");
   if (Mock.nrf_raal_continuous_mode_exit_CallbackFunctionPointer != NULL)
     Mock.nrf_raal_continuous_mode_exit_CallInstance = CMOCK_GUTS_NONE;
+  UNITY_TEST_ASSERT(CMOCK_GUTS_NONE == Mock.nrf_raal_continuous_ended_CallInstance, cmock_line, "Function 'nrf_raal_continuous_ended' called less times than expected.");
+  if (Mock.nrf_raal_continuous_ended_CallbackFunctionPointer != NULL)
+    Mock.nrf_raal_continuous_ended_CallInstance = CMOCK_GUTS_NONE;
   UNITY_TEST_ASSERT(CMOCK_GUTS_NONE == Mock.nrf_raal_timeslot_request_CallInstance, cmock_line, "Function 'nrf_raal_timeslot_request' called less times than expected.");
   if (Mock.nrf_raal_timeslot_request_CallbackFunctionPointer != NULL)
     Mock.nrf_raal_timeslot_request_CallInstance = CMOCK_GUTS_NONE;
@@ -155,6 +169,8 @@ void mock_nrf_raal_api_Destroy(void)
   Mock.nrf_raal_continuous_mode_enter_CallbackCalls = 0;
   Mock.nrf_raal_continuous_mode_exit_CallbackFunctionPointer = NULL;
   Mock.nrf_raal_continuous_mode_exit_CallbackCalls = 0;
+  Mock.nrf_raal_continuous_ended_CallbackFunctionPointer = NULL;
+  Mock.nrf_raal_continuous_ended_CallbackCalls = 0;
   Mock.nrf_raal_timeslot_request_CallbackFunctionPointer = NULL;
   Mock.nrf_raal_timeslot_request_CallbackCalls = 0;
   Mock.nrf_raal_timeslot_us_left_get_CallbackFunctionPointer = NULL;
@@ -333,6 +349,48 @@ void nrf_raal_continuous_mode_exit_CMockExpect(UNITY_LINE_TYPE cmock_line)
 void nrf_raal_continuous_mode_exit_StubWithCallback(CMOCK_nrf_raal_continuous_mode_exit_CALLBACK Callback)
 {
   Mock.nrf_raal_continuous_mode_exit_CallbackFunctionPointer = Callback;
+}
+
+void nrf_raal_continuous_ended(void)
+{
+  UNITY_LINE_TYPE cmock_line = TEST_LINE_NUM;
+  CMOCK_nrf_raal_continuous_ended_CALL_INSTANCE* cmock_call_instance = (CMOCK_nrf_raal_continuous_ended_CALL_INSTANCE*)CMock_Guts_GetAddressFor(Mock.nrf_raal_continuous_ended_CallInstance);
+  Mock.nrf_raal_continuous_ended_CallInstance = CMock_Guts_MemNext(Mock.nrf_raal_continuous_ended_CallInstance);
+  if (Mock.nrf_raal_continuous_ended_IgnoreBool)
+  {
+    return;
+  }
+  if (Mock.nrf_raal_continuous_ended_CallbackFunctionPointer != NULL)
+  {
+    Mock.nrf_raal_continuous_ended_CallbackFunctionPointer(Mock.nrf_raal_continuous_ended_CallbackCalls++);
+    return;
+  }
+  UNITY_TEST_ASSERT_NOT_NULL(cmock_call_instance, cmock_line, "Function 'nrf_raal_continuous_ended' called more times than expected.");
+  cmock_line = cmock_call_instance->LineNumber;
+  if (cmock_call_instance->CallOrder > ++GlobalVerifyOrder)
+    UNITY_TEST_FAIL(cmock_line, "Function 'nrf_raal_continuous_ended' called earlier than expected.");
+  if (cmock_call_instance->CallOrder < GlobalVerifyOrder)
+    UNITY_TEST_FAIL(cmock_line, "Function 'nrf_raal_continuous_ended' called later than expected.");
+}
+
+void nrf_raal_continuous_ended_CMockIgnore(void)
+{
+  Mock.nrf_raal_continuous_ended_IgnoreBool = (int)1;
+}
+
+void nrf_raal_continuous_ended_CMockExpect(UNITY_LINE_TYPE cmock_line)
+{
+  CMOCK_MEM_INDEX_TYPE cmock_guts_index = CMock_Guts_MemNew(sizeof(CMOCK_nrf_raal_continuous_ended_CALL_INSTANCE));
+  CMOCK_nrf_raal_continuous_ended_CALL_INSTANCE* cmock_call_instance = (CMOCK_nrf_raal_continuous_ended_CALL_INSTANCE*)CMock_Guts_GetAddressFor(cmock_guts_index);
+  UNITY_TEST_ASSERT_NOT_NULL(cmock_call_instance, cmock_line, "CMock has run out of memory. Please allocate more.");
+  Mock.nrf_raal_continuous_ended_CallInstance = CMock_Guts_MemChain(Mock.nrf_raal_continuous_ended_CallInstance, cmock_guts_index);
+  cmock_call_instance->LineNumber = cmock_line;
+  cmock_call_instance->CallOrder = ++GlobalExpectCount;
+}
+
+void nrf_raal_continuous_ended_StubWithCallback(CMOCK_nrf_raal_continuous_ended_CALLBACK Callback)
+{
+  Mock.nrf_raal_continuous_ended_CallbackFunctionPointer = Callback;
 }
 
 bool nrf_raal_timeslot_request(uint32_t length_us)

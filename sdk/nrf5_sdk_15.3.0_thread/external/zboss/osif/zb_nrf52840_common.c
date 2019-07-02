@@ -41,10 +41,12 @@ PURPOSE: Platform specific for NRF52840 SoC.
 
 #define ZB_TRACE_FILE_ID 15198
 
+#include <stdlib.h>
 #include "zboss_api.h"
 #include "zb_nrf52840_internal.h"
 #include "zb_nrf52840_zboss_deps.h"
 
+#include "sdk_config.h"
 #if !defined SOFTDEVICE_PRESENT
 #include <stdbool.h>
 #include "nrf_ecb.h"
@@ -53,19 +55,19 @@ PURPOSE: Platform specific for NRF52840 SoC.
 #endif
 
 #include "nrf_log_ctrl.h"
+#include "nrf_log.h"
+
+#include "nrf_pwr_mgmt.h"
+
+#if defined(MULTIPROTOCOL_802154_CONFIG_PRESENT)
+#include "multiprotocol_802154_config.h"
+#endif
 
 static void zb_osif_rng_init(void);
 static zb_uint32_t zb_osif_read_rndval(void);
 static void zb_osif_aes_init(void);
 
 #if defined SOFTDEVICE_PRESENT
-/**
- * @brief Function used to inform radio driver about Softdevice's SoC events.
- *        Copied from nRF radio driver header files to avoid additional external dependencies inside SDK examples.
- *
- */
-extern void nrf_raal_softdevice_soc_evt_handler(uint32_t evt_id);
-
 static zb_void_t zb_zboss_radio_driver_callback(uint32_t sys_evt)
 {
   nrf_raal_softdevice_soc_evt_handler(sys_evt);
@@ -79,7 +81,11 @@ static void soc_evt_handler(uint32_t sys_evt, void * p_context)
   {
     case NRF_EVT_FLASH_OPERATION_SUCCESS:
     case NRF_EVT_FLASH_OPERATION_ERROR:
+    case NRF_EVT_POWER_USB_POWER_READY:
+    case NRF_EVT_POWER_USB_DETECTED:
+    case NRF_EVT_POWER_USB_REMOVED:
       break;
+
     case NRF_EVT_HFCLKSTARTED:
     case NRF_EVT_RADIO_BLOCKED:
     case NRF_EVT_RADIO_CANCELED:
@@ -89,8 +95,9 @@ static void soc_evt_handler(uint32_t sys_evt, void * p_context)
       /* nRF Radio Driver softdevice event handler. */
       zb_zboss_radio_driver_callback(sys_evt);
       break;
+
     default:
-      ZB_ASSERT(0);
+      NRF_LOG_WARNING("Unexpected SOC event: 0x%x", sys_evt);
       break;
   }
 }
@@ -133,7 +140,8 @@ void zb_nrf52840_general_init(void)
 */
 void zb_nrf52840_sleep_init(void)
 {
-
+  ret_code_t ret = nrf_pwr_mgmt_init();
+  ASSERT(ret == NRF_SUCCESS);
 }
 
 void zb_nrf52840_abort(void)
@@ -152,15 +160,24 @@ zb_void_t zb_reset(zb_uint8_t param)
   ZVUNUSED(param);
 }
 
-
 void zb_nrf52840_enable_all_inter(void)
 {
+#ifdef SOFTDEVICE_PRESENT
+  app_util_critical_region_exit(0);
+#else
   __enable_irq();
+#endif
 }
 
 void zb_nrf52840_disable_all_inter(void)
 {
+#ifdef SOFTDEVICE_PRESENT
+  uint8_t __CR_NESTED = 0;
+
+  app_util_critical_region_enter(&__CR_NESTED);
+#else
   __disable_irq();
+#endif
 }
 
 zb_uint32_t zb_random_seed(void)
@@ -229,6 +246,7 @@ static void zb_osif_rng_init(void)
   ret_code_t err_code;
   err_code = nrf_drv_rng_init(NULL);
   NRF_ERR_CHECK(err_code);
+  srand(zb_random_seed());
 }
 
 
@@ -292,8 +310,10 @@ void hw_aes128(zb_uint8_t *key, zb_uint8_t *msg, zb_uint8_t *c)
 #endif
 }
 
+/* It may happen that Zigbee stack does not put radio peripheral into sleep mode. Force this state by calling internal API. */
 zb_uint32_t zb_nrf52840_sleep(zb_uint32_t sleep_tmo)
 {
+  mac_nrf52840_trans_set_rx_on_off(ZB_FALSE);
   return zb_nrf52840_sched_sleep(sleep_tmo);
 }
 
@@ -316,7 +336,7 @@ void zb_osif_get_ieee_eui64(zb_ieee_addr_t ieee_eui64)
 
   // Set constant manufacturer ID to use MAC compression mechanisms.
   factoryAddress &= 0x000000FFFFFFFFFFLL;
-  factoryAddress |= 0x0B010E0000000000LL;
+  factoryAddress |= (uint64_t)(ZIGBEE_VENDOR_OUI) << 40;
 
   memcpy(ieee_eui64, &factoryAddress, sizeof(factoryAddress));
 }
@@ -333,29 +353,26 @@ zb_nrf52840_radio_stats_t* zb_nrf52840_get_radio_stats(void)
 /**@brief Function which waits for event -- essential implementation of sleep on NRF52 */
 zb_void_t zb_osif_wait_for_event(zb_void_t)
 {
-  #ifdef SOFTDEVICE_PRESENT
-      UNUSED_RETURN_VALUE(sd_app_evt_wait());
-  #else
-      __SEV();
-      __WFE();
-      __WFE();
-  #endif
+  nrf_pwr_mgmt_run();
+}
+
+/**@brief Set the radio driver configuration*/
+zb_void_t zb_nrf_802154_mac_osif_init(void)
+{
+#if defined(MULTIPROTOCOL_802154_CONFIG_PRESENT) && defined(MULTIPROTOCOL_802154_MODE)
+    uint32_t retval = multiprotocol_802154_mode_set((multiprotocol_802154_mode_t)MULTIPROTOCOL_802154_MODE);
+    ASSERT(retval == NRF_SUCCESS);
+#endif
 }
 
 /*lint -save -e(14) Weak linkage */
-/**@brief Function which tries to sleep down the MCU 
+/**@brief Function which tries to sleep down the MCU
  *
  * Function is defined as weak; to be redefined if someone wants to implement their own
  * going-to-sleep policy.
  */
-__WEAK zb_void_t zb_osif_go_idle(zb_void_t)
+__WEAK void zb_osif_go_idle(void)
 {
-  if (ZB_PIBCACHE_RX_ON_WHEN_IDLE())
-  {
-    if (NRF_LOG_PROCESS() == false)
-    {
-      zb_osif_wait_for_event();
-    }
-  }
+  zb_osif_wait_for_event();
 }
 /*lint -restore */

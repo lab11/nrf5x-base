@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2018, Nordic Semiconductor ASA
+ * Copyright (c) 2018 - 2019, Nordic Semiconductor ASA
  *
  * All rights reserved.
  *
@@ -37,6 +37,7 @@
  * OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  *
  */
+#include "sdk_config.h"
 #include "nrf_cli.h"
 #include "zboss_api.h"
 #include "zb_error_handler.h"
@@ -64,11 +65,12 @@
 // Defines default value for minimum value change inside configure reporting request.
 #define ZIGBEE_CLI_CONFIGURE_REPORT_DEFAULT_VALUE_CHANGE NULL
 
-// Defines default value for minimum interval configured in order to turn off reporing. See ZCL specification, sec. 2.5.7.1.5.
+// Defines default value for minimum interval configured in order to turn off reporting. See ZCL specification, sec. 2.5.7.1.5.
 #define ZIGBEE_CLI_CONFIGURE_REPORT_OFF_MIN_INTERVAL 0x000F // This can be any value, only max_interval parameters is relevant.
 // Defines default value for maximum interval inside configure reporting request. See ZCL specification, sec. 2.5.7.1.6.
 #define ZIGBEE_CLI_CONFIGURE_REPORT_OFF_MAX_INTERVAL 0xFFFF
 
+#if NRF_LOG_ENABLED
 /** @brief Name of the submodule used for logger messaging.
  */
 #define NRF_LOG_SUBMODULE_NAME report
@@ -84,12 +86,14 @@ NRF_LOG_INSTANCE_REGISTER(ZIGBEE_CLI_LOG_NAME, NRF_LOG_SUBMODULE_NAME,
 typedef struct {
     NRF_LOG_INSTANCE_PTR_DECLARE(p_log)
 } log_ctx_t;
+#endif // NRF_LOG_ENABLED
 
 // This structure allows for binding ZBOSS transaction and CLI object.
 typedef struct {
     nrf_cli_t const * p_cli;
     uint8_t           tsn;
     bool              taken;
+    bool              is_broadcast;
 } tsn_ctx_t;
 
 // This structure representing all fields required to construct configure reporting requests.
@@ -101,15 +105,17 @@ typedef struct {
     zb_uint16_t interval_min;
     zb_uint16_t interval_max;
     zb_addr_u   remote_node;
-    zb_uint8_t  remote_addr_mode;
+    addr_type_t remote_addr_mode;
     zb_uint8_t  remote_ep;
 } configure_reporting_req_t;
 
 
+#if NRF_LOG_ENABLED
 // Logger instance used by this module.
 static log_ctx_t m_log = {
     NRF_LOG_INSTANCE_PTR_INIT(p_log, ZIGBEE_CLI_LOG_NAME, NRF_LOG_SUBMODULE_NAME)
 };
+#endif // NRF_LOG_ENABLED
 
 static tsn_ctx_t m_tsn_ctx[ZIGBEE_CLI_CONFIGURE_REPORT_TSN];
 
@@ -372,12 +378,12 @@ static zb_uint8_t cli_agent_ep_handler_report(zb_uint8_t param)
 /**@brief Subscribe to the attribute changes on the remote node.
  *
  * @code
- * zcl subscribe {on, off} <h:eui64> <d:ep> <h:cluster> <h:profile>
+ * zcl subscribe {on, off} <h:addr> <d:ep> <h:cluster> <h:profile>
  *                         <h:attr ID> <d:attr type>
  *                         [<d:min interval (s)>] [<d:max interval (s)>]
  * @endcode
  *
- * Enable or disable reporting on the node identified by `eui64`, with the endpoint `ep`
+ * Enable or disable reporting on the node identified by `addr`, with the endpoint `ep`
  * that uses the profile `profile` of the attribute `attr ID` with the type
  * `attr type` in the cluster `cluster`.
  *
@@ -398,7 +404,7 @@ void cmd_zb_subscribe(nrf_cli_t const * p_cli, size_t argc, char **argv)
     if ((argc == 1) || (nrf_cli_help_requested(p_cli)))
     {
         print_usage(p_cli, argv[0],
-                    "<h:eui64> <d:ep> <h:cluster>\r\n"
+                    "<h:addr> <d:ep> <h:cluster>\r\n"
                     "<h:profile> <h:attr ID> <d:attr type>\r\n"
                     "[<d:min interval (s)>] [<d:max interval (s)>]\r\n");
         return;
@@ -411,15 +417,11 @@ void cmd_zb_subscribe(nrf_cli_t const * p_cli, size_t argc, char **argv)
         return;
     }
 
-    if (parse_address_string(argv[1], &(req.remote_node), &(req.remote_addr_mode)) == ZB_FALSE)
-    {
-        print_error(p_cli, "Incorrect EUI64 remote address format");
-        return;
-    }
+    req.remote_addr_mode = parse_address(argv[1], &req.remote_node, ADDR_ANY);
 
-    if (req.remote_addr_mode != ZB_APS_ADDR_MODE_64_ENDP_PRESENT)
+    if (req.remote_addr_mode == ADDR_INVALID)
     {
-        print_error(p_cli, "Incorrect remote address type");
+        print_error(p_cli, "Invalid remote address");
         return;
     }
 

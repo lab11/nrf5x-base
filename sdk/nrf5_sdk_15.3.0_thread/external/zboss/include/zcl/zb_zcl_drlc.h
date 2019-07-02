@@ -208,6 +208,7 @@ typedef enum zb_zcl_drlc_cli_cmd_e
                                                                 */
 } zb_zcl_drlc_cli_cmd_t;
 
+/** @cond internals_doc */
 /* DRLC cluster commands list : only for information - do not modify */
 #define ZB_ZCL_CLUSTER_ID_DRLC_SERVER_ROLE_GENERATED_CMD_LIST                          \
                                       ZB_ZCL_DRLC_SRV_CMD_LOAD_CONTROL_EVENT,          \
@@ -221,6 +222,8 @@ typedef enum zb_zcl_drlc_cli_cmd_e
                                       ZB_ZCL_DRLC_CLI_CMD_GET_SCHEDULED_EVENTS
 
 #define ZB_ZCL_CLUSTER_ID_DRLC_SERVER_ROLE_RECEIVED_CMD_LIST ZB_ZCL_CLUSTER_ID_DRLC_CLIENT_ROLE_GENERATED_CMD_LIST
+/*! @}
+ *  @endcond */ /* internals_doc */
 
 /* Payload description */
 
@@ -579,8 +582,6 @@ zb_void_t zb_drlc_client_send_get_scheduled_events(zb_uint8_t param,
 
 /** @} */ /* ZB_ZCL_DRLC_COMMANDS_STRUCTURES_AND_DEFINITIONS */
 
-/** @cond internals_doc */
-
 /** @brief Declare attribute list for DRLC cluster
  *  @param[in] attr_list - attribute list variable name
  *  @param[in] utility_enrollment_group  - pointer to variable to store @ref ZB_ZCL_ATTR_DRLC_UTILITY_ENROLLMENT_GROUP value
@@ -596,8 +597,6 @@ zb_void_t zb_drlc_client_send_get_scheduled_events(zb_uint8_t param,
   ZB_ZCL_SET_ATTR_DESC_M(ZB_ZCL_ATTR_DRLC_DURATION_RANDOMIZATION_MINUTES, (duration_randomization_minutes), ZB_ZCL_ATTR_TYPE_8BIT, ZB_ZCL_ATTR_ACCESS_READ_WRITE) \
   ZB_ZCL_SET_ATTR_DESC_M(ZB_ZCL_ATTR_DRLC_DEVICE_CLASS_VALUE, (device_class), ZB_ZCL_ATTR_TYPE_16BIT, ZB_ZCL_ATTR_ACCESS_READ_WRITE) \
   ZB_ZCL_FINISH_DECLARE_ATTRIB_LIST
-
-/** @endcond */ /* internals_doc */
 
 
 /** Initialize @ref zb_zcl_drlc_client_attrs_s DRLC cluster's attributes */
@@ -637,26 +636,21 @@ typedef struct zb_zcl_drlc_client_attrs_s
 
 /** @brief Declare attribute list for DRLC cluster
  *  @param[in]  attr_list - attribute list variable name
- *  @param[in]  attrs - pointer to @ref zb_zcl_drlc_client_attrs_s structure
+ *  @param[in]  attrs - variable of @ref zb_zcl_drlc_client_attrs_t type (containing DRLC cluster attributes)
  */
 #define ZB_ZCL_DECLARE_DRLC_ATTR_LIST(attr_list, attrs)  \
  ZB_ZCL_DECLARE_DRLC_ATTRIB_LIST(attr_list, &attrs.utility_enrollment_group,  \
    &attrs.start_randomization_munutes, &attrs.duration_randomization_minutes, \
    &attrs.device_class_value)
 
+/**  @} */
 
-/** @cond internals_doc */
+/** @endcond */ /* DOXYGEN_ZCL_SECTION */
 /** Internal handler for DRLC Cluster commands */
 
 zb_void_t zb_zcl_drlc_init_server(void);
 zb_void_t zb_zcl_drlc_init_client(void);
 #define ZB_ZCL_CLUSTER_ID_DRLC_SERVER_ROLE_INIT zb_zcl_drlc_init_server
 #define ZB_ZCL_CLUSTER_ID_DRLC_CLIENT_ROLE_INIT zb_zcl_drlc_init_client
-
-/** @endcond */ /* internals_doc */
-
-/**  @} */
-
-/** @endcond */ /* DOXYGEN_ZCL_SECTION */
 
 #endif /* ZB_ZCL_DRLC_H_ */

@@ -87,6 +87,7 @@ enum
     OT_RADIO_CHANNEL_PAGE_0_MASK = (1U << OT_RADIO_CHANNEL_PAGE_0), ///< 2.4 GHz IEEE 802.15.4-2006
     OT_RADIO_CHANNEL_PAGE_2      = 2,                               ///< 915 MHz IEEE 802.15.4-2006
     OT_RADIO_CHANNEL_PAGE_2_MASK = (1U << OT_RADIO_CHANNEL_PAGE_2), ///< 915 MHz IEEE 802.15.4-2006
+    OT_RADIO_CHANNEL_PAGE_MAX    = OT_RADIO_CHANNEL_PAGE_2,         ///< Maximum supported channel page value
 };
 
 /**
@@ -201,8 +202,12 @@ typedef struct otRadioFrame
          */
         struct
         {
-            int8_t  mRssi; ///< Received signal strength indicator in dBm for received frames.
-            uint8_t mLqi;  ///< Link Quality Indicator for received frames.
+            /**
+             * The timestamp when the frame was received (milliseconds).
+             * Applicable/Required only when raw-link-api feature (`OPENTHREAD_ENABLE_RAW_LINK_API`) is enabled.
+             *
+             */
+            uint32_t mMsec;
 
             /**
              * The timestamp when the frame was received (microseconds, the offset to mMsec).
@@ -210,13 +215,11 @@ typedef struct otRadioFrame
              *
              */
             uint16_t mUsec;
+            int8_t   mRssi; ///< Received signal strength indicator in dBm for received frames.
+            uint8_t  mLqi;  ///< Link Quality Indicator for received frames.
 
-            /**
-             * The timestamp when the frame was received (milliseconds).
-             * Applicable/Required only when raw-link-api feature (`OPENTHREAD_ENABLE_RAW_LINK_API`) is enabled.
-             *
-             */
-            uint32_t mMsec;
+            // Flags
+            bool mAckedWithFramePending : 1; /// This indicates if this frame was acknowledged with frame pending set.
         } mRxInfo;
     } mInfo;
 } otRadioFrame;
@@ -421,7 +424,8 @@ otError otPlatRadioEnable(otInstance *aInstance);
  *
  * @param[in] aInstance  The OpenThread instance structure.
  *
- * @retval OT_ERROR_NONE  Successfully transitioned to Disabled.
+ * @retval OT_ERROR_NONE            Successfully transitioned to Disabled.
+ * @retval OT_ERROR_INVALID_STATE   The radio was not in sleep state.
  *
  */
 otError otPlatRadioDisable(otInstance *aInstance);
@@ -692,6 +696,26 @@ void otPlatRadioClearSrcMatchShortEntries(otInstance *aInstance);
  *
  */
 void otPlatRadioClearSrcMatchExtEntries(otInstance *aInstance);
+
+/**
+ * Get the radio supported channel mask that the device is allowed to be on.
+ *
+ * @param[in]  aInstance   The OpenThread instance structure.
+ *
+ * @returns The radio supported channel mask.
+ *
+ */
+uint32_t otPlatRadioGetSupportedChannelMask(otInstance *aInstance);
+
+/**
+ * Get the radio preferred channel mask that the device prefers to form on.
+ *
+ * @param[in]  aInstance   The OpenThread instance strucyyture.
+ *
+ * @returns The radio preferred channel mask.
+ *
+ */
+uint32_t otPlatRadioGetPreferredChannelMask(otInstance *aInstance);
 
 /**
  * @}

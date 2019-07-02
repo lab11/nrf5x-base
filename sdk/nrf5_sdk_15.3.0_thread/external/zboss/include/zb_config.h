@@ -347,6 +347,11 @@ constants etc.
 #define ZB_NVRAM_BUF_SIZE 256
 #endif
 #define ZB_NO_NVRAM_VER_MIGRATION
+#define ZB_NVRAM_RADIO_OFF_DURING_TRANSACTION
+
+#ifndef ZB_CONFIGURABLE_MEM
+#define ZB_CHILD_HASH_TABLE_SIZE (((ZB_IEEE_ADDR_TABLE_SIZE + ZB_IEEE_ADDR_TABLE_SIZE / 3) + 31) / 32 * 32)
+#endif /* ZB_CONFIGURABLE_MEM */
 
 /* #define ZB_TRANSCEIVER_ALL_CHANNELS_MASK   (0xffff << 11) */ /* 0000.0111 1111.1111 1111.1000 0000.0000*/
 /* C51 doesn't like long shifts, it just cut last two bytes. (11-26) */
@@ -1446,6 +1451,18 @@ compatibility with some mammoth shit */
 #endif
 #ifdef ZB_APS_DUPS_TABLE_SIZE
 #undef ZB_APS_DUPS_TABLE_SIZE
+#endif
+#ifdef ZB_APS_SRC_BINDING_TABLE_SIZE
+#undef ZB_APS_SRC_BINDING_TABLE_SIZE
+#endif
+#ifdef ZB_APS_DST_BINDING_TABLE_SIZE
+#undef ZB_APS_DST_BINDING_TABLE_SIZE
+#endif
+#ifdef ZB_APS_BIND_TRANS_TABLE_SIZE
+#undef ZB_APS_BIND_TRANS_TABLE_SIZE
+#endif
+#ifdef ZB_SINGLE_TRANS_INDEX_SIZE
+#undef ZB_SINGLE_TRANS_INDEX_SIZE
 #endif
 
 #endif  /* ZB_CONFIGURABLE_MEMORY */

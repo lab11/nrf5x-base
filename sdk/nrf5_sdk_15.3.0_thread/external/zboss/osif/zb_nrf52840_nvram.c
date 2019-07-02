@@ -36,7 +36,7 @@
  * CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR
  * TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF
  * THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
-PURPOSE: NVRAM functions for nRF52840 SoC.
+PURPOSE: Platform specific for NRF52840 SoC.
 */
 
 #define ZB_TRACE_FILE_ID 51401
@@ -128,7 +128,7 @@ static struct zb_nvram_buf_s
 #ifdef ZB_NVRAM_FLASH_AUTO_ADDRESS
 static uint32_t flash_end_addr(void)
 {
-    uint32_t const bootloader_addr = NRF_UICR->NRFFW[0];
+    uint32_t const bootloader_addr = BOOTLOADER_ADDRESS;
     uint32_t const page_sz         = NRF_FICR->CODEPAGESIZE;
     uint32_t const code_sz         = NRF_FICR->CODESIZE;
 

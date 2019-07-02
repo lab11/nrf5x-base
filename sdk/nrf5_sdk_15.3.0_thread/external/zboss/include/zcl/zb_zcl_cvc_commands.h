@@ -70,12 +70,12 @@ PURPOSE: ZCL Continuous Value Change feature commands declarations
   ZB_MILLISECONDS_TO_BEACON_INTERVAL(ZB_ZCL_CVC_TRANSITION_TIMER_QUANT_MS)
 /** @brief CVC Transition Time Unit */
 #define ZB_ZCL_CVC_TRANSITION_TIME_UNIT_IN_QUANTS \
-  ZB_ZCL_CVC_TRANSITION_TIME_UNIT_MS / ZB_ZCL_CVC_TRANSITION_TIMER_QUANT_MS
+  (ZB_ZCL_CVC_TRANSITION_TIME_UNIT_MS / ZB_ZCL_CVC_TRANSITION_TIMER_QUANT_MS)
 
 #define ZB_ZCL_MAX_CVC_SLOTS_BY_EP (ZB_ZCL_UNDEFINED_REPORTING_SLOT / ZB_ZCL_MAX_EP_NUMBER)
 
 /** @brief Value set function that will be used for setting value on device */
-typedef zb_ret_t (ZB_CODE * zb_zcl_cvc_value_set_func_t)(zb_uint8_t endpoint, zb_uint16_t* new_value);
+typedef zb_ret_t (ZB_CODE * zb_zcl_cvc_value_set_func_t)(zb_uint8_t endpoint, zb_uint16_t* new_value, zb_uint16_t remaining_time);
 
 
 /** @internal Structure of Input variables

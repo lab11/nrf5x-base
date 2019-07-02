@@ -31,6 +31,8 @@
 /**
  * @brief This file implements procedures to set pending bit in nRF 802.15.4 radio driver.
  *
+ * @deprecated  The API provided by this module is deprecated. Please refer to nrf_802154_ack_data module.
+ *
  */
 
 #ifndef NRF_802154_ACK_PENDING_BIT_H_
@@ -108,4 +110,3 @@ bool nrf_802154_ack_pending_bit_should_be_set(const uint8_t * p_psdu);
 #endif
 
 #endif /* NRF_802154_ACK_PENDING_BIT_H_ */
-

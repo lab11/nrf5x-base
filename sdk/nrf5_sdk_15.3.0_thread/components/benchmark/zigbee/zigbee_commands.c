@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2018, Nordic Semiconductor ASA
+ * Copyright (c) 2018 - 2019, Nordic Semiconductor ASA
  *
  * All rights reserved.
  *
@@ -126,6 +126,6 @@ void protocol_cmd_peer_get(const nrf_cli_t * p_cli, const benchmark_peer_entry_t
 
 void protocol_cmd_remote_send(const nrf_cli_t * p_cli, const nrf_cli_t * p_peer_cli, size_t argc, char ** argv)
 {
-    /* Remote command execution is not implemented in Zigbee benchmark. Use master/slave role instead. */
+    /* Remote command execution is not implemented in Zigbee benchmark. */
     return;
 }

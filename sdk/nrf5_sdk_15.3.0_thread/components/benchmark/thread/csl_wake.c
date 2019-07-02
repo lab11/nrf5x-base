@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2018, Nordic Semiconductor ASA
+ * Copyright (c) 2018 - 2019, Nordic Semiconductor ASA
  *
  * All rights reserved.
  *
@@ -184,7 +184,7 @@ static void send_frame(void)
             frame->mPsdu[0] |= CSL_WAKE_BURST_PSDU_BYTE_0_AR_BIT_MASK;
         }
 
-        error = otLinkRawTransmit(thread_ot_instance_get(), frame, link_raw_transmit_done);
+        error = otLinkRawTransmit(thread_ot_instance_get(), link_raw_transmit_done);
 
         if (error != OT_ERROR_NONE)
         {

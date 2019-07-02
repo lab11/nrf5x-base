@@ -86,6 +86,10 @@
 
 #endif
 
+#if defined (SHIELD_BSP_INC)
+  #include STRINGIFY(SHIELD_BSP_INC.h)
+#endif
+
 #ifdef __cplusplus
 extern "C" {
 #endif

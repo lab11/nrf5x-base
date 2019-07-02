@@ -414,3 +414,11 @@ __WEAK ret_code_t nrf_dfu_settings_additional_erase(void)
     NRF_LOG_WARNING("No additional data erased");
     return NRF_SUCCESS;
 }
+
+
+void nrf_dfu_settings_progress_reset(void)
+{
+    memset(s_dfu_settings.init_command, 0xFF, INIT_COMMAND_MAX_SIZE); // Remove the last init command
+    memset(&s_dfu_settings.progress, 0, sizeof(dfu_progress_t));
+    s_dfu_settings.write_offset = 0;
+}

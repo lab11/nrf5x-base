@@ -3698,4 +3698,3 @@ NRF_CLI_CMD_REGISTER(resize,    &m_sub_resize,  NRF_CLI_HELP_RESIZE,    nrf_cli_
 #endif // NRF_MODULE_ENABLED(NRF_CLI_BUILD_IN_CMDS)
 
 #endif // NRF_MODULE_ENABLED(NRF_CLI)
-

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2018, Nordic Semiconductor ASA
+ * Copyright (c) 2018 - 2019, Nordic Semiconductor ASA
  *
  * All rights reserved.
  *
@@ -63,23 +63,56 @@
 static background_dfu_context_t m_dfu_ctx;                                                    /**< Background DFU context. */
 static zigbee_ota_dfu_context_t m_zb_ota_ctx;                                                 /**< Zigbee transport OTA-DFU context. */
 
+/** @brief Function to resume the downloading process
+ */
+static void resume_download(zb_uint8_t status)
+{
+    if (m_zb_ota_ctx.is_download_suspended)
+    {
+        m_zb_ota_ctx.is_download_suspended = ZB_FALSE;
+        zb_zcl_ota_upgrade_resume_client(m_zb_ota_ctx.resume_buffer, status);
+    }
+    else
+    {
+        NRF_LOG_WARNING("Wanted to resume download but it was already resumed");
+    }
+}
+
 /** @brief Function to abort the firmware upgrade process
  */
 void zb_abort_dfu(void)
 {
+    zb_ret_t   zb_err_code;
+    ret_code_t err_code;
+
+    NRF_LOG_INFO("ABORT Zigbee DFU");
     /* Reset the counters */
+    m_zb_ota_ctx.total_length = 0;
     m_zb_ota_ctx.ota_header_fill_level = 0;
     m_zb_ota_ctx.init_cmd.start = 0;
     m_zb_ota_ctx.init_cmd.length = 0;
     m_zb_ota_ctx.firmware.start = 0;
     m_zb_ota_ctx.firmware.length = 0;
+    m_zb_ota_ctx.scratchpad_fill_level = 0;
     m_zb_ota_ctx.p_trigger = NULL;
 
     /* Reset the background DFU state model */
     background_dfu_reset_state(&m_dfu_ctx);
 
+    // Remove information about last received image from DFU settings page.
+    nrf_dfu_settings_progress_reset();
+    err_code = nrf_dfu_settings_write(NULL);
+    if (err_code != NRF_SUCCESS)
+    {
+        NRF_LOG_ERROR("Unable to remove information about partially downloaded DFU image from DFU setting page.");
+    }
+
     /* Halt the OTA process */
-    zcl_ota_abort(m_zb_ota_ctx.endpoint, 0);
+    zb_err_code = ZB_SCHEDULE_CALLBACK(resume_download, ZB_ZCL_OTA_UPGRADE_STATUS_ERROR);
+    if (zb_err_code != RET_OK)
+    {
+        NRF_LOG_ERROR("Unable to abort DFU due to the lack of ZBOSS buffers");
+    }
 }
 
 /** @brief Function to set the file offset to download
@@ -106,40 +139,23 @@ static void suspend_download(zb_uint8_t param)
     m_zb_ota_ctx.is_download_suspended = ZB_TRUE;
 }
 
-/** @brief Function to resume the downloading process
- */
-static void resume_download(void)
-{
-    if (m_zb_ota_ctx.is_download_suspended)
-    {
-        m_zb_ota_ctx.is_download_suspended = ZB_FALSE;
-        zb_zcl_ota_upgrade_resume_client(m_zb_ota_ctx.resume_buffer, ZB_ZCL_OTA_UPGRADE_STATUS_OK);
-    }
-    else
-    {
-        NRF_LOG_WARNING("Wanted to resume download but it was already resumed");
-    }
-}
-
 /** @brief Code to validate and process the DFU trigger == start the DFU process
  */
 static void activate_trigger(zb_uint8_t param)
 {
     UNUSED_VARIABLE(param);
-    /* p_trigger points to the compile-time known place in RAM - assignment is safe */
-    zb_zcl_ota_upgrade_sub_element_t * p_trigger = (zb_zcl_ota_upgrade_sub_element_t*)(m_zb_ota_ctx.ota_header + sizeof(zb_zcl_ota_upgrade_file_header_t));
 
     /* Sanity check for the received trigger - all the further checks are inside the functions below */
-    if (p_trigger->tag_id != SUBELEMENT_TRIGGER_TYPE)
+    if (m_zb_ota_ctx.p_trigger->tag_id != SUBELEMENT_TRIGGER_TYPE)
     {
         /* The image was combined in an improper way - discarding everything */
         NRF_LOG_ERROR("Trigger type wrong - image combined in an improper way");
         zb_abort_dfu();
     }
 
-    if (background_dfu_validate_trigger(&m_dfu_ctx, p_trigger->value, p_trigger->length))
+    if (background_dfu_validate_trigger(&m_dfu_ctx, m_zb_ota_ctx.p_trigger->value, m_zb_ota_ctx.p_trigger->length))
     {
-        if (!background_dfu_process_trigger(&m_dfu_ctx, p_trigger->value, p_trigger->length))
+        if (!background_dfu_process_trigger(&m_dfu_ctx, m_zb_ota_ctx.p_trigger->value, m_zb_ota_ctx.p_trigger->length))
         {
             NRF_LOG_ERROR("Could not process trigger");
             zb_abort_dfu();
@@ -156,21 +172,27 @@ static void activate_trigger(zb_uint8_t param)
 zb_uint8_t zb_process_chunk(const zb_zcl_ota_upgrade_value_param_t * ota, zb_uint8_t param)
 {
     zb_uint8_t ret = ZB_ZCL_OTA_UPGRADE_STATUS_OK;
+
     /* Process image block */
-    if (ota->upgrade.receive.file_offset < TOTAL_HEADER_LEN)
+    if (m_zb_ota_ctx.p_trigger == NULL)
     {
         /* Branch where we copy the OTA Header and Trigger */
         /* Figure out how much to copy */
-        int bytes_left = TOTAL_HEADER_LEN - m_zb_ota_ctx.ota_header_fill_level;
-        int bytes_to_copy = MIN(bytes_left, ota->upgrade.receive.data_length);
+        uint32_t acccepted_data_len = MIN(TOTAL_HEADER_LEN, ota->upgrade.receive.data_length);
+        uint32_t bytes_left = TOTAL_HEADER_LEN - m_zb_ota_ctx.ota_header_fill_level;
+        uint32_t bytes_to_copy = MIN(bytes_left, acccepted_data_len);
 
         memcpy(m_zb_ota_ctx.ota_header + m_zb_ota_ctx.ota_header_fill_level, ota->upgrade.receive.block_data, bytes_to_copy);
         m_zb_ota_ctx.ota_header_fill_level += bytes_to_copy;
 
         if (m_zb_ota_ctx.ota_header_fill_level == TOTAL_HEADER_LEN)
         {
-            /* All the header is copied */
-            m_zb_ota_ctx.p_trigger = (zb_zcl_ota_upgrade_sub_element_t *)(m_zb_ota_ctx.ota_header + sizeof(zb_zcl_ota_upgrade_file_header_t));
+            /* All the header is copied - handle the offset because of the optional data */
+            zb_zcl_ota_upgrade_file_header_t * hdr =  (zb_zcl_ota_upgrade_file_header_t *)m_zb_ota_ctx.ota_header;
+            /* Can use simple byte offset, because zb_zcl_ota_upgrade_sub_element_t is a packed structure (ZCL frame) and ota_header is stored as zb_uint8_t. */
+            m_zb_ota_ctx.p_trigger = (zb_zcl_ota_upgrade_sub_element_t *)(m_zb_ota_ctx.ota_header + hdr->header_length);
+            /* Store the total length of image. */
+            m_zb_ota_ctx.total_length = hdr->total_image_size;
             suspend_download(param);
             ret = ZB_ZCL_OTA_UPGRADE_STATUS_BUSY;
             UNUSED_RETURN_VALUE(ZB_SCHEDULE_CALLBACK(activate_trigger, 0));
@@ -178,18 +200,52 @@ zb_uint8_t zb_process_chunk(const zb_zcl_ota_upgrade_value_param_t * ota, zb_uin
     }
     else
     {
-        /* Pass the payload straight to the DFU, since it is aligned and equal in size */
-        background_dfu_block_t block;
+        uint32_t acccepted_data_len = MIN(BACKGROUND_DFU_DEFAULT_BLOCK_SIZE, ota->upgrade.receive.data_length);
+        uint32_t downloaded_part = ota->upgrade.receive.file_offset + acccepted_data_len;
 
-        memcpy(m_zb_ota_ctx.block, ota->upgrade.receive.block_data, ota->upgrade.receive.data_length);
+        if (m_zb_ota_ctx.total_length < downloaded_part)
+        {
+            /* Received an invalid OTA Image Block Response frame. */
+            return ZB_ZCL_OTA_UPGRADE_STATUS_ERROR;
+        }
 
-        block.size = BACKGROUND_DFU_DEFAULT_BLOCK_SIZE;
-        block.p_payload = m_zb_ota_ctx.block;
-        block.number    = m_dfu_ctx.block_num;
+        memcpy(m_zb_ota_ctx.scratchpad + m_zb_ota_ctx.scratchpad_fill_level, ota->upgrade.receive.block_data, acccepted_data_len);
+        m_zb_ota_ctx.scratchpad_fill_level += acccepted_data_len;
+        if (m_zb_ota_ctx.scratchpad_fill_level >= BACKGROUND_DFU_DEFAULT_BLOCK_SIZE)
+        {
+            memcpy(m_zb_ota_ctx.block, m_zb_ota_ctx.scratchpad, BACKGROUND_DFU_DEFAULT_BLOCK_SIZE);
+            m_zb_ota_ctx.scratchpad_fill_level -= BACKGROUND_DFU_DEFAULT_BLOCK_SIZE;
+            memmove(m_zb_ota_ctx.scratchpad, m_zb_ota_ctx.scratchpad + BACKGROUND_DFU_DEFAULT_BLOCK_SIZE, m_zb_ota_ctx.scratchpad_fill_level);
 
-        UNUSED_RETURN_VALUE(background_dfu_process_block(&m_dfu_ctx, &block));
-        suspend_download(param);
-        ret = ZB_ZCL_OTA_UPGRADE_STATUS_BUSY;
+            background_dfu_block_t block;
+
+            block.size = BACKGROUND_DFU_DEFAULT_BLOCK_SIZE;
+            block.p_payload = m_zb_ota_ctx.block;
+            block.number    = m_dfu_ctx.block_num;
+
+            UNUSED_RETURN_VALUE(background_dfu_process_block(&m_dfu_ctx, &block));
+            suspend_download(param);
+            ret = ZB_ZCL_OTA_UPGRADE_STATUS_BUSY;
+        }
+        else if (m_zb_ota_ctx.total_length == downloaded_part)
+        {
+            /* Flush the last parts down the DFU. */
+            background_dfu_block_t block;
+
+            block.size = BACKGROUND_DFU_DEFAULT_BLOCK_SIZE;
+            block.p_payload = m_zb_ota_ctx.scratchpad;
+            block.number    = m_dfu_ctx.block_num;
+
+            /* Fill the remaining bytes inside the block with 0xFF. */
+            if (m_zb_ota_ctx.scratchpad_fill_level < BACKGROUND_DFU_DEFAULT_BLOCK_SIZE)
+            {
+                memset(m_zb_ota_ctx.scratchpad + m_zb_ota_ctx.scratchpad_fill_level, 0xFF, BACKGROUND_DFU_DEFAULT_BLOCK_SIZE - m_zb_ota_ctx.scratchpad_fill_level);
+            }
+
+            UNUSED_RETURN_VALUE(background_dfu_process_block(&m_dfu_ctx, &block));
+            suspend_download(param);
+            ret = ZB_ZCL_OTA_UPGRADE_STATUS_BUSY;
+        }
     }
 
     return ret;
@@ -220,9 +276,34 @@ void background_dfu_transport_send_request(background_dfu_context_t * p_dfu_ctx)
 {
     if (p_dfu_ctx->dfu_state == BACKGROUND_DFU_DOWNLOAD_INIT_CMD || p_dfu_ctx->dfu_state == BACKGROUND_DFU_DOWNLOAD_FIRMWARE)
     {
-        int offset = (p_dfu_ctx->dfu_state == BACKGROUND_DFU_DOWNLOAD_INIT_CMD) ? m_zb_ota_ctx.init_cmd.start : m_zb_ota_ctx.firmware.start;
-        set_file_offset(m_zb_ota_ctx.endpoint, p_dfu_ctx->block_num * BACKGROUND_DFU_DEFAULT_BLOCK_SIZE + offset);
-        resume_download();
+        zb_uint32_t offset = (p_dfu_ctx->dfu_state == BACKGROUND_DFU_DOWNLOAD_INIT_CMD) ? m_zb_ota_ctx.init_cmd.start : m_zb_ota_ctx.firmware.start;
+        offset += p_dfu_ctx->block_num * BACKGROUND_DFU_DEFAULT_BLOCK_SIZE + m_zb_ota_ctx.scratchpad_fill_level;
+        set_file_offset(m_zb_ota_ctx.endpoint, offset);
+        if (offset >= m_zb_ota_ctx.total_length)
+        {
+            /* Flush the last parts down the DFU. */
+            background_dfu_block_t block;
+
+            block.size = BACKGROUND_DFU_DEFAULT_BLOCK_SIZE;
+            block.p_payload = m_zb_ota_ctx.scratchpad;
+            block.number    = m_dfu_ctx.block_num;
+
+            /* Fill the remaining bytes inside the block with 0xFF. */
+            if (m_zb_ota_ctx.scratchpad_fill_level < BACKGROUND_DFU_DEFAULT_BLOCK_SIZE)
+            {
+                memset(m_zb_ota_ctx.scratchpad + m_zb_ota_ctx.scratchpad_fill_level, 0xFF, BACKGROUND_DFU_DEFAULT_BLOCK_SIZE - m_zb_ota_ctx.scratchpad_fill_level);
+            }
+
+            UNUSED_RETURN_VALUE(background_dfu_process_block(&m_dfu_ctx, &block));
+        }
+        else
+        {
+            zb_ret_t zb_err_code = ZB_SCHEDULE_CALLBACK(resume_download, ZB_ZCL_OTA_UPGRADE_STATUS_OK);
+            if (zb_err_code != RET_OK)
+            {
+                NRF_LOG_ERROR("Unable to abort DFU due to the lack of ZBOSS buffers");
+            }
+        }
     }
 }
 
@@ -230,12 +311,27 @@ void background_dfu_transport_send_request(background_dfu_context_t * p_dfu_ctx)
  */
 static void dfu_observer(nrf_dfu_evt_type_t evt_type)
 {
+    zb_ret_t zb_err_code;
+
     switch (evt_type)
     {
         case NRF_DFU_EVT_DFU_COMPLETED:
             NRF_LOG_INFO("Observer: Reset after DFU");
             /* Resume Download to send/receive End Upgrade Request/Response */
-            resume_download();
+            zb_err_code = ZB_SCHEDULE_CALLBACK(resume_download, ZB_ZCL_OTA_UPGRADE_STATUS_OK);
+            if (zb_err_code != RET_OK)
+            {
+                NRF_LOG_ERROR("Unable to abort DFU due to the lack of ZBOSS buffers");
+            }
+            break;
+
+        case NRF_DFU_EVT_DFU_FAILED:
+            NRF_LOG_INFO("Observer: Invalid Image - DFU won't happen");
+            zb_err_code = ZB_SCHEDULE_CALLBACK(resume_download, ZB_ZCL_OTA_UPGRADE_STATUS_ERROR);
+            if (zb_err_code != RET_OK)
+            {
+                NRF_LOG_ERROR("Unable to abort DFU due to the lack of ZBOSS buffers");
+            }
             break;
 
         default:
@@ -246,6 +342,8 @@ static void dfu_observer(nrf_dfu_evt_type_t evt_type)
 
 void background_dfu_transport_state_update(background_dfu_context_t * p_dfu_ctx)
 {
+    zb_zcl_ota_upgrade_file_header_t * hdr =  (zb_zcl_ota_upgrade_file_header_t *)m_zb_ota_ctx.ota_header;
+
     switch (p_dfu_ctx->dfu_state)
     {
         case BACKGROUND_DFU_DOWNLOAD_TRIG:
@@ -253,15 +351,17 @@ void background_dfu_transport_state_update(background_dfu_context_t * p_dfu_ctx)
             break;
 
         case BACKGROUND_DFU_DOWNLOAD_INIT_CMD:
-            m_zb_ota_ctx.init_cmd.start = TOTAL_HEADER_LEN + sizeof(zb_zcl_ota_upgrade_sub_element_t) - 1;
+            m_zb_ota_ctx.init_cmd.start = hdr->header_length + SUBELEMENT_LEN(background_dfu_trigger_t) + sizeof(zb_zcl_ota_upgrade_sub_element_t) - 1;
             m_zb_ota_ctx.init_cmd.length = p_dfu_ctx->init_cmd_size;
-            NRF_LOG_INFO("Downloading init packet");
+            NRF_LOG_INFO("Downloading init packet, start: %d length: %d", m_zb_ota_ctx.init_cmd.start, m_zb_ota_ctx.init_cmd.length);
+            m_zb_ota_ctx.scratchpad_fill_level = 0;
             break;
 
         case BACKGROUND_DFU_DOWNLOAD_FIRMWARE:
-            m_zb_ota_ctx.firmware.start = TOTAL_HEADER_LEN + sizeof(zb_zcl_ota_upgrade_sub_element_t) - 1 + p_dfu_ctx->init_cmd_size + sizeof(zb_zcl_ota_upgrade_sub_element_t) - 1;
+            m_zb_ota_ctx.firmware.start = hdr->header_length + SUBELEMENT_LEN(background_dfu_trigger_t) + sizeof(zb_zcl_ota_upgrade_sub_element_t) - 1 + p_dfu_ctx->init_cmd_size + sizeof(zb_zcl_ota_upgrade_sub_element_t) - 1;
             m_zb_ota_ctx.firmware.length = p_dfu_ctx->firmware_size;
-            NRF_LOG_INFO("Downloading firmware image");
+            NRF_LOG_INFO("Downloading firmware image, start: %d length: %d", m_zb_ota_ctx.firmware.start, m_zb_ota_ctx.firmware.length);
+            m_zb_ota_ctx.scratchpad_fill_level = 0;
             break;
 
         case BACKGROUND_DFU_WAIT_FOR_RESET:

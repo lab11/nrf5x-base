@@ -101,6 +101,7 @@ enum zb_zcl_identify_cmd_e
   ZB_ZCL_CMD_IDENTIFY_IDENTIFY_QUERY_RSP_ID = 0x00   /**< Identify query response */
 };
 
+/** @cond internals_doc */
 /* Identify cluster commands lists : only for information - do not modify */
 #define ZB_ZCL_CLUSTER_ID_IDENTIFY_SERVER_ROLE_RECEIVED_CMD_LIST                         \
                                                   ZB_ZCL_CMD_IDENTIFY_IDENTIFY_ID,       \
@@ -113,18 +114,11 @@ enum zb_zcl_identify_cmd_e
 #define ZB_ZCL_CLUSTER_ID_IDENTIFY_SERVER_ROLE_GENERATED_CMD_LIST ZB_ZCL_CLUSTER_ID_IDENTIFY_CLIENT_ROLE_RECEIVED_CMD_LIST
 
 #define ZB_ZCL_CLUSTER_ID_IDENTIFY_CLIENT_ROLE_GENERATED_CMD_LIST ZB_ZCL_CLUSTER_ID_IDENTIFY_SERVER_ROLE_RECEIVED_CMD_LIST
-
-
-/*! @brief Identify cluster extended command identifiers
-    @see ZLL specification, subclause 6.3.1.2
-*/
-enum zb_zcl_identify_cmd_zll_e
-{
-  ZB_ZCL_IDENTIFY_TRIGGER_EFFECT_ID = 0x40,           /**< "Trigger effect" command identifier. */
-};
+/*! @}
+ *  @endcond */ /* internals_doc */
 
 /** Effect identifier enum
- * @see ZLL spec 6.3.1.2.1.1 */
+ * @see ZCL spec 3.5.2.2.3.1 */
 enum zb_zcl_identify_trigger_effect_e
 {
   /**< Effect identifier field value: Light is turned on/off once */
@@ -148,7 +142,7 @@ enum zb_zcl_identify_trigger_effect_e
 
 
 /** Effect identifier enum
- * @see ZLL spec 6.3.1.2.1.2 */
+ * @see ZCL spec 3.5.2.2.3.2 */
 enum zb_zcl_identify_trigger_variant_e
 {
   /**< Effect variant field value: Default */
@@ -181,7 +175,7 @@ typedef ZB_PACKED_PRE struct zb_zcl_identify_effect_req_s
 {                                                                                                  \
 zb_uint8_t* ptr = ZB_ZCL_START_PACKET_REQ(buffer)                                                  \
   ZB_ZCL_CONSTRUCT_SPECIFIC_COMMAND_REQ_FRAME_CONTROL(ptr, def_resp)                               \
-ZB_ZCL_CONSTRUCT_COMMAND_HEADER_REQ(ptr, ZB_ZCL_GET_SEQ_NUM(), ZB_ZCL_IDENTIFY_TRIGGER_EFFECT_ID); \
+ZB_ZCL_CONSTRUCT_COMMAND_HEADER_REQ(ptr, ZB_ZCL_GET_SEQ_NUM(), ZB_ZCL_CMD_IDENTIFY_TRIGGER_EFFECT_ID); \
 ZB_ZCL_PACKET_PUT_DATA8(ptr, (effect_id));                              \
 ZB_ZCL_PACKET_PUT_DATA8(ptr, (effect_var));                             \
 ZB_ZCL_FINISH_PACKET(buffer, ptr)                                                                 \
@@ -213,8 +207,8 @@ ZB_ZCL_SEND_COMMAND_SHORT(                                                      
 }
 
 /**
- *  @name Inform User App about ZLL Identify cluster command and change attributes.
- *  Internal structures and define-procedure for inform User App about ZLL Identify
+ *  @name Inform User App about ZCL Identify cluster command and change attributes.
+ *  Internal structures and define-procedure for inform User App about ZCL Identify
  *  cluster command and change attributes.
  *  @internal
  *  @{
@@ -237,7 +231,6 @@ typedef struct zb_zcl_identify_effect_user_app_schedule_e
   zb_zcl_identify_effect_value_param_t param; /**< User App command parameters,
                                         see @ref zb_zcl_identify_effect_value_param_s */
 } zb_zcl_identify_effect_user_app_schedule_t;
-
 
 #define ZB_ZCL_IDENTIFY_EFFECT_SCHEDULE_USER_APP(buffer, pcmd_info, effectId, effectVar)    \
 {                                                                                           \
@@ -397,6 +390,7 @@ typedef ZB_PACKED_PRE struct zb_zcl_identify_query_res_s
 
 /*! @} */ /* Identify cluster command structures and definitions */
 
+/** @cond internals_doc */
 /*!
     @name Identify cluster internals
     @internal
@@ -411,7 +405,16 @@ typedef ZB_PACKED_PRE struct zb_zcl_identify_query_res_s
   (zb_voidp_t) data_ptr                                         \
 }
 
-/** @internal @brief Declare attribute list for Identify cluster
+#if defined ZB_ZCL_SUPPORT_CLUSTER_SCENES
+/*! Scenes fieldset length for Identify cluster */
+#define ZB_ZCL_CLUSTER_ID_IDENTIFY_SCENE_FIELD_SETS_LENGTH 0
+#endif /* defined ZB_ZCL_SUPPORT_CLUSTER_SCENES */
+
+/*! @} */ /* Identify cluster internals */
+/*! @}
+ *  @endcond */ /* internals_doc */
+
+/** @brief Declare attribute list for Identify cluster
   @param attr_list - attribute list name
   @param identify_time - pointer to variable to store identify time attribute value
 */
@@ -419,13 +422,6 @@ typedef ZB_PACKED_PRE struct zb_zcl_identify_query_res_s
   ZB_ZCL_START_DECLARE_ATTRIB_LIST(attr_list)                           \
   ZB_ZCL_SET_ATTR_DESC(ZB_ZCL_ATTR_IDENTIFY_IDENTIFY_TIME_ID, (identify_time)) \
   ZB_ZCL_FINISH_DECLARE_ATTRIB_LIST
-
-#if defined ZB_ZCL_SUPPORT_CLUSTER_SCENES
-/*! Scenes fieldset length for Identify cluster */
-#define ZB_ZCL_CLUSTER_ID_IDENTIFY_SCENE_FIELD_SETS_LENGTH 0
-#endif /* defined ZB_ZCL_SUPPORT_CLUSTER_SCENES */
-
-/*! @} */ /* Identify cluster internals */
 
 /**
  *  @brief Identify cluster attributes
@@ -441,7 +437,7 @@ typedef struct zb_zcl_identify_attrs_s
 
 /** @brief Declare attribute list for Identify cluster cluster
  *  @param[in]  attr_list - attribute list variable name
- *  @param[in]  attrs - pointer to @ref zb_zcl_identify_attrs_s structure
+ *  @param[in]  attrs - variable of @ref zb_zcl_identify_attrs_t type (containing Identify cluster attributes)
  */
 #define ZB_ZCL_DECLARE_IDENTIFY_ATTR_LIST(attr_list, attrs)   \
   ZB_ZCL_DECLARE_IDENTIFY_ATTRIB_LIST(attr_list, &attrs.identify_time)
@@ -455,11 +451,11 @@ zb_uint8_t zb_zcl_get_cmd_list_identify(zb_bool_t is_client_generated, zb_uint8_
 
 #endif /* defined ZB_ENABLE_HA */
 
+/** @endcond */ /* DOXYGEN_ZCL_SECTION */
+
 zb_void_t zb_zcl_identify_init_server(void);
 zb_void_t zb_zcl_identify_init_client(void);
 #define ZB_ZCL_CLUSTER_ID_IDENTIFY_SERVER_ROLE_INIT zb_zcl_identify_init_server
 #define ZB_ZCL_CLUSTER_ID_IDENTIFY_CLIENT_ROLE_INIT zb_zcl_identify_init_client
-
-/** @endcond */ /* DOXYGEN_ZCL_SECTION */
 
 #endif /* ! defined ZB_ZCL_IDENTIFY_H */

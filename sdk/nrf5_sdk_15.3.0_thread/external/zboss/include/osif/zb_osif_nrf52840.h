@@ -101,7 +101,7 @@ void zb_nrf52840_rf_setChannel(zb_uint8_t channel);
 void zb_nrf52840_enable_all_inter(void);
 void zb_nrf52840_disable_all_inter(void);
 zb_uint16_t zb_nrf52840_getRssi(void);
-
+zb_void_t zb_nrf_802154_mac_osif_init(void);
 
 #if defined ZB_TRACE_OVER_USART && defined ZB_TRACE_LEVEL
 #define ZB_SERIAL_FOR_TRACE
@@ -188,13 +188,21 @@ typedef struct zb_osif_flash_device_s {
 } zb_osif_flash_device_t;
 #endif
 
+/** @addtogroup special_nordic_functions
+ * @{
+ */
+
 /**
  * @brief Read IEEE long address from FICR registers.
  *
  * @param[out] ieee_eui64  Pointer to a long address structure to be filled.
+ * 
  */
-void zb_osif_get_ieee_eui64(zb_ieee_addr_t ieee_eui64);
 
+void zb_osif_get_ieee_eui64(zb_ieee_addr_t ieee_eui64);
+/**
+ * @}
+ */
 #if defined ZB_NRF52840_RADIO_STATISTICS
 typedef struct zb_nrf52840_radio_stats_s
 {
@@ -219,7 +227,7 @@ typedef struct zb_nrf52840_radio_stats_s
   
 } zb_nrf52840_radio_stats_t;
 
-zb_nrf52840_radio_stats_t* zb_nrf52840_get_radio_stats();
+zb_nrf52840_radio_stats_t* zb_nrf52840_get_radio_stats(void);
 #endif /* defined ZB_NRF52840_RADIO_STATISTICS */
 
 #endif /* __ZB_OSIF_NRF52840_H */

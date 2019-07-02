@@ -96,6 +96,17 @@ enum zb_zcl_on_off_on_off_e
   ZB_ZCL_ON_OFF_IS_ON  = 1
 };
 
+enum zb_zcl_on_off_start_up_on_off_e
+{
+  /*! "Off" value */
+  ZB_ZCL_ON_OFF_START_UP_ON_OFF_IS_OFF         = 0,
+  /*! "ON" value */
+  ZB_ZCL_ON_OFF_START_UP_ON_OFF_IS_ON          = 1,
+  /*! "Toggle" value */
+  ZB_ZCL_ON_OFF_START_UP_ON_OFF_IS_TOGGLE      = 2,
+  /*! "Previous" value */
+  ZB_ZCL_ON_OFF_START_UP_ON_OFF_IS_PREVIOUS = 0xFF
+};
 /** @brief Default value for OnOff attribute */
 #define ZB_ZCL_ON_OFF_ON_OFF_DEFAULT_VALUE (ZB_ZCL_ON_OFF_IS_OFF)
 
@@ -107,6 +118,33 @@ enum zb_zcl_on_off_on_off_e
 
 /** @brief Default value for OffWaitTime attribute */
 #define ZB_ZCL_ON_OFF_OFF_WAIT_TIME_DEFAULT_VALUE ((zb_uint16_t)0x0000)
+
+/** @brief Declare attribute list for On/Off cluster
+    @param attr_list - attribute list name
+    @param on_off - pointer to variable to store On/Off attribute value
+*/
+#define ZB_ZCL_DECLARE_ON_OFF_ATTRIB_LIST(attr_list, on_off)            \
+  ZB_ZCL_START_DECLARE_ATTRIB_LIST(attr_list)                           \
+  ZB_ZCL_SET_ATTR_DESC(ZB_ZCL_ATTR_ON_OFF_ON_OFF_ID, (on_off))          \
+  ZB_ZCL_FINISH_DECLARE_ATTRIB_LIST
+
+/**
+ *  @brief Declare attribute list for On/Off cluster (extended attribute set).
+ *  @param attr_list [IN] - attribute list name being declared by this macro.
+ *  @param on_off [IN] - pointer to a boolean variable storing on/off attribute value.
+ *  @param global_scene_ctrl [IN] - pointer to a boolean variable storing global scene control attribute value.
+ *  @param on_time [IN] - pointer to a unsigned 16-bit integer variable storing on time attribute value.
+ *  @param off_wait_time [IN] - pointer to a unsigned 16-bit integer variable storing off wait time attribute value.
+ */
+#define ZB_ZCL_DECLARE_ON_OFF_ATTRIB_LIST_EXT(                                                  \
+    attr_list, on_off, global_scene_ctrl, on_time, off_wait_time                                \
+    )                                                                                           \
+    ZB_ZCL_START_DECLARE_ATTRIB_LIST(attr_list)                                                 \
+    ZB_ZCL_SET_ATTR_DESC(ZB_ZCL_ATTR_ON_OFF_ON_OFF_ID, (on_off))                                \
+    ZB_ZCL_SET_ATTR_DESC(ZB_ZCL_ATTR_ON_OFF_GLOBAL_SCENE_CONTROL, (global_scene_ctrl))          \
+    ZB_ZCL_SET_ATTR_DESC(ZB_ZCL_ATTR_ON_OFF_ON_TIME, (on_time))                                 \
+    ZB_ZCL_SET_ATTR_DESC(ZB_ZCL_ATTR_ON_OFF_OFF_WAIT_TIME, (off_wait_time))                     \
+    ZB_ZCL_FINISH_DECLARE_ATTRIB_LIST
 
 /*! @} */ /* On/Off cluster attributes */
 
@@ -127,7 +165,7 @@ enum zb_zcl_on_off_cmd_e
   ZB_ZCL_CMD_ON_OFF_ON_WITH_TIMED_OFF_ID           = 0x42, /**< "On with timed off" command. */
 };
 
-
+/** @cond internals_doc */
 /* ON OFF cluster commands list : only for information - do not modify */
 #define ZB_ZCL_CLUSTER_ID_ON_OFF_SERVER_ROLE_GENERATED_CMD_LIST
 
@@ -144,8 +182,6 @@ enum zb_zcl_on_off_cmd_e
                                       ZB_ZCL_CMD_ON_OFF_ON_WITH_TIMED_OFF_ID
 
 #define ZB_ZCL_CLUSTER_ID_ON_OFF_SERVER_ROLE_RECEIVED_CMD_LIST ZB_ZCL_CLUSTER_ID_ON_OFF_CLIENT_ROLE_GENERATED_CMD_LIST
-
-/** @cond internals_doc */
 
 /*! @brief General macro for sending On/Off cluster command
     @param buffer to put data to
@@ -283,16 +319,21 @@ enum zb_zcl_on_off_effect_variant_dying_e
 /*! @brief Structured representsation of Off with effect command payload */
 typedef ZB_PACKED_PRE struct zb_zcl_on_off_off_with_effect_req_s
 {
-  zb_uint8_t effect_id;         /*!< Effect identify */
-  zb_uint8_t effect_variant;    /*!< Effect variant */
+  /** Effect identify */
+  zb_uint8_t effect_id;
+  /** Effect variant */
+  zb_uint8_t effect_variant;
 } ZB_PACKED_STRUCT zb_zcl_on_off_off_with_effect_req_t;
 
 /*! @brief Structured representsation of On with timed off command payload */
 typedef ZB_PACKED_PRE struct zb_zcl_on_off_on_with_timed_off_req_s
 {
-  zb_uint8_t on_off;            /*!< On/off control */
-  zb_uint16_t on_time;          /*!< On time variable */
-  zb_uint16_t off_wait_time;    /*!< Off wait time variable */
+  /** On/off control */
+  zb_uint8_t on_off;
+  /** On time variable */
+  zb_uint16_t on_time;
+  /** Off wait time variable */
+  zb_uint16_t off_wait_time;
 } ZB_PACKED_STRUCT zb_zcl_on_off_on_with_timed_off_req_t;
 
 /** @brief Parses Off with Effect command
@@ -341,6 +382,7 @@ typedef ZB_PACKED_PRE struct zb_zcl_on_off_on_with_timed_off_req_s
   }                                                                                 \
 }
 
+/** @cond internals_doc */
 /**
  *  @name Inform User App about On/Off cluster command and change attributes.
  *  Internal structures and define-procedure for inform User App about On/Off
@@ -375,6 +417,9 @@ typedef struct zb_zcl_on_off_effect_user_app_schedule_e
   user_data->param.effect_variant = (effectVar);                                            \
   ZB_SCHEDULE_CALLBACK(zb_zcl_on_off_effect_invoke_user_app, ZB_REF_FROM_BUF((buffer)));    \
 }
+
+/*! @}
+ *  @endcond */ /* internals_doc */
 
 /*! @} */ /* On/Off cluster commands */
 
@@ -416,32 +461,13 @@ typedef struct zb_zcl_on_off_effect_user_app_schedule_e
   (zb_voidp_t) data_ptr                                                      \
 }
 
-/** @internal @brief Declare attribute list for On/Off cluster
-    @param attr_list - attribure list name
-    @param on_off - pointer to variable to store On/Off attribute value
-*/
-#define ZB_ZCL_DECLARE_ON_OFF_ATTRIB_LIST(attr_list, on_off)            \
-  ZB_ZCL_START_DECLARE_ATTRIB_LIST(attr_list)                           \
-  ZB_ZCL_SET_ATTR_DESC(ZB_ZCL_ATTR_ON_OFF_ON_OFF_ID, (on_off))          \
-  ZB_ZCL_FINISH_DECLARE_ATTRIB_LIST
-
-/**
- *  @internal @brief Declare attribute list for On/Off cluster with Touchlink additions.
- *  @param attr_list [IN] - attribute list name being declared by this macro.
- *  @param on_off [IN] - pointer to a boolean variable storing on/off attribute value.
- *  @param global_scene_ctrl [IN] - pointer to a boolean variable storing global scene control attribute value.
- *  @param on_time [IN] - pointer to a unsigned 16-bit integer variable storing on time attribute value.
- *  @param off_wait_time [IN] - pointer to a unsigned 16-bit integer variable storing off wait time attribute value.
- */
-#define ZB_ZCL_DECLARE_ON_OFF_ATTRIB_LIST_TL(                                                   \
-    attr_list, on_off, global_scene_ctrl, on_time, off_wait_time                                \
-    )                                                                                           \
-    ZB_ZCL_START_DECLARE_ATTRIB_LIST(attr_list)                                                 \
-    ZB_ZCL_SET_ATTR_DESC(ZB_ZCL_ATTR_ON_OFF_ON_OFF_ID, (on_off))                                \
-    ZB_ZCL_SET_ATTR_DESC(ZB_ZCL_ATTR_ON_OFF_GLOBAL_SCENE_CONTROL, (global_scene_ctrl))          \
-    ZB_ZCL_SET_ATTR_DESC(ZB_ZCL_ATTR_ON_OFF_ON_TIME, (on_time))                                 \
-    ZB_ZCL_SET_ATTR_DESC(ZB_ZCL_ATTR_ON_OFF_OFF_WAIT_TIME, (off_wait_time))                     \
-    ZB_ZCL_FINISH_DECLARE_ATTRIB_LIST
+#define ZB_SET_ATTR_DESCR_WITH_ZB_ZCL_ATTR_ON_OFF_START_UP_ON_OFF(data_ptr)  \
+{                                                                            \
+  ZB_ZCL_ATTR_ON_OFF_START_UP_ON_OFF,                                        \
+  ZB_ZCL_ATTR_TYPE_8BIT_ENUM,                                                \
+  ZB_ZCL_ATTR_ACCESS_READ_WRITE,                                             \
+  (zb_voidp_t) data_ptr                                                      \
+}
 
 /*! @internal Number of attributes mandatory for reporting in On/Off cluster */
 #define ZB_ZCL_ON_OFF_REPORT_ATTR_COUNT 1

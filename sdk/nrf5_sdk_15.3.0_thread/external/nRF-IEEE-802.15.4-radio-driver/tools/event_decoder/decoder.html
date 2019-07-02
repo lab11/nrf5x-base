@@ -173,7 +173,8 @@
             {id: "CCA", val: 0x0006, from: "APP", to: "DRIVER", text: "nrf_802154_cca()"},
             {id: "CONTINUOUS_CARRIER", val: 0x0007, from: "APP", to: "DRIVER", text: "nrf_802154_continuous_carrier()"},
             {id: "CSMA_CA", val: 0x0008, from: "APP", to: "DRIVER", text: "nrf_802154_transmit_csma_ca()"},
-            {id: "TRANSMIT_AT", val: 0x0009, from: "APP", to: "DRIVER", text: "nrf_802154_transmit_transmit_at()"},
+            {id: "TRANSMIT_AT", val: 0x0009, from: "APP", to: "DRIVER", text: "nrf_802154_transmit_at()"},
+            {id: "RECEIVE_AT", val: 0x000A, from: "APP", to: "DRIVER", text: "nrf_802154_receive_at()"},
 
             {id: "RADIO_IRQ", val: 0x0100, from: "RAAL", to: "DRIVER", text: "RADIO_IRQHandler()"},
             {id: "EVENT_FRAMESTART", val: 0x0101, from: "DRIVER", to: "DRIVER", text: "EVENT_FRAMESTART"},
@@ -210,21 +211,22 @@
             {id: "TIMESLOT_EVT_BLOCKED", val: 0x0408, from: "RAAL", to: "RAAL", text: "EVENT_BLOCKED"},
             {id: "TIMESLOT_SESSION_IDLE", val: 0x0409, from: "RAAL", to: "RAAL", text: "EVENT_SESSION_IDLE"},
             {id: "EVENT_HFCLK_READY", val: 0x040A, from: "RAAL", to: "RAAL", text: "EVENT_HFCLK_READY"},
+            {id: "TIMESLOT_MARGIN", val: 0x040B, from: "RAAL", to: "RAAL", text: "EVENT_MARGIN_MOVE"},
 
-            {id: "RSCH_CONTINUOUS_ENTER", val: 0x040B, from: "DRIVER", to: "RSCH", text: "nrf_rsch_continuous_enter()"},
-            {id: "RSCH_CONTINUOUS_EXIT", val: 0x040C, from: "DRIVER", to: "RSCH", text: "nrf_rsch_continuous_exit()"},
-            {id: "RSCH_CRITICAL_SECTION_ENTER", val: 0x040D, from: "DRIVER", to: "RSCH", text: "nrf_rsch_critical_section_enter()"},
-            {id: "RSCH_CRITICAL_SECTION_EXIT", val: 0x040E, from: "DRIVER", to: "RSCH", text: "nrf_rsch_critical_section_exit()"},
-            {id: "RSCH_TIMESLOT_STARTED", val: 0x040F, from: "RAAL", to: "RSCH", text: "nrf_raal_timeslot_started()"},
-            {id: "RSCH_TIMESLOT_ENDED", val: 0x0410, from: "RAAL", to: "RSCH", text: "nrf_raal_timeslot_ended()"},
-            {id: "RSCH_PEND_GRANTED", val: 0x0411, from: "RSCH", to: "RSCH", text: "nrf_802154_rsch_pend_granted()"},
-            {id: "RSCH_PEND_REVOKED", val: 0x0412, from: "RSCH", to: "RSCH", text: "nrf_802154_rsch_pend_revoked()"},
-            {id: "RSCH_NOTIFY_GRANTED", val: 0x0413, from: "RSCH", to: "RSCH", text: "nrf_802154_rsch_notify_granted()"},
-            {id: "RSCH_NOTIFY_REVOKED", val: 0x0414, from: "RSCH", to: "RSCH", text: "nrf_802154_rsch_notify_revoked()"},
-            {id: "RSCH_NOTIFY_IF_PENDING", val: 0x0415, from: "RSCH", to: "RSCH", text: "nrf_802154_rsch_notify_if_pending()"},
-            {id: "RSCH_DELAYED_TIMESLOT_REQ", val: 0x0416, from: "DRIVER", to: "RSCH", text: "nrf_802154_rsch_delayed_timeslot_request()"},
-            {id: "RSCH_TIMER_DELAYED_PREC", val: 0x0417, from: "TSCH", to: "RSCH", text: "delayed_timeslot_prec_request()"},
-            {id: "RSCH_TIMER_DELAYED_START", val: 0x0418, from: "TSCH", to: "RSCH", text: "delayed_timeslot_start()"},
+            {id: "RSCH_CONTINUOUS_ENTER", val: 0x0480, from: "DRIVER", to: "RSCH", text: "nrf_rsch_continuous_enter()"},
+            {id: "RSCH_CONTINUOUS_EXIT", val: 0x0481, from: "DRIVER", to: "RSCH", text: "nrf_rsch_continuous_exit()"},
+            {id: "RSCH_CRITICAL_SECTION_ENTER", val: 0x0482, from: "DRIVER", to: "RSCH", text: "nrf_rsch_critical_section_enter()"},
+            {id: "RSCH_CRITICAL_SECTION_EXIT", val: 0x0483, from: "DRIVER", to: "RSCH", text: "nrf_rsch_critical_section_exit()"},
+            {id: "RSCH_TIMESLOT_STARTED", val: 0x0484, from: "RAAL", to: "RSCH", text: "nrf_raal_timeslot_started()"},
+            {id: "RSCH_TIMESLOT_ENDED", val: 0x0485, from: "RAAL", to: "RSCH", text: "nrf_raal_timeslot_ended()"},
+            {id: "RSCH_PEND_GRANTED", val: 0x0486, from: "RSCH", to: "RSCH", text: "nrf_802154_rsch_pend_granted()"},
+            {id: "RSCH_PEND_REVOKED", val: 0x0487, from: "RSCH", to: "RSCH", text: "nrf_802154_rsch_pend_revoked()"},
+            {id: "RSCH_NOTIFY_GRANTED", val: 0x0488, from: "RSCH", to: "RSCH", text: "nrf_802154_rsch_notify_granted()"},
+            {id: "RSCH_NOTIFY_REVOKED", val: 0x0489, from: "RSCH", to: "RSCH", text: "nrf_802154_rsch_notify_revoked()"},
+            {id: "RSCH_NOTIFY_IF_PENDING", val: 0x048A, from: "RSCH", to: "RSCH", text: "nrf_802154_rsch_notify_if_pending()"},
+            {id: "RSCH_DELAYED_TIMESLOT_REQ", val: 0x048B, from: "DRIVER", to: "RSCH", text: "nrf_802154_rsch_delayed_timeslot_request()"},
+            {id: "RSCH_TIMER_DELAYED_PREC", val: 0x048C, from: "TSCH", to: "RSCH", text: "delayed_timeslot_prec_request()"},
+            {id: "RSCH_TIMER_DELAYED_START", val: 0x048D, from: "TSCH", to: "RSCH", text: "delayed_timeslot_start()"},
 
             {id: "CSMA_ABORT", val: 0x0500, from: "DRIVER", to: "CSMACA", text: "nrf_802154_csma_ca_abort()"},
             {id: "CSMA_TX_FAILED", val: 0x0501, from: "DRIVER", to: "CSMACA", text: "nrf_802154_csma_ca_tx_failed_hook()"},
@@ -234,6 +236,12 @@
 
             {id: "TSCH_ADD", val: 0x0600, from: "TSCH", to: "TSCH", text: "nrf_802154_timer_sched_add()"},
             {id: "TSCH_FIRED", val: 0x0601, from: "TSCH", to: "TSCH", text: "nrf_802154_lp_timer_fired()"},
+
+            {id: "TCOOR_START", val: 0x0700, from: "DRIVER", to: "TCOOR", text: "nrf_802154_timer_coord_start()"},
+            {id: "TCOOR_STOP", val: 0x0701, from: "DRIVER", to: "TCOOR", text: "nrf_802154_timer_coord_stop()"},
+            {id: "TCOOR_TIMESTAMP_PREPARE", val: 0x0702, from: "DRIVER", to: "TCOOR", text: "nrf_802154_timer_coord_timestamp_prepare()"},
+            {id: "TCOOR_TIMESTAMP_GET", val: 0x0703, from: "DRIVER", to: "TCOOR", text: "nrf_802154_timer_coord_timestamp_get()"},
+            {id: "TCOOR_SYNCHRONIZED", val: 0x0704, from: "TCOOR", to: "TCOOR", text: "nrf_802154_lp_timer_synchronized()"},
         ];
 
         var debugDecoder = function(debug_json, debug_ptr)
@@ -337,6 +345,7 @@
             this.addLine("Participant APP");
             this.addLine("Participant CSMACA");
             this.addLine("Participant TSCH");
+            this.addLine("Participant TCOOR");
             this.addLine("Participant DRIVER");
             this.addLine("Participant RSCH")
             this.addLine("Participant RAAL");

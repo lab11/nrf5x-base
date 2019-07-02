@@ -46,6 +46,12 @@ void nrf_raal_continuous_mode_exit_CMockIgnore(void);
 void nrf_raal_continuous_mode_exit_CMockExpect(UNITY_LINE_TYPE cmock_line);
 typedef void (* CMOCK_nrf_raal_continuous_mode_exit_CALLBACK)(int cmock_num_calls);
 void nrf_raal_continuous_mode_exit_StubWithCallback(CMOCK_nrf_raal_continuous_mode_exit_CALLBACK Callback);
+#define nrf_raal_continuous_ended_Ignore() nrf_raal_continuous_ended_CMockIgnore()
+void nrf_raal_continuous_ended_CMockIgnore(void);
+#define nrf_raal_continuous_ended_Expect() nrf_raal_continuous_ended_CMockExpect(__LINE__)
+void nrf_raal_continuous_ended_CMockExpect(UNITY_LINE_TYPE cmock_line);
+typedef void (* CMOCK_nrf_raal_continuous_ended_CALLBACK)(int cmock_num_calls);
+void nrf_raal_continuous_ended_StubWithCallback(CMOCK_nrf_raal_continuous_ended_CALLBACK Callback);
 #define nrf_raal_timeslot_request_IgnoreAndReturn(cmock_retval) nrf_raal_timeslot_request_CMockIgnoreAndReturn(__LINE__, cmock_retval)
 void nrf_raal_timeslot_request_CMockIgnoreAndReturn(UNITY_LINE_TYPE cmock_line, bool cmock_to_return);
 #define nrf_raal_timeslot_request_ExpectAndReturn(length_us, cmock_retval) nrf_raal_timeslot_request_CMockExpectAndReturn(__LINE__, length_us, cmock_retval)

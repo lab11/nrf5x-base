@@ -122,7 +122,21 @@ enum zb_zcl_dehumidification_control_attr_e
 /** @brief Default value for RelativeHumidityDisplay attribute */
 #define ZB_ZCL_DEHUMIDIFICATION_CONTROL_RELATIVE_HUMIDITY_DISPLAY_DEFAULT_VALUE ((zb_uint8_t)0x00)
 
-
+/** @brief Declare attribute list for Dehumidification Control cluster
+    @param attr_list - attribute list name
+    @param dehumid_cooling - pointer to variable to store Dehumidification Cooling attribute value
+    @param dehumid_setpoint - pointer to variable to store Dehumidification Setpoint attribute value
+    @param dehumid_hysteresis - pointer to variable to store Dehumidification Hysteresis attribute value
+    @param dehumid_max_cool - pointer to variable to store Dehumidification Max Cool attribute value
+*/
+#define ZB_ZCL_DECLARE_DEHUMIDIFICATION_CONTROL_ATTRIB_LIST(attr_list, dehumid_cooling, dehumid_setpoint,         \
+                                               dehumid_hysteresis, dehumid_max_cool)                              \
+  ZB_ZCL_START_DECLARE_ATTRIB_LIST(attr_list)                                                                     \
+  ZB_ZCL_SET_ATTR_DESC(ZB_ZCL_ATTR_DEHUMIDIFICATION_CONTROL_DEHUMIDIFICATION_COOLING_ID, (dehumid_cooling))       \
+  ZB_ZCL_SET_ATTR_DESC(ZB_ZCL_ATTR_DEHUMIDIFICATION_CONTROL_RHDEHUMIDIFICATION_SETPOINT_ID, (dehumid_setpoint))   \
+  ZB_ZCL_SET_ATTR_DESC(ZB_ZCL_ATTR_DEHUMIDIFICATION_CONTROL_DEHUMIDIFICATION_HYSTERESIS_ID, (dehumid_hysteresis)) \
+  ZB_ZCL_SET_ATTR_DESC(ZB_ZCL_ATTR_DEHUMIDIFICATION_CONTROL_DEHUMIDIFICATION_MAX_COOL_ID, (dehumid_max_cool))     \
+  ZB_ZCL_FINISH_DECLARE_ATTRIB_LIST
 
 /*! @} */ /* Dehumidification Control cluster attributes */
 
@@ -132,6 +146,7 @@ enum zb_zcl_dehumidification_control_attr_e
 
 /*! @} */ /* Dehumidification Control cluster commands */
 
+/** @cond internals_doc */
 /*! @internal @name Dehumidification Control cluster internals
     Internal structures for attribute representation in cluster definitions.
     @{
@@ -169,26 +184,12 @@ enum zb_zcl_dehumidification_control_attr_e
   (zb_voidp_t) data_ptr                                                                                      \
 }
 
-/** @internal @brief Declare attribute list for Dehumidification Control cluster
-    @param attr_list - attribure list name
-    @param dehumid_cooling - pointer to variable to store Dehumidification Cooling attribute value
-    @param dehumid_setpoint - pointer to variable to store Dehumidification Setpoint attribute value
-    @param dehumid_hysteresis - pointer to variable to store Dehumidification Hysteresis attribute value
-    @param dehumid_max_cool - pointer to variable to store Dehumidification Max Cool attribute value
-*/
-#define ZB_ZCL_DECLARE_DEHUMIDIFICATION_CONTROL_ATTRIB_LIST(attr_list, dehumid_cooling, dehumid_setpoint,         \
-                                               dehumid_hysteresis, dehumid_max_cool)                              \
-  ZB_ZCL_START_DECLARE_ATTRIB_LIST(attr_list)                                                                     \
-  ZB_ZCL_SET_ATTR_DESC(ZB_ZCL_ATTR_DEHUMIDIFICATION_CONTROL_DEHUMIDIFICATION_COOLING_ID, (dehumid_cooling))       \
-  ZB_ZCL_SET_ATTR_DESC(ZB_ZCL_ATTR_DEHUMIDIFICATION_CONTROL_RHDEHUMIDIFICATION_SETPOINT_ID, (dehumid_setpoint))   \
-  ZB_ZCL_SET_ATTR_DESC(ZB_ZCL_ATTR_DEHUMIDIFICATION_CONTROL_DEHUMIDIFICATION_HYSTERESIS_ID, (dehumid_hysteresis)) \
-  ZB_ZCL_SET_ATTR_DESC(ZB_ZCL_ATTR_DEHUMIDIFICATION_CONTROL_DEHUMIDIFICATION_MAX_COOL_ID, (dehumid_max_cool))     \
-  ZB_ZCL_FINISH_DECLARE_ATTRIB_LIST
-
 /*! @internal Number of attributes mandatory for reporting in Dehumidification Control cluster */
 #define ZB_ZCL_DEHUMIDIFICATION_CONTROL_REPORT_ATTR_COUNT 1
 
 /*! @} */ /* Dehumidification Control cluster internals */
+/*! @}
+ *  @endcond */ /* internals_doc */
 
 /*! @} */ /* ZCL HA Dehumidification Control cluster definitions */
 

@@ -96,7 +96,7 @@ enum zb_zcl_shade_config_status_type_e
   ZB_ZCL_ATTR_SHADE_CONFIG_STATUS_RESERVED                   = 0x04
 };
 
-
+/** @cond internals_doc */
 /** @internal Set bits from conf_var variable to type_value */
 #define ZB_ZCL_SET_BIT(conf_var, type_value)                        \
 {                                                                   \
@@ -111,6 +111,8 @@ enum zb_zcl_shade_config_status_type_e
 {                                                                       \
   (conf_var) = (conf_var) & ~(type_value);                              \
 }
+/*! @}
+ *  @endcond */ /* internals_doc */
 
 /** @brief Sets bits of Status parameter
     @param type_value - bit to set
@@ -158,6 +160,7 @@ enum zb_zcl_shade_config_mode_e
   ZB_ZCL_ATTR_SHADE_CONFIG_MODE_RESERVED  = 0x02
 };
 
+/** @cond internals_doc */
 typedef struct zb_zcl_shade_set_value_param_s
 {
   zb_uint16_t new_value;
@@ -168,6 +171,8 @@ typedef struct zb_zcl_shade_get_value_param_s
 {
   zb_uint16_t ret_value;
 } zb_zcl_shade_get_value_param_t;
+/*! @}
+ *  @endcond */ /* internals_doc */
 
 /** @brief Shade Configuration Status attribute default value */
 #define ZB_ZCL_SHADE_CONFIG_STATUS_DEFAULT_VALUE 0x00
@@ -181,11 +186,24 @@ typedef struct zb_zcl_shade_get_value_param_s
 /** @brief Mode attribute default value */
 #define ZB_ZCL_SHADE_CONFIG_MODE_DEFAULT_VALUE ZB_ZCL_ATTR_SHADE_CONFIG_MODE_NORMAL
 
+/** @brief Declare attribute list for Shade Configuration cluster
+    @param attr_list - attribute list name
+    @param status - pointer to variable to store Status attribute value
+    @param closed_limit - pointer to variable to store ClosedLimit attribute value
+    @param mode - pointer to variable to store Mode attribute value
+*/
+#define ZB_ZCL_DECLARE_SHADE_CONFIG_ATTRIB_LIST(attr_list, status, closed_limit, mode) \
+  ZB_ZCL_START_DECLARE_ATTRIB_LIST(attr_list)                                          \
+  ZB_ZCL_SET_ATTR_DESC(ZB_ZCL_ATTR_SHADE_CONFIG_STATUS_ID, (status))                   \
+  ZB_ZCL_SET_ATTR_DESC(ZB_ZCL_ATTR_SHADE_CONFIG_CLOSED_LIMIT_ID, (closed_limit))       \
+  ZB_ZCL_SET_ATTR_DESC(ZB_ZCL_ATTR_SHADE_CONFIG_MODE_ID, (mode))                       \
+  ZB_ZCL_FINISH_DECLARE_ATTRIB_LIST
 
 /** @} */ /* Shade Configuration cluster attributes */
 
 /* Descriptors for server side */
 
+/** @cond internals_doc */
 /** @name Shade Configuration cluster internals
     Internal structures for Shade Configuration cluster
     @internal
@@ -215,21 +233,6 @@ typedef struct zb_zcl_shade_get_value_param_s
   ZB_ZCL_ATTR_ACCESS_READ_WRITE,                                                  \
   (zb_voidp_t) data_ptr                                                           \
 }
-
-
-/** Declare attribute list for Shade Configuration cluster
-    @param attr_list - attribure list name
-    @param status - pointer to variable to store Status attribute value
-    @param closed_limit - pointer to variable to store ClosedLimit attribute value
-    @param mode - pointer to variable to store Mode attribute value
-*/
-
-#define ZB_ZCL_DECLARE_SHADE_CONFIG_ATTRIB_LIST(attr_list, status, closed_limit, mode) \
-  ZB_ZCL_START_DECLARE_ATTRIB_LIST(attr_list)                                          \
-  ZB_ZCL_SET_ATTR_DESC(ZB_ZCL_ATTR_SHADE_CONFIG_STATUS_ID, (status))                   \
-  ZB_ZCL_SET_ATTR_DESC(ZB_ZCL_ATTR_SHADE_CONFIG_CLOSED_LIMIT_ID, (closed_limit))       \
-  ZB_ZCL_SET_ATTR_DESC(ZB_ZCL_ATTR_SHADE_CONFIG_MODE_ID, (mode))                       \
-  ZB_ZCL_FINISH_DECLARE_ATTRIB_LIST
 
 /** Number of attributes mandatory for reporting in Shade Configuration cluster */
 #define ZB_ZCL_SHADE_CONFIG_REPORT_ATTR_COUNT 0
@@ -266,6 +269,8 @@ typedef struct zb_zcl_shade_get_value_param_s
 }
 
 /** @} */ /* Shade Configuration cluster internals */
+/*! @}
+ *  @endcond */ /* internals_doc */
 
 /** @name Shade Configuration cluster commands
     @{

@@ -110,6 +110,7 @@ enum zb_zcl_illuminance_measurement_attr_e
 #define ZB_ZCL_ATTR_ILLUMINANCE_MEASUREMENT_MAX_MEASURED_VALUE_UNDEFINED 0xFFFF
 
 
+/** @cond internals_doc */
 /*! @internal @name Illuminance Measurement cluster internals
     Internal structures for attribute representation in cluster definitions.
     @{
@@ -139,8 +140,14 @@ enum zb_zcl_illuminance_measurement_attr_e
   (zb_voidp_t) data_ptr                                                                            \
 }
 
-/** @internal @brief Declare attribute list for Illuminance Measurement cluster - server side
-    @param attr_list - attribure list name
+#define ZB_ZCL_ILLUMINANCE_MEASUREMENT_REPORT_ATTR_COUNT 1
+
+/*! @} */ /* Illuminance Measurement cluster internals */
+/*! @}
+ *  @endcond */ /* internals_doc */
+
+/** @brief Declare attribute list for Illuminance Measurement cluster - server side
+    @param attr_list - attribute list name
     @param value - pointer to variable to store MeasuredValue attribute
     @param min_value - pointer to variable to store MinMeasuredValue attribute
     @param max_value - pointer to variable to store MAxMeasuredValue attribute
@@ -153,9 +160,6 @@ enum zb_zcl_illuminance_measurement_attr_e
   ZB_ZCL_SET_ATTR_DESC(ZB_ZCL_ATTR_ILLUMINANCE_MEASUREMENT_MAX_MEASURED_VALUE_ID, (max_value)) \
   ZB_ZCL_FINISH_DECLARE_ATTRIB_LIST
 
-
-/*! @} */ /* Illuminance Measurement cluster internals */
-
 /*! @} */ /* Illuminance Measurement cluster attributes */
 
 /*! @name Illuminance Measurement cluster commands
@@ -163,8 +167,6 @@ enum zb_zcl_illuminance_measurement_attr_e
 */
 
 /*! @} */ /* Illuminance Measurement cluster commands */
-
-#define ZB_ZCL_ILLUMINANCE_MEASUREMENT_REPORT_ATTR_COUNT 1
 
 /*! @} */ /* ZCL Illuminance Measurement cluster definitions */
 

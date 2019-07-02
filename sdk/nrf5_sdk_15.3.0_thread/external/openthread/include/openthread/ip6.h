@@ -158,7 +158,7 @@ typedef struct otMessageInfo
 
     /**
      * A pointer to link-specific information. In case @p mInterfaceId is set to OT_NETIF_INTERFACE_ID_THREAD,
-     * @p mLinkInfo points to @sa otThreadLinkInfo. This field is only valid for messages received from the
+     * @p mLinkInfo points to otThreadLinkInfo(). This field is only valid for messages received from the
      * Thread radio and is ignored on transmission.
      */
     const void *mLinkInfo;
@@ -331,7 +331,7 @@ otMessage *otIp6NewMessageFromBuffer(otInstance *             aInstance,
  *
  * @param[in]  aMessage  A pointer to the message buffer containing the received IPv6 datagram. This function transfers
  *                       the ownership of the @p aMessage to the receiver of the callback. The message should be
- *                       freed by the receiver of the callback after it is processed (@sa otMessageFree).
+ *                       freed by the receiver of the callback after it is processed (see otMessageFree()).
  * @param[in]  aContext  A pointer to application-specific context.
  *
  */
@@ -409,8 +409,17 @@ void otIp6SetReceiveFilterEnabled(otInstance *aInstance, bool aEnabled);
 /**
  * This function sends an IPv6 datagram via the Thread interface.
  *
+ * The caller transfers ownership of @p aMessage when making this call. OpenThread will free @p aMessage when
+ * processing is complete, including when a value other than `OT_ERROR_NONE` is returned.
+ *
  * @param[in]  aInstance A pointer to an OpenThread instance.
  * @param[in]  aMessage  A pointer to the message buffer containing the IPv6 datagram.
+ *
+ * @retval OT_ERROR_NONE      Successfully processed the message.
+ * @retval OT_ERROR_DROP      Message was well-formed but not fully processed due to packet processing rules.
+ * @retval OT_ERROR_NO_BUFS   Could not allocate necessary message buffers when processing the datagram.
+ * @retval OT_ERROR_NO_ROUTE  No route to host.
+ * @retval OT_ERROR_PARSE     Encountered a malformed header when processing the message.
  *
  */
 otError otIp6Send(otInstance *aInstance, otMessage *aMessage);
@@ -521,6 +530,17 @@ bool otIp6IsAddressUnspecified(const otIp6Address *aAddress);
  *
  */
 otError otIp6SelectSourceAddress(otInstance *aInstance, otMessageInfo *aMessageInfo);
+
+/**
+ * This function indicates whether the SLAAC module is enabled or not.
+ *
+ * This function requires the build-time feature `OPENTHREAD_CONFIG_ENABLE_SLAAC` to be enabled.
+ *
+ * @retval TRUE    SLAAC module is enabled.
+ * @retval FALSE   SLAAC module is disabled.
+ *
+ */
+bool otIp6IsSlaacEnabled(otInstance *aInstance);
 
 /**
  * This function enables/disables the SLAAC module.

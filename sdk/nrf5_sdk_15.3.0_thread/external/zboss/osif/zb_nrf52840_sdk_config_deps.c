@@ -36,8 +36,7 @@
  * CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR
  * TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF
  * THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- PURPOSE: Support for nRF52840 SoC. Code dependent on sdk_config.h so
- it must be included into application in the source form.
+PURPOSE: Platform specific for NRF52840 SoC.
 */
 
 #define ZB_TRACE_FILE_ID 21452
@@ -77,8 +76,8 @@
 #error TIMER must be enabled!
 #endif
 
-/* We can take here timer 0 or timer 1 depending on defined sin sdk_config.h */
-static const nrf_drv_timer_t gs_zboss_timer = ZIGBEE_TIMER_INSTANCE;
+/* We can take here timer defined in sdk_config.h */
+static const nrf_drv_timer_t gs_zboss_timer = NRF_DRV_TIMER_INSTANCE(ZIGBEE_TIMER_INSTANCE_NO);
 
 const nrf_drv_timer_t *zb_nrf_cfg_get_zboss_timer(void)
 {

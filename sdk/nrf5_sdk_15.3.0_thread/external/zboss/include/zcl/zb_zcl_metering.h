@@ -275,11 +275,11 @@ enum zb_zcl_metering_attr_e
   /* 0x0160 to 0x01FB reserved */
   ZB_ZCL_ATTR_METERING_CPP1_SUMMATION_DELIVERED_ID = ZB_ZCL_ATTR_SET_WITH_ATTR_ID(ZB_ZCL_METERING_SET_TOU_INFORMATION, 0xFC),   /**< @e CPP1SummationDelivered attribute
                                                                  *  represents the most recent summed value of Energy, Gas, or Water delivered to the premises (i.e.
-                                                                 *  delivered to the customer from the utility) while Critical Peak Price ‘CPP1’ was being applied. */
+                                                                 *  delivered to the customer from the utility) while Critical Peak Price CPP1 was being applied. */
   /* 0x01FD reserved */
   ZB_ZCL_ATTR_METERING_CPP2_SUMMATION_DELIVERED_ID = ZB_ZCL_ATTR_SET_WITH_ATTR_ID(ZB_ZCL_METERING_SET_TOU_INFORMATION, 0xFE),   /**< @e CPP2SummationDelivered attribute
                                                                  *  represents the most recent summed value of Energy, Gas, or Water delivered to the premises (i.e.
-                                                                 *  delivered to the customer from the utility) while Critical Peak Price ‘CPP2’ was being applied. */
+                                                                 *  delivered to the customer from the utility) while Critical Peak Price CPP2 was being applied. */
   /* 0x01FF reserved */
 
 
@@ -302,7 +302,7 @@ enum zb_zcl_metering_attr_e
                                                            *   @see zb_zcl_metering_extstatus_electricity_e
                                                            *   @see zb_zcl_metering_extstatus_gas_e */
   ZB_ZCL_ATTR_METERING_REMAINING_BATTERY_LIFE_DAYS_ID,    /**< @e RemainingBatteryLifeInDays attribute represents the estimated remaining life of the battery in days
-                                                           *   of capacity. The range is 0 – 0xFFFE, where 0xFFFF represents 'Invalid', 'Unused' and 'Disabled'. */
+                                                           *   of capacity. The range is 0 - 0xFFFE, where 0xFFFF represents 'Invalid', 'Unused' and 'Disabled'. */
   ZB_ZCL_ATTR_METERING_CURRENT_METER_ID_ID,               /**< @e CurrentMeterID attribute is the current id for the Meter. This could be the current firmware
                                                            *   version supported on the meter. */
   ZB_ZCL_ATTR_METERING_AMBIENT_CONSUMPTION_INDICATOR_ID,  /**< @e AmbientConsumptionIndicator attribute is an 8-bit enumeration which provides a simple indication
@@ -312,7 +312,7 @@ enum zb_zcl_metering_attr_e
                                                            *   to the premises has been disconnected */
   ZB_ZCL_ATTR_METERING_LINKY_MODE_OF_OPERATION_ID,        /**< The @e LinkyModeOfOperation attribute is specific to Linky devices. It consists of a single flag
                                                            * (bit 0) which shall be set to FALSE (0) when in 'Simple' Mode and set to TRUE (1) when in
-                                                           * ‘Advanced’ Mode. Bits 1 to 7 are reserved. */
+                                                           * Advanced Mode. Bits 1 to 7 are reserved. */
   /* 0x0208 to 0x02FF reserved */
 
 
@@ -352,9 +352,9 @@ enum zb_zcl_metering_attr_e
                                                                    *   and the decimal location of the values found in the Temperature-related attributes. */
   ZB_ZCL_ATTR_METERING_MODULE_SERIAL_NUMBER_ID,                   /**< @e ModuleSerialNumber attribute represents the serial number (unique identifier) of the
                                                                    *   meter module. */
-  ZB_ZCL_ATTR_METERING_OPERATING_TARIFF_LABEL_DELIVERED_ID,       /**< @e OperatingTariffLabelDelivered attribute is the meter’s version of the @e TariffLabel attribute
+  ZB_ZCL_ATTR_METERING_OPERATING_TARIFF_LABEL_DELIVERED_ID,       /**< @e OperatingTariffLabelDelivered attribute is the meter's version of the @e TariffLabel attribute
                                                                    *   that is found within the Tariff Information attribute set of the Price Cluster. */
-  ZB_ZCL_ATTR_METERING_OPERATING_TARIFF_LABEL_RECEIVED_ID,        /**< @e OperatingTariffLabelReceived attribute is the meter’s version of the @e ReceivedTariffLabel
+  ZB_ZCL_ATTR_METERING_OPERATING_TARIFF_LABEL_RECEIVED_ID,        /**< @e OperatingTariffLabelReceived attribute is the meter's version of the @e ReceivedTariffLabel
                                                                    *   attribute that is found within the Tariff Information attribute set of the Price Cluster. */
   ZB_ZCL_ATTR_METERING_CUSTOMER_ID_NUMBER_ID,                    /**< @e CustomerIDNumber attribute provides a customer identification which may be used to confirm
                                                                    *   the customer at the premises. */
@@ -547,7 +547,7 @@ enum zb_zcl_metering_attr_e
                                                            *   the current Demand of Energy, Gas, or Water delivered at the premises. */
   ZB_ZCL_ATTR_METERING_DEMAND_LIMIT_ID,                   /**< @e DemandLimit attribute reflects the current supply demand limit set in the meter. This value can be
                                                            *   compared to the @ref ZB_ZCL_ATTR_METERING_CURRENT_DEMAND_DELIVERED_ID "CurrentDemandDelivered" attribute to
-                                                           *   understand if limits are being approached or exceeded. A value of “0xFFFFFF” indicates “demand limiting”
+                                                           *   understand if limits are being approached or exceeded. A value of 0xFFFFFF indicates demand limiting
                                                            *   is switched off.*/
   ZB_ZCL_ATTR_METERING_DEMAND_INTEGRATION_PERIOD_ID,      /**< @e DemandIntegrationPeriod attribute is the number of minutes over which the
                                                            *   @ref ZB_ZCL_ATTR_METERING_CURRENT_DEMAND_DELIVERED_ID "CurrentDemandDelivered" attribute is calculated. Valid
@@ -789,7 +789,7 @@ enum zb_zcl_metering_extstatus_general_e
                                                                 *   its measurement software has changed. */
   ZB_ZCL_METERING_CLOCK_INVALID                  = 1 << 11,   /**< @e ClockInvalid bit is set to true when the device detects that its internal clock
                                                                 *   is invalid. */
-  ZB_ZCL_METERING_TEMPERATURE_EXCEEDED           = 1 << 12,   /**< @e TemperatureExceeded bit is set to true when the metering device’s temperature
+  ZB_ZCL_METERING_TEMPERATURE_EXCEEDED           = 1 << 12,   /**< @e TemperatureExceeded bit is set to true when the metering device's temperature
                                                                 *   exceeds a predefined limit. There are various reasons for temperature rise in
                                                                 *   metering devices. */
   ZB_ZCL_METERING_MOISTURE_DETECTED              = 1 << 13    /**< @e MoistureDetected bit is set to true when a sensor has detected the presence of
@@ -823,7 +823,7 @@ enum zb_zcl_metering_extstatus_electricity_e
   ZB_ZCL_METERING_ELECTRICITY_BIDIRECTION_OPERATION      = 1L << 30,     /**<Set to true when the meter is capable of measuring energy in both directions
                                                                            * (i.e. delivered and received). */
   /*Each enumerator that appears in the body of an enumeration specifier becomes an integer constant with type int in the enclosing scope.*/
-  ZB_ZCL_METERING_ELECTRICITY_ACTIVE_POWER_RECEIVED      = -2147483648LL /**< Set to true when active power flows in the ‘received’ direction
+  ZB_ZCL_METERING_ELECTRICITY_ACTIVE_POWER_RECEIVED      = -2147483648LL /**< Set to true when active power flows in the received direction
                                                                            * (generation from the premises to the grid). */
   /* bits 32-63 reserved */
 };
@@ -1961,7 +1961,7 @@ typedef ZB_PACKED_PRE struct zb_zcl_metering_publish_snapshot_payload_s
   zb_uint8_t snapshot_payload_type; /* (M) */
 
   /** @see @ref zb_zcl_metering_snapshot_sub_payload_s */
-  zb_zcl_metering_snapshot_sub_payload_t snaphost_sub_payload;
+  zb_zcl_metering_snapshot_sub_payload_t snapshot_sub_payload;
 } ZB_PACKED_STRUCT zb_zcl_metering_publish_snapshot_payload_t;
 
 
@@ -2267,13 +2267,23 @@ zb_void_t zb_zcl_metering_send_cmd_get_sampled_data_response(zb_uint8_t param, c
 }
 
 
-/** @internal @brief Declare attribute list for Electrical Measurement cluster
+/*! @internal Number of attributes mandatory for reporting in Metering cluster */
+#define ZB_ZCL_METERING_REPORT_ATTR_COUNT 3
+
+/*! @}
+    @endcond */ /* Metering cluster internals */
+
+
+/** @struct zb_zcl_metering_attrs_t
+ *  @brief Metering cluster attributes
+ */
+/** @brief Declare attribute list for Electrical Measurement cluster
     @param attr_list - attribute list name
     @param curr_summ_delivered - pointer to variable to store Current Summation Delivered attribute value
     @param status - pointer to variable to store Status attribute value
     @param unit_of_measure - pointer to variable to store Unit Of Measure attribute value
     @param summation_formatting - pointer to variable to store Summation Formatting attribute value
-    @param device_type - pointer to variable to store Device Type attribute value
+    @param metering_device_type - pointer to variable to store Device Type attribute value
 */
 #define ZB_ZCL_DECLARE_METERING_ATTRIB_LIST(attr_list, curr_summ_delivered, status, unit_of_measure, \
                                             summation_formatting, metering_device_type)              \
@@ -2286,13 +2296,13 @@ zb_void_t zb_zcl_metering_send_cmd_get_sampled_data_response(zb_uint8_t param, c
   ZB_ZCL_FINISH_DECLARE_ATTRIB_LIST
 
 
-/** @internal @brief Declare attribute list for Electrical Measurement cluster with added attributes
+/** @brief Declare attribute list for Electrical Measurement cluster (extended attribute set)
     @param attr_list - attribute list name
     @param curr_summ_delivered - pointer to variable to store Current Summ Delivered attribute value
     @param status - pointer to variable to store Status attribute value
     @param unit_of_measure - pointer to variable to store Unit Of Measure attribute value
     @param summation_formatting - pointer to variable to store Summation Formatting attribute value
-    @param device_type - pointer to variable to store Device Type attribute value
+    @param metering_device_type - pointer to variable to store Device Type attribute value
     @param instantaneous_demand - pointer to variable to store Instantaneous Demand attribute value
     @param demand_formatting - pointer to variable to store Demand Formatting attribute value
     @param historical_consumption_formatting - pointer to variable to store Historical Consumption Formatting attribute value
@@ -2315,16 +2325,6 @@ zb_void_t zb_zcl_metering_send_cmd_get_sampled_data_response(zb_uint8_t param, c
   ZB_ZCL_SET_ATTR_DESC(ZB_ZCL_ATTR_METERING_DIVISOR_ID, (divisor))                                   \
   ZB_ZCL_FINISH_DECLARE_ATTRIB_LIST
 
-/*! @internal Number of attributes mandatory for reporting in Metering cluster */
-#define ZB_ZCL_METERING_REPORT_ATTR_COUNT 3
-
-/*! @}
-    @endcond */ /* Metering cluster internals */
-
-
-/** @struct zb_zcl_metering_attrs_s
- *  @brief Metering cluster attributes
- */
 typedef struct zb_zcl_metering_attrs_s
 {
 
@@ -2357,7 +2357,7 @@ typedef struct zb_zcl_metering_attrs_s
 
 /** @brief Declare attribute list for Metering cluster cluster
  *  @param[in]  attr_list - attribute list variable name
- *  @param[in]  attrs - pointer to @ref zb_zcl_metering_attrs_s structure
+ *  @param[in]  attrs - variable of @ref zb_zcl_metering_attrs_t type (containing Metering cluster attributes)
  */
 #define ZB_ZCL_DECLARE_METERING_ATTR_LIST(attr_list, attrs) \
   ZB_ZCL_DECLARE_METERING_ATTRIB_LIST(attr_list, &attrs.curr_summ_delivered, \

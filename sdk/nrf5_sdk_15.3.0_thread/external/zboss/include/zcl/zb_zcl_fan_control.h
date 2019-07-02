@@ -114,6 +114,17 @@ enum zb_zcl_fan_control_fan_mode_sequence_e
 /** @brief Default value for Fan Mode attribute */
 #define ZB_ZCL_FAN_CONTROL_FAN_MODE_SEQUENCE_DEFAULT_VALUE 0x02
 
+/** @brief Declare attribute list for Fan Control cluster
+    @param attr_list - attribute list name
+    @param fan_mode - pointer to variable to store Fan Mode attribute value
+    @param fan_mode_sequence - pointer to variable to store Fan Mode Sequence attribute value
+*/
+#define ZB_ZCL_DECLARE_FAN_CONTROL_ATTRIB_LIST(attr_list, fan_mode, fan_mode_sequence)    \
+  ZB_ZCL_START_DECLARE_ATTRIB_LIST(attr_list)                                             \
+  ZB_ZCL_SET_ATTR_DESC(ZB_ZCL_ATTR_FAN_CONTROL_FAN_MODE_ID, (fan_mode))                   \
+  ZB_ZCL_SET_ATTR_DESC(ZB_ZCL_ATTR_FAN_CONTROL_FAN_MODE_SEQUENCE_ID, (fan_mode_sequence)) \
+  ZB_ZCL_FINISH_DECLARE_ATTRIB_LIST
+
 /*! @} */ /* Fan Control cluster attributes */
 
 /*! @name Fan Control cluster commands
@@ -143,17 +154,6 @@ enum zb_zcl_fan_control_fan_mode_sequence_e
   ZB_ZCL_ATTR_ACCESS_READ_WRITE,                                                      \
   (zb_voidp_t) data_ptr                                                               \
 }
-
-/** @internal @brief Declare attribute list for Fan Control cluster
-    @param attr_list - attribure list name
-    @param fan_mode - pointer to variable to store Fan Mode attribute value
-    @param fan_mode_sequence - pointer to variable to store Fan Mode Sequence attribute value
-*/
-#define ZB_ZCL_DECLARE_FAN_CONTROL_ATTRIB_LIST(attr_list, fan_mode, fan_mode_sequence)    \
-  ZB_ZCL_START_DECLARE_ATTRIB_LIST(attr_list)                                             \
-  ZB_ZCL_SET_ATTR_DESC(ZB_ZCL_ATTR_FAN_CONTROL_FAN_MODE_ID, (fan_mode))                   \
-  ZB_ZCL_SET_ATTR_DESC(ZB_ZCL_ATTR_FAN_CONTROL_FAN_MODE_SEQUENCE_ID, (fan_mode_sequence)) \
-  ZB_ZCL_FINISH_DECLARE_ATTRIB_LIST
 
 /*! @internal Number of attributes mandatory for reporting in Fan Control cluster */
 #define ZB_ZCL_FAN_CONTROL_REPORT_ATTR_COUNT 0

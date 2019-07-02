@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2018, Nordic Semiconductor ASA
+ * Copyright (c) 2018 - 2019, Nordic Semiconductor ASA
  *
  * All rights reserved.
  *
@@ -37,6 +37,7 @@
  * OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  *
  */
+#include "sdk_config.h"
 #include "zigbee_cli_ping.h"
 #include "zb_nrf52840_internal.h"
 #include "zb_error_handler.h"
@@ -57,6 +58,7 @@
  */
 #define ZIGBEE_PING_FRAME_CONTROL_FIELD 0x11
 
+#if NRF_LOG_ENABLED
 /** @brief Name of the submodule used for logger messaging.
  */
 #define NRF_LOG_SUBMODULE_NAME ping
@@ -72,6 +74,7 @@ NRF_LOG_INSTANCE_REGISTER(ZIGBEE_CLI_LOG_NAME, NRF_LOG_SUBMODULE_NAME,
 typedef struct {
     NRF_LOG_INSTANCE_PTR_DECLARE(p_log)
 } log_ctx_t;
+#endif // NRF_LOG_ENABLED
 
 /**@brief The row of the table which holds the replies which are to be sent.
  *
@@ -94,39 +97,15 @@ static ping_request_t m_ping_request_table[PING_TABLE_SIZE];
 static ping_reply_t   m_ping_reply_table[PING_TABLE_SIZE];
 static uint8_t        m_ping_seq_num;
 static ping_time_cb_t mp_ping_ind_cb = NULL;
+
+#if NRF_LOG_ENABLED
 // Logger instance used by this module.
 static log_ctx_t m_log = {
     NRF_LOG_INSTANCE_PTR_INIT(p_log, ZIGBEE_CLI_LOG_NAME, NRF_LOG_SUBMODULE_NAME)
 };
+#endif // NRF_LOG_ENABLED
 
 static zb_uint32_t get_request_duration(ping_request_t * p_request);
-
-/** @brief Send ZCL command without APS acknowledgement request. */
-static void zb_zcl_finish_and_send_packet_no_ack(zb_buf_t * p_buf, zb_uint8_t * p_cmd_ptr,
-                                   zb_addr_u * p_dst_addr, zb_uint8_t dst_addr_mode,
-                                   zb_uint8_t dst_ep, zb_uint8_t src_ep,
-                                   zb_uint16_t profile_id, zb_uint16_t cluster_id,
-                                   zb_callback_t p_cb)
-{
-    zb_uint16_t remote_addr_short;
-
-    // Obtain network short address for the destination node.
-    if (dst_addr_mode == ZB_APS_ADDR_MODE_16_ENDP_PRESENT)
-    {
-        remote_addr_short = p_dst_addr->addr_short;
-    }
-    else
-    {
-        remote_addr_short = zb_address_short_by_ieee(p_dst_addr->addr_long);
-    }
-
-    // Mark command space inside buffer as used.
-    ZB_BUF_ALLOC_LEFT(p_buf, ZB_ZCL_GET_BYTES_WRITTEN(p_buf, p_cmd_ptr), p_cmd_ptr);
-
-    ZB_ZCL_SEND_COMMAND_SHORT_WITHOUT_ACK(p_buf, remote_addr_short,
-        ZB_APS_ADDR_MODE_16_ENDP_PRESENT, dst_ep, src_ep, profile_id,
-        cluster_id, p_cb, 0);
-}
 
 ping_request_t * zb_ping_acquire_request(void)
 {
@@ -306,7 +285,7 @@ static zb_uint32_t get_request_duration(ping_request_t * p_request)
     return time_diff;
 }
 
-/**@bried Default handler for incoming ping request APS acknowledgements.
+/**@brief Default handler for incoming ping request APS acknowledgments.
  *
  * @details  If there is a user callback defined for the acknowledged request,
  *           the callback with PING_EVT_ACK_RECEIVED event will be called.
@@ -339,7 +318,7 @@ static zb_void_t dispatch_user_callback(zb_uint8_t param)
     }
     else
     {
-        NRF_LOG_INST_ERROR(m_log.p_log, "Ping requst acknowledged with an unknown destination address type: %d", p_cmd_ping_status->dst_addr.addr_type);
+        NRF_LOG_INST_ERROR(m_log.p_log, "Ping request acknowledged with an unknown destination address type: %d", p_cmd_ping_status->dst_addr.addr_type);
         ZB_FREE_BUF_BY_REF(param);
         return;
     }
@@ -381,6 +360,11 @@ static zb_void_t dispatch_user_callback(zb_uint8_t param)
             NRF_LOG_INST_ERROR(m_log.p_log, "Ping request returned error status: %d",
                                              p_cmd_ping_status->status);
         }
+    }
+    else
+    {
+        NRF_LOG_INST_WARNING(m_log.p_log, "Unknown ping command callback called with status: %d",
+                             p_cmd_ping_status->status);
     }
 
     ZB_FREE_BUF_BY_REF(param);
@@ -548,10 +532,12 @@ static zb_void_t ping_reply_send(ping_reply_t * p_reply)
     p_buf = ZB_GET_OUT_BUF();
     if (!p_buf)
     {
+        NRF_LOG_INST_WARNING(m_log.p_log, "Drop ping request due to the lack of output buffers");
         ping_release_reply(p_reply);
         return;
     }
 
+    NRF_LOG_INST_DEBUG(m_log.p_log, "Send ping reply");
     p_cmd_buf = ZB_ZCL_START_PACKET(p_buf);
     *(p_cmd_buf++) = ZIGBEE_PING_FRAME_CONTROL_FIELD;
     *(p_cmd_buf++) = p_reply->ping_seq;
@@ -650,7 +636,7 @@ static zb_uint8_t cli_agent_ep_handler_ping(zb_uint8_t param)
         return ZB_FALSE;
     }
 
-    NRF_LOG_INST_INFO(m_log.p_log, "New ping frame received, param: %d", param);
+    NRF_LOG_INST_DEBUG(m_log.p_log, "New ping frame received, param: %d", param);
     ping_req_indicate(p_zcl_cmd_buf);
 
     if (p_cmd_info->cmd_id == PING_ECHO_REPLY)
@@ -714,6 +700,7 @@ static zb_uint8_t cli_agent_ep_handler_ping(zb_uint8_t param)
 
         if (p_reply == NULL)
         {
+            NRF_LOG_INST_WARNING(m_log.p_log, "Cannot obtain new row for incoming ping request");
             return ZB_FALSE;
         }
 
@@ -723,10 +710,14 @@ static zb_uint8_t cli_agent_ep_handler_ping(zb_uint8_t param)
 
         if (p_cmd_info->cmd_id == PING_ECHO_REQUEST)
         {
+            NRF_LOG_INST_DEBUG(m_log.p_log,
+                               "PING echo request with APS ACK received");
             p_reply->send_ack = 1;
         }
         else
         {
+            NRF_LOG_INST_DEBUG(m_log.p_log,
+                               "PING echo request without APS ACK received");
             p_reply->send_ack = 0;
         }
 
@@ -736,6 +727,7 @@ static zb_uint8_t cli_agent_ep_handler_ping(zb_uint8_t param)
         }
         else
         {
+            NRF_LOG_INST_WARNING(m_log.p_log, "Drop ping request due to incorrect address type");
             ping_release_reply(p_reply);
             ZB_FREE_BUF(p_zcl_cmd_buf);
             return ZB_TRUE;
@@ -746,7 +738,7 @@ static zb_uint8_t cli_agent_ep_handler_ping(zb_uint8_t param)
     }
     else if (p_cmd_info->cmd_id == PING_NO_ECHO_REQUEST)
     {
-        NRF_LOG_INST_INFO(m_log.p_log,
+        NRF_LOG_INST_DEBUG(m_log.p_log,
                           "PING request without ECHO received");
     }
     else
@@ -763,7 +755,7 @@ static zb_uint8_t cli_agent_ep_handler_ping(zb_uint8_t param)
 /** @brief ping over ZCL
  *
  * @code
- * zcl ping [--no-echo] [--aps-ack] <h:eui64> <d:payload size>
+ * zcl ping [--no-echo] [--aps-ack] <h:dst_addr> <d:payload size>
  * @endcode
  *
  * Example:
@@ -771,12 +763,12 @@ static zb_uint8_t cli_agent_ep_handler_ping(zb_uint8_t param)
  * zcl ping 0b010eaafd745dfa 32
  * @endcode
  *
- * @pre Only after starting @ref zigbee.
+ * @pre Ping only after starting @ref zigbee.
  *
  * Issue a ping-style command to another CLI device of the address `dst_addr`
  * by using `payload_size` bytes of payload.<br>
  *
- * Optionally, the device can request an APS acknowledgement (`--aps-ack`) or
+ * Optionally, the device can request an APS acknowledgment (`--aps-ack`) or
  * ask destination not to sent ping reply (`--no-echo`).<br>
  *
  * To implement the ping-like functionality, a new custom cluster has been
@@ -785,10 +777,10 @@ static zb_uint8_t cli_agent_ep_handler_ping(zb_uint8_t param)
  *
  * See the following flow graphs for details.
  *
- * - <b>Case 1:</b> Ping with echo, without the APS acknowledgement (default mode):
+ * - <b>Case 1:</b> Ping with echo, without the APS acknowledgment (default mode):
  *   @code
  *       App 1          Node 1                 Node 2
- *         |  -- ping ->  |  -- ping request ->  |   (command ID: 0x02 - ping request without the APS acknowledgement)
+ *         |  -- ping ->  |  -- ping request ->  |   (command ID: 0x02 - ping request without the APS acknowledgment)
  *         |              |    <- MAC ACK --     |
  *         |              | <- ping reply --     |   (command ID: 0x01 - ping reply)
  *         |              |    -- MAC ACK ->     |
@@ -797,10 +789,10 @@ static zb_uint8_t cli_agent_ep_handler_ping(zb_uint8_t param)
  *
  *   In this default mode, the `ping` command measures the time needed for a Zigbee frame to travel between two nodes in the network (there and back again). The command uses a custom "overloaded" ZCL frame, which is constructed as a ZCL frame of the new custom ping ZCL cluster (ID 64).
  *
- * - <b>Case 2:</b> Ping with echo, with the APS acknowledgement:
+ * - <b>Case 2:</b> Ping with echo, with the APS acknowledgment:
  *     @code
  *       App 1          Node 1                 Node 2
- *         |  -- ping ->  |  -- ping request ->  |   (command ID: 0x00 - ping request with the APS acknowledgement)
+ *         |  -- ping ->  |  -- ping request ->  |   (command ID: 0x00 - ping request with the APS acknowledgment)
  *         |              |    <- MAC ACK --     |
  *         |              |    <- APS ACK --     |
  *         |              |    -- MAC ACK ->     |
@@ -811,7 +803,7 @@ static zb_uint8_t cli_agent_ep_handler_ping(zb_uint8_t param)
  *         |  <- Done --  |                      |
  *     @endcode
  *
- * - <b>Case 3:</b> Ping without echo, with the APS acknowledgement:
+ * - <b>Case 3:</b> Ping without echo, with the APS acknowledgment:
  *     @code
  *       App 1          Node 1                 Node 2
  *         |  -- ping ->  |  -- ping request ->  |   (command ID: 0x03 - ping request without echo)
@@ -821,7 +813,7 @@ static zb_uint8_t cli_agent_ep_handler_ping(zb_uint8_t param)
  *         |  <- Done --  |                      |
  *     @endcode
  *
- * - <b>Case 4:</b> Ping without echo, without the APS acknowledgement:
+ * - <b>Case 4:</b> Ping without echo, without the APS acknowledgment:
  *     @code
  *       App 1          Node 1                 Node 2
  *         |  -- ping ->  |  -- ping request ->  |   (command ID: 0x03 - ping request without echo)
@@ -837,7 +829,7 @@ void cmd_zb_ping(nrf_cli_t const * p_cli, size_t argc, char **argv)
     if (nrf_cli_help_requested(p_cli) || (argc == 1))
     {
         print_usage(p_cli, argv[0],
-                    "[--no-echo] [--aps-ack] <h:eui64> <d:payload size>");
+                    "[--no-echo] [--aps-ack] <h:addr> <d:payload size>");
         return;
     }
 
@@ -871,9 +863,10 @@ void cmd_zb_ping(nrf_cli_t const * p_cli, size_t argc, char **argv)
         }
     }
 
-    if(parse_address_string(argv[argc - 2], &(p_row->remote_addr), &(p_row->remote_addr_mode)) == ZB_FALSE)
+    p_row->remote_addr_mode = parse_address(argv[argc - 2], &(p_row->remote_addr), ADDR_ANY);
+    if (p_row->remote_addr_mode == ADDR_INVALID)
     {
-        nrf_cli_fprintf(p_cli, NRF_CLI_ERROR, "Error: wrong EUI64 address format\r\n");
+        nrf_cli_fprintf(p_cli, NRF_CLI_ERROR, "Error: wrong address format\r\n");
         zb_ping_release_request(p_row);
         return;
     }

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2017 - 2018, Nordic Semiconductor ASA
+ * Copyright (c) 2017 - 2019, Nordic Semiconductor ASA
  *
  * All rights reserved.
  *
@@ -43,9 +43,9 @@
 #include <string.h>
 
 #include "nrf_log.h"
+#include "thread_utils.h"
 
-otError thread_dns_utils_hostname_resolve(otInstance         * p_instance,
-                                          const char         * p_hostname,
+otError thread_dns_utils_hostname_resolve(const char         * p_hostname,
                                           otDnsResponseHandler p_dns_response_handler,
                                           void               * p_context)
 {
@@ -54,7 +54,7 @@ otError thread_dns_utils_hostname_resolve(otInstance         * p_instance,
 
     memset(&message_info, 0, sizeof(message_info));
     message_info.mInterfaceId = OT_NETIF_INTERFACE_ID_THREAD;
-    message_info.mPeerPort    = OT_DNS_DEFAULT_DNS_SERVER_PORT;
+    message_info.mPeerPort    = OT_DNS_DEFAULT_SERVER_PORT;
     error = otIp6AddressFromString(DNS_SERVER_IP, &message_info.mPeerAddr);
 
     if (error == OT_ERROR_NONE)
@@ -65,7 +65,7 @@ otError thread_dns_utils_hostname_resolve(otInstance         * p_instance,
         query.mMessageInfo = &message_info;
         query.mNoRecursion = false;
 
-        error = otDnsClientQuery(p_instance, &query, p_dns_response_handler, p_context);
+        error = otDnsClientQuery(thread_ot_instance_get(), &query, p_dns_response_handler, p_context);
     }
 
     if (error != OT_ERROR_NONE)

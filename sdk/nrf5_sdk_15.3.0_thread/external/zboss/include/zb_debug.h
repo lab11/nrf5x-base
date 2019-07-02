@@ -114,9 +114,9 @@ zb_void_t lwip_zb_assert(zb_uint16_t file_id, zb_int_t line_number);
 #else  /* release */
 
 #ifndef KEIL
-#define ZB_ASSERT(expr) ((void)0)
+#define ZB_ASSERT(expr) ((void)(expr))
 #else
-#define ZB_ASSERT(expr)
+#define ZB_ASSERT(expr) ((void)(expr))
 #endif
 
 #define ZB_INLINE_ASSERT_SIMPLE(expr) -1

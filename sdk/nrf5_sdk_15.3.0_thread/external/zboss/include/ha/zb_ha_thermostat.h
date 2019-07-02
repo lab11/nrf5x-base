@@ -133,6 +133,79 @@ PURPOSE: HA Thermostat device definition
     )                                                                   \
   }
 
+/*!
+  @brief Declare cluster list for Thermostat device
+  @param cluster_list_name - cluster list variable name
+  @param basic_attr_list - attribute list for Basic cluster
+  @param identify_attr_list - attribute list for Identify cluster
+  @param groups_attr_list - attribute list for Groups cluster
+  @param scenes_attr_list - attribute list for Scenes cluster
+  @param thermostat_attr_list - attribute list for Thermostat cluster
+  @param fan_control_attr_list - attribute list for Fan Control cluster
+  @param thermostat_ui_config_attr_list - attribute list for Thermostat UI Config cluster
+ */
+#define ZB_HA_DECLARE_THERMOSTAT_CLUSTER_LIST_EXT(                      \
+  cluster_list_name,                                                    \
+  basic_attr_list,                                                      \
+  identify_attr_list,                                                   \
+  groups_attr_list,                                                     \
+  scenes_attr_list,                                                     \
+  thermostat_attr_list,                                                 \
+  fan_control_attr_list,                                                \
+  thermostat_ui_config_attr_list)                                       \
+  zb_zcl_cluster_desc_t cluster_list_name[] =                           \
+  {                                                                     \
+    ZB_ZCL_CLUSTER_DESC(                                                \
+      ZB_ZCL_CLUSTER_ID_IDENTIFY,                                       \
+      ZB_ZCL_ARRAY_SIZE(identify_attr_list, zb_zcl_attr_t),             \
+      (identify_attr_list),                                             \
+      ZB_ZCL_CLUSTER_SERVER_ROLE,                                       \
+      ZB_ZCL_MANUF_CODE_INVALID                                         \
+    ),                                                                  \
+    ZB_ZCL_CLUSTER_DESC(                                                \
+      ZB_ZCL_CLUSTER_ID_BASIC,                                          \
+      ZB_ZCL_ARRAY_SIZE(basic_attr_list, zb_zcl_attr_t),                \
+      (basic_attr_list),                                                \
+      ZB_ZCL_CLUSTER_SERVER_ROLE,                                       \
+      ZB_ZCL_MANUF_CODE_INVALID                                         \
+    ),                                                                  \
+    ZB_ZCL_CLUSTER_DESC(                                                \
+      ZB_ZCL_CLUSTER_ID_GROUPS,                                         \
+      ZB_ZCL_ARRAY_SIZE(groups_attr_list, zb_zcl_attr_t),               \
+      (groups_attr_list),                                               \
+      ZB_ZCL_CLUSTER_SERVER_ROLE,                                       \
+      ZB_ZCL_MANUF_CODE_INVALID                                         \
+    ),                                                                  \
+     ZB_ZCL_CLUSTER_DESC(                                               \
+      ZB_ZCL_CLUSTER_ID_SCENES,                                         \
+      ZB_ZCL_ARRAY_SIZE(scenes_attr_list, zb_zcl_attr_t),               \
+      (scenes_attr_list),                                               \
+      ZB_ZCL_CLUSTER_SERVER_ROLE,                                       \
+      ZB_ZCL_MANUF_CODE_INVALID                                         \
+    ),                                                                  \
+    ZB_ZCL_CLUSTER_DESC(                                                \
+      ZB_ZCL_CLUSTER_ID_THERMOSTAT,                                     \
+      ZB_ZCL_ARRAY_SIZE(thermostat_attr_list, zb_zcl_attr_t),           \
+      (thermostat_attr_list),                                           \
+      ZB_ZCL_CLUSTER_SERVER_ROLE,                                       \
+      ZB_ZCL_MANUF_CODE_INVALID                                         \
+    ),                                                                  \
+    ZB_ZCL_CLUSTER_DESC(                                                \
+      ZB_ZCL_CLUSTER_ID_FAN_CONTROL,                                    \
+      ZB_ZCL_ARRAY_SIZE(fan_control_attr_list, zb_zcl_attr_t),          \
+      (fan_control_attr_list),                                          \
+      ZB_ZCL_CLUSTER_SERVER_ROLE,                                       \
+      ZB_ZCL_MANUF_CODE_INVALID                                         \
+    ),                                                                  \
+    ZB_ZCL_CLUSTER_DESC(                                                \
+      ZB_ZCL_CLUSTER_ID_THERMOSTAT_UI_CONFIG,                           \
+      ZB_ZCL_ARRAY_SIZE(thermostat_ui_config_attr_list, zb_zcl_attr_t), \
+      (thermostat_ui_config_attr_list),                                 \
+      ZB_ZCL_CLUSTER_SERVER_ROLE,                                       \
+      ZB_ZCL_MANUF_CODE_INVALID                                         \
+    )                                                                   \
+  }
+
 /** @cond internals_doc */
 /*!
   @brief Declare simple descriptor for Thermostat device

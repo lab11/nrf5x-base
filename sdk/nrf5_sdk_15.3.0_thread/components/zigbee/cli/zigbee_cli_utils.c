@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2018, Nordic Semiconductor ASA
+ * Copyright (c) 2018 - 2019, Nordic Semiconductor ASA
  *
  * All rights reserved.
  *
@@ -40,6 +40,8 @@
 #include "nrf_cli.h"
 #include "zboss_api.h"
 #include "zb_error_handler.h"
+#include "zigbee_logger_eprxzcl.h"
+#include "zigbee_cli_utils.h"
 #include <ctype.h>
 
 NRF_SECTION_DEF(zb_ep_handlers, zb_device_handler_t);
@@ -49,6 +51,10 @@ NRF_SECTION_DEF(zb_ep_handlers, zb_device_handler_t);
 zb_uint8_t cli_agent_ep_handler(zb_uint8_t param)
 {
     unsigned int idx;
+
+#if defined(DEBUG_NRF) && NRF_LOG_ENABLED
+    UNUSED_RETURN_VALUE(zigbee_logger_eprxzcl_ep_handler(param));
+#endif
 
     for (idx = 0; idx < ZB_EP_HANDLER_SECTION_ITEM_COUNT; idx++)
     {
@@ -62,64 +68,12 @@ zb_uint8_t cli_agent_ep_handler(zb_uint8_t param)
     return ZB_FALSE;
 }
 
-zb_bool_t parse_address_string(char * input, zb_addr_u * output, zb_uint8_t * addr_mode)
-{
-    char byte[2 + 1]; /* Substring holding 1 byte */
-    unsigned int chunk;
-    unsigned int idx;
-
-    /* Check the input string for validity */
-    if (strlen(input) != sizeof(zb_ieee_addr_t) * 2)
-    {
-        return ZB_FALSE;
-    }
-
-    for (idx = 0; idx < sizeof(zb_ieee_addr_t) * 2; idx++)
-    {
-        if (!isxdigit(input[idx]))
-        {
-            return ZB_FALSE;
-        }
-    }
-
-    /* Set the terminator */
-    byte[2] = 0;
-    for (idx = 0; idx < sizeof(zb_ieee_addr_t); idx++)
-    {
-        strncpy(byte, input + (2 * sizeof(zb_ieee_addr_t) - 2 * (idx + 1)), 2);
-        sscanf(byte, "%x", &chunk);
-        *(((zb_uint8_t*)output->addr_long) + idx) = chunk;
-    }
-    *addr_mode = ZB_APS_ADDR_MODE_64_ENDP_PRESENT;
-
-    return ZB_TRUE;
-}
-
 zb_void_t frame_acked_cb(zb_uint8_t param)
 {
     if (param)
     {
         ZB_FREE_BUF_BY_REF(param);
     }
-}
-
-int ieee_addr_to_str(char * p_str_buf, uint16_t buf_len, zb_ieee_addr_t p_addr)
-{
-    int bytes_written = 0;
-    int status;
-
-    for (int i = sizeof(zb_ieee_addr_t) - 1; i >= 0; i--)
-    {
-        status = snprintf(p_str_buf + bytes_written, buf_len - bytes_written, "%02x", p_addr[i]);
-        if (status < 0)
-        {
-            return status;
-        }
-
-        bytes_written += status;
-    }
-
-    return bytes_written;
 }
 
 int zcl_attr_to_str(char * p_str_buf, uint16_t buf_len, zb_uint16_t attr_type, zb_uint8_t * p_attr)
@@ -195,6 +149,12 @@ int zcl_attr_to_str(char * p_str_buf, uint16_t buf_len, zb_uint16_t attr_type, z
             bytes_written += string_len + 1;
             break;
 
+        case ZB_ZCL_ATTR_TYPE_IEEE_ADDR:
+            /*lint -e661 -e662 -save */
+            bytes_written = to_hex_str(p_str_buf, buf_len, (const uint8_t *)p_attr, sizeof(zb_64bit_addr_t), true);
+            /*lint -restore */
+            break;
+
         default:
             bytes_written = snprintf(p_str_buf, buf_len, "Value type 0x%x unsupported", attr_type);
             break;
@@ -205,14 +165,34 @@ int zcl_attr_to_str(char * p_str_buf, uint16_t buf_len, zb_uint16_t attr_type, z
 
 int sscan_uint8(const char * p_bp, uint8_t * p_u8)
 {
-    uint16_t u16;
+    unsigned int value;
 
-    if (!sscanf(p_bp, "%hd", &u16))
+    if (!sscanf(p_bp, "%u", &value) || (value > 0xff))
     {
         return 0;
     }
 
-    *p_u8 = (uint8_t)u16;
+    *p_u8 = value & 0xFF;
 
     return 1;
+}
+
+void print_hexdump(nrf_cli_t const * p_cli,
+                   const uint8_t * p_in, uint8_t size,
+                   bool reverse)
+{
+    char addr_buf[2*size + 1];
+    int bytes_written = 0;
+
+    memset(addr_buf, 0, sizeof(addr_buf));
+
+    bytes_written = to_hex_str(addr_buf, (uint16_t)sizeof(addr_buf), p_in, size, reverse);
+    if (bytes_written < 0)
+    {
+        nrf_cli_fprintf(p_cli, NRF_CLI_ERROR, "%s", "Unable to print hexdump");
+    }
+    else
+    {
+        nrf_cli_fprintf(p_cli, NRF_CLI_NORMAL, "%s", addr_buf);
+    }
 }

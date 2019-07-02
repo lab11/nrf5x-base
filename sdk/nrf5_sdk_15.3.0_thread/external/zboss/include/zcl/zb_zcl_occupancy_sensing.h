@@ -47,7 +47,7 @@ PURPOSE: Occupancy Sensing definitoins
 
 /** @cond DOXYGEN_ZCL_SECTION */
 
-/** @addtogroup ZB_ZCL_OOSC
+/** @addtogroup ZB_ZCL_OCCUPANCY_SENSING
  *  @{
  *    @details
  *    Occupancy Sensing cluster has no cluster-specific command support. Cluster
@@ -103,6 +103,7 @@ enum zb_zcl_occupancy_sensing_attr_e
    *  occupied state. */
   ZB_ZCL_ATTR_OCCUPANCY_SENSING_PHYSICAL_CONTACT_UNOCCUPIED_TO_OCCUPIED_THRESHOLD_ID = 0x0032,
   /* Parking Sensor, Attributes for device Configuration, 2.5.1 */
+  /** @cond internals_doc */
   ZB_ZCL_ATTR_OCCUPANCY_SENSING_CUSTOM_REPORTING_MODE_ID                                   = 0x8001,
   ZB_ZCL_ATTR_OCCUPANCY_SENSING_CUSTOM_DEBUG_MODE_ID                                       = 0x8002,
   ZB_ZCL_ATTR_OCCUPANCY_SENSING_CUSTOM_SENSING_INTERVAL_ID                                 = 0x8003,
@@ -132,6 +133,8 @@ enum zb_zcl_occupancy_sensing_attr_e
   ZB_ZCL_ATTR_OCCUPANCY_SENSING_CUSTOM_RX_SAMPLES_ARRAY_2_ID                   = 0x8019,
   ZB_ZCL_ATTR_OCCUPANCY_SENSING_CUSTOM_RX_SAMPLES_ARRAY_3_ID                   = 0x801A,
   ZB_ZCL_ATTR_OCCUPANCY_SENSING_CUSTOM_RX_SAMPLES_ARRAY_4_ID                   = 0x801B
+  /*! @}
+   *  @endcond */ /* internals_doc */
 };
 
 /** @brief Default value for PIROccToUnoccDelay attribute */
@@ -166,10 +169,10 @@ enum zb_zcl_occupancy_sensing_attr_e
 */
 enum zb_zcl_occupancy_sensing_occupancy_e
 {
-  /*! Occupied value */
-  ZB_ZCL_OCCUPANCY_SENSING_OCCUPANCY_OCCUPIED   = 0,
   /*! Unoccupied value */
-  ZB_ZCL_OCCUPANCY_SENSING_OCCUPANCY_UNOCCUPIED = 1
+  ZB_ZCL_OCCUPANCY_SENSING_OCCUPANCY_UNOCCUPIED = 0,
+  /*! Occupied value */
+  ZB_ZCL_OCCUPANCY_SENSING_OCCUPANCY_OCCUPIED   = 1
 };
 
 /* Custom Attributes values */
@@ -196,7 +199,7 @@ enum zb_zcl_occupancy_sensing_occupancy_sensor_type_e
   ZB_ZCL_OCCUPANCY_SENSING_OCCUPANCY_SENSOR_TYPE_RESERVED           = 3
 };
 
-
+/** @cond internals_doc */
 enum zb_zcl_custom_reporting_mode_type_e
 {
   ZB_ZCL_CUSTOM_OCCUPANCY_SENSING_REPORING_MODE_TYPE_REGULAR_REPORTING                = 0,
@@ -236,19 +239,31 @@ enum zb_zcl_custom_learn_type_e
     (zb_voidp_t) data_ptr                                                                       \
   }
 
-/** @internal @brief Declare attribute list for Occupancy Sensing cluster
-    @param attr_list - attribure list name
-    @param switch_type - pointer to variable to store switch type attribute value
-    @param switch_actions - pointer to variable to store switch action attribute value
-*/
-#define ZB_ZCL_DECLARE_OCCUPANCY_SENSING_ATTRIB_LIST(attr_list, occupancy, occupancy_sensor_type)       \
-  ZB_ZCL_START_DECLARE_ATTRIB_LIST(attr_list)                                                           \
-  ZB_ZCL_SET_ATTR_DESC(ZB_ZCL_ATTR_OCCUPANCY_SENSING_OCCUPANCY_ID, (occupancy))                         \
-  ZB_ZCL_SET_ATTR_DESC(ZB_ZCL_ATTR_OCCUPANCY_SENSING_OCCUPANCY_SENSOR_TYPE_ID, (occupancy_sensor_type)) \
-  ZB_ZCL_FINISH_DECLARE_ATTRIB_LIST
-
+#define ZB_SET_ATTR_DESCR_WITH_ZB_ZCL_ATTR_OCCUPANCY_SENSING_OCCUPANCY_SENSOR_TYPE_BITMAP_ID(data_ptr) \
+  {                                                                                                    \
+    ZB_ZCL_ATTR_OCCUPANCY_SENSING_OCCUPANCY_SENSOR_TYPE_BITMAP_ID,                                     \
+    ZB_ZCL_ATTR_TYPE_8BITMAP,                                                                          \
+    ZB_ZCL_ATTR_ACCESS_READ_ONLY,                                                                      \
+    (zb_voidp_t) data_ptr                                                                              \
+  }
 /** @internal Number of attributes mandatory for reporting on Occupancy Sensing cluster */
 #define ZB_ZCL_OCCUPANCY_SENSING_REPORT_ATTR_COUNT 1
+
+/*! @}
+ *  @endcond */ /* internals_doc */
+
+/** @brief Declare attribute list for Occupancy Sensing cluster
+    @param attr_list - attribute list name
+    @param occupancy - pointer to variable to store Occupancy attribute value
+    @param occupancy_sensor_type - pointer to variable to store Occupancy Sensor Type attribute value
+    @param occupancy_sensor_type_bitmap - pointer to variable to store Occupancy Sensor Type Bitmap attribute value
+*/
+#define ZB_ZCL_DECLARE_OCCUPANCY_SENSING_ATTRIB_LIST(attr_list, occupancy, occupancy_sensor_type, occupancy_sensor_type_bitmap) \
+  ZB_ZCL_START_DECLARE_ATTRIB_LIST(attr_list)                                                                                   \
+  ZB_ZCL_SET_ATTR_DESC(ZB_ZCL_ATTR_OCCUPANCY_SENSING_OCCUPANCY_ID, (occupancy))                                                 \
+  ZB_ZCL_SET_ATTR_DESC(ZB_ZCL_ATTR_OCCUPANCY_SENSING_OCCUPANCY_SENSOR_TYPE_ID, (occupancy_sensor_type))                         \
+  ZB_ZCL_SET_ATTR_DESC(ZB_ZCL_ATTR_OCCUPANCY_SENSING_OCCUPANCY_SENSOR_TYPE_BITMAP_ID, (occupancy_sensor_type_bitmap))           \
+  ZB_ZCL_FINISH_DECLARE_ATTRIB_LIST
 
 /*! @} */ /* Occupancy Sensing cluster attribute structures */
 

@@ -2503,12 +2503,12 @@ enum zb_zcl_price_set_received_billing_information
 
 /******************************************************************************/
 
-/** @def ZB_ZCL_DECLARE_PRICE_SRV_ATTR_LIST
+/** @def ZB_ZCL_DECLARE_PRICE_SRV_ATTRIB_LIST
  *  @brief Declare server-side Price cluster attributes
  *  @param attr_list - Attribute list name.
  *  @param commodity_type - pointer to variable to store @ref ZB_ZCL_ATTR_PRICE_SRV_COMMODITY_TYPE "CommodityType" attribute value.
 */
-#define ZB_ZCL_DECLARE_PRICE_SRV_ATTR_LIST(attr_list, commodity_type)           \
+#define ZB_ZCL_DECLARE_PRICE_SRV_ATTRIB_LIST(attr_list, commodity_type)           \
   ZB_ZCL_START_DECLARE_ATTRIB_LIST(attr_list)                                   \
   ZB_ZCL_SET_ATTR_DESC(ZB_ZCL_ATTR_PRICE_SRV_COMMODITY_TYPE, (commodity_type))  \
   ZB_ZCL_FINISH_DECLARE_ATTRIB_LIST
@@ -2560,7 +2560,7 @@ typedef enum zb_zcl_price_cli_attr_e
 
 #define ZB_SET_ATTR_DESCR_WITH_ZB_ZCL_ATTR_PRICE_CLI_COMMODITY_TYPE(data_ptr)   \
 {                                                                               \
-  ZB_ZCL_ATTR_PRICE_CLI_PRICE_COMMODITY_TYPE,                                   \
+  ZB_ZCL_ATTR_PRICE_CLI_COMMODITY_TYPE,                                         \
   ZB_ZCL_ATTR_TYPE_8BIT_ENUM,                                                   \
   ZB_ZCL_ATTR_ACCESS_READ_ONLY,                                                 \
   (zb_voidp_t) (data_ptr)                                                       \
@@ -2568,18 +2568,18 @@ typedef enum zb_zcl_price_cli_attr_e
 
 /** @endcond */ /* internals_doc */
 
-/** @def ZB_ZCL_DECLARE_PRICE_CLI_ATTR_LIST
+/** @def ZB_ZCL_DECLARE_PRICE_CLI_ATTRIB_LIST
  *  @brief Declare client-side Price cluster attributes
  *  @param attr_list - Attribute list name
  *  @param inc_rand_min - pointer to variable to store @ref ZB_ZCL_ATTR_PRICE_CLI_PRICE_INCREASE_RANDOMIZE_MINUTES "PriceIncreaseRandomizeMinutes" attribute value.
  *  @param dec_rand_min - pointer to variable to store @ref ZB_ZCL_ATTR_PRICE_CLI_PRICE_DECREASE_RANDOMIZE_MINUTES "PriceDecreaseRandomizeMinutes" attribute value.
  *  @param commodity_type - pointer to variable to store "CommodityType" attribute value.
  */
-#define ZB_ZCL_DECLARE_PRICE_CLI_ATTR_LIST(attr_list, inc_rand_min, dec_rand_min, commodity_type) \
+#define ZB_ZCL_DECLARE_PRICE_CLI_ATTRIB_LIST(attr_list, inc_rand_min, dec_rand_min, commodity_type) \
   ZB_ZCL_START_DECLARE_ATTRIB_LIST(attr_list)                                   \
   ZB_ZCL_SET_ATTR_DESC(ZB_ZCL_ATTR_PRICE_CLI_PRICE_INCREASE_RANDOMIZE_MINUTES, (inc_rand_min))  \
   ZB_ZCL_SET_ATTR_DESC(ZB_ZCL_ATTR_PRICE_CLI_PRICE_DECREASE_RANDOMIZE_MINUTES, (dec_rand_min))  \
-  ZB_ZCL_SET_ATTR_DESC(ZB_ZCL_ATTR_PRICE_CLI_ATTR_COMMODITY_TYPE, (commodity_type))  \
+  ZB_ZCL_SET_ATTR_DESC(ZB_ZCL_ATTR_PRICE_CLI_COMMODITY_TYPE, (commodity_type))  \
   ZB_ZCL_FINISH_DECLARE_ATTRIB_LIST
 
 /** @} */ /* end of ZB_ZCL_PRICE_CLIENT_ATTRIBUTES_GROUP */

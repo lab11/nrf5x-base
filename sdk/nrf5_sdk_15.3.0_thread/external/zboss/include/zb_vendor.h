@@ -117,14 +117,14 @@
 #define ZB_APS_GROUP_TABLE_SIZE 8
 #endif
 #define ZB_ZGP_SINK_TBL_SIZE 24
-#define ZB_ZGP_PROXY_TBL_SIZE 4
+#define ZB_ZGP_PROXY_TBL_SIZE 5
 
+#define ZB_NRF52840_RADIO_STATISTICS
 
 #define ZB_CONFIGURABLE_MEM
 
-#ifdef ZB_CONFIG_DEFAULT_KERNEL_DEFINITION
-
 /* Default memory storage configuration - to be used if user does not include any of zb_mem_config_xxx.h */
+#ifdef ZB_CONFIG_DEFAULT_KERNEL_DEFINITION
 
 #ifndef ZB_ED_ROLE
 /* Note that by dafault ZC/ZR ZBOSS library uses ZC memory
@@ -142,7 +142,5 @@
 #define ZB_CONFIG_APPLICATION_COMPLEX
 
 #endif  /*  ZB_CONFIG_DEFAULT_KERNEL_DEFINITION */
-
-#define ZB_ENABLE_SE_CLUSTERS
 
 #endif /* ZB_VENDOR_CFG_NRF52840_NORDIC_SDK_H */

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2018, Nordic Semiconductor ASA
+ * Copyright (c) 2018 - 2019, Nordic Semiconductor ASA
  *
  * All rights reserved.
  *
@@ -50,16 +50,8 @@
 #include <openthread/ip6.h>
 #include <openthread/thread.h>
 
-#define IPV6_STRING_SIZE       (41 * sizeof(char))
+#define IPV6_STRING_SIZE       41
 #define REMOTE_CMD_BUFFER_SIZE 128
-
-static const otIp6Address m_unspecified_ipv6 =
-{
-    .mFields =
-    {
-        .m8 = {0}
-    }
-};
 
 static void address_to_string(const otIp6Address *addr, char * ipstr)
 {
@@ -140,7 +132,7 @@ void protocol_cmd_config_get(const nrf_cli_t * p_cli)
 
 void protocol_cmd_peer_get(const nrf_cli_t * p_cli, const benchmark_peer_entry_t * p_peer)
 {
-    char     ipv6[IPV6_STRING_SIZE];
+    char     ipv6[IPV6_STRING_SIZE] = "::"; ///< Use unspecified address by default.
     uint32_t device_id_lo = 0;
     uint32_t device_id_hi = 0;
 
@@ -150,10 +142,6 @@ void protocol_cmd_peer_get(const nrf_cli_t * p_cli, const benchmark_peer_entry_t
         device_id_hi = DEVICE_ID_HI(p_peer->device_id);
 
         address_to_string((otIp6Address *)(p_peer->p_address), ipv6);
-    }
-    else
-    {
-        address_to_string(&m_unspecified_ipv6, ipv6);
     }
 
     nrf_cli_fprintf(p_cli, NRF_CLI_INFO, "\n\t=== Peer information ===\r\n");

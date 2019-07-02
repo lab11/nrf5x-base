@@ -112,6 +112,17 @@ enum zb_zcl_thermostat_ui_config_keypad_lockout_e
 /** @brief Default value for ScheduleProgrammingVisibility attribute */
 #define ZB_ZCL_THERMOSTAT_UI_CONFIG_SCHEDULE_PROGRAMMING_VISIBILITY_DEFAULT_VALUE ((zb_uint8_t)0x00)
 
+/** @brief Declare attribute list for Thermostat UI Configuration cluster
+    @param attr_list - attribute list name
+    @param temperature_display_mode - pointer to variable to store Temperature Display Mode attribute value
+    @param keypad_lockout - pointer to variable to store Keypad Lockout attribute value
+*/
+#define ZB_ZCL_DECLARE_THERMOSTAT_UI_CONFIG_ATTRIB_LIST(attr_list, temperature_display_mode, keypad_lockout)     \
+  ZB_ZCL_START_DECLARE_ATTRIB_LIST(attr_list)                                                                    \
+  ZB_ZCL_SET_ATTR_DESC(ZB_ZCL_ATTR_THERMOSTAT_UI_CONFIG_TEMPERATURE_DISPLAY_MODE_ID, (temperature_display_mode)) \
+  ZB_ZCL_SET_ATTR_DESC(ZB_ZCL_ATTR_THERMOSTAT_UI_CONFIG_KEYPAD_LOCKOUT_ID, (keypad_lockout))                     \
+  ZB_ZCL_FINISH_DECLARE_ATTRIB_LIST
+
 /*! @} */ /* Thermostat UI Configuration cluster attributes */
 
 /*! @name Thermostat UI Configuration cluster commands
@@ -141,17 +152,6 @@ enum zb_zcl_thermostat_ui_config_keypad_lockout_e
   ZB_ZCL_ATTR_ACCESS_READ_WRITE,                                                                      \
   (zb_voidp_t) data_ptr                                                                               \
 }
-
-/** @internal @brief Declare attribute list for Thermostat UI Configuration cluster
-    @param attr_list - attribure list name
-    @param temperature_display_mode - pointer to variable to store Temperature Display Mode attribute value
-    @param keypad_lockout - pointer to variable to store Keypad Lockout attribute value
-*/
-#define ZB_ZCL_DECLARE_THERMOSTAT_UI_CONFIG_ATTRIB_LIST(attr_list, temperature_display_mode, keypad_lockout)     \
-  ZB_ZCL_START_DECLARE_ATTRIB_LIST(attr_list)                                                                    \
-  ZB_ZCL_SET_ATTR_DESC(ZB_ZCL_ATTR_THERMOSTAT_UI_CONFIG_TEMPERATURE_DISPLAY_MODE_ID, (temperature_display_mode)) \
-  ZB_ZCL_SET_ATTR_DESC(ZB_ZCL_ATTR_THERMOSTAT_UI_CONFIG_KEYPAD_LOCKOUT_ID, (keypad_lockout))                     \
-  ZB_ZCL_FINISH_DECLARE_ATTRIB_LIST
 
 /*! @internal Number of attributes mandatory for reporting in Thermostat UI Configuration cluster */
 #define ZB_ZCL_THERMOSTAT_UI_CONFIG_REPORT_ATTR_COUNT 0

@@ -1,0 +1,67 @@
+nrf52840:
+  compilers:
+    - gcc
+    - keil
+    - iar
+  required_libs:
+    - libmbedcrypto
+    - libmbedcrypto-threadsafe
+    - libopenthread-cli-ftd
+    - libopenthread-cli-mtd
+    - libopenthread-diag
+    - libopenthread-ftd
+    - libopenthread-mtd
+    - libopenthread-ncp-ftd
+    - libopenthread-ncp-ftd-spi
+    - libopenthread-ncp-mtd
+    - libopenthread-ncp-mtd-spi
+    - libopenthread-nrf52840-sdk
+    - libopenthread-nrf52840-sdk-usb
+    - libopenthread-nrf52840-sdk-spi
+    - libopenthread-nrf52840-softdevice-sdk
+    - libopenthread-nrf52840-softdevice-sdk-usb
+    - libopenthread-nrf52840-softdevice-sdk-spi
+    - libopenthread-platform-utils
+    - libnordicsemi-nrf52840-radio-driver
+    - libnordicsemi-nrf52840-radio-driver-softdevice
+    - libopenthread-radio
+    - libopenthread-ncp-radio
+    - libopenthread-ncp-radio-spi
+  dropped_libs:
+    - libjlinkrtt
+    - libnordicsemi-nrf52840-sdk
+    - libopenthread-nrf52840
+
+nrf52811:
+  compilers:
+    - gcc
+    - keil
+    - iar
+  required_libs:
+    - libmbedcrypto
+    - libopenthread-mtd
+    - libopenthread-diag
+    - libopenthread-nrf52811-sdk
+    - libopenthread-nrf52811-sdk-spi
+    - libopenthread-platform-utils
+    - libopenthread-radio
+    - libopenthread-cli-mtd
+    - libopenthread-ncp-radio
+    - libopenthread-ncp-radio-spi
+    - libnordicsemi-nrf52811-radio-driver
+  dropped_libs:
+    - libmbedcrypto-threadsafe
+    - libjlinkrtt
+    - libopenthread-ftd
+    - libopenthread-cli-ftd
+    - libnordicsemi-nrf52811-sdk
+    - libopenthread-nrf52811
+    - libopenthread-ncp-ftd
+    - libopenthread-ncp-ftd-spi
+    - libopenthread-ncp-mtd
+    - libopenthread-ncp-mtd-spi
+    - libopenthread-nrf52811-sdk-usb
+    - libopenthread-nrf52811-softdevice-sdk
+    - libopenthread-nrf52811-softdevice-sdk-usb
+    - libopenthread-nrf52811-softdevice-sdk-spi
+    - libnordicsemi-nrf52811-radio-driver-softdevice

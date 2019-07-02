@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2018, Nordic Semiconductor ASA
+ * Copyright (c) 2018 - 2019, Nordic Semiconductor ASA
  *
  * All rights reserved.
  *
@@ -65,6 +65,10 @@ NRF_CLI_CREATE_STATIC_SUBCMD_SET(m_sub_zcl)
     NRF_CLI_CMD(attr, &m_sub_attr, "read/write attribute", NULL),
     NRF_CLI_CMD(ping, NULL, "ping over ZCL", cmd_zb_ping),
     NRF_CLI_CMD(subscribe, &m_sub_subscribe, "(un)subscribe to an attribute", NULL),
+    NRF_CLI_CMD(cmd, NULL, "send generic command", cmd_zb_generic_cmd),
+#ifdef ZIGBEE_CLI_DEBUG
+    NRF_CLI_CMD(raw, NULL, "send raw ZCL frame", cmd_zb_zcl_raw),
+#endif
     NRF_CLI_SUBCMD_SET_END
 };
 

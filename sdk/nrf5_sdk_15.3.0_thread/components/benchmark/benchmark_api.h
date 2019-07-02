@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2018, Nordic Semiconductor ASA
+ * Copyright (c) 2018 - 2019, Nordic Semiconductor ASA
  *
  * All rights reserved.
  *
@@ -46,6 +46,7 @@
 
 #include <stdbool.h>
 #include <stdint.h>
+#include "app_util_platform.h"
 
 #define BENCHMARK_MAX_PEER_NUMBER               16         /**< Maximal number of discovered peers that can be stored in the database. */
 #define BENCHMARK_SCHED_MAX_EVENT_DATA_SIZE     52         /**< Maximum possible size of a data structure passed by the app scheduler module. */
@@ -88,30 +89,32 @@ typedef enum
     BENCHMARK_MODE_ACK,                /**< Receiver replies with a short information that the data has been received. */
 } benchmark_mode_t;
 
-typedef enum
-{
-    BENCHMARK_ROLE_MASTER = 0,  /**< The device will generate test frames. */
-    BENCHMARK_ROLE_SLAVE,       /**< The device will respond to the generated frames. */
-} benchmark_role_t;
-
 typedef struct
 {
     uint16_t         length;       /**< Length of the protocol-specific payload. */
     uint16_t         ack_timeout;  /**< Timeout, in milliseconds, used in ACK and ECHO modes */
     uint32_t         count;        /**< Number of packets to send. */
     benchmark_mode_t mode;         /**< Receiver mode. */
-    benchmark_role_t role;         /**< Device role in test. */
-    uint8_t          peer_control; /**< Boolean flag indicating whether a peer should be controlled during test. */
 } benchmark_configuration_t;
 
 typedef struct
 {
-    bool     test_in_progress;   /**< Indicates that the test is ongoing. */
-    bool     reset_counters;     /**< Reset counters upon reception of the first packet. */
-    uint32_t acks_lost;          /**< Total number of acknowledgments lost. */
-    uint32_t waiting_for_ack;    /**< Frame number for which acknowledgment is awaited. */
-    uint32_t packets_left_count; /**< Number of sent packets. */
-    uint32_t frame_number;       /**< Number of the test frame included in the payload. */
+    uint32_t min; /**< Minimum measured latency [us]. */
+    uint32_t max; /**< Maximum measured latency [us]. */
+
+    uint32_t cnt; /**< Number of summed latencies. */
+    uint64_t sum; /**< Sum of measured latencies. */
+} benchmark_latency_t;
+
+typedef struct
+{
+    bool                test_in_progress;   /**< Indicates that the test is ongoing. */
+    bool                reset_counters;     /**< Reset counters upon reception of the first packet. */
+    uint32_t            acks_lost;          /**< Total number of acknowledgments lost. */
+    uint32_t            waiting_for_ack;    /**< Frame number for which acknowledgment is awaited. */
+    uint32_t            packets_left_count; /**< Number of sent packets. */
+    uint32_t            frame_number;       /**< Number of the test frame included in the payload. */
+    benchmark_latency_t latency;            /**< Measured latency values. */
 } benchmark_status_t;
 
 typedef struct
@@ -124,9 +127,29 @@ typedef struct
 
 typedef struct
 {
-    uint32_t                cpu_utilization; /**< CPU utilization [0.01%]. */
-    uint32_t                duration;        /**< Test duration [ms]. */
-    benchmark_rx_counters_t rx_counters;     /**< Counter values from peer that are transferred to the local node after the test. */
+    uint32_t total; /**< Total number of attempts. */
+    uint32_t error; /**< Total number of failed attempts. */
+} benchmark_mac_counters_t;
+
+typedef PACKED_STRUCT
+{
+    uint32_t bytes_transfered;          /**< Total number of bytes transfered over BLE. */
+    uint32_t duration;                  /**< Total duration of the BLE transfer. */
+    uint32_t throughput;                /**< Average throughput of the BLE transfer. */
+} benchmark_ble_results_t;
+
+typedef struct
+{
+    benchmark_ble_results_t local_results;      /**< Data transfer measurements over the BLE, collected locally. */
+    benchmark_ble_results_t remote_results;     /**< Data transfer measurements over the BLE, collected from peer. */
+} benchmark_ble_ping_results_t;
+
+typedef struct
+{
+    uint32_t                 cpu_utilization; /**< CPU utilization [0.01%]. */
+    uint32_t                 duration;        /**< Test duration [ms]. */
+    benchmark_rx_counters_t  rx_counters;     /**< Counter values from peer that are transferred to the local node after the test. */
+    benchmark_mac_counters_t mac_tx_counters; /**< MAC transmit counters. */
 } benchmark_result_t;
 
 typedef struct
@@ -156,6 +179,7 @@ typedef struct
     benchmark_event_t         evt;     /**< Benchmark event. */
     benchmark_event_context_t context; /**< Additional event information to be used in application. */
 } benchmark_evt_t;
+
 
 /**@brief Type definition of the the benchmark callback.
  *
@@ -228,6 +252,33 @@ uint32_t benchmark_peer_results_request_send(void);
  * @retval A pointer to the benchmark peer entry structure of the selected peer.
  */
 const benchmark_peer_entry_t * benchmark_peer_selected_get(void);
+
+/**@brief   Function that clears latency measurement.
+ *
+ * @param[out] p_latency    Pointer to latency measurements to be cleared.
+ */
+void benchmark_clear_latency(benchmark_latency_t * p_latency);
+
+/**@brief   Function that adds a new value to latency measurement.
+ *
+ * @param[inout] p_latency    Pointer to latency measurements to be updated.
+ * @param[in]    latency      Currently measured latency.
+ */
+void benchmark_update_latency(benchmark_latency_t * p_latency, uint32_t latency);
+
+/**@brief   Function for retrieving the amount of data sent and the throughput results from the BLE module.
+ *
+ * @return Pointer to structure holding bytes of data sent, transmission duration and throughput.
+ */
+benchmark_ble_ping_results_t * benchmark_ble_continuous_results_get(void);
+
+/**@brief   Function for starting packet flood over the BLE.
+ */
+void benchmark_ble_flood_start(void);
+
+/**@brief   Function for stopping packet flood over the BLE.
+ */
+void benchmark_ble_flood_stop(void);
 
 #endif // BENCHMARK_H__
 

@@ -80,6 +80,7 @@ enum zb_zcl_ias_wd_attr_e
 /** @brief Max Duration attribute maximum value */
 #define ZB_ZCL_ATTR_IAS_WD_MAX_DURATION_MAX_VALUE            0xfffe
 
+/** @cond internals_doc */
 /*! @internal @name IAS WD cluster internals
     Internal structures for attribute representation in cluster definitions.
     @{
@@ -93,8 +94,15 @@ enum zb_zcl_ias_wd_attr_e
   (zb_voidp_t) data_ptr                                 \
 }
 
-/** @internal @brief Declare attribute list for IAS WD cluster - server side
-    @param attr_list - attribure list name
+/*! @internal Number of attributes mandatory for reporting in IAS WD cluster */
+#define ZB_ZCL_IAS_WD_REPORT_ATTR_COUNT 0
+
+/*! @} */ /* IAS WD cluster internals */
+/*! @}
+ *  @endcond */ /* internals_doc */
+
+/** @brief Declare attribute list for IAS WD cluster - server side
+    @param attr_list - attribute list name
     @param max_duration - pointer to variable to store Max Duration attribute
 */
 #define ZB_ZCL_DECLARE_IAS_WD_ATTRIB_LIST(attr_list,                          \
@@ -102,12 +110,6 @@ enum zb_zcl_ias_wd_attr_e
   ZB_ZCL_START_DECLARE_ATTRIB_LIST(attr_list)                                 \
   ZB_ZCL_SET_ATTR_DESC(ZB_ZCL_ATTR_IAS_WD_MAX_DURATION_ID, (max_duration))    \
   ZB_ZCL_FINISH_DECLARE_ATTRIB_LIST
-
-
-/*! @internal Number of attributes mandatory for reporting in IAS WD cluster */
-#define ZB_ZCL_IAS_WD_REPORT_ATTR_COUNT 0
-
-/*! @} */ /* IAS WD cluster internals */
 
 /*! @} */ /* IAS WD cluster attributes */
 
@@ -124,6 +126,7 @@ enum zb_zcl_ias_wd_cmd_e
   ZB_ZCL_CMD_IAS_WD_SQUAWK_ID         = 0x01   /**< Squawk command. ZCL spec 8.4.2.3.2 */
 };
 
+/** @cond internals_doc */
 /* IAS WD cluster commands list : only for information - do not modify */
 #define ZB_ZCL_CLUSTER_ID_IAS_WD_SERVER_ROLE_GENERATED_CMD_LIST
 
@@ -134,6 +137,8 @@ enum zb_zcl_ias_wd_cmd_e
                                       ZB_ZCL_CMD_IAS_WD_SQUAWK_ID
 
 #define ZB_ZCL_CLUSTER_ID_IAS_WD_SERVER_ROLE_RECEIVED_CMD_LIST ZB_ZCL_CLUSTER_ID_IAS_WD_CLIENT_ROLE_GENERATED_CMD_LIST
+/*! @}
+ *  @endcond */ /* internals_doc */
 
 /******************************* Start warning command ******************************/
 
@@ -179,7 +184,7 @@ enum zb_zcl_ias_wd_siren_level_e
 };
 
 /**
-   Strobe Level Field, see ZCL spec 8.4.2.2.1.7
+   @brief Strobe Level Field, see ZCL spec 8.4.2.2.1.7
  */
 enum zb_zcl_ias_wd_strobe_level_e
 {

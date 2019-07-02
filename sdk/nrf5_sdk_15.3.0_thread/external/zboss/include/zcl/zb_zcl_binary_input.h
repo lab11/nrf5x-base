@@ -153,6 +153,20 @@ enum zb_zcl_binary_input_status_flag_value_e
 /*! @brief StatusFlag attribute maximum value */
 #define ZB_ZCL_BINARY_INPUT_STATUS_FLAG_MAX_VALUE 0x0F
 
+/** @brief Declare attribute list for Binary Input cluster
+    @param attr_list - attribute list name
+    @param out_of_service - pointer to variable to store OutOfService attribute value
+    @param present_value -  pointer to variable to store PresentValue attribute value
+    @param status_flag -  pointer to variable to store StatusFlag attribute value
+*/
+#define ZB_ZCL_DECLARE_BINARY_INPUT_ATTRIB_LIST(                                     \
+    attr_list, out_of_service, present_value, status_flag)                           \
+  ZB_ZCL_START_DECLARE_ATTRIB_LIST(attr_list)                                        \
+  ZB_ZCL_SET_ATTR_DESC(ZB_ZCL_ATTR_BINARY_INPUT_OUT_OF_SERVICE_ID, (out_of_service)) \
+  ZB_ZCL_SET_ATTR_DESC(ZB_ZCL_ATTR_BINARY_INPUT_PRESENT_VALUE_ID, (present_value))   \
+  ZB_ZCL_SET_ATTR_DESC(ZB_ZCL_ATTR_BINARY_INPUT_STATUS_FLAG_ID, (status_flag))       \
+  ZB_ZCL_FINISH_DECLARE_ATTRIB_LIST
+
 /*! @} */ /* Binary Input cluster attributes */
 
 /*! @name Binary input attribute value manipulation API
@@ -260,20 +274,6 @@ enum zb_zcl_binary_input_status_flag_value_e
   ZB_ZCL_ATTR_ACCESS_READ_ONLY | ZB_ZCL_ATTR_ACCESS_REPORTING,      \
   (zb_voidp_t) data_ptr                                             \
 }
-
-/** @brief Declare attribute list for Binary Input cluster
-    @param attr_list - attribure list name
-    @param out_of_service - pointer to variable to store OutOfService attribute value
-    @param present_value -  pointer to variable to store PresentValue attribute value
-    @param status_flag -  pointer to variable to store StatusFlag attribute value
-*/
-#define ZB_ZCL_DECLARE_BINARY_INPUT_ATTRIB_LIST(                                     \
-    attr_list, out_of_service, present_value, status_flag)                           \
-  ZB_ZCL_START_DECLARE_ATTRIB_LIST(attr_list)                                        \
-  ZB_ZCL_SET_ATTR_DESC(ZB_ZCL_ATTR_BINARY_INPUT_OUT_OF_SERVICE_ID, (out_of_service)) \
-  ZB_ZCL_SET_ATTR_DESC(ZB_ZCL_ATTR_BINARY_INPUT_PRESENT_VALUE_ID, (present_value))   \
-  ZB_ZCL_SET_ATTR_DESC(ZB_ZCL_ATTR_BINARY_INPUT_STATUS_FLAG_ID, (status_flag))       \
-  ZB_ZCL_FINISH_DECLARE_ATTRIB_LIST
 
 /*! Number of attributes mandatory for reporting in Binary Input cluster */
 #define ZB_ZCL_BINARY_INPUT_REPORT_ATTR_COUNT 2

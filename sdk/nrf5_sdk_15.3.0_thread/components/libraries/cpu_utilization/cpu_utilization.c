@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2018, Nordic Semiconductor ASA
+ * Copyright (c) 2018 - 2019, Nordic Semiconductor ASA
  *
  * All rights reserved.
  *
@@ -320,7 +320,14 @@ uint32_t cpu_utilization_get(void)
     uint64_t measurement_time = ((uint64_t)measurement_timer_msw << 32) | time_measurement_timer_value;
     uint64_t sleep_time       = ((uint64_t)sleep_timer_msw << 32) | time_sleep_timer_value;
 
-    return (uint32_t)(10000 - (10000 * sleep_time / measurement_time));
+    if (measurement_time)
+    {
+        return (uint32_t)(10000 - (10000 * sleep_time / measurement_time));
+    }
+    else
+    {
+        return 0;
+    }
 }
 #endif //NRF_MODULE_ENABLED(CPU_UTILIZATION)
 

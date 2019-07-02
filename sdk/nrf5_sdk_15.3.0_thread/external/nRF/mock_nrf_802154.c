@@ -179,6 +179,22 @@ typedef struct _CMOCK_nrf_802154_receive_CALL_INSTANCE
 
 } CMOCK_nrf_802154_receive_CALL_INSTANCE;
 
+typedef struct _CMOCK_nrf_802154_receive_at_CALL_INSTANCE
+{
+  UNITY_LINE_TYPE LineNumber;
+  bool ReturnVal;
+  int CallOrder;
+  uint32_t Expected_t0;
+  uint32_t Expected_dt;
+  uint32_t Expected_timeout;
+  uint8_t Expected_channel;
+  int IgnoreArg_t0;
+  int IgnoreArg_dt;
+  int IgnoreArg_timeout;
+  int IgnoreArg_channel;
+
+} CMOCK_nrf_802154_receive_at_CALL_INSTANCE;
+
 typedef struct _CMOCK_nrf_802154_transmit_raw_CALL_INSTANCE
 {
   UNITY_LINE_TYPE LineNumber;
@@ -372,6 +388,26 @@ typedef struct _CMOCK_nrf_802154_pan_coord_get_CALL_INSTANCE
 
 } CMOCK_nrf_802154_pan_coord_get_CALL_INSTANCE;
 
+typedef struct _CMOCK_nrf_802154_ack_data_set_CALL_INSTANCE
+{
+  UNITY_LINE_TYPE LineNumber;
+  bool ReturnVal;
+  int CallOrder;
+  uint8_t* Expected_p_addr;
+  bool Expected_extended;
+  void* Expected_p_data;
+  uint16_t Expected_length;
+  uint8_t Expected_data_type;
+  int Expected_p_addr_Depth;
+  int Expected_p_data_Depth;
+  int IgnoreArg_p_addr;
+  int IgnoreArg_extended;
+  int IgnoreArg_p_data;
+  int IgnoreArg_length;
+  int IgnoreArg_data_type;
+
+} CMOCK_nrf_802154_ack_data_set_CALL_INSTANCE;
+
 typedef struct _CMOCK_nrf_802154_auto_pending_bit_set_CALL_INSTANCE
 {
   UNITY_LINE_TYPE LineNumber;
@@ -557,6 +593,11 @@ static struct mock_nrf_802154Instance
   CMOCK_nrf_802154_receive_CALLBACK nrf_802154_receive_CallbackFunctionPointer;
   int nrf_802154_receive_CallbackCalls;
   CMOCK_MEM_INDEX_TYPE nrf_802154_receive_CallInstance;
+  int nrf_802154_receive_at_IgnoreBool;
+  bool nrf_802154_receive_at_FinalReturn;
+  CMOCK_nrf_802154_receive_at_CALLBACK nrf_802154_receive_at_CallbackFunctionPointer;
+  int nrf_802154_receive_at_CallbackCalls;
+  CMOCK_MEM_INDEX_TYPE nrf_802154_receive_at_CallInstance;
   int nrf_802154_transmit_raw_IgnoreBool;
   bool nrf_802154_transmit_raw_FinalReturn;
   CMOCK_nrf_802154_transmit_raw_CALLBACK nrf_802154_transmit_raw_CallbackFunctionPointer;
@@ -641,6 +682,11 @@ static struct mock_nrf_802154Instance
   CMOCK_nrf_802154_pan_coord_get_CALLBACK nrf_802154_pan_coord_get_CallbackFunctionPointer;
   int nrf_802154_pan_coord_get_CallbackCalls;
   CMOCK_MEM_INDEX_TYPE nrf_802154_pan_coord_get_CallInstance;
+  int nrf_802154_ack_data_set_IgnoreBool;
+  bool nrf_802154_ack_data_set_FinalReturn;
+  CMOCK_nrf_802154_ack_data_set_CALLBACK nrf_802154_ack_data_set_CallbackFunctionPointer;
+  int nrf_802154_ack_data_set_CallbackCalls;
+  CMOCK_MEM_INDEX_TYPE nrf_802154_ack_data_set_CallInstance;
   int nrf_802154_auto_pending_bit_set_IgnoreBool;
   CMOCK_nrf_802154_auto_pending_bit_set_CALLBACK nrf_802154_auto_pending_bit_set_CallbackFunctionPointer;
   int nrf_802154_auto_pending_bit_set_CallbackCalls;
@@ -745,6 +791,9 @@ void mock_nrf_802154_Verify(void)
   UNITY_TEST_ASSERT(CMOCK_GUTS_NONE == Mock.nrf_802154_receive_CallInstance, cmock_line, "Function 'nrf_802154_receive' called less times than expected.");
   if (Mock.nrf_802154_receive_CallbackFunctionPointer != NULL)
     Mock.nrf_802154_receive_CallInstance = CMOCK_GUTS_NONE;
+  UNITY_TEST_ASSERT(CMOCK_GUTS_NONE == Mock.nrf_802154_receive_at_CallInstance, cmock_line, "Function 'nrf_802154_receive_at' called less times than expected.");
+  if (Mock.nrf_802154_receive_at_CallbackFunctionPointer != NULL)
+    Mock.nrf_802154_receive_at_CallInstance = CMOCK_GUTS_NONE;
   UNITY_TEST_ASSERT(CMOCK_GUTS_NONE == Mock.nrf_802154_transmit_raw_CallInstance, cmock_line, "Function 'nrf_802154_transmit_raw' called less times than expected.");
   if (Mock.nrf_802154_transmit_raw_CallbackFunctionPointer != NULL)
     Mock.nrf_802154_transmit_raw_CallInstance = CMOCK_GUTS_NONE;
@@ -799,6 +848,9 @@ void mock_nrf_802154_Verify(void)
   UNITY_TEST_ASSERT(CMOCK_GUTS_NONE == Mock.nrf_802154_pan_coord_get_CallInstance, cmock_line, "Function 'nrf_802154_pan_coord_get' called less times than expected.");
   if (Mock.nrf_802154_pan_coord_get_CallbackFunctionPointer != NULL)
     Mock.nrf_802154_pan_coord_get_CallInstance = CMOCK_GUTS_NONE;
+  UNITY_TEST_ASSERT(CMOCK_GUTS_NONE == Mock.nrf_802154_ack_data_set_CallInstance, cmock_line, "Function 'nrf_802154_ack_data_set' called less times than expected.");
+  if (Mock.nrf_802154_ack_data_set_CallbackFunctionPointer != NULL)
+    Mock.nrf_802154_ack_data_set_CallInstance = CMOCK_GUTS_NONE;
   UNITY_TEST_ASSERT(CMOCK_GUTS_NONE == Mock.nrf_802154_auto_pending_bit_set_CallInstance, cmock_line, "Function 'nrf_802154_auto_pending_bit_set' called less times than expected.");
   if (Mock.nrf_802154_auto_pending_bit_set_CallbackFunctionPointer != NULL)
     Mock.nrf_802154_auto_pending_bit_set_CallInstance = CMOCK_GUTS_NONE;
@@ -875,6 +927,8 @@ void mock_nrf_802154_Destroy(void)
   Mock.nrf_802154_sleep_if_idle_CallbackCalls = 0;
   Mock.nrf_802154_receive_CallbackFunctionPointer = NULL;
   Mock.nrf_802154_receive_CallbackCalls = 0;
+  Mock.nrf_802154_receive_at_CallbackFunctionPointer = NULL;
+  Mock.nrf_802154_receive_at_CallbackCalls = 0;
   Mock.nrf_802154_transmit_raw_CallbackFunctionPointer = NULL;
   Mock.nrf_802154_transmit_raw_CallbackCalls = 0;
   Mock.nrf_802154_transmit_CallbackFunctionPointer = NULL;
@@ -911,6 +965,8 @@ void mock_nrf_802154_Destroy(void)
   Mock.nrf_802154_pan_coord_set_CallbackCalls = 0;
   Mock.nrf_802154_pan_coord_get_CallbackFunctionPointer = NULL;
   Mock.nrf_802154_pan_coord_get_CallbackCalls = 0;
+  Mock.nrf_802154_ack_data_set_CallbackFunctionPointer = NULL;
+  Mock.nrf_802154_ack_data_set_CallbackCalls = 0;
   Mock.nrf_802154_auto_pending_bit_set_CallbackFunctionPointer = NULL;
   Mock.nrf_802154_auto_pending_bit_set_CallbackCalls = 0;
   Mock.nrf_802154_pending_bit_for_addr_set_CallbackFunctionPointer = NULL;
@@ -2112,6 +2168,115 @@ void nrf_802154_receive_CMockExpectAndReturn(UNITY_LINE_TYPE cmock_line, bool cm
 void nrf_802154_receive_StubWithCallback(CMOCK_nrf_802154_receive_CALLBACK Callback)
 {
   Mock.nrf_802154_receive_CallbackFunctionPointer = Callback;
+}
+
+bool nrf_802154_receive_at(uint32_t t0, uint32_t dt, uint32_t timeout, uint8_t channel)
+{
+  UNITY_LINE_TYPE cmock_line = TEST_LINE_NUM;
+  CMOCK_nrf_802154_receive_at_CALL_INSTANCE* cmock_call_instance = (CMOCK_nrf_802154_receive_at_CALL_INSTANCE*)CMock_Guts_GetAddressFor(Mock.nrf_802154_receive_at_CallInstance);
+  Mock.nrf_802154_receive_at_CallInstance = CMock_Guts_MemNext(Mock.nrf_802154_receive_at_CallInstance);
+  if (Mock.nrf_802154_receive_at_IgnoreBool)
+  {
+    if (cmock_call_instance == NULL)
+      return Mock.nrf_802154_receive_at_FinalReturn;
+    Mock.nrf_802154_receive_at_FinalReturn = cmock_call_instance->ReturnVal;
+    return cmock_call_instance->ReturnVal;
+  }
+  if (Mock.nrf_802154_receive_at_CallbackFunctionPointer != NULL)
+  {
+    return Mock.nrf_802154_receive_at_CallbackFunctionPointer(t0, dt, timeout, channel, Mock.nrf_802154_receive_at_CallbackCalls++);
+  }
+  UNITY_TEST_ASSERT_NOT_NULL(cmock_call_instance, cmock_line, "Function 'nrf_802154_receive_at' called more times than expected.");
+  cmock_line = cmock_call_instance->LineNumber;
+  if (cmock_call_instance->CallOrder > ++GlobalVerifyOrder)
+    UNITY_TEST_FAIL(cmock_line, "Function 'nrf_802154_receive_at' called earlier than expected.");
+  if (cmock_call_instance->CallOrder < GlobalVerifyOrder)
+    UNITY_TEST_FAIL(cmock_line, "Function 'nrf_802154_receive_at' called later than expected.");
+  if (!cmock_call_instance->IgnoreArg_t0)
+  {
+    UNITY_TEST_ASSERT_EQUAL_HEX32(cmock_call_instance->Expected_t0, t0, cmock_line, "Function 'nrf_802154_receive_at' called with unexpected value for argument 't0'.");
+  }
+  if (!cmock_call_instance->IgnoreArg_dt)
+  {
+    UNITY_TEST_ASSERT_EQUAL_HEX32(cmock_call_instance->Expected_dt, dt, cmock_line, "Function 'nrf_802154_receive_at' called with unexpected value for argument 'dt'.");
+  }
+  if (!cmock_call_instance->IgnoreArg_timeout)
+  {
+    UNITY_TEST_ASSERT_EQUAL_HEX32(cmock_call_instance->Expected_timeout, timeout, cmock_line, "Function 'nrf_802154_receive_at' called with unexpected value for argument 'timeout'.");
+  }
+  if (!cmock_call_instance->IgnoreArg_channel)
+  {
+    UNITY_TEST_ASSERT_EQUAL_HEX8(cmock_call_instance->Expected_channel, channel, cmock_line, "Function 'nrf_802154_receive_at' called with unexpected value for argument 'channel'.");
+  }
+  return cmock_call_instance->ReturnVal;
+}
+
+void CMockExpectParameters_nrf_802154_receive_at(CMOCK_nrf_802154_receive_at_CALL_INSTANCE* cmock_call_instance, uint32_t t0, uint32_t dt, uint32_t timeout, uint8_t channel)
+{
+  cmock_call_instance->Expected_t0 = t0;
+  cmock_call_instance->IgnoreArg_t0 = 0;
+  cmock_call_instance->Expected_dt = dt;
+  cmock_call_instance->IgnoreArg_dt = 0;
+  cmock_call_instance->Expected_timeout = timeout;
+  cmock_call_instance->IgnoreArg_timeout = 0;
+  cmock_call_instance->Expected_channel = channel;
+  cmock_call_instance->IgnoreArg_channel = 0;
+}
+
+void nrf_802154_receive_at_CMockIgnoreAndReturn(UNITY_LINE_TYPE cmock_line, bool cmock_to_return)
+{
+  CMOCK_MEM_INDEX_TYPE cmock_guts_index = CMock_Guts_MemNew(sizeof(CMOCK_nrf_802154_receive_at_CALL_INSTANCE));
+  CMOCK_nrf_802154_receive_at_CALL_INSTANCE* cmock_call_instance = (CMOCK_nrf_802154_receive_at_CALL_INSTANCE*)CMock_Guts_GetAddressFor(cmock_guts_index);
+  UNITY_TEST_ASSERT_NOT_NULL(cmock_call_instance, cmock_line, "CMock has run out of memory. Please allocate more.");
+  Mock.nrf_802154_receive_at_CallInstance = CMock_Guts_MemChain(Mock.nrf_802154_receive_at_CallInstance, cmock_guts_index);
+  cmock_call_instance->LineNumber = cmock_line;
+  cmock_call_instance->ReturnVal = cmock_to_return;
+  Mock.nrf_802154_receive_at_IgnoreBool = (int)1;
+}
+
+void nrf_802154_receive_at_CMockExpectAndReturn(UNITY_LINE_TYPE cmock_line, uint32_t t0, uint32_t dt, uint32_t timeout, uint8_t channel, bool cmock_to_return)
+{
+  CMOCK_MEM_INDEX_TYPE cmock_guts_index = CMock_Guts_MemNew(sizeof(CMOCK_nrf_802154_receive_at_CALL_INSTANCE));
+  CMOCK_nrf_802154_receive_at_CALL_INSTANCE* cmock_call_instance = (CMOCK_nrf_802154_receive_at_CALL_INSTANCE*)CMock_Guts_GetAddressFor(cmock_guts_index);
+  UNITY_TEST_ASSERT_NOT_NULL(cmock_call_instance, cmock_line, "CMock has run out of memory. Please allocate more.");
+  Mock.nrf_802154_receive_at_CallInstance = CMock_Guts_MemChain(Mock.nrf_802154_receive_at_CallInstance, cmock_guts_index);
+  cmock_call_instance->LineNumber = cmock_line;
+  cmock_call_instance->CallOrder = ++GlobalExpectCount;
+  CMockExpectParameters_nrf_802154_receive_at(cmock_call_instance, t0, dt, timeout, channel);
+  cmock_call_instance->ReturnVal = cmock_to_return;
+}
+
+void nrf_802154_receive_at_StubWithCallback(CMOCK_nrf_802154_receive_at_CALLBACK Callback)
+{
+  Mock.nrf_802154_receive_at_CallbackFunctionPointer = Callback;
+}
+
+void nrf_802154_receive_at_CMockIgnoreArg_t0(UNITY_LINE_TYPE cmock_line)
+{
+  CMOCK_nrf_802154_receive_at_CALL_INSTANCE* cmock_call_instance = cmock_call_instance = (CMOCK_nrf_802154_receive_at_CALL_INSTANCE*)CMock_Guts_GetAddressFor(CMock_Guts_MemEndOfChain(Mock.nrf_802154_receive_at_CallInstance));
+  UNITY_TEST_ASSERT_NOT_NULL(cmock_call_instance, cmock_line, "t0 IgnoreArg called before Expect on 'nrf_802154_receive_at'.");
+  cmock_call_instance->IgnoreArg_t0 = 1;
+}
+
+void nrf_802154_receive_at_CMockIgnoreArg_dt(UNITY_LINE_TYPE cmock_line)
+{
+  CMOCK_nrf_802154_receive_at_CALL_INSTANCE* cmock_call_instance = cmock_call_instance = (CMOCK_nrf_802154_receive_at_CALL_INSTANCE*)CMock_Guts_GetAddressFor(CMock_Guts_MemEndOfChain(Mock.nrf_802154_receive_at_CallInstance));
+  UNITY_TEST_ASSERT_NOT_NULL(cmock_call_instance, cmock_line, "dt IgnoreArg called before Expect on 'nrf_802154_receive_at'.");
+  cmock_call_instance->IgnoreArg_dt = 1;
+}
+
+void nrf_802154_receive_at_CMockIgnoreArg_timeout(UNITY_LINE_TYPE cmock_line)
+{
+  CMOCK_nrf_802154_receive_at_CALL_INSTANCE* cmock_call_instance = cmock_call_instance = (CMOCK_nrf_802154_receive_at_CALL_INSTANCE*)CMock_Guts_GetAddressFor(CMock_Guts_MemEndOfChain(Mock.nrf_802154_receive_at_CallInstance));
+  UNITY_TEST_ASSERT_NOT_NULL(cmock_call_instance, cmock_line, "timeout IgnoreArg called before Expect on 'nrf_802154_receive_at'.");
+  cmock_call_instance->IgnoreArg_timeout = 1;
+}
+
+void nrf_802154_receive_at_CMockIgnoreArg_channel(UNITY_LINE_TYPE cmock_line)
+{
+  CMOCK_nrf_802154_receive_at_CALL_INSTANCE* cmock_call_instance = cmock_call_instance = (CMOCK_nrf_802154_receive_at_CALL_INSTANCE*)CMock_Guts_GetAddressFor(CMock_Guts_MemEndOfChain(Mock.nrf_802154_receive_at_CallInstance));
+  UNITY_TEST_ASSERT_NOT_NULL(cmock_call_instance, cmock_line, "channel IgnoreArg called before Expect on 'nrf_802154_receive_at'.");
+  cmock_call_instance->IgnoreArg_channel = 1;
 }
 
 bool nrf_802154_transmit_raw(const uint8_t* p_data, bool cca)
@@ -3461,6 +3626,147 @@ void nrf_802154_pan_coord_get_CMockExpectAndReturn(UNITY_LINE_TYPE cmock_line, b
 void nrf_802154_pan_coord_get_StubWithCallback(CMOCK_nrf_802154_pan_coord_get_CALLBACK Callback)
 {
   Mock.nrf_802154_pan_coord_get_CallbackFunctionPointer = Callback;
+}
+
+bool nrf_802154_ack_data_set(const uint8_t* p_addr, bool extended, const void* p_data, uint16_t length, uint8_t data_type)
+{
+  UNITY_LINE_TYPE cmock_line = TEST_LINE_NUM;
+  CMOCK_nrf_802154_ack_data_set_CALL_INSTANCE* cmock_call_instance = (CMOCK_nrf_802154_ack_data_set_CALL_INSTANCE*)CMock_Guts_GetAddressFor(Mock.nrf_802154_ack_data_set_CallInstance);
+  Mock.nrf_802154_ack_data_set_CallInstance = CMock_Guts_MemNext(Mock.nrf_802154_ack_data_set_CallInstance);
+  if (Mock.nrf_802154_ack_data_set_IgnoreBool)
+  {
+    if (cmock_call_instance == NULL)
+      return Mock.nrf_802154_ack_data_set_FinalReturn;
+    Mock.nrf_802154_ack_data_set_FinalReturn = cmock_call_instance->ReturnVal;
+    return cmock_call_instance->ReturnVal;
+  }
+  if (Mock.nrf_802154_ack_data_set_CallbackFunctionPointer != NULL)
+  {
+    return Mock.nrf_802154_ack_data_set_CallbackFunctionPointer(p_addr, extended, p_data, length, data_type, Mock.nrf_802154_ack_data_set_CallbackCalls++);
+  }
+  UNITY_TEST_ASSERT_NOT_NULL(cmock_call_instance, cmock_line, "Function 'nrf_802154_ack_data_set' called more times than expected.");
+  cmock_line = cmock_call_instance->LineNumber;
+  if (cmock_call_instance->CallOrder > ++GlobalVerifyOrder)
+    UNITY_TEST_FAIL(cmock_line, "Function 'nrf_802154_ack_data_set' called earlier than expected.");
+  if (cmock_call_instance->CallOrder < GlobalVerifyOrder)
+    UNITY_TEST_FAIL(cmock_line, "Function 'nrf_802154_ack_data_set' called later than expected.");
+  if (!cmock_call_instance->IgnoreArg_p_addr)
+  {
+    if (cmock_call_instance->Expected_p_addr == NULL)
+      { UNITY_TEST_ASSERT_NULL(p_addr, cmock_line, "Expected NULL. Function 'nrf_802154_ack_data_set' called with unexpected value for argument 'p_addr'."); }
+    else if (cmock_call_instance->Expected_p_addr_Depth == 0)
+      { UNITY_TEST_ASSERT_EQUAL_PTR(cmock_call_instance->Expected_p_addr, p_addr, cmock_line, "Function 'nrf_802154_ack_data_set' called with unexpected value for argument 'p_addr'."); }
+    else
+      { UNITY_TEST_ASSERT_EQUAL_HEX8_ARRAY(cmock_call_instance->Expected_p_addr, p_addr, cmock_call_instance->Expected_p_addr_Depth, cmock_line, "Function 'nrf_802154_ack_data_set' called with unexpected value for argument 'p_addr'."); }
+  }
+  if (!cmock_call_instance->IgnoreArg_extended)
+  {
+    UNITY_TEST_ASSERT_EQUAL_INT(cmock_call_instance->Expected_extended, extended, cmock_line, "Function 'nrf_802154_ack_data_set' called with unexpected value for argument 'extended'.");
+  }
+  if (!cmock_call_instance->IgnoreArg_p_data)
+  {
+    UNITY_TEST_ASSERT_EQUAL_PTR(cmock_call_instance->Expected_p_data, p_data, cmock_line, "Function 'nrf_802154_ack_data_set' called with unexpected value for argument 'p_data'.");
+  }
+  if (!cmock_call_instance->IgnoreArg_length)
+  {
+    UNITY_TEST_ASSERT_EQUAL_HEX16(cmock_call_instance->Expected_length, length, cmock_line, "Function 'nrf_802154_ack_data_set' called with unexpected value for argument 'length'.");
+  }
+  if (!cmock_call_instance->IgnoreArg_data_type)
+  {
+    UNITY_TEST_ASSERT_EQUAL_HEX8(cmock_call_instance->Expected_data_type, data_type, cmock_line, "Function 'nrf_802154_ack_data_set' called with unexpected value for argument 'data_type'.");
+  }
+  return cmock_call_instance->ReturnVal;
+}
+
+void CMockExpectParameters_nrf_802154_ack_data_set(CMOCK_nrf_802154_ack_data_set_CALL_INSTANCE* cmock_call_instance, const uint8_t* p_addr, int p_addr_Depth, bool extended, const void* p_data, int p_data_Depth, uint16_t length, uint8_t data_type)
+{
+  cmock_call_instance->Expected_p_addr = (uint8_t*)p_addr;
+  cmock_call_instance->Expected_p_addr_Depth = p_addr_Depth;
+  cmock_call_instance->IgnoreArg_p_addr = 0;
+  cmock_call_instance->Expected_extended = extended;
+  cmock_call_instance->IgnoreArg_extended = 0;
+  cmock_call_instance->Expected_p_data = (void*)p_data;
+  cmock_call_instance->Expected_p_data_Depth = p_data_Depth;
+  cmock_call_instance->IgnoreArg_p_data = 0;
+  cmock_call_instance->Expected_length = length;
+  cmock_call_instance->IgnoreArg_length = 0;
+  cmock_call_instance->Expected_data_type = data_type;
+  cmock_call_instance->IgnoreArg_data_type = 0;
+}
+
+void nrf_802154_ack_data_set_CMockIgnoreAndReturn(UNITY_LINE_TYPE cmock_line, bool cmock_to_return)
+{
+  CMOCK_MEM_INDEX_TYPE cmock_guts_index = CMock_Guts_MemNew(sizeof(CMOCK_nrf_802154_ack_data_set_CALL_INSTANCE));
+  CMOCK_nrf_802154_ack_data_set_CALL_INSTANCE* cmock_call_instance = (CMOCK_nrf_802154_ack_data_set_CALL_INSTANCE*)CMock_Guts_GetAddressFor(cmock_guts_index);
+  UNITY_TEST_ASSERT_NOT_NULL(cmock_call_instance, cmock_line, "CMock has run out of memory. Please allocate more.");
+  Mock.nrf_802154_ack_data_set_CallInstance = CMock_Guts_MemChain(Mock.nrf_802154_ack_data_set_CallInstance, cmock_guts_index);
+  cmock_call_instance->LineNumber = cmock_line;
+  cmock_call_instance->ReturnVal = cmock_to_return;
+  Mock.nrf_802154_ack_data_set_IgnoreBool = (int)1;
+}
+
+void nrf_802154_ack_data_set_CMockExpectAndReturn(UNITY_LINE_TYPE cmock_line, const uint8_t* p_addr, bool extended, const void* p_data, uint16_t length, uint8_t data_type, bool cmock_to_return)
+{
+  CMOCK_MEM_INDEX_TYPE cmock_guts_index = CMock_Guts_MemNew(sizeof(CMOCK_nrf_802154_ack_data_set_CALL_INSTANCE));
+  CMOCK_nrf_802154_ack_data_set_CALL_INSTANCE* cmock_call_instance = (CMOCK_nrf_802154_ack_data_set_CALL_INSTANCE*)CMock_Guts_GetAddressFor(cmock_guts_index);
+  UNITY_TEST_ASSERT_NOT_NULL(cmock_call_instance, cmock_line, "CMock has run out of memory. Please allocate more.");
+  Mock.nrf_802154_ack_data_set_CallInstance = CMock_Guts_MemChain(Mock.nrf_802154_ack_data_set_CallInstance, cmock_guts_index);
+  cmock_call_instance->LineNumber = cmock_line;
+  cmock_call_instance->CallOrder = ++GlobalExpectCount;
+  CMockExpectParameters_nrf_802154_ack_data_set(cmock_call_instance, p_addr, 0, extended, p_data, 0, length, data_type);
+  cmock_call_instance->ReturnVal = cmock_to_return;
+}
+
+void nrf_802154_ack_data_set_StubWithCallback(CMOCK_nrf_802154_ack_data_set_CALLBACK Callback)
+{
+  Mock.nrf_802154_ack_data_set_CallbackFunctionPointer = Callback;
+}
+
+void nrf_802154_ack_data_set_CMockExpectWithArrayAndReturn(UNITY_LINE_TYPE cmock_line, uint8_t* p_addr, int p_addr_Depth, bool extended, void* p_data, int p_data_Depth, uint16_t length, uint8_t data_type, bool cmock_to_return)
+{
+  CMOCK_MEM_INDEX_TYPE cmock_guts_index = CMock_Guts_MemNew(sizeof(CMOCK_nrf_802154_ack_data_set_CALL_INSTANCE));
+  CMOCK_nrf_802154_ack_data_set_CALL_INSTANCE* cmock_call_instance = (CMOCK_nrf_802154_ack_data_set_CALL_INSTANCE*)CMock_Guts_GetAddressFor(cmock_guts_index);
+  UNITY_TEST_ASSERT_NOT_NULL(cmock_call_instance, cmock_line, "CMock has run out of memory. Please allocate more.");
+  Mock.nrf_802154_ack_data_set_CallInstance = CMock_Guts_MemChain(Mock.nrf_802154_ack_data_set_CallInstance, cmock_guts_index);
+  cmock_call_instance->LineNumber = cmock_line;
+  cmock_call_instance->CallOrder = ++GlobalExpectCount;
+  CMockExpectParameters_nrf_802154_ack_data_set(cmock_call_instance, p_addr, p_addr_Depth, extended, p_data, p_data_Depth, length, data_type);
+  cmock_call_instance->ReturnVal = cmock_to_return;
+}
+
+void nrf_802154_ack_data_set_CMockIgnoreArg_p_addr(UNITY_LINE_TYPE cmock_line)
+{
+  CMOCK_nrf_802154_ack_data_set_CALL_INSTANCE* cmock_call_instance = cmock_call_instance = (CMOCK_nrf_802154_ack_data_set_CALL_INSTANCE*)CMock_Guts_GetAddressFor(CMock_Guts_MemEndOfChain(Mock.nrf_802154_ack_data_set_CallInstance));
+  UNITY_TEST_ASSERT_NOT_NULL(cmock_call_instance, cmock_line, "p_addr IgnoreArg called before Expect on 'nrf_802154_ack_data_set'.");
+  cmock_call_instance->IgnoreArg_p_addr = 1;
+}
+
+void nrf_802154_ack_data_set_CMockIgnoreArg_extended(UNITY_LINE_TYPE cmock_line)
+{
+  CMOCK_nrf_802154_ack_data_set_CALL_INSTANCE* cmock_call_instance = cmock_call_instance = (CMOCK_nrf_802154_ack_data_set_CALL_INSTANCE*)CMock_Guts_GetAddressFor(CMock_Guts_MemEndOfChain(Mock.nrf_802154_ack_data_set_CallInstance));
+  UNITY_TEST_ASSERT_NOT_NULL(cmock_call_instance, cmock_line, "extended IgnoreArg called before Expect on 'nrf_802154_ack_data_set'.");
+  cmock_call_instance->IgnoreArg_extended = 1;
+}
+
+void nrf_802154_ack_data_set_CMockIgnoreArg_p_data(UNITY_LINE_TYPE cmock_line)
+{
+  CMOCK_nrf_802154_ack_data_set_CALL_INSTANCE* cmock_call_instance = cmock_call_instance = (CMOCK_nrf_802154_ack_data_set_CALL_INSTANCE*)CMock_Guts_GetAddressFor(CMock_Guts_MemEndOfChain(Mock.nrf_802154_ack_data_set_CallInstance));
+  UNITY_TEST_ASSERT_NOT_NULL(cmock_call_instance, cmock_line, "p_data IgnoreArg called before Expect on 'nrf_802154_ack_data_set'.");
+  cmock_call_instance->IgnoreArg_p_data = 1;
+}
+
+void nrf_802154_ack_data_set_CMockIgnoreArg_length(UNITY_LINE_TYPE cmock_line)
+{
+  CMOCK_nrf_802154_ack_data_set_CALL_INSTANCE* cmock_call_instance = cmock_call_instance = (CMOCK_nrf_802154_ack_data_set_CALL_INSTANCE*)CMock_Guts_GetAddressFor(CMock_Guts_MemEndOfChain(Mock.nrf_802154_ack_data_set_CallInstance));
+  UNITY_TEST_ASSERT_NOT_NULL(cmock_call_instance, cmock_line, "length IgnoreArg called before Expect on 'nrf_802154_ack_data_set'.");
+  cmock_call_instance->IgnoreArg_length = 1;
+}
+
+void nrf_802154_ack_data_set_CMockIgnoreArg_data_type(UNITY_LINE_TYPE cmock_line)
+{
+  CMOCK_nrf_802154_ack_data_set_CALL_INSTANCE* cmock_call_instance = cmock_call_instance = (CMOCK_nrf_802154_ack_data_set_CALL_INSTANCE*)CMock_Guts_GetAddressFor(CMock_Guts_MemEndOfChain(Mock.nrf_802154_ack_data_set_CallInstance));
+  UNITY_TEST_ASSERT_NOT_NULL(cmock_call_instance, cmock_line, "data_type IgnoreArg called before Expect on 'nrf_802154_ack_data_set'.");
+  cmock_call_instance->IgnoreArg_data_type = 1;
 }
 
 void nrf_802154_auto_pending_bit_set(bool enabled)

@@ -185,6 +185,12 @@ bool nrf_dfu_settings_adv_name_is_valid(void);
  */
 ret_code_t nrf_dfu_settings_additional_erase(void);
 
+/** @brief Function for resetting both init command and DFU transfer progress inside settings structure.
+ *
+ * @note    This function does not perform flash operation.
+ *          In order to save the reset state, please use @ref nrf_dfu_settings_write function.
+ */
+void nrf_dfu_settings_progress_reset(void);
 
 #ifdef __cplusplus
 }

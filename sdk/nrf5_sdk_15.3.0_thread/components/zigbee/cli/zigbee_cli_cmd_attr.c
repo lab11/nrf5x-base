@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2018, Nordic Semiconductor ASA
+ * Copyright (c) 2018 - 2019, Nordic Semiconductor ASA
  *
  * All rights reserved.
  *
@@ -68,18 +68,19 @@ typedef enum attr_type_e
  */
 typedef struct attr_query_s
 {
-    zb_bool_t          taken;
-    zb_uint8_t         seq_num;
-    attr_req_type_t    req_type;
-    zb_addr_u          remote_node;
-    zb_uint8_t         remote_addr_mode;
-    zb_uint8_t         remote_ep;
-    zb_uint16_t        profile_id;
-    zb_uint16_t        cluster_id;
-    zb_uint16_t        attr_id;
-    zb_uint8_t         attr_type;
-    zb_uint8_t         attr_value[32];
-    nrf_cli_t        * p_cli;
+    zb_bool_t                  taken;
+    zb_uint8_t                 seq_num;
+    attr_req_type_t            req_type;
+    zb_addr_u                  remote_node;
+    zb_uint8_t                 remote_addr_mode;
+    zb_uint8_t                 remote_ep;
+    zb_uint16_t                profile_id;
+    zb_uint16_t                cluster_id;
+    zb_uint16_t                attr_id;
+    zb_uint8_t                 attr_type;
+    zb_uint8_t                 attr_value[32];
+    zb_zcl_frame_direction_t   direction;
+    nrf_cli_t                * p_cli;
 } attr_query_t;
 
 static attr_query_t m_attr_table[ATTRIBUTE_TABLE_SIZE];
@@ -118,7 +119,7 @@ static zb_int8_t get_attr_table_row_by_sn(zb_uint8_t sernum)
     return -1;
 }
 
-/**@brief Invaidate row after the timeout.
+/**@brief Invalidate row after the timeout.
  *
  * @param row     Number of row to invalidate
  */
@@ -130,7 +131,7 @@ static zb_void_t invalidate_row(zb_uint8_t row)
     }
 }
 
-/**@brief Invaidate row after the timeout - ZBOSS callback
+/**@brief Invalidate row after the timeout - ZBOSS callback
  *
  * @param row     Number of row to invalidate
  */
@@ -322,7 +323,7 @@ static zb_void_t readattr_send(zb_uint8_t param, zb_uint16_t cb_param)
     attr_query_t * p_row = &(m_attr_table[row]);
 
     p_row->seq_num = ZCL_CTX().seq_number;
-    ZB_ZCL_GENERAL_INIT_READ_ATTR_REQ(p_buf, p_cmd_buf, ZB_ZCL_ENABLE_DEFAULT_RESPONSE);
+    ZB_ZCL_GENERAL_INIT_READ_ATTR_REQ_A(p_buf, p_cmd_buf, p_row->direction, ZB_ZCL_ENABLE_DEFAULT_RESPONSE);
     ZB_ZCL_GENERAL_ADD_ID_READ_ATTR_REQ(p_cmd_buf, p_row->attr_id);
     ZB_ZCL_GENERAL_SEND_READ_ATTR_REQ(p_buf, p_cmd_buf, p_row->remote_node,
                                       p_row->remote_addr_mode, p_row->remote_ep,
@@ -348,7 +349,7 @@ static zb_void_t writeattr_send(zb_uint8_t param, zb_uint16_t cb_param)
     attr_query_t * p_row = &(m_attr_table[row]);
     p_row->seq_num = ZCL_CTX().seq_number;
 
-    ZB_ZCL_GENERAL_INIT_WRITE_ATTR_REQ(p_buf, p_cmd_buf, ZB_ZCL_ENABLE_DEFAULT_RESPONSE);
+    ZB_ZCL_GENERAL_INIT_WRITE_ATTR_REQ_A(p_buf, p_cmd_buf, p_row->direction, ZB_ZCL_ENABLE_DEFAULT_RESPONSE);
     ZB_ZCL_GENERAL_ADD_VALUE_WRITE_ATTR_REQ(p_cmd_buf, p_row->attr_id, p_row->attr_type,
                                             p_row->attr_value);
     ZB_ZCL_GENERAL_SEND_WRITE_ATTR_REQ(p_buf, p_cmd_buf, p_row->remote_node,
@@ -380,13 +381,15 @@ void cmd_zb_readattr(nrf_cli_t const * p_cli, size_t argc, char **argv)
     if (nrf_cli_help_requested(p_cli))
     {
         nrf_cli_help_print(p_cli, NULL, 0);
-        nrf_cli_fprintf(p_cli, NRF_CLI_NORMAL, "  h: is for hex, d: is for decimal\r\n");
-        nrf_cli_fprintf(p_cli, NRF_CLI_NORMAL, "  readattr <h:eui64> <d:ep> <h:cluster> ");
+        nrf_cli_fprintf(p_cli, NRF_CLI_NORMAL, "  h: is for hex, d: is for decimal, -c switches the server-to-client direction\r\n");
+        nrf_cli_fprintf(p_cli, NRF_CLI_NORMAL, "  readattr <h:dst_addr> <d:ep> <h:cluster> [-c] ");
         nrf_cli_fprintf(p_cli, NRF_CLI_NORMAL, "<h:profile> <h:attr ID>\r\n");
         return;
     }
 
-    if (argc != 6)
+    bool is_direction_present = ((argc == 7) && !strcmp(argv[4], "-c"));
+
+    if (argc != 6 && !is_direction_present)
     {
         nrf_cli_fprintf(p_cli, NRF_CLI_ERROR, "Error: wrong number of arguments\r\n");
         return;
@@ -399,16 +402,27 @@ void cmd_zb_readattr(nrf_cli_t const * p_cli, size_t argc, char **argv)
     }
 
     attr_query_t * p_row = &(m_attr_table[row]);
-    if (parse_address_string(argv[1], &(p_row->remote_node), &(p_row->remote_addr_mode)) == ZB_FALSE)
+
+    p_row->remote_addr_mode = parse_address(*(++argv), &(p_row->remote_node), ADDR_ANY);
+    if (p_row->remote_addr_mode == ADDR_INVALID)
     {
-        nrf_cli_fprintf(p_cli, NRF_CLI_ERROR, "Error: wrong EUI64 address format\r\n");
+        nrf_cli_fprintf(p_cli, NRF_CLI_ERROR, "Error: wrong address format\r\n");
         return;
     }
 
-    sscanf(argv[2], "%hhd", &(p_row->remote_ep));
-    sscanf(argv[3], "%hx", &(p_row->cluster_id));
-    sscanf(argv[4], "%hx", &(p_row->profile_id));
-    sscanf(argv[5], "%hx", &(p_row->attr_id));
+    UNUSED_RETURN_VALUE(sscan_uint8(*(++argv), &(p_row->remote_ep)));
+    sscanf(*(++argv), "%hx", &(p_row->cluster_id));
+    if (is_direction_present)
+    {
+        p_row->direction = ZB_ZCL_FRAME_DIRECTION_TO_CLI;
+        ++argv;
+    }
+    else
+    {
+        p_row->direction = ZB_ZCL_FRAME_DIRECTION_TO_SRV;
+    }
+    sscanf(*(++argv), "%hx", &(p_row->profile_id));
+    sscanf(*(++argv), "%hx", &(p_row->attr_id));
     p_row->req_type = ATTR_READ_REQUEST;
     p_row->taken = ZB_TRUE;
     /* Put the CLI instance to be used later */
@@ -445,14 +459,16 @@ void cmd_zb_writeattr(nrf_cli_t const * p_cli, size_t argc, char **argv)
     if (nrf_cli_help_requested(p_cli))
     {
         nrf_cli_help_print(p_cli, NULL, 0);
-        nrf_cli_fprintf(p_cli, NRF_CLI_NORMAL, "  h: is for hex, d: is for decimal\r\n");
-        nrf_cli_fprintf(p_cli, NRF_CLI_NORMAL, "  writeattr <h:eui64> <d:ep> <h:cluster> ");
+        nrf_cli_fprintf(p_cli, NRF_CLI_NORMAL, "  h: is for hex, d: is for decimal, -c switches the server-to-client direction\r\n");
+        nrf_cli_fprintf(p_cli, NRF_CLI_NORMAL, "  writeattr <h:dst_addr> <d:ep> <h:cluster> [-c] ");
         nrf_cli_fprintf(p_cli, NRF_CLI_NORMAL, "<h:profile> <h:attr ID> <h:attr type> ");
         nrf_cli_fprintf(p_cli, NRF_CLI_NORMAL, "<h:attr value>\r\n");
         return;
     }
 
-    if (argc != 8)
+    bool is_direction_present = ((argc == 9) && !strcmp(argv[4], "-c"));
+
+    if (argc != 8 && !is_direction_present)
     {
         nrf_cli_fprintf(p_cli, NRF_CLI_ERROR, "Error: wrong number of arguments\r\n");
         return;
@@ -465,26 +481,38 @@ void cmd_zb_writeattr(nrf_cli_t const * p_cli, size_t argc, char **argv)
     }
 
     attr_query_t * p_row = &(m_attr_table[row]);
-    if (parse_address_string(argv[1], &(p_row->remote_node), &(p_row->remote_addr_mode)) == ZB_FALSE)
+
+    p_row->remote_addr_mode = parse_address(*(++argv), &(p_row->remote_node), ADDR_ANY);
+    if (p_row->remote_addr_mode == ADDR_INVALID)
     {
-        nrf_cli_fprintf(p_cli, NRF_CLI_ERROR, "Error: wrong EUI64 address format\r\n");
+        nrf_cli_fprintf(p_cli, NRF_CLI_ERROR, "Error: wrong address format\r\n");
         return;
     }
-    sscanf(argv[2], "%hhd", &(p_row->remote_ep));
-    sscanf(argv[3], "%hx", &(p_row->cluster_id));
-    sscanf(argv[4], "%hx", &(p_row->profile_id));
-    sscanf(argv[5], "%hx", &(p_row->attr_id));
-    sscanf(argv[6], "%x", (zb_uint32_t*)&(p_row->attr_type)); // newlib-nano sscanf limitations
+
+    UNUSED_RETURN_VALUE(sscan_uint8(*(++argv), &(p_row->remote_ep)));
+    sscanf(*(++argv), "%hx", &(p_row->cluster_id));
+    if (is_direction_present)
+    {
+        p_row->direction = ZB_ZCL_FRAME_DIRECTION_TO_CLI;
+        ++argv;
+    }
+    else
+    {
+        p_row->direction = ZB_ZCL_FRAME_DIRECTION_TO_SRV;
+    }
+    sscanf(*(++argv), "%hx", &(p_row->profile_id));
+    sscanf(*(++argv), "%hx", &(p_row->attr_id));
+    sscanf(*(++argv), "%x", (zb_uint32_t*)&(p_row->attr_type)); // newlib-nano sscanf limitations
     switch (p_row->attr_type)
     {
         /* Let's handle gracefully the string */
         case ZB_ZCL_ATTR_TYPE_CHAR_STRING:
-            p_row->attr_value[0] = strlen(argv[7]);
-            strncpy((zb_char_t*)(p_row->attr_value + 1), argv[7], sizeof(p_row->attr_value) - 1);
+            p_row->attr_value[0] = strlen(*(++argv));
+            strncpy((zb_char_t*)(p_row->attr_value + 1), *argv, sizeof(p_row->attr_value) - 1);
             break;
         /* All others for now can be just a hexdump */
         default:
-            sscanf(argv[7], "%x", (zb_uint32_t*)p_row->attr_value);
+            sscanf(*(++argv), "%x", (zb_uint32_t*)p_row->attr_value);
             break;
     }
     p_row->req_type = ATTR_WRITE_REQUEST;

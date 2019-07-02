@@ -89,7 +89,7 @@ typedef enum
 } background_dfu_mode_t;
 
 /** @brief Trigger packet structure. */
-typedef PACKED_STRUCT
+typedef PACKED_STRUCT 
 {
     uint8_t  flags;         /**< Trigger message flags. Bits 7:4 (oldest) - trigger version, bit 3 - DFU mode, bits 2:0 - reserved. */
     uint32_t init_length;
@@ -109,7 +109,6 @@ typedef PACKED_STRUCT background_dfu_diagnostic
     uint16_t triggers_received;             /**< Number of triggers received. */
     uint16_t total_init_blocks_received;    /**< Total number of init blocks received, including retransmitted ones. */
     uint16_t total_image_blocks_received;   /**< Total number of image blocks received, including retransmitted ones. */
-    uint32_t block_num;                     /**< Currently requested block number. */
 } background_dfu_diagnostic_t;
 
 /** @brief DFU client state. */

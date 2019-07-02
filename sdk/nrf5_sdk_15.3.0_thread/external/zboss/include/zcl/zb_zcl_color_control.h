@@ -314,6 +314,9 @@ enum zb_zcl_color_control_hue_e
 /** @brief Default value for ColorLoopDirection attribute */
 #define ZB_ZCL_COLOR_CONTROL_COLOR_LOOP_DIRECTION_DEFAULT_VALUE ((zb_uint8_t)0x00)
 
+/** @brief Invalid value for Physical Mireds attribute */
+#define ZB_ZCL_COLOR_CONTROL_COLOR_TEMP_PHYSICAL_MIREDS_INVALID_VALUE ((zb_uint16_t)0xffff)
+
 /*! @brief Color Mode attribute enumeration
     @see ZCL spec, subclause 5.2.2.2.1.9
 */
@@ -388,7 +391,7 @@ enum zb_zcl_color_control_color_mode_e
 enum zb_zcl_color_control_options_e
 {
   /** Execute command if the On/Off cluster, OnOff attribute is 0x00 (FALSE) */
-  ZB_ZCL_COLOR_CONTROL_OPTIONS_EXECUTE_IF_OFF  = 1 << 0,
+  ZB_ZCL_COLOR_CONTROL_OPTIONS_EXECUTE_IF_OFF  = 0,
 };
 
 /*! @brief Enhanced Color Mode attribute enumeration
@@ -423,9 +426,116 @@ enum zb_zcl_color_control_color_capabilities_e
   ZB_ZCL_COLOR_CONTROL_CAPABILITIES_COLOR_TEMP      = 1 << 4,
 };
 
+/*!
+  @brief Declare attribute list for Color Control cluster (extended attribute set)
+  @param attr_list - attribute list name
+  @param current_hue - pointer to variable to store current_hue attribute value
+  @param current_saturation - pointer to variable to store current_saturation attribute value
+  @param remaining_time - pointer to variable to store remaining_time attribute value
+  @param current_X - pointer to variable to store current_X attribute value
+  @param current_Y - pointer to variable to store current_Y attribute value
+  @param color_temperature - pointer to variable to store color_temperature attribute value
+  @param color_mode - pointer to variable to store color_mode attribute value
+  @param options - pointer to variable to store options attribute value
+  @param number_primaries - pointer to variable to store number_primaries attribute value
+  @param primary_1_X - pointer to variable to store primary_1_X attribute value
+  @param primary_1_Y - pointer to variable to store primary_1_Y attribute value
+  @param primary_1_intensity - pointer to variable to store primary_1_intensity attribute value
+  @param primary_2_X - pointer to variable to store primary_2_X attribute value
+  @param primary_2_Y - pointer to variable to store primary_2_Y attribute value
+  @param primary_2_intensity - pointer to variable to store primary_2_intensity attribute value
+  @param primary_3_X - pointer to variable to store primary_3_X attribute value
+  @param primary_3_Y - pointer to variable to store primary_3_Y attribute value
+  @param primary_3_intensity - pointer to variable to store primary_3_intensity attribute value
+  @param primary_4_X - pointer to variable to store primary_4_X attribute value
+  @param primary_4_Y - pointer to variable to store primary_4_Y attribute value
+  @param primary_4_intensity - pointer to variable to store primary_4_intensity attribute value
+  @param primary_5_X - pointer to variable to store primary_5_X attribute value
+  @param primary_5_Y - pointer to variable to store primary_5_Y attribute value
+  @param primary_5_intensity - pointer to variable to store primary_5_intensity attribute value
+  @param primary_6_X - pointer to variable to store primary_6_X attribute value
+  @param primary_6_Y - pointer to variable to store primary_6_Y attribute value
+  @param primary_6_intensity - pointer to variable to store primary_6_intensity attribute value
+  @param enhanced_current_hue - pointer to variable to store Enhanced Current Hue attribute value
+  @param enhanced_color_mode - pointer to variable to store Enhanced Color Mode attribute value
+  @param color_loop_active - pointer to variable to store Color Loop Active attribute value
+  @param color_loop_direction - pointer to variable to store Color Loop Direction attribute value
+  @param color_loop_time - pointer to variable to store Color Loop Time attribute value
+  @param color_loop_start - pointer to variable to store Color Loop Start Enhanced Hue attribute value
+  @param color_loop_stored - pointer to variable to store Color Loop Stored Enhanced Hue attribute value
+  @param color_capabilities - pointer to variable to store Color Capabilities attribute value
+  @param color_temp_physical_min - pointer to variable to store Color Temp Physical Min attribute value
+  @param color_temp_physical_max - pointer to variable to store Color Temp Physical Max attribute value
+  @param couple_color_temp_to_level_min - pointer to variable to store Couple Color Temp To Level Min Mireds attribute value
+  @param start_up_color_temp - pointer to variable to store Start Up Color Temperature Mireds attribute value
+*/
+#define ZB_ZCL_DECLARE_COLOR_CONTROL_ATTRIB_LIST_EXT(attr_list, current_hue,                       \
+    current_saturation, remaining_time, current_X, current_Y, color_temperature,                   \
+    color_mode, options, number_primaries, primary_1_X, primary_1_Y, primary_1_intensity,          \
+    primary_2_X, primary_2_Y, primary_2_intensity, primary_3_X, primary_3_Y,                       \
+    primary_3_intensity, primary_4_X, primary_4_Y, primary_4_intensity, primary_5_X,               \
+    primary_5_Y, primary_5_intensity, primary_6_X, primary_6_Y, primary_6_intensity,               \
+    enhanced_current_hue, enhanced_color_mode, color_loop_active, color_loop_direction,            \
+    color_loop_time, color_loop_start, color_loop_stored, color_capabilities,                      \
+    color_temp_physical_min, color_temp_physical_max,                                              \
+    couple_color_temp_to_level_min, start_up_color_temp)                                           \
+  ZB_ZCL_START_DECLARE_ATTRIB_LIST(attr_list)                                                      \
+  ZB_ZCL_SET_ATTR_DESC(ZB_ZCL_ATTR_COLOR_CONTROL_CURRENT_HUE_ID, (current_hue))                    \
+  ZB_ZCL_SET_ATTR_DESC(ZB_ZCL_ATTR_COLOR_CONTROL_CURRENT_SATURATION_ID, (current_saturation))      \
+  ZB_ZCL_SET_ATTR_DESC(ZB_ZCL_ATTR_COLOR_CONTROL_REMAINING_TIME_ID, (remaining_time))              \
+  ZB_ZCL_SET_ATTR_DESC(ZB_ZCL_ATTR_COLOR_CONTROL_CURRENT_X_ID, (current_X))                        \
+  ZB_ZCL_SET_ATTR_DESC(ZB_ZCL_ATTR_COLOR_CONTROL_CURRENT_Y_ID, (current_Y))                        \
+  ZB_ZCL_SET_ATTR_DESC(ZB_ZCL_ATTR_COLOR_CONTROL_COLOR_TEMPERATURE_ID, (color_temperature))        \
+  ZB_ZCL_SET_ATTR_DESC(ZB_ZCL_ATTR_COLOR_CONTROL_COLOR_MODE_ID, (color_mode))                      \
+  ZB_ZCL_SET_ATTR_DESC(ZB_ZCL_ATTR_COLOR_CONTROL_OPTIONS_ID, (options))                            \
+  ZB_ZCL_SET_ATTR_DESC(ZB_ZCL_ATTR_COLOR_CONTROL_NUMBER_OF_PRIMARIES_ID, (number_primaries))       \
+  ZB_ZCL_SET_ATTR_DESC(ZB_ZCL_ATTR_COLOR_CONTROL_PRIMARY_1_X_ID, (primary_1_X))                    \
+  ZB_ZCL_SET_ATTR_DESC(ZB_ZCL_ATTR_COLOR_CONTROL_PRIMARY_1_Y_ID, (primary_1_Y))                    \
+  ZB_ZCL_SET_ATTR_DESC(ZB_ZCL_ATTR_COLOR_CONTROL_PRIMARY_1_INTENSITY_ID, (primary_1_intensity))    \
+  ZB_ZCL_SET_ATTR_DESC(ZB_ZCL_ATTR_COLOR_CONTROL_PRIMARY_2_X_ID, (primary_2_X))                    \
+  ZB_ZCL_SET_ATTR_DESC(ZB_ZCL_ATTR_COLOR_CONTROL_PRIMARY_2_Y_ID, (primary_2_Y))                    \
+  ZB_ZCL_SET_ATTR_DESC(ZB_ZCL_ATTR_COLOR_CONTROL_PRIMARY_2_INTENSITY_ID, (primary_2_intensity))    \
+  ZB_ZCL_SET_ATTR_DESC(ZB_ZCL_ATTR_COLOR_CONTROL_PRIMARY_3_X_ID, (primary_3_X))                    \
+  ZB_ZCL_SET_ATTR_DESC(ZB_ZCL_ATTR_COLOR_CONTROL_PRIMARY_3_Y_ID, (primary_3_Y))                    \
+  ZB_ZCL_SET_ATTR_DESC(ZB_ZCL_ATTR_COLOR_CONTROL_PRIMARY_3_INTENSITY_ID, (primary_3_intensity))    \
+  ZB_ZCL_SET_ATTR_DESC(ZB_ZCL_ATTR_COLOR_CONTROL_PRIMARY_4_X_ID, (primary_4_X))                    \
+  ZB_ZCL_SET_ATTR_DESC(ZB_ZCL_ATTR_COLOR_CONTROL_PRIMARY_4_Y_ID, (primary_4_Y))                    \
+  ZB_ZCL_SET_ATTR_DESC(ZB_ZCL_ATTR_COLOR_CONTROL_PRIMARY_4_INTENSITY_ID, (primary_4_intensity))    \
+  ZB_ZCL_SET_ATTR_DESC(ZB_ZCL_ATTR_COLOR_CONTROL_PRIMARY_5_X_ID, (primary_5_X))                    \
+  ZB_ZCL_SET_ATTR_DESC(ZB_ZCL_ATTR_COLOR_CONTROL_PRIMARY_5_Y_ID, (primary_5_Y))                    \
+  ZB_ZCL_SET_ATTR_DESC(ZB_ZCL_ATTR_COLOR_CONTROL_PRIMARY_5_INTENSITY_ID, (primary_5_intensity))    \
+  ZB_ZCL_SET_ATTR_DESC(ZB_ZCL_ATTR_COLOR_CONTROL_PRIMARY_6_X_ID, (primary_6_X))                    \
+  ZB_ZCL_SET_ATTR_DESC(ZB_ZCL_ATTR_COLOR_CONTROL_PRIMARY_6_Y_ID, (primary_6_Y))                    \
+  ZB_ZCL_SET_ATTR_DESC(ZB_ZCL_ATTR_COLOR_CONTROL_PRIMARY_6_INTENSITY_ID, (primary_6_intensity))    \
+  ZB_ZCL_SET_ATTR_DESC(ZB_ZCL_ATTR_COLOR_CONTROL_ENHANCED_CURRENT_HUE_ID, (enhanced_current_hue))  \
+  ZB_ZCL_SET_ATTR_DESC(ZB_ZCL_ATTR_COLOR_CONTROL_ENHANCED_COLOR_MODE_ID, (enhanced_color_mode))    \
+  ZB_ZCL_SET_ATTR_DESC(ZB_ZCL_ATTR_COLOR_CONTROL_COLOR_LOOP_ACTIVE_ID, (color_loop_active))        \
+  ZB_ZCL_SET_ATTR_DESC(ZB_ZCL_ATTR_COLOR_CONTROL_COLOR_LOOP_DIRECTION_ID, (color_loop_direction))  \
+  ZB_ZCL_SET_ATTR_DESC(ZB_ZCL_ATTR_COLOR_CONTROL_COLOR_LOOP_TIME_ID, (color_loop_time))            \
+  ZB_ZCL_SET_ATTR_DESC(ZB_ZCL_ATTR_COLOR_CONTROL_COLOR_LOOP_START_ENHANCED_HUE_ID, (color_loop_start))          \
+  ZB_ZCL_SET_ATTR_DESC(ZB_ZCL_ATTR_COLOR_CONTROL_COLOR_LOOP_STORED_ENHANCED_HUE_ID, (color_loop_stored))        \
+  ZB_ZCL_SET_ATTR_DESC(ZB_ZCL_ATTR_COLOR_CONTROL_COLOR_CAPABILITIES_ID, (color_capabilities))                   \
+  ZB_ZCL_SET_ATTR_DESC(ZB_ZCL_ATTR_COLOR_CONTROL_COLOR_TEMP_PHYSICAL_MIN_MIREDS_ID, (color_temp_physical_min))  \
+  ZB_ZCL_SET_ATTR_DESC(ZB_ZCL_ATTR_COLOR_CONTROL_COLOR_TEMP_PHYSICAL_MAX_MIREDS_ID, (color_temp_physical_max))  \
+  ZB_ZCL_SET_ATTR_DESC(ZB_ZCL_ATTR_COLOR_CONTROL_COUPLE_COLOR_TEMP_TO_LEVEL_MIN_MIREDS_ID, (couple_color_temp_to_level_min))  \
+  ZB_ZCL_SET_ATTR_DESC(ZB_ZCL_ATTR_COLOR_CONTROL_START_UP_COLOR_TEMPERATURE_MIREDS_ID, (start_up_color_temp))                 \
+  ZB_ZCL_FINISH_DECLARE_ATTRIB_LIST
+
+/*!
+  @brief Declare attribute list for Color Control cluster (mandatory attribute set)
+  @param attr_list - attribute list name
+  @param current_X - pointer to variable to store current_X attribute value
+  @param current_Y - pointer to variable to store current_Y attribute value
+*/
+#define ZB_ZCL_DECLARE_COLOR_CONTROL_ATTRIB_LIST(attr_list, current_X, current_Y)               \
+  ZB_ZCL_START_DECLARE_ATTRIB_LIST(attr_list)                                                   \
+  ZB_ZCL_SET_ATTR_DESC(ZB_ZCL_ATTR_COLOR_CONTROL_CURRENT_X_ID, (current_X))                     \
+  ZB_ZCL_SET_ATTR_DESC(ZB_ZCL_ATTR_COLOR_CONTROL_CURRENT_Y_ID, (current_Y))                     \
+  ZB_ZCL_FINISH_DECLARE_ATTRIB_LIST
 
 /*! @} */ /* Color Control cluster attributes */
 
+/** @cond internals_doc */
 /*! @name Color Control cluster internals
     Internal structures for Color Control cluster
     @internal
@@ -891,119 +1001,14 @@ typedef struct zb_zcl_color_control_step_loop_s
     loop_data->limit = (limit_);                                                            \
 }
 
-/*!
-  Declare attribute list for Color Control cluster.
-  @param attr_list - attribure list name
-  @param current_hue - pointer to variable to store current_hue attribute value
-  @param current_saturation - pointer to variable to store current_saturation attribute value
-  @param remaining_time - pointer to variable to store remaining_time attribute value
-  @param current_X - pointer to variable to store current_X attribute value
-  @param current_Y - pointer to variable to store current_Y attribute value
-  @param color_temperature - pointer to variable to store color_temperature attribute value
-  @param color_mode - pointer to variable to store color_mode attribute value
-  @param options - pointer to variable to store options attribute value
-  @param number_primaries - pointer to variable to store number_primaries attribute value
-  @param primary_1_X - pointer to variable to store primary_1_X attribute value
-  @param primary_1_Y - pointer to variable to store primary_1_Y attribute value
-  @param primary_1_intensity - pointer to variable to store primary_1_intensity attribute value
-  @param primary_2_X - pointer to variable to store primary_2_X attribute value
-  @param primary_2_Y - pointer to variable to store primary_2_Y attribute value
-  @param primary_2_intensity - pointer to variable to store primary_2_intensity attribute value
-  @param primary_3_X - pointer to variable to store primary_3_X attribute value
-  @param primary_3_Y - pointer to variable to store primary_3_Y attribute value
-  @param primary_3_intensity - pointer to variable to store primary_3_intensity attribute value
-  @param primary_4_X - pointer to variable to store primary_4_X attribute value
-  @param primary_4_Y - pointer to variable to store primary_4_Y attribute value
-  @param primary_4_intensity - pointer to variable to store primary_4_intensity attribute value
-  @param primary_5_X - pointer to variable to store primary_5_X attribute value
-  @param primary_5_Y - pointer to variable to store primary_5_Y attribute value
-  @param primary_5_intensity - pointer to variable to store primary_5_intensity attribute value
-  @param primary_6_X - pointer to variable to store primary_6_X attribute value
-  @param primary_6_Y - pointer to variable to store primary_6_Y attribute value
-  @param primary_6_intensity - pointer to variable to store primary_6_intensity attribute value
-  @param enhanced_current_hue - pointer to variable to store Enhanced Current Hue attribute value
-  @param enhanced_color_mode - pointer to variable to store Enhanced Color Mode attribute value
-  @param color_loop_active - pointer to variable to store Color Loop Active attribute value
-  @param color_loop_direction - pointer to variable to store Color Loop Direction attribute value
-  @param color_loop_time - pointer to variable to store Color Loop Time attribute value
-  @param color_loop_start - pointer to variable to store Color Loop Start Enhanced Hue attribute value
-  @param color_loop_stored - pointer to variable to store Color Loop Stored Enhanced Hue attribute value
-  @param color_capabilities - pointer to variable to store Color Capabilities attribute value
-  @param color_temp_physical_min - pointer to variable to store Color Temp Physical Min attribute value
-  @param color_temp_physical_max - pointer to variable to store Color Temp Physical Max attribute value
-  @param couple_color_temp_to_level_min - pointer to variable to store Couple Color Temp To Level Min Mireds attribute value
-  @param start_up_color_temp - pointer to variable to store Start Up Color Temperature Mireds attribute value
-*/
-#define ZB_ZCL_DECLARE_COLOR_CONTROL_ATTRIB_LIST(attr_list, current_hue,                           \
-    current_saturation, remaining_time, current_X, current_Y, color_temperature,                   \
-    color_mode, options, number_primaries, primary_1_X, primary_1_Y, primary_1_intensity,          \
-    primary_2_X, primary_2_Y, primary_2_intensity, primary_3_X, primary_3_Y,                       \
-    primary_3_intensity, primary_4_X, primary_4_Y, primary_4_intensity, primary_5_X,               \
-    primary_5_Y, primary_5_intensity, primary_6_X, primary_6_Y, primary_6_intensity,               \
-    enhanced_current_hue, enhanced_color_mode, color_loop_active, color_loop_direction,            \
-    color_loop_time, color_loop_start, color_loop_stored, color_capabilities,                      \
-    color_temp_physical_min, color_temp_physical_max,                                              \
-    couple_color_temp_to_level_min, start_up_color_temp)                                           \
-  ZB_ZCL_START_DECLARE_ATTRIB_LIST(attr_list)                                                      \
-  ZB_ZCL_SET_ATTR_DESC(ZB_ZCL_ATTR_COLOR_CONTROL_CURRENT_HUE_ID, (current_hue))                    \
-  ZB_ZCL_SET_ATTR_DESC(ZB_ZCL_ATTR_COLOR_CONTROL_CURRENT_SATURATION_ID, (current_saturation))      \
-  ZB_ZCL_SET_ATTR_DESC(ZB_ZCL_ATTR_COLOR_CONTROL_REMAINING_TIME_ID, (remaining_time))              \
-  ZB_ZCL_SET_ATTR_DESC(ZB_ZCL_ATTR_COLOR_CONTROL_CURRENT_X_ID, (current_X))                        \
-  ZB_ZCL_SET_ATTR_DESC(ZB_ZCL_ATTR_COLOR_CONTROL_CURRENT_Y_ID, (current_Y))                        \
-  ZB_ZCL_SET_ATTR_DESC(ZB_ZCL_ATTR_COLOR_CONTROL_COLOR_TEMPERATURE_ID, (color_temperature))        \
-  ZB_ZCL_SET_ATTR_DESC(ZB_ZCL_ATTR_COLOR_CONTROL_COLOR_MODE_ID, (color_mode))                      \
-  ZB_ZCL_SET_ATTR_DESC(ZB_ZCL_ATTR_COLOR_CONTROL_OPTIONS_ID, (options))                            \
-  ZB_ZCL_SET_ATTR_DESC(ZB_ZCL_ATTR_COLOR_CONTROL_NUMBER_OF_PRIMARIES_ID, (number_primaries))       \
-  ZB_ZCL_SET_ATTR_DESC(ZB_ZCL_ATTR_COLOR_CONTROL_PRIMARY_1_X_ID, (primary_1_X))                    \
-  ZB_ZCL_SET_ATTR_DESC(ZB_ZCL_ATTR_COLOR_CONTROL_PRIMARY_1_Y_ID, (primary_1_Y))                    \
-  ZB_ZCL_SET_ATTR_DESC(ZB_ZCL_ATTR_COLOR_CONTROL_PRIMARY_1_INTENSITY_ID, (primary_1_intensity))    \
-  ZB_ZCL_SET_ATTR_DESC(ZB_ZCL_ATTR_COLOR_CONTROL_PRIMARY_2_X_ID, (primary_2_X))                    \
-  ZB_ZCL_SET_ATTR_DESC(ZB_ZCL_ATTR_COLOR_CONTROL_PRIMARY_2_Y_ID, (primary_2_Y))                    \
-  ZB_ZCL_SET_ATTR_DESC(ZB_ZCL_ATTR_COLOR_CONTROL_PRIMARY_2_INTENSITY_ID, (primary_2_intensity))    \
-  ZB_ZCL_SET_ATTR_DESC(ZB_ZCL_ATTR_COLOR_CONTROL_PRIMARY_3_X_ID, (primary_3_X))                    \
-  ZB_ZCL_SET_ATTR_DESC(ZB_ZCL_ATTR_COLOR_CONTROL_PRIMARY_3_Y_ID, (primary_3_Y))                    \
-  ZB_ZCL_SET_ATTR_DESC(ZB_ZCL_ATTR_COLOR_CONTROL_PRIMARY_3_INTENSITY_ID, (primary_3_intensity))    \
-  ZB_ZCL_SET_ATTR_DESC(ZB_ZCL_ATTR_COLOR_CONTROL_PRIMARY_4_X_ID, (primary_4_X))                    \
-  ZB_ZCL_SET_ATTR_DESC(ZB_ZCL_ATTR_COLOR_CONTROL_PRIMARY_4_Y_ID, (primary_4_Y))                    \
-  ZB_ZCL_SET_ATTR_DESC(ZB_ZCL_ATTR_COLOR_CONTROL_PRIMARY_4_INTENSITY_ID, (primary_4_intensity))    \
-  ZB_ZCL_SET_ATTR_DESC(ZB_ZCL_ATTR_COLOR_CONTROL_PRIMARY_5_X_ID, (primary_5_X))                    \
-  ZB_ZCL_SET_ATTR_DESC(ZB_ZCL_ATTR_COLOR_CONTROL_PRIMARY_5_Y_ID, (primary_5_Y))                    \
-  ZB_ZCL_SET_ATTR_DESC(ZB_ZCL_ATTR_COLOR_CONTROL_PRIMARY_5_INTENSITY_ID, (primary_5_intensity))    \
-  ZB_ZCL_SET_ATTR_DESC(ZB_ZCL_ATTR_COLOR_CONTROL_PRIMARY_6_X_ID, (primary_6_X))                    \
-  ZB_ZCL_SET_ATTR_DESC(ZB_ZCL_ATTR_COLOR_CONTROL_PRIMARY_6_Y_ID, (primary_6_Y))                    \
-  ZB_ZCL_SET_ATTR_DESC(ZB_ZCL_ATTR_COLOR_CONTROL_PRIMARY_6_INTENSITY_ID, (primary_6_intensity))    \
-  ZB_ZCL_SET_ATTR_DESC(ZB_ZCL_ATTR_COLOR_CONTROL_ENHANCED_CURRENT_HUE_ID, (enhanced_current_hue))  \
-  ZB_ZCL_SET_ATTR_DESC(ZB_ZCL_ATTR_COLOR_CONTROL_ENHANCED_COLOR_MODE_ID, (enhanced_color_mode))    \
-  ZB_ZCL_SET_ATTR_DESC(ZB_ZCL_ATTR_COLOR_CONTROL_COLOR_LOOP_ACTIVE_ID, (color_loop_active))        \
-  ZB_ZCL_SET_ATTR_DESC(ZB_ZCL_ATTR_COLOR_CONTROL_COLOR_LOOP_DIRECTION_ID, (color_loop_direction))  \
-  ZB_ZCL_SET_ATTR_DESC(ZB_ZCL_ATTR_COLOR_CONTROL_COLOR_LOOP_TIME_ID, (color_loop_time))            \
-  ZB_ZCL_SET_ATTR_DESC(ZB_ZCL_ATTR_COLOR_CONTROL_COLOR_LOOP_START_ENHANCED_HUE_ID, (color_loop_start))          \
-  ZB_ZCL_SET_ATTR_DESC(ZB_ZCL_ATTR_COLOR_CONTROL_COLOR_LOOP_STORED_ENHANCED_HUE_ID, (color_loop_stored))        \
-  ZB_ZCL_SET_ATTR_DESC(ZB_ZCL_ATTR_COLOR_CONTROL_COLOR_CAPABILITIES_ID, (color_capabilities))                   \
-  ZB_ZCL_SET_ATTR_DESC(ZB_ZCL_ATTR_COLOR_CONTROL_COLOR_TEMP_PHYSICAL_MIN_MIREDS_ID, (color_temp_physical_min))  \
-  ZB_ZCL_SET_ATTR_DESC(ZB_ZCL_ATTR_COLOR_CONTROL_COLOR_TEMP_PHYSICAL_MAX_MIREDS_ID, (color_temp_physical_max))  \
-  ZB_ZCL_SET_ATTR_DESC(ZB_ZCL_ATTR_COLOR_CONTROL_COUPLE_COLOR_TEMP_TO_LEVEL_MIN_MIREDS_ID, (couple_color_temp_to_level_min))  \
-  ZB_ZCL_SET_ATTR_DESC(ZB_ZCL_ATTR_COLOR_CONTROL_START_UP_COLOR_TEMPERATURE_MIREDS_ID, (start_up_color_temp))                 \
-  ZB_ZCL_FINISH_DECLARE_ATTRIB_LIST
-
-/*!
-  Declare mandatory attribute list for Color Control cluster
-  @param attr_list - attribure list name
-  @param current_X - pointer to variable to store current_X attribute value
-  @param current_Y - pointer to variable to store current_Y attribute value
-*/
-#define ZB_ZCL_DECLARE_COLOR_CONTROL_MANDATORY_ATTRIB_LIST(attr_list, current_X, current_Y)     \
-  ZB_ZCL_START_DECLARE_ATTRIB_LIST(attr_list)                                                   \
-  ZB_ZCL_SET_ATTR_DESC(ZB_ZCL_ATTR_COLOR_CONTROL_CURRENT_X_ID, (current_X))                     \
-  ZB_ZCL_SET_ATTR_DESC(ZB_ZCL_ATTR_COLOR_CONTROL_CURRENT_Y_ID, (current_Y))                     \
-  ZB_ZCL_FINISH_DECLARE_ATTRIB_LIST
-
 /*! Number of attributes mandatory for reporting in Color Control cluster
  * Attribute: CurrentX, CurrentY, CurrentHue, CurrentSaturation, ColorTemperature
  *  */
 #define ZB_ZCL_COLOR_CONTROL_REPORT_ATTR_COUNT 5
 
 /*! @} */ /* Color Control cluster internals */
+/*! @}
+ *  @endcond */ /* internals_doc */
 
 /*! @name Color Control cluster commands
     @{
@@ -1056,6 +1061,7 @@ enum zb_zcl_color_control_cmd_e
   ZB_ZCL_CMD_COLOR_CONTROL_STEP_COLOR_TEMPERATURE           = 0x4c,
 };
 
+/** @cond internals_doc */
 /* Color control cluster commands list : only for information - do not modify */
 #define ZB_ZCL_CLUSTER_ID_COLOR_CONTROL_SERVER_ROLE_GENERATED_CMD_LIST
 
@@ -1083,6 +1089,8 @@ enum zb_zcl_color_control_cmd_e
                                           ZB_ZCL_CMD_COLOR_CONTROL_STEP_COLOR_TEMPERATURE
 
 #define ZB_ZCL_CLUSTER_ID_COLOR_CONTROL_SERVER_ROLE_RECEIVED_CMD_LIST ZB_ZCL_CLUSTER_ID_COLOR_CONTROL_CLIENT_ROLE_GENERATED_CMD_LIST
+/*! @}
+ *  @endcond */ /* internals_doc */
 
 
 /* command parameters enumerates */
@@ -1112,6 +1120,40 @@ enum zb_zcl_color_control_step_mode_e
 
 /* command request structure */
 
+/*! @brief Structured representsation of Level Control command payload (optional part)
+    @see ZCL spec, subclause 3.10.2.3.1.1*/
+typedef ZB_PACKED_PRE struct zb_zcl_color_control_req_options_s
+{
+  /** OptionsMask field */
+  zb_uint8_t options_mask;
+  /** OptionsOverride field */
+  zb_uint8_t options_override;
+} ZB_PACKED_STRUCT zb_zcl_color_control_req_options_t;
+
+/** @brief Move to Level payload length macro */
+#define ZB_ZCL_COLOR_CONTROL_REQ_OPTIONS_PAYLOAD_LEN \
+  sizeof(zb_zcl_color_control_req_options_t)
+
+/** @internal Macro for getting Move to Color command */
+#define ZB_ZCL_COLOR_CONTROL_GET_CMD_OPTIONS(data_buf, req_options, status) \
+{                                                                           \
+  zb_zcl_color_control_req_options_t *req_options_ptr;                      \
+  (req_options_ptr) = ZB_BUF_LEN(data_buf) >=                               \
+    ZB_ZCL_COLOR_CONTROL_REQ_OPTIONS_PAYLOAD_LEN ?                          \
+    (zb_zcl_color_control_req_options_t*)ZB_BUF_BEGIN(data_buf) : NULL;     \
+  if (req_options_ptr)                                                      \
+  {                                                                         \
+    req_options.options_mask = req_options_ptr->options_mask;               \
+    req_options.options_override = req_options_ptr->options_override;       \
+    status = ZB_TRUE;                                                       \
+    zb_buf_cut_left(data_buf, sizeof(zb_zcl_color_control_req_options_t));  \
+  }                                                                         \
+  else                                                                      \
+  {                                                                         \
+    status = ZB_FALSE;                                                      \
+  }                                                                         \
+}
+
 /******************************* MOVE_TO_HUE ******************************/
 
 /** @brief Direction of Move to Hue command.
@@ -1139,6 +1181,10 @@ typedef ZB_PACKED_PRE struct zb_zcl_color_control_move_to_hue_req_s
   /** Transition time field */
   zb_uint16_t transition_time;
 } ZB_PACKED_STRUCT zb_zcl_color_control_move_to_hue_req_t;
+
+/** @brief Move Hue payload length macro */
+#define ZB_ZCL_COLOR_CONTROL_MOVE_TO_HUE_REQ_PAYLOAD_LEN \
+  sizeof(zb_zcl_color_control_move_to_hue_req_t)
 
 /*! @brief Send Move to Hue command
     @param buffer - to put packet to
@@ -1169,27 +1215,30 @@ typedef ZB_PACKED_PRE struct zb_zcl_color_control_move_to_hue_req_s
 
 /** @brief Macro for getting Move to Hue command
   * @attention Assumes that ZCL header already cut.
-  * @param data_ptr - pointer to a variable of type @ref
-  * zb_zcl_color_control_move_to_hue_req_s.
   * @param buffer containing the packet (by pointer).
+  * @param move_to_hue_req - pointer to a variable of type @ref
+  * zb_zcl_color_control_move_to_hue_req_s.
   * @param status - variable to put parse status to (see @ref zb_zcl_parse_status_t).
   */
-#define ZB_ZCL_COLOR_CONTROL_GET_MOVE_TO_HUE_REQ(data_ptr, buffer, status)          \
-{                                                                                   \
-  if (ZB_BUF_LEN((buffer)) != sizeof(zb_zcl_color_control_move_to_hue_req_t))       \
-  {                                                                                 \
-   (status) = ZB_ZCL_PARSE_STATUS_FAILURE;                                          \
-  }                                                                                 \
-  else                                                                              \
-  {                                                                                 \
-    zb_zcl_color_control_move_to_hue_req_t *src_ptr =                               \
-                   (zb_zcl_color_control_move_to_hue_req_t*)ZB_BUF_BEGIN((buffer)); \
-    (status) = ZB_ZCL_PARSE_STATUS_SUCCESS;                                         \
-    ZB_MEMCPY((data_ptr), src_ptr, sizeof(zb_zcl_color_control_move_to_hue_req_t)); \
-    ZB_HTOLE16(&((data_ptr)->transition_time), &(src_ptr->transition_time));        \
-  }                                                                                 \
+#define ZB_ZCL_COLOR_CONTROL_GET_MOVE_TO_HUE_REQ(buffer, move_to_hue_req, status)            \
+{                                                                                            \
+  zb_zcl_color_control_move_to_hue_req_t *move_to_hue_req_ptr;                               \
+  (move_to_hue_req_ptr) = ZB_BUF_LEN(buffer) >=                                              \
+    ZB_ZCL_COLOR_CONTROL_MOVE_TO_HUE_REQ_PAYLOAD_LEN ?                                       \
+    (zb_zcl_color_control_move_to_hue_req_t*)ZB_BUF_BEGIN(buffer) : NULL;                    \
+  if (move_to_hue_req_ptr)                                                                   \
+  {                                                                                          \
+    move_to_hue_req.hue = move_to_hue_req_ptr->hue;                                          \
+    move_to_hue_req.direction = move_to_hue_req_ptr->direction;                              \
+    ZB_HTOLE16(&(move_to_hue_req).transition_time, &(move_to_hue_req_ptr->transition_time)); \
+    zb_buf_cut_left(buffer, ZB_ZCL_COLOR_CONTROL_MOVE_TO_HUE_REQ_PAYLOAD_LEN);               \
+    status = ZB_ZCL_PARSE_STATUS_SUCCESS;                                                    \
+  }                                                                                          \
+  else                                                                                       \
+  {                                                                                          \
+    status = ZB_ZCL_PARSE_STATUS_FAILURE;                                                    \
+  }                                                                                          \
 }
-
 /******************************* MOVE_HUE ******************************/
 
 /*! @brief Structure representsation of Move Hue command payload
@@ -1201,6 +1250,10 @@ typedef ZB_PACKED_PRE struct zb_zcl_color_control_move_hue_req_s
   /** Rate */
   zb_uint8_t rate;
 } ZB_PACKED_STRUCT zb_zcl_color_control_move_hue_req_t;
+
+/** @brief Move Hue payload length macro */
+#define ZB_ZCL_COLOR_CONTROL_MOVE_HUE_REQ_PAYLOAD_LEN \
+  sizeof(zb_zcl_color_control_move_hue_req_t)
 
 /*! @brief Send Move Hue command
     @param buffer - to put packet to
@@ -1229,24 +1282,28 @@ typedef ZB_PACKED_PRE struct zb_zcl_color_control_move_hue_req_s
 
 /** @brief Macro for getting Move Hue command
   * @attention Assumes that ZCL header already cut.
-  * @param data_ptr - pointer to a variable of type @ref
-  * zb_zcl_color_control_move_hue_req_s.
   * @param buffer containing the packet (by pointer).
+  * @param move_hue_req - variable of type @ref
+  * zb_zcl_color_control_move_hue_req_s.
   * @param status - variable to put parse status to (see @ref zb_zcl_parse_status_t).
   */
-#define ZB_ZCL_COLOR_CONTROL_GET_MOVE_HUE_REQ(data_ptr, buffer, status)             \
-{                                                                                   \
-  if (ZB_BUF_LEN((buffer)) != sizeof(zb_zcl_color_control_move_hue_req_t))          \
-  {                                                                                 \
-   (status) = ZB_ZCL_PARSE_STATUS_FAILURE;                                          \
-  }                                                                                 \
-  else                                                                              \
-  {                                                                                 \
-    zb_zcl_color_control_move_hue_req_t *src_ptr =                                  \
-                   (zb_zcl_color_control_move_hue_req_t*)ZB_BUF_BEGIN((buffer));    \
-    (status) = ZB_ZCL_PARSE_STATUS_SUCCESS;                                         \
-    ZB_MEMCPY((data_ptr), src_ptr, sizeof(zb_zcl_color_control_move_hue_req_t));    \
-  }                                                                                 \
+#define ZB_ZCL_COLOR_CONTROL_GET_MOVE_HUE_REQ(buffer, move_hue_req, status)  \
+{                                                                            \
+  zb_zcl_color_control_move_hue_req_t *move_hue_req_ptr;                     \
+  (move_hue_req_ptr) = ZB_BUF_LEN(buffer) >=                                 \
+    ZB_ZCL_COLOR_CONTROL_MOVE_HUE_REQ_PAYLOAD_LEN ?                          \
+    (zb_zcl_color_control_move_hue_req_t*)ZB_BUF_BEGIN(buffer) : NULL;       \
+  if (move_hue_req_ptr)                                                      \
+  {                                                                          \
+    move_hue_req.move_mode = move_hue_req_ptr->move_mode;                    \
+    move_hue_req.rate = move_hue_req_ptr->rate;                              \
+    zb_buf_cut_left(buffer, ZB_ZCL_COLOR_CONTROL_MOVE_HUE_REQ_PAYLOAD_LEN);  \
+    status = ZB_ZCL_PARSE_STATUS_SUCCESS;                                    \
+  }                                                                          \
+  else                                                                       \
+  {                                                                          \
+    status = ZB_ZCL_PARSE_STATUS_FAILURE;                                    \
+  }                                                                          \
 }
 
 /******************************* STEP_HUE ******************************/
@@ -1260,9 +1317,13 @@ typedef ZB_PACKED_PRE struct zb_zcl_color_control_step_hue_req_s
   /** Step size */
   zb_uint8_t step_size;
   /** Transition time field */
-  zb_uint16_t transition_time;
+  zb_uint8_t transition_time;
 } ZB_PACKED_STRUCT zb_zcl_color_control_step_hue_req_t;
 
+/** @brief Step Hue payload length macro */
+#define ZB_ZCL_COLOR_CONTROL_STEP_HUE_REQ_PAYLOAD_LEN \
+  sizeof(zb_zcl_color_control_step_hue_req_t)
+  
 /*! @brief Send Step Hue command
     @param buffer - to put packet to
     @param addr - address to send packet to
@@ -1292,25 +1353,29 @@ typedef ZB_PACKED_PRE struct zb_zcl_color_control_step_hue_req_s
 
 /** @brief Macro for getting Step Hue command
   * @attention Assumes that ZCL header already cut.
-  * @param data_ptr - pointer to a variable of type @ref
-  * zb_zcl_color_control_step_hue_req_s.
   * @param buffer containing the packet (by pointer).
+  * @param step_hue_req - pointer to a variable of type @ref
+  * zb_zcl_color_control_step_hue_req_s.
   * @param status - variable to put parse status to (see @ref zb_zcl_parse_status_t).
   */
-#define ZB_ZCL_COLOR_CONTROL_GET_STEP_HUE_REQ(data_ptr, buffer, status)             \
-{                                                                                   \
-  if (ZB_BUF_LEN((buffer)) != sizeof(zb_zcl_color_control_step_hue_req_t))          \
-  {                                                                                 \
-   (status) = ZB_ZCL_PARSE_STATUS_FAILURE;                                          \
-  }                                                                                 \
-  else                                                                              \
-  {                                                                                 \
-    zb_zcl_color_control_step_hue_req_t *src_ptr =                                  \
-                   (zb_zcl_color_control_step_hue_req_t*)ZB_BUF_BEGIN((buffer));    \
-    (status) = ZB_ZCL_PARSE_STATUS_SUCCESS;                                         \
-    ZB_MEMCPY((data_ptr), src_ptr, sizeof(zb_zcl_color_control_step_hue_req_t));    \
-    ZB_HTOLE16(&((data_ptr)->transition_time), &(src_ptr->transition_time));        \
-  }                                                                                 \
+#define ZB_ZCL_COLOR_CONTROL_GET_STEP_HUE_REQ(buffer, step_hue_req, status)            \
+{                                                                                      \
+  zb_zcl_color_control_step_hue_req_t *step_hue_req_ptr;                               \
+  (step_hue_req_ptr) = ZB_BUF_LEN(buffer) >=                                           \
+    ZB_ZCL_COLOR_CONTROL_STEP_HUE_REQ_PAYLOAD_LEN ?                                    \
+    (zb_zcl_color_control_step_hue_req_t*)ZB_BUF_BEGIN(buffer) : NULL;                  \
+  if (step_hue_req_ptr)                                                                \
+  {                                                                                    \
+    step_hue_req.step_mode = step_hue_req_ptr->step_mode;                              \
+    step_hue_req.step_size = step_hue_req_ptr->step_size;                              \
+    ZB_HTOLE16(&(step_hue_req).transition_time, &(step_hue_req_ptr->transition_time)); \
+    zb_buf_cut_left(buffer, ZB_ZCL_COLOR_CONTROL_STEP_HUE_REQ_PAYLOAD_LEN);            \
+    status = ZB_ZCL_PARSE_STATUS_SUCCESS;                                              \
+  }                                                                                    \
+  else                                                                                 \
+  {                                                                                    \
+    status = ZB_ZCL_PARSE_STATUS_FAILURE;                                              \
+  }                                                                                    \
 }
 
 /******************************* Move to Saturation ******************************/
@@ -1324,6 +1389,10 @@ typedef ZB_PACKED_PRE struct zb_zcl_color_control_move_to_saturation_req_s
   /** Transition time field */
   zb_uint16_t transition_time;
 } ZB_PACKED_STRUCT zb_zcl_color_control_move_to_saturation_req_t;
+
+/** @brief Move To Saturation payload length macro */
+#define ZB_ZCL_COLOR_CONTROL_MOVE_TO_SATURATION_REQ_PAYLOAD_LEN \
+  sizeof(zb_zcl_color_control_move_to_saturation_req_t)
 
 /*! @brief Send Move to Saturation command
     @param buffer - to put packet to
@@ -1352,27 +1421,29 @@ typedef ZB_PACKED_PRE struct zb_zcl_color_control_move_to_saturation_req_s
 
 /** @brief Macro for getting Move To Saturation command
   * @attention Assumes that ZCL header already cut.
-  * @param data_ptr - pointer to a variable of type @ref
-  * zb_zcl_color_control_move_to_saturation_req_s.
   * @param buffer containing the packet (by pointer).
+  * @param move_to_saturation_req - variable of type @ref
+  * zb_zcl_color_control_move_to_saturation_req_s.
   * @param status - variable to put parse status to (see @ref zb_zcl_parse_status_t).
   */
-#define ZB_ZCL_COLOR_CONTROL_GET_MOVE_TO_SATURATION_REQ(data_ptr, buffer, status)    \
-{                                                                                    \
-  if (ZB_BUF_LEN((buffer)) != sizeof(zb_zcl_color_control_move_to_saturation_req_t)) \
-  {                                                                                  \
-   (status) = ZB_ZCL_PARSE_STATUS_FAILURE;                                           \
-  }                                                                                  \
-  else                                                                               \
-  {                                                                                  \
-    zb_zcl_color_control_move_to_saturation_req_t *src_ptr =                         \
-         (zb_zcl_color_control_move_to_saturation_req_t*)ZB_BUF_BEGIN((buffer));     \
-    (status) = ZB_ZCL_PARSE_STATUS_SUCCESS;                                          \
-    (data_ptr)->saturation = src_ptr->saturation;                                    \
-    ZB_HTOLE16(&((data_ptr)->transition_time), &(src_ptr->transition_time));         \
-  }                                                                                  \
+#define ZB_ZCL_COLOR_CONTROL_GET_MOVE_TO_SATURATION_REQ(buffer, move_to_saturation_req, status)            \
+{                                                                                                          \
+  zb_zcl_color_control_move_to_saturation_req_t *move_to_saturation_req_ptr;                               \
+  (move_to_saturation_req_ptr) = ZB_BUF_LEN(buffer) >=                                                     \
+    ZB_ZCL_COLOR_CONTROL_MOVE_TO_SATURATION_REQ_PAYLOAD_LEN ?                                              \
+    (zb_zcl_color_control_move_to_saturation_req_t*)ZB_BUF_BEGIN(buffer) : NULL;                           \
+  if (move_to_saturation_req_ptr)                                                                          \
+  {                                                                                                        \
+    move_to_saturation_req.saturation = move_to_saturation_req_ptr->saturation;                            \
+    ZB_HTOLE16(&(move_to_saturation_req).transition_time, &(move_to_saturation_req_ptr->transition_time)); \
+    zb_buf_cut_left(buffer, ZB_ZCL_COLOR_CONTROL_MOVE_TO_SATURATION_REQ_PAYLOAD_LEN);                      \
+    status = ZB_ZCL_PARSE_STATUS_SUCCESS;                                                                  \
+  }                                                                                                        \
+  else                                                                                                     \
+  {                                                                                                        \
+    status = ZB_ZCL_PARSE_STATUS_FAILURE;                                                                  \
+  }                                                                                                        \
 }
-
 /******************************* Move Saturation ******************************/
 
 /*! @brief Structure representsation of Move Saturation command payload
@@ -1385,6 +1456,10 @@ typedef ZB_PACKED_PRE struct zb_zcl_color_control_move_saturation_req_s
   zb_uint8_t rate;
 } ZB_PACKED_STRUCT zb_zcl_color_control_move_saturation_req_t;
 
+/** @brief Move Saturation payload length macro */
+#define ZB_ZCL_COLOR_CONTROL_MOVE_SATURATION_REQ_PAYLOAD_LEN \
+  sizeof(zb_zcl_color_control_move_saturation_req_t)
+  
 /*! @brief Send Move Saturation command
     @param buffer - to put packet to
     @param addr - address to send packet to
@@ -1412,24 +1487,28 @@ typedef ZB_PACKED_PRE struct zb_zcl_color_control_move_saturation_req_s
 
 /** @brief Macro for getting Move Saturation command
   * @attention Assumes that ZCL header already cut.
-  * @param data_ptr - pointer to a variable of type @ref
-  * zb_zcl_color_control_move_saturation_req_s.
   * @param buffer containing the packet (by pointer).
+  * @param move_saturation_req - variable of type @ref
+  * zb_zcl_color_control_move_saturation_req_s.
   * @param status - variable to put parse status to (see @ref zb_zcl_parse_status_t).
   */
-#define ZB_ZCL_COLOR_CONTROL_GET_MOVE_SATURATION_REQ(data_ptr, buffer, status)      \
-{                                                                                   \
-  if (ZB_BUF_LEN((buffer)) != sizeof(zb_zcl_color_control_move_saturation_req_t))   \
-  {                                                                                 \
-   (status) = ZB_ZCL_PARSE_STATUS_FAILURE;                                          \
-  }                                                                                 \
-  else                                                                              \
-  {                                                                                 \
-    zb_zcl_color_control_move_saturation_req_t *src_ptr =                           \
-                   (zb_zcl_color_control_move_saturation_req_t*)ZB_BUF_BEGIN((buffer));    \
-    (status) = ZB_ZCL_PARSE_STATUS_SUCCESS;                                         \
-    ZB_MEMCPY((data_ptr), src_ptr, sizeof(zb_zcl_color_control_move_saturation_req_t));    \
-  }                                                                                 \
+#define ZB_ZCL_COLOR_CONTROL_GET_MOVE_SATURATION_REQ(buffer, move_saturation_req, status) \
+{                                                                                         \
+  zb_zcl_color_control_move_saturation_req_t *move_saturation_req_ptr;                    \
+  (move_saturation_req_ptr) = ZB_BUF_LEN(buffer) >=                                       \
+    ZB_ZCL_COLOR_CONTROL_MOVE_SATURATION_REQ_PAYLOAD_LEN ?                                \
+    (zb_zcl_color_control_move_saturation_req_t*)ZB_BUF_BEGIN(buffer) : NULL;             \
+  if (move_saturation_req_ptr)                                                            \
+  {                                                                                       \
+    move_saturation_req.move_mode = move_saturation_req_ptr->move_mode;                   \
+    move_saturation_req.rate = move_saturation_req_ptr->rate;                             \
+    zb_buf_cut_left(buffer, ZB_ZCL_COLOR_CONTROL_MOVE_SATURATION_REQ_PAYLOAD_LEN);        \
+    status = ZB_ZCL_PARSE_STATUS_SUCCESS;                                                 \
+  }                                                                                       \
+  else                                                                                    \
+  {                                                                                       \
+    status = ZB_ZCL_PARSE_STATUS_FAILURE;                                                 \
+  }                                                                                       \
 }
 
 /******************************* STEP_SATURATION ******************************/
@@ -1443,9 +1522,13 @@ typedef ZB_PACKED_PRE struct zb_zcl_color_control_step_saturation_req_s
   /** Step size */
   zb_uint8_t step_size;
   /** Transition time field */
-  zb_uint16_t transition_time;
+  zb_uint8_t transition_time;
 } ZB_PACKED_STRUCT zb_zcl_color_control_step_saturation_req_t;
 
+/** @brief Move Saturation payload length macro */
+#define ZB_ZCL_COLOR_CONTROL_STEP_SATURATION_REQ_PAYLOAD_LEN \
+  sizeof(zb_zcl_color_control_step_saturation_req_t)
+  
 /*! @brief Send Step Saturation command
     @param buffer - to put packet to
     @param addr - address to send packet to
@@ -1467,7 +1550,7 @@ typedef ZB_PACKED_PRE struct zb_zcl_color_control_step_saturation_req_s
   ZB_ZCL_CONSTRUCT_COMMAND_HEADER_REQ(ptr, ZB_ZCL_GET_SEQ_NUM(), ZB_ZCL_CMD_COLOR_CONTROL_STEP_SATURATION);    \
   ZB_ZCL_PACKET_PUT_DATA8(ptr, (step_mode));                                                        \
   ZB_ZCL_PACKET_PUT_DATA8(ptr, (step_size));                                                        \
-  ZB_ZCL_PACKET_PUT_DATA16_VAL(ptr, (transition_time));                                             \
+  ZB_ZCL_PACKET_PUT_DATA8(ptr, (transition_time));                                                  \
   ZB_ZCL_FINISH_PACKET((buffer), ptr)                                                               \
   ZB_ZCL_SEND_COMMAND_SHORT(                                                                        \
    buffer, addr, dst_addr_mode, dst_ep, ep, prfl_id, ZB_ZCL_CLUSTER_ID_COLOR_CONTROL, cb);          \
@@ -1475,25 +1558,29 @@ typedef ZB_PACKED_PRE struct zb_zcl_color_control_step_saturation_req_s
 
 /** @brief Macro for getting Step Saturation command
   * @attention Assumes that ZCL header already cut.
-  * @param data_ptr - pointer to a variable of type @ref
-  * zb_zcl_color_control_step_saturation_req_s.
   * @param buffer containing the packet (by pointer).
+  * @param step_saturation_req - variable of type @ref
+  * zb_zcl_color_control_step_saturation_req_s.
   * @param status - variable to put parse status to (see @ref zb_zcl_parse_status_t).
   */
-#define ZB_ZCL_COLOR_CONTROL_GET_STEP_SATURATION_REQ(data_ptr, buffer, status)          \
-{                                                                                       \
-  if (ZB_BUF_LEN((buffer)) != sizeof(zb_zcl_color_control_step_saturation_req_t))       \
-  {                                                                                     \
-   (status) = ZB_ZCL_PARSE_STATUS_FAILURE;                                              \
-  }                                                                                     \
-  else                                                                                  \
-  {                                                                                     \
-    zb_zcl_color_control_step_saturation_req_t *src_ptr =                               \
-            (zb_zcl_color_control_step_saturation_req_t*)ZB_BUF_BEGIN((buffer));        \
-    (status) = ZB_ZCL_PARSE_STATUS_SUCCESS;                                             \
-    ZB_MEMCPY((data_ptr), src_ptr, sizeof(zb_zcl_color_control_step_saturation_req_t)); \
-    ZB_HTOLE16(&((data_ptr)->transition_time), &(src_ptr->transition_time));            \
-  }                                                                                     \
+#define ZB_ZCL_COLOR_CONTROL_GET_STEP_SATURATION_REQ(buffer, step_saturation_req, status) \
+{                                                                                         \
+  zb_zcl_color_control_step_saturation_req_t *step_saturation_req_ptr;                    \
+  (step_saturation_req_ptr) = ZB_BUF_LEN(buffer) >=                                       \
+    ZB_ZCL_COLOR_CONTROL_STEP_SATURATION_REQ_PAYLOAD_LEN ?                                \
+    (zb_zcl_color_control_step_saturation_req_t*)ZB_BUF_BEGIN(buffer) : NULL;             \
+  if (step_saturation_req_ptr)                                                            \
+  {                                                                                       \
+    step_saturation_req.step_mode = step_saturation_req_ptr->step_mode;                   \
+    step_saturation_req.step_size = step_saturation_req_ptr->step_size;                   \
+    step_saturation_req.transition_time = step_saturation_req_ptr->transition_time;       \
+    zb_buf_cut_left(buffer, ZB_ZCL_COLOR_CONTROL_STEP_SATURATION_REQ_PAYLOAD_LEN);        \
+    status = ZB_ZCL_PARSE_STATUS_SUCCESS;                                                 \
+  }                                                                                       \
+  else                                                                                    \
+  {                                                                                       \
+    status = ZB_ZCL_PARSE_STATUS_FAILURE;                                                 \
+  }                                                                                       \
 }
 
 /******************************* Move to Hue and Saturation ******************************/
@@ -1509,6 +1596,10 @@ typedef ZB_PACKED_PRE struct zb_zcl_color_control_move_to_hue_saturation_req_s
   /** Transition time field */
   zb_uint16_t transition_time;
 } ZB_PACKED_STRUCT zb_zcl_color_control_move_to_hue_saturation_req_t;
+
+/** @brief Move to Hue and Saturation payload length macro */
+#define ZB_ZCL_COLOR_CONTROL_MOVE_TO_HUE_SATURATION_REQ_PAYLOAD_LEN \
+  sizeof(zb_zcl_color_control_move_to_hue_saturation_req_t)
 
 /*! @brief Send Move to Hue and Saturation command
     @param buffer - to put packet to
@@ -1539,26 +1630,29 @@ typedef ZB_PACKED_PRE struct zb_zcl_color_control_move_to_hue_saturation_req_s
 
 /** @brief Macro for getting Move To Hue and Saturation command
   * @attention Assumes that ZCL header already cut.
-  * @param data_ptr - pointer to a variable of type @ref
-  * zb_zcl_color_control_move_to_hue_saturation_req_s.
   * @param buffer containing the packet (by pointer).
+  * @param move_to_hue_saturation_req - pointer to a variable of type @ref
+  * zb_zcl_color_control_move_to_hue_saturation_req_s.
   * @param status - variable to put parse status to (see @ref zb_zcl_parse_status_t).
   */
-#define ZB_ZCL_COLOR_CONTROL_GET_MOVE_TO_HUE_SATURATION_REQ(data_ptr, buffer, status)   \
-{                                                                                       \
-  if (ZB_BUF_LEN((buffer)) != sizeof(zb_zcl_color_control_move_to_hue_saturation_req_t))\
-  {                                                                                     \
-   (status) = ZB_ZCL_PARSE_STATUS_FAILURE;                                              \
-  }                                                                                     \
-  else                                                                                  \
-  {                                                                                     \
-    zb_zcl_color_control_move_to_hue_saturation_req_t *src_ptr =                        \
-         (zb_zcl_color_control_move_to_hue_saturation_req_t*)ZB_BUF_BEGIN((buffer));    \
-    (status) = ZB_ZCL_PARSE_STATUS_SUCCESS;                                             \
-    (data_ptr)->hue = src_ptr->hue;                                                     \
-    (data_ptr)->saturation = src_ptr->saturation;                                       \
-    ZB_HTOLE16(&((data_ptr)->transition_time), &(src_ptr->transition_time));            \
-  }                                                                                     \
+#define ZB_ZCL_COLOR_CONTROL_GET_MOVE_TO_HUE_SATURATION_REQ(buffer, move_to_hue_saturation_req, status)            \
+{                                                                                                                  \
+  zb_zcl_color_control_move_to_hue_saturation_req_t *move_to_hue_saturation_req_ptr;                               \
+  (move_to_hue_saturation_req_ptr) = ZB_BUF_LEN(buffer) >=                                                         \
+    ZB_ZCL_COLOR_CONTROL_MOVE_TO_HUE_SATURATION_REQ_PAYLOAD_LEN ?                                                  \
+    (zb_zcl_color_control_move_to_hue_saturation_req_t*)ZB_BUF_BEGIN(buffer) : NULL;                               \
+  if (move_to_hue_saturation_req_ptr)                                                                              \
+  {                                                                                                                \
+    move_to_hue_saturation_req.hue = move_to_hue_saturation_req_ptr->hue;                                          \
+    move_to_hue_saturation_req.saturation = move_to_hue_saturation_req_ptr->saturation;                            \
+    ZB_HTOLE16(&(move_to_hue_saturation_req).transition_time, &(move_to_hue_saturation_req_ptr->transition_time)); \
+    zb_buf_cut_left(buffer, ZB_ZCL_COLOR_CONTROL_MOVE_TO_HUE_SATURATION_REQ_PAYLOAD_LEN);                          \
+    status = ZB_ZCL_PARSE_STATUS_SUCCESS;                                                                          \
+  }                                                                                                                \
+  else                                                                                                             \
+  {                                                                                                                \
+    status = ZB_ZCL_PARSE_STATUS_FAILURE;                                                                          \
+  }                                                                                                                \
 }
 
 /******************************* Move to Color ******************************/
@@ -1574,6 +1668,10 @@ typedef ZB_PACKED_PRE struct zb_zcl_color_control_move_to_color_req_s
   /** Transition time field */
   zb_uint16_t transition_time;
 } ZB_PACKED_STRUCT zb_zcl_color_control_move_to_color_req_t;
+
+/** @brief Move to Color payload length macro */
+#define ZB_ZCL_COLOR_CONTROL_MOVE_TO_COLOR_REQ_PAYLOAD_LEN \
+  sizeof(zb_zcl_color_control_move_to_color_req_t)
 
 /*! @brief Send Move to Color command
     @param buffer - to put packet to
@@ -1602,28 +1700,32 @@ typedef ZB_PACKED_PRE struct zb_zcl_color_control_move_to_color_req_s
    buffer, addr, dst_addr_mode, dst_ep, ep, prfl_id, ZB_ZCL_CLUSTER_ID_COLOR_CONTROL, cb);          \
 }
 
+
 /** @brief Macro for getting Move To Color command
   * @attention Assumes that ZCL header already cut.
-  * @param data_ptr - pointer to a variable of type @ref
+  * @param buffer  containing the packet (by pointer).
   * zb_zcl_color_control_move_to_color_req_s.
-  * @param buffer containing the packet (by pointer).
+  * @param move_to_color_req containing the packet (by pointer).
   * @param status - variable to put parse status to (see @ref zb_zcl_parse_status_t).
   */
-#define ZB_ZCL_COLOR_CONTROL_GET_MOVE_TO_COLOR_REQ(data_ptr, buffer, status)            \
-{                                                                                       \
-  if (ZB_BUF_LEN((buffer)) != sizeof(zb_zcl_color_control_move_to_color_req_t))         \
-  {                                                                                     \
-   (status) = ZB_ZCL_PARSE_STATUS_FAILURE;                                              \
-  }                                                                                     \
-  else                                                                                  \
-  {                                                                                     \
-    zb_zcl_color_control_move_to_color_req_t *src_ptr =                                 \
-         (zb_zcl_color_control_move_to_color_req_t*)ZB_BUF_BEGIN((buffer));             \
-    (status) = ZB_ZCL_PARSE_STATUS_SUCCESS;                                             \
-    ZB_HTOLE16(&((data_ptr)->color_x), &(src_ptr->color_x));                            \
-    ZB_HTOLE16(&((data_ptr)->color_y), &(src_ptr->color_y));                            \
-    ZB_HTOLE16(&((data_ptr)->transition_time), &(src_ptr->transition_time));            \
-  }                                                                                     \
+#define ZB_ZCL_COLOR_CONTROL_GET_MOVE_TO_COLOR_REQ(buffer, move_to_color_req, status)                \
+{                                                                                                    \
+  zb_zcl_color_control_move_to_color_req_t *move_to_color_req_ptr;                                   \
+  (move_to_color_req_ptr) = ZB_BUF_LEN(buffer) >=                                                    \
+    ZB_ZCL_COLOR_CONTROL_MOVE_TO_COLOR_REQ_PAYLOAD_LEN ?                                             \
+    (zb_zcl_color_control_move_to_color_req_t*)ZB_BUF_BEGIN(buffer) : NULL;                          \
+  if (move_to_color_req_ptr)                                                                         \
+  {                                                                                                  \
+    ZB_HTOLE16(&(move_to_color_req).color_x, &(move_to_color_req_ptr->color_x));                     \
+    ZB_HTOLE16(&(move_to_color_req).color_y, &(move_to_color_req_ptr->color_y));                     \
+    ZB_HTOLE16(&(move_to_color_req).transition_time, &(move_to_color_req_ptr->transition_time));     \
+    zb_buf_cut_left(buffer, ZB_ZCL_COLOR_CONTROL_MOVE_TO_COLOR_REQ_PAYLOAD_LEN);                     \
+    status = ZB_ZCL_PARSE_STATUS_SUCCESS;                                                            \
+  }                                                                                                  \
+  else                                                                                               \
+  {                                                                                                  \
+    status = ZB_ZCL_PARSE_STATUS_FAILURE;                                                            \
+  }                                                                                                  \
 }
 
 /******************************* Move Color ******************************/
@@ -1637,6 +1739,10 @@ typedef ZB_PACKED_PRE struct zb_zcl_color_control_move_color_req_s
   /** RateY */
   zb_int16_t rate_y;
 } ZB_PACKED_STRUCT zb_zcl_color_control_move_color_req_t;
+
+/** @brief Move Color payload length macro */
+#define ZB_ZCL_COLOR_CONTROL_MOVE_COLOR_REQ_PAYLOAD_LEN \
+  sizeof(zb_zcl_color_control_move_color_req_t)
 
 /*! @brief Send Move Color command
     @param buffer - to put packet to
@@ -1665,25 +1771,28 @@ typedef ZB_PACKED_PRE struct zb_zcl_color_control_move_color_req_s
 
 /** @brief Macro for getting Move Color command
   * @attention Assumes that ZCL header already cut.
-  * @param data_ptr - pointer to a variable of type @ref
-  * zb_zcl_color_control_move_color_req_s.
   * @param buffer containing the packet (by pointer).
+  * @param move_color_req - variable of type @ref
+  * zb_zcl_color_control_move_color_req_s.
   * @param status - variable to put parse status to (see @ref zb_zcl_parse_status_t).
   */
-#define ZB_ZCL_COLOR_CONTROL_GET_MOVE_COLOR_REQ(data_ptr, buffer, status)       \
-{                                                                               \
-  if (ZB_BUF_LEN((buffer)) != sizeof(zb_zcl_color_control_move_color_req_t))    \
-  {                                                                             \
-   (status) = ZB_ZCL_PARSE_STATUS_FAILURE;                                      \
-  }                                                                             \
-  else                                                                          \
-  {                                                                             \
-    zb_zcl_color_control_move_color_req_t *src_ptr =                            \
-         (zb_zcl_color_control_move_color_req_t*)ZB_BUF_BEGIN((buffer));        \
-    (status) = ZB_ZCL_PARSE_STATUS_SUCCESS;                                     \
-    ZB_HTOLE16(&((data_ptr)->rate_x), &(src_ptr->rate_x));                      \
-    ZB_HTOLE16(&((data_ptr)->rate_y), &(src_ptr->rate_y));                      \
-  }                                                                             \
+#define ZB_ZCL_COLOR_CONTROL_GET_MOVE_COLOR_REQ(buffer, move_color_req, status)                      \
+{                                                                                                    \
+  zb_zcl_color_control_move_color_req_t *move_color_req_ptr;                                         \
+  (move_color_req_ptr) = ZB_BUF_LEN(buffer) >=                                                       \
+    ZB_ZCL_COLOR_CONTROL_MOVE_COLOR_REQ_PAYLOAD_LEN ?                                                \
+    (zb_zcl_color_control_move_color_req_t*)ZB_BUF_BEGIN(buffer) : NULL;                             \
+  if (move_color_req_ptr)                                                                            \
+  {                                                                                                  \
+    ZB_HTOLE16(&(move_color_req).rate_x, &(move_color_req_ptr->rate_x));                             \
+    ZB_HTOLE16(&(move_color_req).rate_y, &(move_color_req_ptr->rate_y));                             \
+    zb_buf_cut_left(buffer, ZB_ZCL_COLOR_CONTROL_MOVE_COLOR_REQ_PAYLOAD_LEN);                        \
+    status = ZB_ZCL_PARSE_STATUS_SUCCESS;                                                            \
+  }                                                                                                  \
+  else                                                                                               \
+  {                                                                                                  \
+    status = ZB_ZCL_PARSE_STATUS_FAILURE;                                                            \
+  }                                                                                                  \
 }
 
 /******************************* Step Color ******************************/
@@ -1699,6 +1808,10 @@ typedef ZB_PACKED_PRE struct zb_zcl_color_control_step_color_req_s
   /** Transition time field */
   zb_uint16_t transition_time;
 } ZB_PACKED_STRUCT zb_zcl_color_control_step_color_req_t;
+
+/** @brief Step Color payload length macro */
+#define ZB_ZCL_COLOR_CONTROL_STEP_COLOR_REQ_PAYLOAD_LEN \
+  sizeof(zb_zcl_color_control_step_color_req_t)
 
 /*! @brief Send Step Color command
     @param buffer - to put packet to
@@ -1727,28 +1840,31 @@ typedef ZB_PACKED_PRE struct zb_zcl_color_control_step_color_req_s
    buffer, addr, dst_addr_mode, dst_ep, ep, prfl_id, ZB_ZCL_CLUSTER_ID_COLOR_CONTROL, cb);          \
 }
 
-/** @brief Macro for getting Step Color command
+/** @brief Macro for getting Move Color command
   * @attention Assumes that ZCL header already cut.
-  * @param data_ptr - pointer to a variable of type @ref
-  * zb_zcl_color_control_step_color_req_s.
   * @param buffer containing the packet (by pointer).
+  * @param step_color_req - variable of type @ref
+  * zb_zcl_color_control_step_color_req_s.
   * @param status - variable to put parse status to (see @ref zb_zcl_parse_status_t).
   */
-#define ZB_ZCL_COLOR_CONTROL_GET_STEP_COLOR_REQ(data_ptr, buffer, status)       \
-{                                                                               \
-  if (ZB_BUF_LEN((buffer)) != sizeof(zb_zcl_color_control_step_color_req_t))    \
-  {                                                                             \
-   (status) = ZB_ZCL_PARSE_STATUS_FAILURE;                                      \
-  }                                                                             \
-  else                                                                          \
-  {                                                                             \
-    zb_zcl_color_control_step_color_req_t *src_ptr =                            \
-         (zb_zcl_color_control_step_color_req_t*)ZB_BUF_BEGIN((buffer));        \
-    (status) = ZB_ZCL_PARSE_STATUS_SUCCESS;                                     \
-    ZB_HTOLE16(&((data_ptr)->step_x), &(src_ptr->step_x));                      \
-    ZB_HTOLE16(&((data_ptr)->step_y), &(src_ptr->step_y));                      \
-    ZB_HTOLE16(&((data_ptr)->transition_time), &(src_ptr->transition_time));    \
-  }                                                                             \
+#define ZB_ZCL_COLOR_CONTROL_GET_STEP_COLOR_REQ(buffer, step_color_req, status)                      \
+{                                                                                                    \
+  zb_zcl_color_control_step_color_req_t *step_color_req_ptr;                                         \
+  (step_color_req_ptr) = ZB_BUF_LEN(buffer) >=                                                       \
+    ZB_ZCL_COLOR_CONTROL_STEP_COLOR_REQ_PAYLOAD_LEN ?                                                \
+    (zb_zcl_color_control_step_color_req_t*)ZB_BUF_BEGIN(buffer) : NULL;                             \
+  if (step_color_req_ptr)                                                                            \
+  {                                                                                                  \
+    ZB_HTOLE16(&(step_color_req).step_x, &(step_color_req_ptr->step_x));                             \
+    ZB_HTOLE16(&(step_color_req).step_y, &(step_color_req_ptr->step_y));                             \
+    ZB_HTOLE16(&(step_color_req).transition_time, &(step_color_req_ptr->transition_time));           \
+    zb_buf_cut_left(buffer, ZB_ZCL_COLOR_CONTROL_STEP_COLOR_REQ_PAYLOAD_LEN);                        \
+    status = ZB_ZCL_PARSE_STATUS_SUCCESS;                                                            \
+  }                                                                                                  \
+  else                                                                                               \
+  {                                                                                                  \
+    status = ZB_ZCL_PARSE_STATUS_FAILURE;                                                            \
+  }                                                                                                  \
 }
 
 /******************************* Move to Color Temperature ******************************/
@@ -1762,6 +1878,11 @@ typedef ZB_PACKED_PRE struct zb_zcl_color_control_move_to_color_temperature_req_
   /** Transition time field */
   zb_uint16_t transition_time;
 } ZB_PACKED_STRUCT zb_zcl_color_control_move_to_color_temperature_req_t;
+
+/** @brief Move to Color Temperature payload length macro */
+#define ZB_ZCL_COLOR_CONTROL_MOVE_TO_COLOR_TEMP_REQ_PAYLOAD_LEN \
+  sizeof(zb_zcl_color_control_move_to_color_temperature_req_t)
+
 
 /*! @brief Send Move To Color Temperature command
     @param buffer - to put packet to
@@ -1790,25 +1911,53 @@ typedef ZB_PACKED_PRE struct zb_zcl_color_control_move_to_color_temperature_req_
 
 /** @brief Macro for getting Step Color Temperature command
   * @attention Assumes that ZCL header already cut.
-  * @param data_ptr - pointer to a variable of type @ref
-  * zb_zcl_color_control_move_to_color_temperature_req_s.
   * @param buffer containing the packet (by pointer).
   * @param status - variable to put parse status to (see @ref zb_zcl_parse_status_t).
   */
-#define ZB_ZCL_COLOR_CONTROL_GET_MOVE_TO_COLOR_TEMPERATURE_REQ(data_ptr, buffer, status)    \
-{                                                                                           \
-  if (ZB_BUF_LEN((buffer)) != sizeof(zb_zcl_color_control_move_to_color_temperature_req_t)) \
-  {                                                                                         \
-   (status) = ZB_ZCL_PARSE_STATUS_FAILURE;                                                  \
-  }                                                                                         \
-  else                                                                                      \
-  {                                                                                         \
-    zb_zcl_color_control_move_to_color_temperature_req_t *src_ptr =                         \
-         (zb_zcl_color_control_move_to_color_temperature_req_t*)ZB_BUF_BEGIN((buffer));     \
-    (status) = ZB_ZCL_PARSE_STATUS_SUCCESS;                                                 \
-    ZB_HTOLE16(&((data_ptr)->color_temperature), &(src_ptr->color_temperature));            \
-    ZB_HTOLE16(&((data_ptr)->transition_time), &(src_ptr->transition_time));                \
-  }                                                                                         \
+#define ZB_ZCL_COLOR_CONTROL_GET_STEP_COLOR_REQ(buffer, step_color_req, status)                      \
+{                                                                                                    \
+  zb_zcl_color_control_step_color_req_t *step_color_req_ptr;                                         \
+  (step_color_req_ptr) = ZB_BUF_LEN(buffer) >=                                                       \
+    ZB_ZCL_COLOR_CONTROL_STEP_COLOR_REQ_PAYLOAD_LEN ?                                                \
+    (zb_zcl_color_control_step_color_req_t*)ZB_BUF_BEGIN(buffer) : NULL;                             \
+  if (step_color_req_ptr)                                                                            \
+  {                                                                                                  \
+    ZB_HTOLE16(&(step_color_req).step_x, &(step_color_req_ptr->step_x));                             \
+    ZB_HTOLE16(&(step_color_req).step_y, &(step_color_req_ptr->step_y));                             \
+    ZB_HTOLE16(&(step_color_req).transition_time, &(step_color_req_ptr->transition_time));           \
+    zb_buf_cut_left(buffer, ZB_ZCL_COLOR_CONTROL_STEP_COLOR_REQ_PAYLOAD_LEN);                        \
+    status = ZB_ZCL_PARSE_STATUS_SUCCESS;                                                            \
+  }                                                                                                  \
+  else                                                                                               \
+  {                                                                                                  \
+    status = ZB_ZCL_PARSE_STATUS_FAILURE;                                                            \
+  }                                                                                                  \
+}
+
+/** @brief Macro for getting Move to Color Temperature command
+  * @attention Assumes that ZCL header already cut.
+  * @param buffer containing the packet (by pointer).
+  * @param move_to_color_temperature_req - variable of type @ref
+  * zb_zcl_color_control_move_to_color_temperature_req_s.
+  * @param status - variable to put parse status to (see @ref zb_zcl_parse_status_t).
+  */
+#define ZB_ZCL_COLOR_CONTROL_GET_MOVE_TO_COLOR_TEMPERATURE_REQ(buffer, move_to_color_temperature_req, status)         \
+{                                                                                                                     \
+  zb_zcl_color_control_move_to_color_temperature_req_t *move_to_color_temp_req_ptr;                                   \
+  (move_to_color_temp_req_ptr) = ZB_BUF_LEN(buffer) >=                                                                \
+    ZB_ZCL_COLOR_CONTROL_MOVE_TO_COLOR_TEMP_REQ_PAYLOAD_LEN ?                                                         \
+    (zb_zcl_color_control_move_to_color_temperature_req_t*)ZB_BUF_BEGIN(buffer) : NULL;                               \
+  if (move_to_color_temp_req_ptr)                                                                                     \
+  {                                                                                                                   \
+    ZB_HTOLE16(&(move_to_color_temperature_req).color_temperature, &(move_to_color_temp_req_ptr->color_temperature)); \
+    ZB_HTOLE16(&(move_to_color_temperature_req).transition_time, &(move_to_color_temp_req_ptr->transition_time));     \
+    zb_buf_cut_left(buffer, ZB_ZCL_COLOR_CONTROL_MOVE_TO_COLOR_TEMP_REQ_PAYLOAD_LEN);                                 \
+    status = ZB_ZCL_PARSE_STATUS_SUCCESS;                                                                             \
+  }                                                                                                                   \
+  else                                                                                                                \
+  {                                                                                                                   \
+    status = ZB_ZCL_PARSE_STATUS_FAILURE;                                                                             \
+  }                                                                                                                   \
 }
 
 /******************************* ENHANCED_MOVE_TO_HUE ******************************/
@@ -1818,12 +1967,16 @@ typedef ZB_PACKED_PRE struct zb_zcl_color_control_move_to_color_temperature_req_
 typedef ZB_PACKED_PRE struct zb_zcl_color_control_enhanced_move_to_hue_req_s
 {
   /** Enhanced Hue */
-  zb_uint16_t ehnanced_hue;
+  zb_uint16_t enhanced_hue;
   /** Direction, see @ref zb_zcl_color_control_move_to_hue_direction_e */
   zb_uint8_t direction;
   /** Transition time field */
   zb_uint16_t transition_time;
 } ZB_PACKED_STRUCT zb_zcl_color_control_enhanced_move_to_hue_req_t;
+
+/** @brief Enhanced Move to Hue payload length macro */
+#define ZB_ZCL_COLOR_CONTROL_ENHANCED_MOVE_TO_HUE_REQ_PAYLOAD_LEN \
+  sizeof(zb_zcl_color_control_enhanced_move_to_hue_req_t)
 
 /*! @brief Send Enhanced Move to Hue command
     @param buffer - to put packet to
@@ -1854,26 +2007,29 @@ typedef ZB_PACKED_PRE struct zb_zcl_color_control_enhanced_move_to_hue_req_s
 
 /** @brief Macro for getting Enhanced Move to Hue command
   * @attention Assumes that ZCL header already cut.
-  * @param data_ptr - pointer to a variable of type @ref
-  * zb_zcl_color_control_enhanced_move_to_hue_req_s.
   * @param buffer containing the packet (by pointer).
+  * @param enhanced_move_to_hue_req - variable of type @ref
+  * zb_zcl_color_control_enhanced_move_to_hue_req_s.
   * @param status - variable to put parse status to (see @ref zb_zcl_parse_status_t).
   */
-#define ZB_ZCL_COLOR_CONTROL_GET_ENHANCED_MOVE_TO_HUE_REQ(data_ptr, buffer, status)     \
-{                                                                                       \
-  if (ZB_BUF_LEN((buffer)) != sizeof(zb_zcl_color_control_enhanced_move_to_hue_req_t))  \
-  {                                                                                     \
-   (status) = ZB_ZCL_PARSE_STATUS_FAILURE;                                              \
-  }                                                                                     \
-  else                                                                                  \
-  {                                                                                     \
-    zb_zcl_color_control_enhanced_move_to_hue_req_t *src_ptr =                          \
-          (zb_zcl_color_control_enhanced_move_to_hue_req_t*)ZB_BUF_BEGIN((buffer));     \
-    (status) = ZB_ZCL_PARSE_STATUS_SUCCESS;                                             \
-    ZB_HTOLE16(&((data_ptr)->ehnanced_hue), &(src_ptr->ehnanced_hue));                  \
-    (data_ptr)->direction = src_ptr->direction;                                         \
-    ZB_HTOLE16(&((data_ptr)->transition_time), &(src_ptr->transition_time));            \
-  }                                                                                     \
+#define ZB_ZCL_COLOR_CONTROL_GET_ENHANCED_MOVE_TO_HUE_REQ(buffer, enhanced_move_to_hue_req, status)            \
+{                                                                                                              \
+  zb_zcl_color_control_enhanced_move_to_hue_req_t *enhanced_move_to_hue_req_ptr;                               \
+  (enhanced_move_to_hue_req_ptr) = ZB_BUF_LEN(buffer) >=                                                       \
+    ZB_ZCL_COLOR_CONTROL_ENHANCED_MOVE_TO_HUE_REQ_PAYLOAD_LEN ?                                                \
+    (zb_zcl_color_control_enhanced_move_to_hue_req_t*)ZB_BUF_BEGIN(buffer) : NULL;                             \
+  if (enhanced_move_to_hue_req_ptr)                                                                            \
+  {                                                                                                            \
+    ZB_HTOLE16(&(enhanced_move_to_hue_req).enhanced_hue, &(enhanced_move_to_hue_req_ptr->enhanced_hue));       \
+    enhanced_move_to_hue_req.direction = enhanced_move_to_hue_req_ptr->direction;                              \
+    ZB_HTOLE16(&(enhanced_move_to_hue_req).transition_time, &(enhanced_move_to_hue_req_ptr->transition_time)); \
+    zb_buf_cut_left(buffer, ZB_ZCL_COLOR_CONTROL_ENHANCED_MOVE_TO_HUE_REQ_PAYLOAD_LEN);                        \
+    status = ZB_ZCL_PARSE_STATUS_SUCCESS;                                                                      \
+  }                                                                                                            \
+  else                                                                                                         \
+  {                                                                                                            \
+    status = ZB_ZCL_PARSE_STATUS_FAILURE;                                                                      \
+  }                                                                                                            \
 }
 
 /******************************* ENHANCED_MOVE_HUE ******************************/
@@ -1887,6 +2043,10 @@ typedef ZB_PACKED_PRE struct zb_zcl_color_control_enhanced_move_hue_req_s
   /** Rate */
   zb_uint16_t rate;
 } ZB_PACKED_STRUCT zb_zcl_color_control_enhanced_move_hue_req_t;
+
+/** @brief Enhanced Move to Hue payload length macro */
+#define ZB_ZCL_COLOR_CONTROL_ENHANCED_MOVE_HUE_REQ_PAYLOAD_LEN \
+  sizeof(zb_zcl_color_control_enhanced_move_hue_req_t)
 
 /*! @brief Send Enhanced Move Hue command
     @param buffer - to put packet to
@@ -1915,25 +2075,28 @@ typedef ZB_PACKED_PRE struct zb_zcl_color_control_enhanced_move_hue_req_s
 
 /** @brief Macro for getting Enhanced Move Hue command
   * @attention Assumes that ZCL header already cut.
-  * @param data_ptr - pointer to a variable of type @ref
-  * zb_zcl_color_control_enhanced_move_hue_req_s.
   * @param buffer containing the packet (by pointer).
+  * @param enhanced_move_hue_req - variable of type @ref
+  * zb_zcl_color_control_enhanced_move_hue_req_s.
   * @param status - variable to put parse status to (see @ref zb_zcl_parse_status_t).
   */
-#define ZB_ZCL_COLOR_CONTROL_GET_ENHANCED_MOVE_HUE_REQ(data_ptr, buffer, status)    \
-{                                                                                   \
-  if (ZB_BUF_LEN((buffer)) != sizeof(zb_zcl_color_control_enhanced_move_hue_req_t)) \
-  {                                                                                 \
-   (status) = ZB_ZCL_PARSE_STATUS_FAILURE;                                          \
-  }                                                                                 \
-  else                                                                              \
-  {                                                                                 \
-    zb_zcl_color_control_enhanced_move_hue_req_t *src_ptr =                         \
-             (zb_zcl_color_control_enhanced_move_hue_req_t*)ZB_BUF_BEGIN((buffer)); \
-    (status) = ZB_ZCL_PARSE_STATUS_SUCCESS;                                         \
-    (data_ptr)->move_mode = src_ptr->move_mode;                                     \
-    ZB_HTOLE16(&((data_ptr)->rate), &(src_ptr->rate));                              \
-  }                                                                                 \
+#define ZB_ZCL_COLOR_CONTROL_GET_ENHANCED_MOVE_HUE_REQ(buffer, enhanced_move_hue_req, status)    \
+{                                                                                                \
+  zb_zcl_color_control_enhanced_move_hue_req_t *enhanced_move_hue_req_ptr;                       \
+  (enhanced_move_hue_req_ptr) = ZB_BUF_LEN(buffer) >=                                            \
+    ZB_ZCL_COLOR_CONTROL_ENHANCED_MOVE_HUE_REQ_PAYLOAD_LEN ?                                     \
+    (zb_zcl_color_control_enhanced_move_hue_req_t*)ZB_BUF_BEGIN(buffer) : NULL;                  \
+  if (enhanced_move_hue_req_ptr)                                                                 \
+  {                                                                                              \
+    enhanced_move_hue_req.move_mode = enhanced_move_hue_req_ptr->move_mode;                      \
+    ZB_HTOLE16(&(enhanced_move_hue_req).rate, &(enhanced_move_hue_req_ptr->rate));               \
+    zb_buf_cut_left(buffer, ZB_ZCL_COLOR_CONTROL_ENHANCED_MOVE_HUE_REQ_PAYLOAD_LEN);             \
+    status = ZB_ZCL_PARSE_STATUS_SUCCESS;                                                        \
+  }                                                                                              \
+  else                                                                                           \
+  {                                                                                              \
+    status = ZB_ZCL_PARSE_STATUS_FAILURE;                                                        \
+  }                                                                                              \
 }
 
 /******************************* ENHANCED_STEP_HUE ******************************/
@@ -1950,6 +2113,10 @@ typedef ZB_PACKED_PRE struct zb_zcl_color_control_enhanced_step_hue_req_s
   zb_uint16_t transition_time;
 } ZB_PACKED_STRUCT zb_zcl_color_control_enhanced_step_hue_req_t;
 
+/** @brief Enhanced Move to Hue payload length macro */
+#define ZB_ZCL_COLOR_CONTROL_ENHANCED_STEP_HUE_REQ_PAYLOAD_LEN \
+  sizeof(zb_zcl_color_control_enhanced_step_hue_req_t)
+  
 /*! @brief Send Enhanced Step Hue command
     @param buffer - to put packet to
     @param addr - address to send packet to
@@ -1979,26 +2146,29 @@ typedef ZB_PACKED_PRE struct zb_zcl_color_control_enhanced_step_hue_req_s
 
 /** @brief Macro for getting Enhanced Step Hue command
   * @attention Assumes that ZCL header already cut.
-  * @param data_ptr - pointer to a variable of type @ref
-  * zb_zcl_color_control_enhanced_step_hue_req_s.
   * @param buffer containing the packet (by pointer).
+  * @param enhanced_step_hue_req - variable of type @ref
+  * zb_zcl_color_control_enhanced_step_hue_req_s.
   * @param status - variable to put parse status to (see @ref zb_zcl_parse_status_t).
   */
-#define ZB_ZCL_COLOR_CONTROL_GET_ENHANCED_STEP_HUE_REQ(data_ptr, buffer, status)    \
-{                                                                                   \
-  if (ZB_BUF_LEN((buffer)) != sizeof(zb_zcl_color_control_enhanced_step_hue_req_t)) \
-  {                                                                                 \
-   (status) = ZB_ZCL_PARSE_STATUS_FAILURE;                                          \
-  }                                                                                 \
-  else                                                                              \
-  {                                                                                 \
-    zb_zcl_color_control_enhanced_step_hue_req_t *src_ptr =                         \
-          (zb_zcl_color_control_enhanced_step_hue_req_t*)ZB_BUF_BEGIN((buffer));    \
-    (status) = ZB_ZCL_PARSE_STATUS_SUCCESS;                                         \
-    (data_ptr)->step_mode = src_ptr->step_mode;                                     \
-    ZB_HTOLE16(&((data_ptr)->step_size), &(src_ptr->step_size));                    \
-    ZB_HTOLE16(&((data_ptr)->transition_time), &(src_ptr->transition_time));        \
-  }                                                                                 \
+#define ZB_ZCL_COLOR_CONTROL_GET_ENHANCED_STEP_HUE_REQ(buffer, enhanced_step_hue_req, status)            \
+{                                                                                                        \
+  zb_zcl_color_control_enhanced_step_hue_req_t *enhanced_step_hue_req_ptr;                               \
+  (enhanced_step_hue_req_ptr) = ZB_BUF_LEN(buffer) >=                                                    \
+    ZB_ZCL_COLOR_CONTROL_ENHANCED_STEP_HUE_REQ_PAYLOAD_LEN ?                                             \
+    (zb_zcl_color_control_enhanced_step_hue_req_t*)ZB_BUF_BEGIN(buffer) : NULL;                          \
+  if (enhanced_step_hue_req_ptr)                                                                         \
+  {                                                                                                      \
+    enhanced_step_hue_req.step_mode = enhanced_step_hue_req_ptr->step_mode;                              \
+    ZB_HTOLE16(&(enhanced_step_hue_req).step_size, &(enhanced_step_hue_req_ptr->step_size));             \
+    ZB_HTOLE16(&(enhanced_step_hue_req).transition_time, &(enhanced_step_hue_req_ptr->transition_time)); \
+    zb_buf_cut_left(buffer, ZB_ZCL_COLOR_CONTROL_ENHANCED_STEP_HUE_REQ_PAYLOAD_LEN);                     \
+    status = ZB_ZCL_PARSE_STATUS_SUCCESS;                                                                \
+  }                                                                                                      \
+  else                                                                                                   \
+  {                                                                                                      \
+    status = ZB_ZCL_PARSE_STATUS_FAILURE;                                                                \
+  }                                                                                                      \
 }
 
 /******************************* Enhanced Move to Hue and Saturation ******************************/
@@ -2014,6 +2184,10 @@ typedef ZB_PACKED_PRE struct zb_zcl_color_control_enhanced_move_to_hue_saturatio
   /** Transition time field */
   zb_uint16_t transition_time;
 } ZB_PACKED_STRUCT zb_zcl_color_control_enhanced_move_to_hue_saturation_req_t;
+
+/** @brief Enhanced Move to Hue payload length macro */
+#define ZB_ZCL_COLOR_CONTROL_ENHANCED_MOVE_TO_HUE_SATURATION_REQ_PAYLOAD_LEN \
+  sizeof(zb_zcl_color_control_enhanced_move_to_hue_saturation_req_t)
 
 /*! @brief Send Enhanced Move to Hue and Saturation command
     @param buffer - to put packet to
@@ -2044,26 +2218,29 @@ typedef ZB_PACKED_PRE struct zb_zcl_color_control_enhanced_move_to_hue_saturatio
 
 /** @brief Macro for getting Enhanced Move To Hue and Saturation command
   * @attention Assumes that ZCL header already cut.
-  * @param data_ptr - pointer to a variable of type @ref
-  * zb_zcl_color_control_enhanced_move_to_hue_saturation_req_s.
   * @param buffer containing the packet (by pointer).
+  * @param enhanced_move_to_hue_saturation_req - variable of type @ref
+  * zb_zcl_color_control_enhanced_move_to_hue_saturation_req_s.
   * @param status - variable to put parse status to (see @ref zb_zcl_parse_status_t).
   */
-#define ZB_ZCL_COLOR_CONTROL_GET_ENHANCED_MOVE_TO_HUE_SATURATION_REQ(data_ptr, buffer, status)      \
-{                                                                                                   \
-  if (ZB_BUF_LEN((buffer)) != sizeof(zb_zcl_color_control_enhanced_move_to_hue_saturation_req_t))   \
-  {                                                                                                 \
-   (status) = ZB_ZCL_PARSE_STATUS_FAILURE;                                                          \
-  }                                                                                                 \
-  else                                                                                              \
-  {                                                                                                 \
-    zb_zcl_color_control_enhanced_move_to_hue_saturation_req_t *src_ptr =                           \
-         (zb_zcl_color_control_enhanced_move_to_hue_saturation_req_t*)ZB_BUF_BEGIN((buffer));       \
-    (status) = ZB_ZCL_PARSE_STATUS_SUCCESS;                                                         \
-    ZB_HTOLE16(&((data_ptr)->enhanced_hue), &(src_ptr->enhanced_hue));                              \
-    (data_ptr)->saturation = src_ptr->saturation;                                                   \
-    ZB_HTOLE16(&((data_ptr)->transition_time), &(src_ptr->transition_time));                        \
-  }                                                                                                 \
+#define ZB_ZCL_COLOR_CONTROL_GET_ENHANCED_MOVE_TO_HUE_SATURATION_REQ(buffer, enhanced_move_to_hue_saturation_req, status)            \
+{                                                                                                                                    \
+  zb_zcl_color_control_enhanced_move_to_hue_saturation_req_t *enhanced_move_to_hue_saturation_req_ptr;                               \
+  (enhanced_move_to_hue_saturation_req_ptr) = ZB_BUF_LEN(buffer) >=                                                                  \
+    ZB_ZCL_COLOR_CONTROL_ENHANCED_MOVE_TO_HUE_SATURATION_REQ_PAYLOAD_LEN ?                                                           \
+    (zb_zcl_color_control_enhanced_move_to_hue_saturation_req_t*)ZB_BUF_BEGIN(buffer) : NULL;                                        \
+  if (enhanced_move_to_hue_saturation_req_ptr)                                                                                       \
+                                {                                                                                                    \
+    ZB_HTOLE16(&(enhanced_move_to_hue_saturation_req).enhanced_hue, &(enhanced_move_to_hue_saturation_req_ptr->enhanced_hue));       \
+    enhanced_move_to_hue_saturation_req.saturation = enhanced_move_to_hue_saturation_req_ptr->saturation;                            \
+    ZB_HTOLE16(&(enhanced_move_to_hue_saturation_req).transition_time, &(enhanced_move_to_hue_saturation_req_ptr->transition_time)); \
+    zb_buf_cut_left(buffer, ZB_ZCL_COLOR_CONTROL_ENHANCED_MOVE_TO_HUE_SATURATION_REQ_PAYLOAD_LEN);                                   \
+    status = ZB_ZCL_PARSE_STATUS_SUCCESS;                                                                                            \
+  }                                                                                                                                  \
+  else                                                                                                                               \
+  {                                                                                                                                  \
+    status = ZB_ZCL_PARSE_STATUS_FAILURE;                                                                                            \
+  }                                                                                                                                  \
 }
 
 /******************************* Color Loop Set ******************************/
@@ -2084,6 +2261,10 @@ typedef ZB_PACKED_PRE struct zb_zcl_color_control_color_loop_set_req_s
   zb_uint16_t start_hue;
 } ZB_PACKED_STRUCT zb_zcl_color_control_color_loop_set_req_t;
 
+/** @brief Enhanced Color Loop Set payload length macro */
+#define ZB_ZCL_COLOR_CONTROL_COLOR_LOOR_SET_REQ_PAYLOAD_LEN \
+  sizeof(zb_zcl_color_control_color_loop_set_req_t)
+  
 /** @brief Update flag for Color Loop Set command
  *  See ZCL specs 5.2.2.3.18.1 */
 enum zb_zcl_color_control_color_loop_update_e
@@ -2173,26 +2354,31 @@ typedef struct zb_zcl_color_control_color_loop_set_s
 
 /** @brief Macro for getting Color Loop Set command
   * @attention Assumes that ZCL header already cut.
-  * @param data_ptr - pointer to a variable of type @ref
-  * zb_zcl_color_control_color_loop_set_req_s.
   * @param buffer containing the packet (by pointer).
+  * @param color_loop_set_req - pointer to a variable of
+  * type @ref zb_zcl_color_control_color_loop_set_req_t
   * @param status - variable to put parse status to (see @ref zb_zcl_parse_status_t).
   */
-#define ZB_ZCL_COLOR_CONTROL_GET_COLOR_LOOP_SET_REQ(data_ptr, buffer, status)           \
-{                                                                                       \
-  if (ZB_BUF_LEN((buffer)) != sizeof(zb_zcl_color_control_color_loop_set_req_t))        \
-  {                                                                                     \
-   (status) = ZB_ZCL_PARSE_STATUS_FAILURE;                                              \
-  }                                                                                     \
-  else                                                                                  \
-  {                                                                                     \
-    zb_zcl_color_control_color_loop_set_req_t *src_ptr =                                \
-         (zb_zcl_color_control_color_loop_set_req_t*)ZB_BUF_BEGIN((buffer));            \
-    (status) = ZB_ZCL_PARSE_STATUS_SUCCESS;                                             \
-    ZB_MEMCPY((data_ptr), src_ptr, sizeof(zb_zcl_color_control_color_loop_set_req_t));  \
-    ZB_HTOLE16(&((data_ptr)->time), &(src_ptr->time));                                  \
-    ZB_HTOLE16(&((data_ptr)->start_hue), &(src_ptr->start_hue));                        \
-  }                                                                                     \
+#define ZB_ZCL_COLOR_CONTROL_GET_COLOR_LOOP_SET_REQ(buffer, color_loop_set_req, status)  \
+{                                                                                        \
+  zb_zcl_color_control_color_loop_set_req_t *color_loop_set_req_ptr;                     \
+  (color_loop_set_req_ptr) = ZB_BUF_LEN(buffer) >=                                       \
+    ZB_ZCL_COLOR_CONTROL_COLOR_LOOR_SET_REQ_PAYLOAD_LEN ?                                \
+    (zb_zcl_color_control_color_loop_set_req_t*)ZB_BUF_BEGIN(buffer) : NULL;             \
+  if (color_loop_set_req_ptr)                                                            \
+  {                                                                                      \
+    color_loop_set_req.update_flags = color_loop_set_req_ptr->update_flags;              \
+    color_loop_set_req.action = color_loop_set_req_ptr->action;                          \
+    color_loop_set_req.direction = color_loop_set_req_ptr->direction;                    \
+    ZB_HTOLE16(&(color_loop_set_req).time, &(color_loop_set_req_ptr->time));             \
+    ZB_HTOLE16(&(color_loop_set_req).start_hue, &(color_loop_set_req_ptr->start_hue));   \
+    zb_buf_cut_left(buffer, ZB_ZCL_COLOR_CONTROL_COLOR_LOOR_SET_REQ_PAYLOAD_LEN);        \
+    status = ZB_ZCL_PARSE_STATUS_SUCCESS;                                                \
+  }                                                                                      \
+  else                                                                                   \
+  {                                                                                      \
+    status = ZB_ZCL_PARSE_STATUS_FAILURE;                                                \
+  }                                                                                      \
 }
 
 /******************************* Stop move step ******************************/
@@ -2234,6 +2420,10 @@ typedef ZB_PACKED_PRE struct zb_zcl_color_control_move_color_temp_req_s
   zb_uint16_t color_temp_max;
 } ZB_PACKED_STRUCT zb_zcl_color_control_move_color_temp_req_t;
 
+/** @brief Enhanced Move Color Temperature payload length macro */
+#define ZB_ZCL_COLOR_CONTROL_MOVE_COLOR_TEMP_REQ_PAYLOAD_LEN \
+  sizeof(zb_zcl_color_control_move_color_temp_req_t)
+  
 /*! @brief Send Move color temperature command
     @param buffer - to put packet to
     @param addr - address to send packet to
@@ -2265,27 +2455,30 @@ typedef ZB_PACKED_PRE struct zb_zcl_color_control_move_color_temp_req_s
 
 /** @brief Macro for getting Move color temperature command
   * @attention Assumes that ZCL header already cut.
-  * @param data_ptr - pointer to a variable of type @ref
-  * zb_zcl_color_control_move_color_temp_req_s.
   * @param buffer containing the packet (by pointer).
+  * @param move_color_temp_req - variable of type @ref
+  * zb_zcl_color_control_move_color_temp_req_s.
   * @param status - variable to put parse status to (see @ref zb_zcl_parse_status_t).
   */
-#define ZB_ZCL_COLOR_CONTROL_GET_MOVE_COLOR_TEMP_REQ(data_ptr, buffer, status)      \
-{                                                                                   \
-  if (ZB_BUF_LEN((buffer)) != sizeof(zb_zcl_color_control_move_color_temp_req_t))   \
-  {                                                                                 \
-   (status) = ZB_ZCL_PARSE_STATUS_FAILURE;                                          \
-  }                                                                                 \
-  else                                                                              \
-  {                                                                                 \
-    zb_zcl_color_control_move_color_temp_req_t *src_ptr =                           \
-         (zb_zcl_color_control_move_color_temp_req_t*)ZB_BUF_BEGIN((buffer));       \
-    (status) = ZB_ZCL_PARSE_STATUS_SUCCESS;                                         \
-    (data_ptr)->move_mode = src_ptr->move_mode;                                     \
-    ZB_HTOLE16(&((data_ptr)->rate), &(src_ptr->rate));                              \
-    ZB_HTOLE16(&((data_ptr)->color_temp_min), &(src_ptr->color_temp_min));          \
-    ZB_HTOLE16(&((data_ptr)->color_temp_max), &(src_ptr->color_temp_max));          \
-  }                                                                                 \
+#define ZB_ZCL_COLOR_CONTROL_GET_MOVE_COLOR_TEMP_REQ(buffer, move_color_temp_req, status)          \
+{                                                                                                  \
+  zb_zcl_color_control_move_color_temp_req_t *move_color_temp_req_ptr;                             \
+  (move_color_temp_req_ptr) = ZB_BUF_LEN(buffer) >=                                                \
+    ZB_ZCL_COLOR_CONTROL_MOVE_COLOR_TEMP_REQ_PAYLOAD_LEN ?                                         \
+    (zb_zcl_color_control_move_color_temp_req_t*)ZB_BUF_BEGIN(buffer) : NULL;                      \
+  if (move_color_temp_req_ptr)                                                                     \
+  {                                                                                                \
+    move_color_temp_req.move_mode = move_color_temp_req_ptr->move_mode;                            \
+    ZB_HTOLE16(&(move_color_temp_req).rate, &(move_color_temp_req_ptr->rate));                     \
+    ZB_HTOLE16(&(move_color_temp_req).color_temp_min, &(move_color_temp_req_ptr->color_temp_min)); \
+    ZB_HTOLE16(&(move_color_temp_req).color_temp_max, &(move_color_temp_req_ptr->color_temp_max)); \
+    zb_buf_cut_left(buffer, ZB_ZCL_COLOR_CONTROL_MOVE_COLOR_TEMP_REQ_PAYLOAD_LEN);                 \
+    status = ZB_ZCL_PARSE_STATUS_SUCCESS;                                                          \
+  }                                                                                                \
+  else                                                                                             \
+  {                                                                                                \
+    status = ZB_ZCL_PARSE_STATUS_FAILURE;                                                          \
+  }                                                                                                \
 }
 
 /******************************* Step color temperature command ******************************/
@@ -2305,6 +2498,10 @@ typedef ZB_PACKED_PRE struct zb_zcl_color_control_step_color_temp_req_s
   /** Color temperature maximum */
   zb_uint16_t color_temp_max;
 } ZB_PACKED_STRUCT zb_zcl_color_control_step_color_temp_req_t;
+
+/** @brief Enhanced Move Color Temperature payload length macro */
+#define ZB_ZCL_COLOR_CONTROL_STEP_COLOR_TEMP_REQ_PAYLOAD_LEN \
+  sizeof(zb_zcl_color_control_step_color_temp_req_t)
 
 /*! @brief Step color temperature command
     @param buffer - to put packet to
@@ -2339,28 +2536,59 @@ typedef ZB_PACKED_PRE struct zb_zcl_color_control_step_color_temp_req_s
 
 /** @brief Macro for getting Move color temperature command
   * @attention Assumes that ZCL header already cut.
-  * @param data_ptr - pointer to a variable of type @ref
-  * zb_zcl_color_control_step_color_temp_req_s.
   * @param buffer containing the packet (by pointer).
+  * @param move_color_temp_req - variable of type @ref
+  * zb_zcl_color_control_move_color_temp_req_s.
   * @param status - variable to put parse status to (see @ref zb_zcl_parse_status_t).
   */
-#define ZB_ZCL_COLOR_CONTROL_GET_STEP_COLOR_TEMP_REQ(data_ptr, buffer, status)      \
-{                                                                                   \
-  if (ZB_BUF_LEN((buffer)) != sizeof(zb_zcl_color_control_step_color_temp_req_t))   \
-  {                                                                                 \
-   (status) = ZB_ZCL_PARSE_STATUS_FAILURE;                                          \
-  }                                                                                 \
-  else                                                                              \
-  {                                                                                 \
-    zb_zcl_color_control_step_color_temp_req_t *src_ptr =                           \
-         (zb_zcl_color_control_step_color_temp_req_t*)ZB_BUF_BEGIN((buffer));       \
-    (status) = ZB_ZCL_PARSE_STATUS_SUCCESS;                                         \
-    (data_ptr)->step_mode = src_ptr->step_mode;                                     \
-    ZB_HTOLE16(&((data_ptr)->step_size), &(src_ptr->step_size));                    \
-    ZB_HTOLE16(&((data_ptr)->transition_time), &(src_ptr->transition_time));        \
-    ZB_HTOLE16(&((data_ptr)->color_temp_min), &(src_ptr->color_temp_min));          \
-    ZB_HTOLE16(&((data_ptr)->color_temp_max), &(src_ptr->color_temp_max));          \
-  }                                                                                 \
+#define ZB_ZCL_COLOR_CONTROL_GET_MOVE_COLOR_TEMP_REQ(buffer, move_color_temp_req, status)          \
+{                                                                                                  \
+  zb_zcl_color_control_move_color_temp_req_t *move_color_temp_req_ptr;                             \
+  (move_color_temp_req_ptr) = ZB_BUF_LEN(buffer) >=                                                \
+    ZB_ZCL_COLOR_CONTROL_MOVE_COLOR_TEMP_REQ_PAYLOAD_LEN ?                                         \
+    (zb_zcl_color_control_move_color_temp_req_t*)ZB_BUF_BEGIN(buffer) : NULL;                      \
+  if (move_color_temp_req_ptr)                                                                     \
+  {                                                                                                \
+    move_color_temp_req.move_mode = move_color_temp_req_ptr->move_mode;                            \
+    ZB_HTOLE16(&(move_color_temp_req).rate, &(move_color_temp_req_ptr->rate));                     \
+    ZB_HTOLE16(&(move_color_temp_req).color_temp_min, &(move_color_temp_req_ptr->color_temp_min)); \
+    ZB_HTOLE16(&(move_color_temp_req).color_temp_max, &(move_color_temp_req_ptr->color_temp_max)); \
+    zb_buf_cut_left(buffer, ZB_ZCL_COLOR_CONTROL_MOVE_COLOR_TEMP_REQ_PAYLOAD_LEN);                 \
+    status = ZB_ZCL_PARSE_STATUS_SUCCESS;                                                          \
+  }                                                                                                \
+  else                                                                                             \
+  {                                                                                                \
+    status = ZB_ZCL_PARSE_STATUS_FAILURE;                                                          \
+  }                                                                                                \
+}
+
+/** @brief Macro for getting Move color temperature command
+  * @attention Assumes that ZCL header already cut.
+  * @param buffer containing the packet (by pointer).
+  * @param step_color_temp_req - variable of type @ref
+  * zb_zcl_color_control_step_color_temp_req_s.
+  * @param status - variable to put parse status to (see @ref zb_zcl_parse_status_t).
+  */
+#define ZB_ZCL_COLOR_CONTROL_GET_STEP_COLOR_TEMP_REQ(buffer, step_color_temp_req, status)            \
+{                                                                                                    \
+  zb_zcl_color_control_step_color_temp_req_t *step_color_temp_req_ptr;                               \
+  (step_color_temp_req_ptr) = ZB_BUF_LEN(buffer) >=                                                  \
+    ZB_ZCL_COLOR_CONTROL_STEP_COLOR_TEMP_REQ_PAYLOAD_LEN ?                                           \
+    (zb_zcl_color_control_step_color_temp_req_t*)ZB_BUF_BEGIN(buffer) : NULL;                        \
+  if (step_color_temp_req_ptr)                                                                       \
+  {                                                                                                  \
+    step_color_temp_req.step_mode = step_color_temp_req_ptr->step_mode;                              \
+    ZB_HTOLE16(&(step_color_temp_req).step_size, &(step_color_temp_req_ptr->step_size));             \
+    ZB_HTOLE16(&(step_color_temp_req).transition_time, &(step_color_temp_req_ptr->transition_time)); \
+    ZB_HTOLE16(&(step_color_temp_req).color_temp_min, &(step_color_temp_req_ptr->color_temp_min));   \
+    ZB_HTOLE16(&(step_color_temp_req).color_temp_max, &(step_color_temp_req_ptr->color_temp_max));   \
+    zb_buf_cut_left(buffer, ZB_ZCL_COLOR_CONTROL_STEP_COLOR_TEMP_REQ_PAYLOAD_LEN);                   \
+    status = ZB_ZCL_PARSE_STATUS_SUCCESS;                                                            \
+  }                                                                                                  \
+  else                                                                                               \
+  {                                                                                                  \
+    status = ZB_ZCL_PARSE_STATUS_FAILURE;                                                            \
+  }                                                                                                  \
 }
 
 /*! @} */ /* Color Control cluster commands */

@@ -53,47 +53,83 @@ PURPOSE: HA devices configuration
 /** @brief HA Device identifiers. */
 enum zb_ha_standard_devs_e
 {
-  ZB_HA_ON_OFF_SWITCH_DEVICE_ID       = 0x0000,         /*! General On/Off switch */
-  ZB_HA_LEVEL_CONTROL_SWITCH_DEVICE_ID = 0x0001,        /*! Level Control Switch  */
-  ZB_HA_ON_OFF_OUTPUT_DEVICE_ID       = 0x0002,         /*! General On/Off output */
-  ZB_HA_LEVEL_CONTROLLABLE_OUTPUT_DEVICE_ID = 0x0003,   /*! Level Controllable Output */
-  ZB_HA_SCENE_SELECTOR_DEVICE_ID      = 0x0004,         /*! Scene Selector */
-  ZB_HA_CONFIGURATION_TOOL_DEVICE_ID  = 0x0005,         /*! Configuration Tool */
-  ZB_HA_REMOTE_CONTROL_DEVICE_ID      = 0x0006,         /*! Remote Control */
-  ZB_HA_COMBINED_INTERFACE_DEVICE_ID  = 0x0007,         /*! Combined Interface */
-  ZB_HA_RANGE_EXTENDER_DEVICE_ID      = 0x0008,         /*! Range Extender */
-  ZB_HA_MAINS_POWER_OUTLET_DEVICE_ID  = 0x0009,         /*! Mains Power Outlet */
-  ZB_HA_DOOR_LOCK_DEVICE_ID           = 0x000A,         /*! Door lock client */
-  ZB_HA_DOOR_LOCK_CONTROLLER_DEVICE_ID = 0x000B,        /*! Door lock controller */
-  ZB_HA_SIMPLE_SENSOR_DEVICE_ID       = 0x000C,         /*! Simple Sensor device */
-  ZB_HA_CONSUMPTION_AWARENESS_DEVICE_ID = 0x000D,       /*! Consumption Awareness Device */
-  ZB_HA_HOME_GATEWAY_DEVICE_ID        = 0x0050,         /*! Home Gateway */
-  ZB_HA_SMART_PLUG_DEVICE_ID          = 0x0051,         /*! Smart plug */
-  ZB_HA_WHITE_GOODS_DEVICE_ID         = 0x0052,         /*! White Goods */
-  ZB_HA_METER_INTERFACE_DEVICE_ID     = 0x0053,         /*! Meter Interface */
-  ZB_HA_WINDOW_COVERING_DEVICE_ID     = 0x0060,         /*! Window Covering client*/
-  ZB_HA_WINDOW_COVERING_CONTROLLER_DEVICE_ID = 0x0061,  /*! Window Covering controller */
-  ZB_HA_SHADE_DEVICE_ID               = 0x0062,         /*! Shade */
-  ZB_HA_SHADE_CONTROLLER_DEVICE_ID    = 0x0063,         /*! Shade controller */
+  /*! General On/Off switch */
+  ZB_HA_ON_OFF_SWITCH_DEVICE_ID       = 0x0000,         
+  /*! Level Control Switch  */
+  ZB_HA_LEVEL_CONTROL_SWITCH_DEVICE_ID = 0x0001,
+  /*! General On/Off output */
+  ZB_HA_ON_OFF_OUTPUT_DEVICE_ID       = 0x0002,
+  /*! Level Controllable Output */
+  ZB_HA_LEVEL_CONTROLLABLE_OUTPUT_DEVICE_ID = 0x0003,
+  /*! Scene Selector */
+  ZB_HA_SCENE_SELECTOR_DEVICE_ID      = 0x0004,
+  /*! Configuration Tool */ 
+  ZB_HA_CONFIGURATION_TOOL_DEVICE_ID  = 0x0005,
+  /*! Remote Control */
+  ZB_HA_REMOTE_CONTROL_DEVICE_ID      = 0x0006,
+  /*! Combined Interface */
+  ZB_HA_COMBINED_INTERFACE_DEVICE_ID  = 0x0007,
+  /*! Range Extender */
+  ZB_HA_RANGE_EXTENDER_DEVICE_ID      = 0x0008,
+  /*! Mains Power Outlet */
+  ZB_HA_MAINS_POWER_OUTLET_DEVICE_ID  = 0x0009,
+  /*! Door lock client */
+  ZB_HA_DOOR_LOCK_DEVICE_ID           = 0x000A,
+  /*! Door lock controller */
+  ZB_HA_DOOR_LOCK_CONTROLLER_DEVICE_ID = 0x000B,
+  /*! Simple Sensor device */
+  ZB_HA_SIMPLE_SENSOR_DEVICE_ID       = 0x000C,
+  /*! Consumption Awareness Device */
+  ZB_HA_CONSUMPTION_AWARENESS_DEVICE_ID = 0x000D,
+  /*! Home Gateway */
+  ZB_HA_HOME_GATEWAY_DEVICE_ID        = 0x0050,
+  /*! Smart plug */
+  ZB_HA_SMART_PLUG_DEVICE_ID          = 0x0051,
+  /*! White Goods */
+  ZB_HA_WHITE_GOODS_DEVICE_ID         = 0x0052,
+  /*! Meter Interface */
+  ZB_HA_METER_INTERFACE_DEVICE_ID     = 0x0053,
+  /*! Window Covering client*/
+  ZB_HA_WINDOW_COVERING_DEVICE_ID     = 0x0060,
+  /*! Window Covering controller */
+  ZB_HA_WINDOW_COVERING_CONTROLLER_DEVICE_ID = 0x0061,
+  /*! Shade */
+  ZB_HA_SHADE_DEVICE_ID               = 0x0062,
+  /*! Shade controller */
+  ZB_HA_SHADE_CONTROLLER_DEVICE_ID    = 0x0063,
   /* Lightning */
-  ZB_HA_ON_OFF_LIGHT_DEVICE_ID        = 0x0100,         /*! On/Off Light Device */
-  ZB_HA_DIMMABLE_LIGHT_DEVICE_ID      = 0x0101,         /*! Dimmable Light Device */
-  ZB_HA_COLOR_DIMMABLE_LIGHT_DEVICE_ID = 0x0102,        /*! Color Dimmable Light Device */
-  ZB_HA_DIMMER_SWITCH_DEVICE_ID       = 0x0104,         /*! Dimmer Switch Device */
-  ZB_HA_COLOR_DIMMER_SWITCH_DEVICE_ID = 0x0105,         /*! Color Dimmer Switch Device */
+  /*! On/Off Light Device */
+  ZB_HA_ON_OFF_LIGHT_DEVICE_ID        = 0x0100,
+  /*! Dimmable Light Device */
+  ZB_HA_DIMMABLE_LIGHT_DEVICE_ID      = 0x0101,
+  /*! Color Dimmable Light Device */
+  ZB_HA_COLOR_DIMMABLE_LIGHT_DEVICE_ID = 0x0102,
+  /*! Dimmer Switch Device */
+  ZB_HA_DIMMER_SWITCH_DEVICE_ID       = 0x0104,
+  /*! Color Dimmer Switch Device */
+  ZB_HA_COLOR_DIMMER_SWITCH_DEVICE_ID = 0x0105,
   /* HVAC */
-  ZB_HA_HEATING_COOLING_UNIT_DEVICE_ID = 0x0300,        /*! Heating/Cooling Unit device */
-  ZB_HA_THERMOSTAT_DEVICE_ID          = 0x0301,         /*! Thermostat Device */
-  ZB_HA_TEMPERATURE_SENSOR_DEVICE_ID  = 0x0302,         /*! Temperature Sensor */
+  /*! Heating/Cooling Unit device */
+  ZB_HA_HEATING_COOLING_UNIT_DEVICE_ID = 0x0300,
+  /*! Thermostat Device */
+  ZB_HA_THERMOSTAT_DEVICE_ID          = 0x0301,
+  /*! Temperature Sensor */
+  ZB_HA_TEMPERATURE_SENSOR_DEVICE_ID  = 0x0302,
   /* IAS */
-  ZB_HA_IAS_CONTROL_INDICATING_EQUIPMENT_ID = 0x0400,   /*! IAS Control and Indicating Equipment */
-  ZB_HA_IAS_ANCILLARY_CONTROL_EQUIPMENT_ID = 0x0401,    /*! IAS Ancillary Control Equipment */
-  ZB_HA_IAS_ZONE_ID                   = 0x0402,         /*! IAS Zone */
-  ZB_HA_IAS_WARNING_DEVICE_ID         = 0x0403,         /*! IAS Warning Device */
-
-  ZB_HA_TEST_DEVICE_ID                = 0xfff0,         /*! Custom HA device for test */
-  ZB_HA_CUSTOM_TUNNEL_DEVICE_ID       = 0xfff1,         /*! Custom Tunnel device (should declared in private profile) */
-  ZB_HA_CUSTOM_ATTR_DEVICE_ID         = 0xfff2          /*! Custom Attributes Device */
+  /*! IAS Control and Indicating Equipment */
+  ZB_HA_IAS_CONTROL_INDICATING_EQUIPMENT_ID = 0x0400,
+  /*! IAS Ancillary Control Equipment */
+  ZB_HA_IAS_ANCILLARY_CONTROL_EQUIPMENT_ID = 0x0401,
+  /*! IAS Zone */
+  ZB_HA_IAS_ZONE_ID                   = 0x0402,
+  /*! IAS Warning Device */
+  ZB_HA_IAS_WARNING_DEVICE_ID         = 0x0403,
+  /*! Custom HA device for test */
+  ZB_HA_TEST_DEVICE_ID                = 0xfff0,
+  /*! Custom Tunnel device (should declared in private profile) */
+  ZB_HA_CUSTOM_TUNNEL_DEVICE_ID       = 0xfff1,
+  /*! Custom Attributes Device */
+  ZB_HA_CUSTOM_ATTR_DEVICE_ID         = 0xfff2
 };
 
 
@@ -146,6 +182,12 @@ enum zb_ha_standard_devs_e
 #ifdef ZB_ENABLE_SE_CLUSTERS
 #define ZB_ZCL_SUPPORT_CLUSTER_PRICE 1
 #define ZB_ZCL_SUPPORT_CLUSTER_TUNNELING 1
+#define ZB_ZCL_SUPPORT_CLUSTER_EVENTS 1
+#define ZB_ZCL_SUPPORT_CLUSTER_CALENDAR 1
+#define ZB_ZCL_SUPPORT_CLUSTER_PREPAYMENT 1
+#define ZB_ZCL_SUPPORT_CLUSTER_DEVICE_MANAGEMENT 1
+#define ZB_ZCL_SUPPORT_CLUSTER_MDU_PAIRING 1
+#define ZB_ZCL_SUPPORT_CLUSTER_ENERGY_MANAGEMENT 1
 #define ZB_ZCL_SUPPORT_CLUSTER_MESSAGING 1
 #define ZB_ZCL_SUPPORT_CLUSTER_TIME 1
 #define ZB_ZCL_SUPPORT_CLUSTER_DRLC 1
@@ -416,9 +458,6 @@ enum zb_ha_standard_devs_e
 #define ZB_ZCL_SUPPORT_CLUSTER_IAS_ZONE                  1
 #define ZB_ZCL_SUPPORT_CLUSTER_TIME                      1
 /* #define ZB_ZCL_SUPPORT_CLUSTER_DIAGNOSTICS               1 */
-#if (!defined ZB_HA_SUPPORT_EZ_MODE && !defined ZB_BDB_MODE)
-#define ZB_HA_SUPPORT_EZ_MODE                               1
-#endif
 #define ZB_ZCL_SUPPORT_CLUSTER_OTA_UPGRADE               1
 #define ZB_ZCL_SUPPORT_CLUSTER_GROUPS_CLIENT             1
 #define ZB_ZCL_SUPPORT_CLUSTER_POWER_CONFIG              1
@@ -429,11 +468,6 @@ enum zb_ha_standard_devs_e
 #define ZB_ZCL_SUPPORT_CLUSTER_GROUPS                    1
 #define ZB_ZCL_SUPPORT_CLUSTER_METERING                  1
 
-/*
- * Gateway uses EZ mode only for Gemtek smartplug, which is
- * currently excluded from build.
- */
-/* #define ZB_HA_SUPPORT_EZ_MODE                         1 */
 #endif /* ZB_HA_DEFINE_DEVICE_GATEWAY */
 
 /* Custome device should not be declared as a part of HA, keep it
@@ -454,10 +488,6 @@ enum zb_ha_standard_devs_e
 /* #define ZB_ZCL_SUPPORT_CLUSTER_SCENES               1 */
 #define ZB_ZCL_SUPPORT_CLUSTER_DIAGNOSTICS          1
 #define ZB_ZCL_SUPPORT_CLUSTER_OTA_UPGRADE          1
-/* Features: */
-#if (!defined ZB_HA_SUPPORT_EZ_MODE && !defined ZB_BDB_MODE)
-#define ZB_HA_SUPPORT_EZ_MODE 1
-#endif
 #endif /* ZB_HA_DEFINE_DEVICE_SMART_PLUG */
 
 #ifdef ZB_HA_DEFINE_DEVICE_CUSTOM_DIMMABLE_LIGHT

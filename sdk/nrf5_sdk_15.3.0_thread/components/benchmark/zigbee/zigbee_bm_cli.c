@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2018, Nordic Semiconductor ASA
+ * Copyright (c) 2018 - 2019, Nordic Semiconductor ASA
  *
  * All rights reserved.
  *
@@ -50,7 +50,7 @@ void cli_init(void)
 
 void cli_remote_init(void)
 {
-    /* Remote command execution is not implemented in Zigbee benchmark. Use master/slave role instead. */
+    /* Remote command execution is not implemented in Zigbee benchmark. */
     return;
 }
 
@@ -62,7 +62,7 @@ void cli_start(void)
 
 void cli_remote_start(void)
 {
-    /* Remote command execution is not implemented in Zigbee benchmark. Use master/slave role instead. */
+    /* Remote command execution is not implemented in Zigbee benchmark. */
     return;
 }
 
@@ -73,12 +73,12 @@ void cli_process(void)
 
 nrf_cli_t const * cli_remote_get(size_t idx)
 {
-    /* Remote command execution is not implemented in Zigbee benchmark. Use master/slave role instead. */
+    /* Remote command execution is not implemented in Zigbee benchmark. */
     return NULL;
 }
 
 void cli_remote_peer_set(nrf_cli_t const * p_peer_cli, benchmark_address_context_t * p_peer_address)
 {
-    /* Remote command execution is not implemented in Zigbee benchmark. Use master/slave role instead. */
+    /* Remote command execution is not implemented in Zigbee benchmark. */
     return;
 }

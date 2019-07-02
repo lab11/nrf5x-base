@@ -833,16 +833,16 @@ zb_zcl_write_attr_req_t;
   * is no more data.
 
    If request contains invlid data, NULL is returned.
-   @param data_buf - pointer to zb_buf_t buffer containing write attribute request data
+   @param data_ptr - pointer to the data of a zb_buf_t buffer containing write attribute request data
+   @param data_len - variable containing length of a zb_buf_t buffer
    @param write_attr_req - out pointer to zb_zcl_write_attr_req_t, containing Write attribute record
-   @note data_buf buffer should contain Write attribute request payload, without ZCL header.  Each
-   parsed Write attribute record is exctracted from intial data_buf buffer
+   @note buffer data by data_ptr should contain Write attribute request payload, without ZCL header.
  */
-#define ZB_ZCL_GENERAL_GET_NEXT_WRITE_ATTR_REQ(data_buf, write_attr_req)                     \
+#define ZB_ZCL_GENERAL_GET_NEXT_WRITE_ATTR_REQ(data_ptr, data_len, write_attr_req)           \
 {                                                                                            \
   zb_uint8_t req_size = 0xff;                                                                \
-  (write_attr_req) = ZB_BUF_LEN(data_buf) >= ZB_ZCL_WRITE_ATTR_REQ_SIZE ?                    \
-    (zb_zcl_write_attr_req_t*)ZB_BUF_BEGIN(data_buf) : NULL;                                 \
+  (write_attr_req) = (data_len) >= ZB_ZCL_WRITE_ATTR_REQ_SIZE ?                              \
+    (zb_zcl_write_attr_req_t*)(data_ptr) : NULL;                                             \
                                                                                              \
   if (write_attr_req)                                                                        \
   {                                                                                          \
@@ -850,16 +850,17 @@ zb_zcl_write_attr_req_t;
     /* is already included into ZB_ZCL_WRITE_ATTR_REQ_SIZE */                                \
     req_size = ZB_ZCL_WRITE_ATTR_REQ_SIZE - sizeof(zb_uint8_t) +                             \
       zb_zcl_get_attribute_size((write_attr_req)->attr_type, (write_attr_req)->attr_value);  \
-    if (req_size <= ZB_BUF_LEN(data_buf))                                                    \
+    if (req_size <= (data_len))                                                              \
     {                                                                                        \
       ZB_ZCL_HTOLE16_INPLACE(&(write_attr_req)->attr_id);                                    \
       ZB_ZCL_FIX_ENDIAN((write_attr_req)->attr_value, (write_attr_req)->attr_type);          \
     }                                                                                        \
   }                                                                                          \
                                                                                              \
-  if (req_size <= ZB_BUF_LEN(data_buf))                                                      \
+  if (req_size <= (data_len))                                                                \
   {                                                                                          \
-    ZB_BUF_CUT_LEFT2((data_buf), req_size);                                                  \
+    (data_ptr) = (data_ptr) + req_size;                                                      \
+    (data_len) = (data_len) - req_size;                                                      \
   }                                                                                          \
   else                                                                                       \
   {                                                                                          \
@@ -930,13 +931,44 @@ zb_zcl_write_attr_res_t;
     @param buffer - buffer to store command data
     @param cmd_ptr - pointer to a command data memory
     @param def_resp - enable/disable default response
+    @param write_attr_type - type of 'Write Attribute' command:
+           default - @see ZB_ZCL_CMD_WRITE_ATTRIB;
+           no response - @see ZB_ZCL_CMD_WRITE_ATTRIB_NO_RESP;
+           undivided - @see ZB_ZCL_CMD_WRITE_ATTRIB_UNDIV;
 */
-#define ZB_ZCL_GENERAL_INIT_WRITE_ATTR_REQ(buffer, cmd_ptr, def_resp)                      \
-{                                                                                          \
-  cmd_ptr = ZB_ZCL_START_PACKET(buffer);                                                   \
-  ZB_ZCL_CONSTRUCT_GENERAL_COMMAND_REQ_FRAME_CONTROL(cmd_ptr, def_resp);                   \
-  ZB_ZCL_CONSTRUCT_COMMAND_HEADER(cmd_ptr, ZB_ZCL_GET_SEQ_NUM(), ZB_ZCL_CMD_WRITE_ATTRIB); \
+#define ZB_ZCL_GENERAL_INIT_WRITE_ATTR_REQ_BY_TYPE(buffer, cmd_ptr, def_resp, write_attr_type) \
+{                                                                                              \
+  cmd_ptr = ZB_ZCL_START_PACKET(buffer);                                                       \
+  ZB_ZCL_CONSTRUCT_GENERAL_COMMAND_REQ_FRAME_CONTROL(cmd_ptr, def_resp);                       \
+  ZB_ZCL_CONSTRUCT_COMMAND_HEADER(cmd_ptr, ZB_ZCL_GET_SEQ_NUM(), write_attr_type);             \
 }
+
+/** @brief Initialize Write attribute command
+    @param buffer - buffer to store command data
+    @param cmd_ptr - pointer to a command data memory
+    @param def_resp - enable/disable default response
+*/
+#define ZB_ZCL_GENERAL_INIT_WRITE_ATTR_REQ(buffer, cmd_ptr, def_resp) \
+  ZB_ZCL_GENERAL_INIT_WRITE_ATTR_REQ_BY_TYPE( \
+    (buffer), (cmd_ptr), (def_resp), ZB_ZCL_CMD_WRITE_ATTRIB);
+
+/** @brief Initialize Write Attribute No Response command
+    @param buffer - buffer to store command data
+    @param cmd_ptr - pointer to a command data memory
+    @param def_resp - enable/disable default response
+*/
+#define ZB_ZCL_GENERAL_INIT_WRITE_ATTR_REQ_NO_RESP(buffer, cmd_ptr, def_resp) \
+  ZB_ZCL_GENERAL_INIT_WRITE_ATTR_REQ_BY_TYPE( \
+    (buffer), (cmd_ptr), (def_resp), ZB_ZCL_CMD_WRITE_ATTRIB_NO_RESP);
+
+/** @brief Initialize Write Attribute Undivided command
+    @param buffer - buffer to store command data
+    @param cmd_ptr - pointer to a command data memory
+    @param def_resp - enable/disable default response
+*/
+#define ZB_ZCL_GENERAL_INIT_WRITE_ATTR_REQ_UNDIV(buffer, cmd_ptr, def_resp) \
+  ZB_ZCL_GENERAL_INIT_WRITE_ATTR_REQ_BY_TYPE( \
+    (buffer), (cmd_ptr), (def_resp), ZB_ZCL_CMD_WRITE_ATTRIB_UNDIV);
 
 /**
  * @brief Initialize Write attribute command
@@ -1451,9 +1483,7 @@ zb_zcl_configure_reporting_res_t;
   if (config_rep_res)                                                               \
   {                                                                                 \
     if ((config_rep_res)->status != ZB_ZCL_STATUS_SUCCESS                           \
-/* NK_TEST 06/21/13                                                               */\
          && (config_rep_res)->status != ZB_ZCL_STATUS_MALFORMED_CMD)                \
-/* NK_TEST 06/21/13                                                               */\
     {                                                                               \
       /* In case of error, direction and attribute id is reported */                \
       res_size = sizeof(zb_zcl_configure_reporting_res_t);                          \

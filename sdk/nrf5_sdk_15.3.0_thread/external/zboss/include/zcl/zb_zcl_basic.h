@@ -111,11 +111,7 @@ enum zb_zcl_basic_settings_attr_e
   /*! Physical environment attribute */
   ZB_ZCL_ATTR_BASIC_PHYSICAL_ENVIRONMENT_ID = 0x0011,
   /*! Device enabled attribute */
-#ifndef ZB_DISABLE_DEVICE_ENABLED_ATTR
   ZB_ZCL_ATTR_BASIC_DEVICE_ENABLED_ID       = 0x0012,
-#else
-  ZB_ZCL_ATTR_BASIC_DEVICE_ENABLED_ID       = 0xF012,
-#endif
   /*! Alarm mask attribute */
   ZB_ZCL_ATTR_BASIC_ALARM_MASK_ID           = 0x0013,
   /*! Disable local config attribute */
@@ -341,7 +337,14 @@ typedef struct zb_zcl_basic_disable_local_conf_s
   (zb_voidp_t) data_ptr                                                         \
 }
 
-/** @internal @brief Declare attribute list for Basic cluster
+#if defined ZB_ZCL_SUPPORT_CLUSTER_SCENES
+/*! Scenes fieldset length for Basic cluster */
+#define ZB_ZCL_CLUSTER_ID_BASIC_SCENE_FIELD_SETS_LENGTH 0
+#endif /* defined ZB_ZCL_SUPPORT_CLUSTER_SCENES */
+
+/** @endcond */ /* internals_doc */
+
+/** @brief Declare attribute list for Basic cluster
     @param attr_list - attribute list name
     @param zcl_version - pointer to variable to store zcl version  attribute value
     @param power_source - pointer to variable to store power source attribute value
@@ -353,8 +356,8 @@ typedef struct zb_zcl_basic_disable_local_conf_s
     ZB_ZCL_FINISH_DECLARE_ATTRIB_LIST
 
 /**
- *  @brief Declare attribute list for Basic cluster with Touchlink additions.
- *  @param attr_list [IN] - attribure list name.
+ *  @brief Declare attribute list for Basic cluster (extended attribute set).
+ *  @param attr_list [IN] - attribute list name.
  *  @param zcl_version [IN] - pointer to variable storing ZCL version  attribute value.
  *  @param app_version [IN] - pointer to the variable storing application version.
  *  @param stack_version [IN] - pointer to the variable storing stack version.
@@ -363,9 +366,11 @@ typedef struct zb_zcl_basic_disable_local_conf_s
  *  @param model_id [IN] - pointer to the variable storing model identifier.
  *  @param date_code [IN] - pointer to the variable storing date code.
  *  @param power_source [IN] - pointer to variable storing power source attribute value.
+ *  @param location_id [IN] - pointer to variable storing location description attribute value.
+ *  @param ph_env [IN] - pointer to variable storing physical environment attribute value.
  *  @param sw_build_id [IN] - pointer to the variable storing software version reference.
  */
-#define ZB_ZCL_DECLARE_BASIC_ATTRIB_LIST_TL(                                        \
+#define ZB_ZCL_DECLARE_BASIC_ATTRIB_LIST_EXT(                                       \
   attr_list,                                                                        \
   zcl_version,                                                                      \
   app_version,                                                                      \
@@ -375,7 +380,10 @@ typedef struct zb_zcl_basic_disable_local_conf_s
   model_id,                                                                         \
   date_code,                                                                        \
   power_source,                                                                     \
+  location_id,                                                                      \
+  ph_env,                                                                           \
   sw_build_id)                                                                      \
+  zb_bool_t device_enable_##attr_list = ZB_TRUE;                                    \
     ZB_ZCL_START_DECLARE_ATTRIB_LIST(attr_list)                                     \
     ZB_ZCL_SET_ATTR_DESC(ZB_ZCL_ATTR_BASIC_ZCL_VERSION_ID, (zcl_version))           \
     ZB_ZCL_SET_ATTR_DESC(ZB_ZCL_ATTR_BASIC_APPLICATION_VERSION_ID, (app_version))   \
@@ -386,14 +394,11 @@ typedef struct zb_zcl_basic_disable_local_conf_s
     ZB_ZCL_SET_ATTR_DESC(ZB_ZCL_ATTR_BASIC_DATE_CODE_ID, (date_code))               \
     ZB_ZCL_SET_ATTR_DESC(ZB_ZCL_ATTR_BASIC_POWER_SOURCE_ID, (power_source))         \
     ZB_ZCL_SET_ATTR_DESC(ZB_ZCL_ATTR_BASIC_SW_BUILD_ID, (sw_build_id))              \
+    ZB_ZCL_SET_ATTR_DESC(ZB_ZCL_ATTR_BASIC_DEVICE_ENABLED_ID,                       \
+                         &(device_enable_##attr_list))                              \
+    ZB_ZCL_SET_ATTR_DESC(ZB_ZCL_ATTR_BASIC_LOCATION_DESCRIPTION_ID, (location_id))  \
+    ZB_ZCL_SET_ATTR_DESC(ZB_ZCL_ATTR_BASIC_PHYSICAL_ENVIRONMENT_ID, (ph_env))       \
     ZB_ZCL_FINISH_DECLARE_ATTRIB_LIST
-
-#if defined ZB_ZCL_SUPPORT_CLUSTER_SCENES
-/*! Scenes fieldset length for Basic cluster */
-#define ZB_ZCL_CLUSTER_ID_BASIC_SCENE_FIELD_SETS_LENGTH 0
-#endif /* defined ZB_ZCL_SUPPORT_CLUSTER_SCENES */
-
-/** @endcond */ /* internals_doc */
 
 /*! Maximum length of ManufacturerName string field */
 #define ZB_ZCL_CLUSTER_ID_BASIC_MANUFACTURER_NAME_MAX_LEN 32
@@ -420,7 +425,7 @@ typedef struct zb_zcl_basic_attrs_s
 
 /** @brief Declare attribute list for Basic cluster cluster
  *  @param[in]  attr_list - attribute list variable name
- *  @param[in]  attrs - pointer to @ref zb_zcl_basic_attrs_s structure
+ *  @param[in]  attrs - variable of @ref zb_zcl_basic_attrs_t type (containing Basic cluster attributes)
  */
 #define ZB_ZCL_DECLARE_BASIC_ATTR_LIST(attr_list, attrs) \
   ZB_ZCL_DECLARE_BASIC_ATTRIB_LIST(attr_list, &attrs.zcl_version, &attrs.power_source)
@@ -439,10 +444,13 @@ enum zb_zcl_basic_cmd_e
   ZB_ZCL_CMD_BASIC_RESET_ID       = 0x00, /**< "Reset to Factory Defaults" command. */
 };
 
+/** @cond internals_doc */
 /* Basic cluster commands lists : only for information - do not modify */
 #define ZB_ZCL_CLUSTER_ID_BASIC_SERVER_ROLE_RECEIVED_CMD_LIST ZB_ZCL_CMD_BASIC_RESET_ID
 
 #define ZB_ZCL_CLUSTER_ID_BASIC_CLIENT_ROLE_GENERATED_CMD_LIST ZB_ZCL_CLUSTER_ID_BASIC_SERVER_ROLE_RECEIVED_CMD_LIST
+/*! @}
+ *  @endcond */ /* internals_doc */
 
 ////////////////////////////////////////
 

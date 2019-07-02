@@ -41,6 +41,7 @@
 #ifndef ZB_MEM_CONFIG_CONTEXT_H
 #define ZB_MEM_CONFIG_CONTEXT_H 1
 
+
 /*! @internal */
 /*! @{ */
 
@@ -199,8 +200,24 @@ ZB_CONFIG_PRE zb_uint32_t gc_pending_bitmap[ZB_CONFIG_PENDING_BITMAP_SIZE] ZB_CO
 
   zb_aps_bind_dst_table_t.trans_index
   */
-ZB_CONFIG_PRE zb_uint8_t gc_trans_index_buf[ZB_APS_DST_BINDING_TABLE_SIZE][ZB_CONFIG_SINGLE_TRANS_INDEX_SIZE] ZB_CONFIG_POST = { 0 };
+
+ZB_CONFIG_PRE zb_uint8_t gc_trans_table_size ZB_CONFIG_POST = ZB_CONFIG_APS_BIND_TRANS_TABLE_SIZE;
+ZB_CONFIG_PRE zb_uint8_t gc_single_trans_index_size ZB_CONFIG_POST = ZB_CONFIG_SINGLE_TRANS_INDEX_SIZE;
+ZB_CONFIG_PRE zb_uint8_t gc_trans_index_buf[ZB_CONFIG_APS_DST_BINDING_TABLE_SIZE][ZB_CONFIG_SINGLE_TRANS_INDEX_SIZE] ZB_CONFIG_POST = { 0 };
 ZB_CONFIG_PRE zb_uint8_t gc_trans_table[ZB_CONFIG_APS_BIND_TRANS_TABLE_SIZE] ZB_CONFIG_POST = { 0 };
+
+/**
+  APS bind tables
+  
+  zb_aps_globals.h
+
+  ZG->aps.binding.zb_aps_bind_src_table_t
+  ZG->aps.binding.zb_aps_bind_dst_table_t
+ */
+ZB_CONFIG_PRE zb_uint8_t gc_aps_bind_src_table_size ZB_CONFIG_POST = ZB_CONFIG_APS_SRC_BINDING_TABLE_SIZE;
+ZB_CONFIG_PRE zb_uint8_t gc_aps_bind_dst_table_size ZB_CONFIG_POST = ZB_CONFIG_APS_DST_BINDING_TABLE_SIZE;
+ZB_CONFIG_PRE zb_aps_bind_src_table_t gc_aps_bind_src_table[ZB_CONFIG_APS_SRC_BINDING_TABLE_SIZE] ZB_CONFIG_POST = { 0 };
+ZB_CONFIG_PRE zb_aps_bind_dst_table_t gc_aps_bind_dst_table[ZB_CONFIG_APS_DST_BINDING_TABLE_SIZE] ZB_CONFIG_POST = { 0 };
 
 /**
    APS retransmission buffer

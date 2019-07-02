@@ -53,9 +53,12 @@ PURPOSE: IAS Zone cluster defintions
  *    IAS Zone cluster definitions
  */
 
+/** @cond internals_doc */
 /** @brief Hook on Write attribute
  * send Zone Status Change Notification Command if change ZoneStatus attribute */
 zb_void_t zb_zcl_ias_zone_write_attr_hook(zb_uint8_t endpoint, zb_uint16_t attr_id, zb_uint8_t *new_value);
+/*! @}
+ *  @endcond */ /* internals_doc */
 
 /* Cluster ZB_ZCL_CLUSTER_ID_IAS_ZONE */
 
@@ -76,11 +79,20 @@ enum zb_zcl_ias_zone_attr_e
   ZB_ZCL_ATTR_IAS_ZONE_ZONESTATUS_ID = 0x0002,
   /*! @brief IAS_CIE_Address  attribute, ZCL spec 8.2.2.2.2.1. */
   ZB_ZCL_ATTR_IAS_ZONE_IAS_CIE_ADDRESS_ID = 0x0010,
+  /*! @brief ZoneID attribute, ZCL spec 8.2.2.1.2.2 */
+  ZB_ZCL_ATTR_IAS_ZONE_ZONEID_ID = 0x0011,
+  /*! @brief NumberOfZoneSensitivityLevelsSupported attribute, ZCL spec 8.2.2.1.2.3 */
+  ZB_ZCL_ATTR_IAS_ZONE_NUMBER_OF_ZONE_SENSITIVITY_LEVELS_SUPPORTED_ID = 0x0012,
+  /*! @brief CurrentZoneSensitivityLevel attribute, ZCL spec 8.2.2.1.2.4 */
+  ZB_ZCL_ATTR_IAS_ZONE_CURRENT_ZONE_SENSITIVITY_LEVEL_ID = 0x0013,
   /* custom attribute */
   ZB_ZCL_ATTR_CUSTOM_ZGP_CALIBRATION = 0x8000,
   ZB_ZCL_ATTR_CUSTOM_ZGP_CLOUD_ACK = 0x8003,
-  ZB_ZCL_ATTR_CUSTOM_CIE_EP = 0xF001,
-  ZB_ZCL_ATTR_CUSTOM_CIE_SHORT_ADDR = 0xF002
+  ZB_ZCL_ATTR_CUSTOM_CIE_EP = 0xE001,
+  ZB_ZCL_ATTR_CUSTOM_CIE_SHORT_ADDR = 0xE002,
+  /* TODO: move this attribute to IAS Zone ZCL implementation */
+  /*! @brief Struct with pointers on User App callbacks */
+  ZB_ZCL_ATTR_IAS_ZONE_INT_CTX_ID = 0xeffe,
 };
 
 /**
@@ -168,19 +180,29 @@ enum zb_zcl_ias_zone_zonestatus_e
   ZB_ZCL_IAS_ZONE_ZONE_STATUS_TROUBLE     = 1 << 6,
   /** AC (mains) */
   ZB_ZCL_IAS_ZONE_ZONE_STATUS_AC_MAINS    = 1 << 7,
+  /** Test */
+  ZB_ZCL_IAS_ZONE_ZONE_STATUS_TEST            = 1 << 8,
+  /** Battery Defect */
+  ZB_ZCL_IAS_ZONE_ZONE_STATUS_BATTERY_DEFECT  = 1 << 9,
 };
-
 
 /** @brief IAS Zone ZoneStatus attribute default value */
 #define ZB_ZCL_IAS_ZONE_ZONE_STATUS_DEF_VALUE            0
 
+/** @brief Min value for NumberOfZoneSensitivityLevelsSupported attribute */
+#define ZB_ZCL_IAS_ZONE_NUMBER_OF_ZONE_SENSITIVITY_LEVELS_SUPPORTED_MIN_VALUE ((zb_uint8_t)0x02)
+
 /** @brief Default value for NumberOfZoneSensitivityLevelsSupported attribute */
-#define ZB_ZCL_IAS_ZONE_NUMBER_OF_ZONE_SENSITIVITY_LEVELS_SUPPORTED_DEFAULT_VALUE ((zb_uint8_t)0x02)
+#define ZB_ZCL_IAS_ZONE_NUMBER_OF_ZONE_SENSITIVITY_LEVELS_SUPPORTED_DEFAULT_VALUE \
+  ZB_ZCL_IAS_ZONE_NUMBER_OF_ZONE_SENSITIVITY_LEVELS_SUPPORTED_MIN_VALUE
 
 /** @brief Default value for CurrentZoneSensitivityLevel attribute */
 #define ZB_ZCL_IAS_ZONE_CURRENT_ZONE_SENSITIVITY_LEVEL_DEFAULT_VALUE ((zb_uint8_t)0x00)
 
+/** @brief IAS Zone ZoneID attribute default value */
+#define ZB_ZCL_IAS_ZONEID_ID_DEF_VALUE            0xff
 
+/** @cond internals_doc */
 /** @cond This macros should not be used by the user application directly */
 /*! @internal @name IAS Zone cluster internals
     Internal structures for attribute representation in cluster definitions.
@@ -191,7 +213,7 @@ enum zb_zcl_ias_zone_zonestatus_e
 {                                                       \
   ZB_ZCL_ATTR_CUSTOM_CIE_EP,                            \
   ZB_ZCL_ATTR_TYPE_U8,                                  \
-  ZB_ZCL_ATTR_ACCESS_READ_ONLY,                         \
+  ZB_ZCL_ATTR_ACCESS_INTERNAL,                         \
   (zb_voidp_t) data_ptr                                 \
 }
 
@@ -199,7 +221,7 @@ enum zb_zcl_ias_zone_zonestatus_e
 {                                                       \
   ZB_ZCL_ATTR_CUSTOM_CIE_SHORT_ADDR,                    \
   ZB_ZCL_ATTR_TYPE_U16,                                 \
-  ZB_ZCL_ATTR_ACCESS_READ_ONLY,                         \
+  ZB_ZCL_ATTR_ACCESS_INTERNAL,                         \
   (zb_voidp_t) data_ptr                                 \
 }
 
@@ -236,8 +258,48 @@ enum zb_zcl_ias_zone_zonestatus_e
   (zb_voidp_t) data_ptr                                 \
 }
 
-/** @internal @brief Declare attribute list for IAS Zone cluster - server side
-    @param attr_list - attribure list name
+#define ZB_SET_ATTR_DESCR_WITH_ZB_ZCL_ATTR_IAS_ZONE_ZONEID_ID(data_ptr) \
+{                                                       \
+  ZB_ZCL_ATTR_IAS_ZONE_ZONEID_ID,                       \
+  ZB_ZCL_ATTR_TYPE_U8,                                  \
+  ZB_ZCL_ATTR_ACCESS_READ_ONLY,                         \
+  (zb_voidp_t) data_ptr                                 \
+}
+
+#define ZB_SET_ATTR_DESCR_WITH_ZB_ZCL_ATTR_IAS_ZONE_NUMBER_OF_ZONE_SENSITIVITY_LEVELS_SUPPORTED_ID(data_ptr) \
+{                                                       \
+  ZB_ZCL_ATTR_IAS_ZONE_NUMBER_OF_ZONE_SENSITIVITY_LEVELS_SUPPORTED_ID,                      \
+  ZB_ZCL_ATTR_TYPE_U8,                                \
+  ZB_ZCL_ATTR_ACCESS_READ_ONLY,                         \
+  (zb_voidp_t) data_ptr                                 \
+}
+
+#define ZB_SET_ATTR_DESCR_WITH_ZB_ZCL_ATTR_IAS_ZONE_CURRENT_ZONE_SENSITIVITY_LEVEL_ID(data_ptr) \
+{                                                       \
+  ZB_ZCL_ATTR_IAS_ZONE_CURRENT_ZONE_SENSITIVITY_LEVEL_ID,                      \
+  ZB_ZCL_ATTR_TYPE_U8,                                \
+  ZB_ZCL_ATTR_ACCESS_READ_WRITE,                         \
+  (zb_voidp_t) data_ptr                                 \
+}
+
+#define ZB_SET_ATTR_DESCR_WITH_ZB_ZCL_ATTR_IAS_ZONE_INT_CTX_ID(data_ptr) \
+{                                                       \
+  ZB_ZCL_ATTR_IAS_ZONE_INT_CTX_ID,                      \
+  ZB_ZCL_ATTR_TYPE_NULL,                                \
+  ZB_ZCL_ATTR_ACCESS_INTERNAL,                          \
+  (zb_voidp_t) data_ptr                                 \
+}
+
+/*! @internal Number of attributes mandatory for reporting in IAS Zone cluster */
+#define ZB_ZCL_IAS_ZONE_REPORT_ATTR_COUNT 1
+
+/*! @} */ /* IAS Zone cluster internals */
+/** @endcond */
+/*! @}
+ *  @endcond */ /* internals_doc */
+
+/** @brief Declare attribute list for IAS Zone cluster - server side
+    @param attr_list - attribute list name
     @param zone_state - pointer to variable to store ZoneState attribute
     @param zone_type - pointer to variable to store ZoneType attribute
     @param zone_status - pointer to variable to store ZoneStatus attribute
@@ -258,12 +320,39 @@ enum zb_zcl_ias_zone_zonestatus_e
   ZB_ZCL_SET_ATTR_DESC(ZB_ZCL_ATTR_CUSTOM_CIE_EP, (cie_ep))                         \
   ZB_ZCL_FINISH_DECLARE_ATTRIB_LIST
 
-
-/*! @internal Number of attributes mandatory for reporting in IAS Zone cluster */
-#define ZB_ZCL_IAS_ZONE_REPORT_ATTR_COUNT 1
-
-/*! @} */ /* IAS Zone cluster internals */
-/** @endcond */
+/** @brief Declare attribute list for IAS Zone cluster - server side (extended attribute set)
+    @param attr_list - attribute list name
+    @param zone_state - pointer to variable to store ZoneState attribute
+    @param zone_type - pointer to variable to store ZoneType attribute
+    @param zone_status - pointer to variable to store ZoneStatus attribute
+    @param ias_cie_address - pointer to variable to store IAS-CIE address attribute
+    @param zone_id - pointer to variable to store Zone ID attribute
+    @param number_of_zone_sens_levels_supported - pointer to variable to store
+    NumberOfZoneSensitivityLevelsSupported attribute
+    @param current_zone_sens_level - pointer to variable to store CurrentZoneSensitivityLevel attribute
+    @param cie_short_addr - custom attribute to store CIE short address
+    @param cie_ep - custom attribute to store CIE Endpoint number
+*/
+/* FIXME: declare custom attributes internally */
+#define ZB_ZCL_DECLARE_IAS_ZONE_ATTRIB_LIST_EXT(                                                                 \
+  attr_list, zone_state, zone_type, zone_status, number_of_zone_sens_levels_supported, current_zone_sens_level,  \
+  ias_cie_address, zone_id, cie_short_addr, cie_ep)                                                              \
+  zb_uint16_t last_change_##attr_list;                                                                           \
+  zb_zcl_ias_zone_int_ctx_t int_ctx_##attr_list;                                                                 \
+  ZB_ZCL_START_DECLARE_ATTRIB_LIST(attr_list)                                                                    \
+  ZB_ZCL_SET_ATTR_DESC(ZB_ZCL_ATTR_IAS_ZONE_ZONESTATE_ID, (zone_state))                                          \
+  ZB_ZCL_SET_ATTR_DESC(ZB_ZCL_ATTR_IAS_ZONE_ZONETYPE_ID, (zone_type))                                            \
+  ZB_ZCL_SET_ATTR_DESC(ZB_ZCL_ATTR_IAS_ZONE_ZONESTATUS_ID, (zone_status))                                        \
+  ZB_ZCL_SET_ATTR_DESC(ZB_ZCL_ATTR_IAS_ZONE_IAS_CIE_ADDRESS_ID, (ias_cie_address))                               \
+  ZB_ZCL_SET_ATTR_DESC(ZB_ZCL_ATTR_IAS_ZONE_ZONEID_ID, (zone_id))                                                \
+  ZB_ZCL_SET_ATTR_DESC(ZB_ZCL_ATTR_IAS_ZONE_NUMBER_OF_ZONE_SENSITIVITY_LEVELS_SUPPORTED_ID,                      \
+                       (number_of_zone_sens_levels_supported))                                                   \
+  ZB_ZCL_SET_ATTR_DESC(ZB_ZCL_ATTR_IAS_ZONE_CURRENT_ZONE_SENSITIVITY_LEVEL_ID,                                   \
+                       (current_zone_sens_level))                                                                \
+  ZB_ZCL_SET_ATTR_DESC(ZB_ZCL_ATTR_IAS_ZONE_INT_CTX_ID, &(int_ctx_##attr_list))                                  \
+  ZB_ZCL_SET_ATTR_DESC(ZB_ZCL_ATTR_CUSTOM_CIE_SHORT_ADDR, (cie_short_addr))                                      \
+  ZB_ZCL_SET_ATTR_DESC(ZB_ZCL_ATTR_CUSTOM_CIE_EP, (cie_ep))                                                      \
+  ZB_ZCL_FINISH_DECLARE_ATTRIB_LIST
 
 /*! @} */ /* IAS Zone cluster attributes */
 
@@ -276,7 +365,12 @@ enum zb_zcl_ias_zone_zonestatus_e
 */
 enum zb_zcl_ias_zone_cmd_e
 {
-  ZB_ZCL_CMD_IAS_ZONE_ZONE_ENROLL_RESPONSE_ID        = 0x00, /**< "Zone Enroll Response" command, ZCL spec 8.2.2.3.1 */
+  ZB_ZCL_CMD_IAS_ZONE_ZONE_ENROLL_RESPONSE_ID        = 0x00, /**< "Zone Enroll Response" command,
+                                                              * ZCL spec 8.2.2.3.1 */
+  /**< "Initiate Normal Operation Mode" command, ZCL spec 8.2.2.2.1 */
+  ZB_ZCL_CMD_IAS_ZONE_INITIATE_NORMAL_OPERATION_MODE_ID        = 0x01,
+  /**< "Initiate Test Mode" command, ZCL spec 8.2.2.2.2.3 */
+  ZB_ZCL_CMD_IAS_ZONE_INITIATE_TEST_MODE_ID        = 0x02,
 };
 
 
@@ -291,9 +385,12 @@ enum zb_zcl_ias_zone_resp_cmd_e
                                                           ZCL spec 8.2.2.4.2 */
 };
 
+/** @cond internals_doc */
 /* Ias zone cluster commands list : only for information - do not modify */
-#define ZB_ZCL_CLUSTER_ID_IAS_ZONE_SERVER_ROLE_RECEIVED_CMD_LIST                             \
-                                             ZB_ZCL_CMD_IAS_ZONE_ZONE_ENROLL_RESPONSE_ID,
+#define ZB_ZCL_CLUSTER_ID_IAS_ZONE_SERVER_ROLE_RECEIVED_CMD_LIST        \
+  ZB_ZCL_CMD_IAS_ZONE_ZONE_ENROLL_RESPONSE_ID,                          \
+  ZB_ZCL_CMD_IAS_ZONE_INITIATE_NORMAL_OPERATION_MODE_ID,                \
+  ZB_ZCL_CMD_IAS_ZONE_INITIATE_TEST_MODE_ID
 
 #define ZB_ZCL_CLUSTER_ID_IAS_ZONE_CLIENT_ROLE_RECEIVED_CMD_LIST                             \
                                              ZB_ZCL_CMD_IAS_ZONE_ZONE_STATUS_CHANGE_NOT_ID,  \
@@ -302,7 +399,89 @@ enum zb_zcl_ias_zone_resp_cmd_e
 #define ZB_ZCL_CLUSTER_ID_IAS_ZONE_SERVER_ROLE_GENERATED_CMD_LIST ZB_ZCL_CLUSTER_ID_IAS_ZONE_CLIENT_ROLE_RECEIVED_CMD_LIST
 
 #define ZB_ZCL_CLUSTER_ID_IAS_ZONE_CLIENT_ROLE_GENERATED_CMD_LIST ZB_ZCL_CLUSTER_ID_IAS_ZONE_SERVER_ROLE_RECEIVED_CMD_LIST
+/*! @}
+ *  @endcond */ /* internals_doc */
 
+/*! @brief Structure representsation of Initiate Test Mode - Errata to 05-3520-29 Spec, 1.1.23.2.2.1 */
+typedef ZB_PACKED_PRE struct zb_zcl_ias_zone_init_test_mode_ha_s
+{
+  /** Test mode duration */
+  zb_uint8_t test_mode_duration;
+  /** Current Zone Sensitivity Level */
+  zb_uint8_t current_zone_sens_level;
+} ZB_PACKED_STRUCT zb_zcl_ias_zone_init_test_mode_t;
+
+/** @brief Macro for getting "Initiate Test Mode" command
+  * @attention Assumes that ZCL header already cut.
+  * @param data_ptr - pointer to a variable of type @ref
+  * zb_zcl_ias_zone_init_test_mode_t.
+  * @param buffer containing the packet (by pointer).
+  * @param status - variable to put parse status to (see @ref zb_zcl_parse_status_t).
+  */
+#define ZB_ZCL_IAS_ZONE_GET_INITIATE_TEST_MODE_REQ(data_ptr, buffer, status) \
+{                                                                            \
+  if (ZB_BUF_LEN((buffer)) != sizeof(zb_zcl_ias_zone_init_test_mode_t))      \
+  {                                                                          \
+   (status) = ZB_ZCL_PARSE_STATUS_FAILURE;                                   \
+  }                                                                          \
+  else                                                                       \
+  {                                                                          \
+    zb_zcl_ias_zone_init_test_mode_t *src_ptr =                              \
+         (zb_zcl_ias_zone_init_test_mode_t*)ZB_BUF_BEGIN((buffer));          \
+    (status) = ZB_ZCL_PARSE_STATUS_SUCCESS;                                  \
+    (data_ptr)->test_mode_duration = src_ptr->test_mode_duration;            \
+    (data_ptr)->current_zone_sens_level = src_ptr->current_zone_sens_level;  \
+  }                                                                          \
+}
+
+/*! @brief Initiate Test Mode command
+    @param buffer - to put packet to
+    @param addr - address to send packet to
+    @param dst_addr_mode - addressing mode
+    @param dst_ep - destination endpoint
+    @param ep - sending endpoint
+    @param prfl_id - profile identifier
+    @param cb - callback for getting command send status
+    @param test_mode_duration - Test Mode duration
+    @param current_zone_sens_level - CurrentZoneSensitivityLevel
+*/
+#define ZB_ZCL_IAS_ZONE_SEND_INITIATE_TEST_MODE_REQ(                                            \
+    buffer, addr, dst_addr_mode, dst_ep, ep, prfl_id, cb,                                       \
+    test_mode_duration, current_zone_sens_level)                                                \
+{                                                                                               \
+  zb_uint8_t* ptr = ZB_ZCL_START_PACKET_REQ(buffer)                                             \
+  ZB_ZCL_CONSTRUCT_SPECIFIC_COMMAND_REQ_FRAME_CONTROL(ptr, ZB_ZCL_ENABLE_DEFAULT_RESPONSE)      \
+  ZB_ZCL_CONSTRUCT_COMMAND_HEADER_REQ(ptr, ZB_ZCL_GET_SEQ_NUM(),                                \
+      ZB_ZCL_CMD_IAS_ZONE_INITIATE_TEST_MODE_ID);                                               \
+  ZB_ZCL_PACKET_PUT_DATA8(ptr, (test_mode_duration));                                           \
+  ZB_ZCL_PACKET_PUT_DATA8(ptr, (current_zone_sens_level));                                      \
+  ZB_ZCL_FINISH_PACKET((buffer), ptr)                                                           \
+  ZB_ZCL_SEND_COMMAND_SHORT(                                                                    \
+      buffer, addr, dst_addr_mode, dst_ep, ep, prfl_id,                                         \
+      ZB_ZCL_CLUSTER_ID_IAS_ZONE, cb);                                                          \
+}
+
+/*! @brief Initiate Normal Operation Mode command
+    @param buffer - to put packet to
+    @param addr - address to send packet to
+    @param dst_addr_mode - addressing mode
+    @param dst_ep - destination endpoint
+    @param ep - sending endpoint
+    @param prfl_id - profile identifier
+    @param cb - callback for getting command send status
+*/
+#define ZB_ZCL_IAS_ZONE_SEND_INITIATE_NORMAL_OPERATION_MODE_REQ(                                \
+    buffer, addr, dst_addr_mode, dst_ep, ep, prfl_id, cb)                                       \
+{                                                                                               \
+  zb_uint8_t* ptr = ZB_ZCL_START_PACKET_REQ(buffer)                                             \
+  ZB_ZCL_CONSTRUCT_SPECIFIC_COMMAND_REQ_FRAME_CONTROL(ptr, ZB_ZCL_ENABLE_DEFAULT_RESPONSE)      \
+  ZB_ZCL_CONSTRUCT_COMMAND_HEADER_REQ(ptr, ZB_ZCL_GET_SEQ_NUM(),                                \
+      ZB_ZCL_CMD_IAS_ZONE_INITIATE_NORMAL_OPERATION_MODE_ID);                                   \
+  ZB_ZCL_FINISH_PACKET((buffer), ptr)                                                           \
+  ZB_ZCL_SEND_COMMAND_SHORT(                                                                    \
+      buffer, addr, dst_addr_mode, dst_ep, ep, prfl_id,                                         \
+      ZB_ZCL_CLUSTER_ID_IAS_ZONE, cb);                                                          \
+}
 
 /******************************* Zone Status Change Notification ******************************/
 
@@ -314,10 +493,14 @@ typedef ZB_PACKED_PRE struct zb_zcl_ias_zone_status_change_not_s
   zb_uint16_t zone_status;
   /** Extended Status */
   zb_uint8_t extended_status;
+  /** Zone ID*/
+  zb_uint8_t zone_id;
+  /** Delay */
+  zb_uint16_t delay;
 } ZB_PACKED_STRUCT zb_zcl_ias_zone_status_change_not_t;
 
 
-/*! @brief Zone Status Change Notification command, see ZCL spec 8.2.2.4.1
+/*! @brief Zone Status Change Notification command
     @param buffer - to put packet to
     @param addr - address to send packet to
     @param dst_addr_mode - addressing mode
@@ -327,10 +510,12 @@ typedef ZB_PACKED_PRE struct zb_zcl_ias_zone_status_change_not_s
     @param cb - callback for getting command send status
     @param zone_status - Zone Status, see @ref zb_zcl_ias_zone_zonestatus_e
     @param extended_status - Extended Status
+    @param zone_id - Zone ID
+    @param delay - Delay
 */
 #define ZB_ZCL_IAS_ZONE_SEND_STATUS_CHANGE_NOTIFICATION_REQ(                \
     buffer, addr, dst_addr_mode, dst_ep, ep, prfl_id, cb,                   \
-    zone_status, extended_status )                                          \
+    zone_status, extended_status, zone_id, delay )                          \
 {                                                                           \
   zb_uint8_t* ptr = ZB_ZCL_START_PACKET(buffer);                            \
   ZB_ZCL_CONSTRUCT_SPECIFIC_COMMAND_RES_FRAME_CONTROL(ptr);                 \
@@ -338,33 +523,37 @@ typedef ZB_PACKED_PRE struct zb_zcl_ias_zone_status_change_not_s
       ZB_ZCL_CMD_IAS_ZONE_ZONE_STATUS_CHANGE_NOT_ID);                       \
   ZB_ZCL_PACKET_PUT_DATA16_VAL(ptr, (zone_status));                         \
   ZB_ZCL_PACKET_PUT_DATA8(ptr, (extended_status));                          \
-  ZB_ZCL_FINISH_PACKET((buffer), ptr)                                      \
+  ZB_ZCL_PACKET_PUT_DATA8(ptr, (zone_id));                                  \
+  ZB_ZCL_PACKET_PUT_DATA16_VAL(ptr, (delay));                               \
+  ZB_ZCL_FINISH_PACKET((buffer), ptr)                                       \
   ZB_ZCL_SEND_COMMAND_SHORT(                                                \
       buffer, addr, dst_addr_mode, dst_ep, ep, prfl_id,                     \
       ZB_ZCL_CLUSTER_ID_IAS_ZONE, cb);                                      \
 }
 
-/** @brief Macro for getting Zone Status Change Notification command, see ZCL spec 8.2.2.4.1
+/** @brief Macro for getting Zone Status Change Notification command
   * @attention Assumes that ZCL header already cut.
   * @param data_ptr - pointer to a variable of type @ref
   * zb_zcl_ias_zone_status_change_not_s.
   * @param buffer containing the packet (by pointer).
   * @param status - variable to put parse status to (see @ref zb_zcl_parse_status_t).
   */
-#define ZB_ZCL_IAS_ZONE_GET_STATUS_CHANGE_NOTIFICATION_REQ(data_ptr, buffer, status)     \
-{                                                                           \
-  if (ZB_BUF_LEN((buffer)) != sizeof(zb_zcl_ias_zone_status_change_not_t))  \
-  {                                                                         \
-   (status) = ZB_ZCL_PARSE_STATUS_FAILURE;                                  \
-  }                                                                         \
-  else                                                                      \
-  {                                                                         \
-    zb_zcl_ias_zone_status_change_not_t *src_ptr =                          \
-         (zb_zcl_ias_zone_status_change_not_t*)ZB_BUF_BEGIN((buffer));      \
-    (status) = ZB_ZCL_PARSE_STATUS_SUCCESS;                                 \
-    ZB_HTOLE16(&((data_ptr)->zone_status), &(src_ptr->zone_status));        \
-    (data_ptr)->extended_status = src_ptr->extended_status;                 \
-  }                                                                         \
+#define ZB_ZCL_IAS_ZONE_GET_STATUS_CHANGE_NOTIFICATION_REQ(data_ptr, buffer, status) \
+{                                                                             \
+  if (ZB_BUF_LEN((buffer)) != sizeof(zb_zcl_ias_zone_status_change_not_t))    \
+  {                                                                           \
+   (status) = ZB_ZCL_PARSE_STATUS_FAILURE;                                    \
+  }                                                                           \
+  else                                                                        \
+  {                                                                           \
+    zb_zcl_ias_zone_status_change_not_t *src_ptr =                            \
+         (zb_zcl_ias_zone_status_change_not_t*)ZB_BUF_BEGIN((buffer));        \
+    (status) = ZB_ZCL_PARSE_STATUS_SUCCESS;                                   \
+    ZB_HTOLE16(&((data_ptr)->zone_status), &(src_ptr->zone_status));          \
+    (data_ptr)->extended_status = src_ptr->extended_status;                   \
+    (data_ptr)->zone_id = src_ptr->zone_id;                                   \
+    ZB_HTOLE16(&((data_ptr)->delay), &(src_ptr->delay));                      \
+  }                                                                           \
 }
 
 /******************************* Zone Enroll Request command ******************************/
@@ -584,15 +773,6 @@ typedef struct zb_zcl_ias_zone_status_param_s
   ZB_SCHEDULE_CALLBACK(zb_zcl_ias_zone_change_status, ZB_REF_FROM_BUF((buffer))); \
 }
 
-
-/**
- * Start loop ssend notification if Set Supervision bit Status arrtibute
- * see test 5.33 step 8
- * (What frequency should this occur?)
-TODO: need to check how it should be implemented
- */
-zb_void_t zb_zcl_ias_zone_run_supervision(zb_uint8_t endpoint);
-
 /**
    @brief Structure is used to pass parameters for ZoneStatus
    notification command
@@ -601,7 +781,7 @@ typedef struct zb_zcl_ias_zone_notification_param_s
 {
   zb_uint8_t  ep;             /*!< endpoint number */
   zb_uint16_t status_val;     /*!< new value of zone_zone_status, see @ref zb_zcl_ias_zone_zonestatus_e */
-  zb_uint16_t delay;          /*!< Delay - used only by HA implementation */
+  zb_uint16_t delay;          /*!< Delay */
 }
 zb_zcl_ias_zone_notification_param_t;
 

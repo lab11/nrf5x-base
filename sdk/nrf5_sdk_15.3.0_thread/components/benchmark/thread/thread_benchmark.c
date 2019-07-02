@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2018, Nordic Semiconductor ASA
+ * Copyright (c) 2018 - 2019, Nordic Semiconductor ASA
  *
  * All rights reserved.
  *
@@ -49,6 +49,7 @@
 
 #include <openthread/coap.h>
 #include <openthread/ip6.h>
+#include <openthread/link.h>
 #include <openthread/platform/alarm-milli.h>
 #include <openthread/thread.h>
 
@@ -86,6 +87,7 @@ static benchmark_callback_t          mp_callback;
 static benchmark_peer_db_t           m_peer_information;
 static benchmark_address_context_t   m_peer_addresses[BENCHMARK_MAX_PEER_NUMBER];
 static benchmark_configuration_t   * mp_test_configuration;
+static benchmark_mac_counters_t      m_total_mac_counters;
 
 static benchmark_status_t m_test_status =
 {
@@ -101,6 +103,40 @@ void benchmark_test_duration_calculate(void)
     m_local_result.duration = otPlatAlarmMilliGetNow() - m_start_time;
 }
 
+void benchmark_mac_counters_update(void)
+{
+    const otMacCounters * counters  = otLinkGetCounters(thread_ot_instance_get());
+
+    uint32_t tx_errors = counters->mTxRetry + counters->mTxErrCca;
+
+    /* Normally mTxTotal or mTxErrCca is increased but there is
+     * a possibility that both values are increased at the same time,
+     * this is indicated by increased mTxErrBusyChannel
+     * so we need to substract it here.
+     */
+    uint32_t tx_total = counters->mTxTotal + tx_errors - counters->mTxErrBusyChannel;
+
+    NRF_LOG_INFO("MacErr: %lu", m_total_mac_counters.error);
+    NRF_LOG_INFO("MacCounterTotal: %lu", m_total_mac_counters.total);
+
+    m_local_result.mac_tx_counters.total = tx_total - m_total_mac_counters.total;
+    m_local_result.mac_tx_counters.error = tx_errors - m_total_mac_counters.error;
+
+    m_total_mac_counters.total += m_local_result.mac_tx_counters.total;
+    m_total_mac_counters.error += m_local_result.mac_tx_counters.error;
+
+    NRF_LOG_INFO("Current MAC Counters values::");
+    NRF_LOG_INFO("TxErrCca: %lu", counters->mTxErrCca);
+    NRF_LOG_INFO("TxErrBussyChannel: %lu", counters->mTxErrBusyChannel);
+    NRF_LOG_INFO("TxErrRetry: %lu", counters->mTxRetry);
+    NRF_LOG_INFO("TxTotal: %lu", counters->mTxTotal);
+    NRF_LOG_INFO("TxErrTotal: %lu", m_local_result.mac_tx_counters.error);
+    NRF_LOG_INFO("TxAttemptTotal: %lu", m_local_result.mac_tx_counters.total);
+    NRF_LOG_INFO("MacErr: %lu", m_total_mac_counters.error);
+    NRF_LOG_INFO("MacCounterTotal: %lu", m_total_mac_counters.total);
+
+}
+
 uint64_t benchmark_local_device_id_get(void)
 {
     uint32_t dev_id_hi = NRF_FICR->DEVICEID[1];
@@ -114,6 +150,8 @@ static void result_clear(void)
     memset(&m_local_result, 0, sizeof(m_local_result));
     memset(&m_remote_result, 0, sizeof(m_remote_result));
 
+    benchmark_clear_latency(&m_test_status.latency);
+
     otMacCounters counters = *otLinkGetCounters(thread_ot_instance_get());
 
     m_local_result.rx_counters.rx_total  = counters.mRxTotal;
@@ -126,23 +164,25 @@ static otError thread_benchmark_peer_discovery_response_send(void               
                                                              const otMessageInfo * p_message_info)
 {
     otError       error = OT_ERROR_NO_BUFS;
-    otCoapHeader  header;
     otMessage   * p_response;
     otMessageInfo message_info;
+    otInstance  * p_instance = thread_ot_instance_get();
     uint64_t      device_id;
+
+    UNUSED_PARAMETER(p_context);
 
     do
     {
-        otCoapHeaderInit(&header, OT_COAP_TYPE_NON_CONFIRMABLE, OT_COAP_CODE_PUT);
-        otCoapHeaderGenerateToken(&header, 2);
-        UNUSED_RETURN_VALUE(otCoapHeaderAppendUriPathOptions(&header, "discovery"));
-        UNUSED_RETURN_VALUE(otCoapHeaderSetPayloadMarker(&header));
-
-        p_response = otCoapNewMessage(thread_ot_instance_get(), &header);
+        p_response = otCoapNewMessage(p_instance, NULL);
         if (p_response == NULL)
         {
             break;
         }
+
+        otCoapMessageInit(p_response, OT_COAP_TYPE_NON_CONFIRMABLE, OT_COAP_CODE_PUT);
+        otCoapMessageGenerateToken(p_response, 2);
+        UNUSED_RETURN_VALUE(otCoapMessageAppendUriPathOptions(p_response, "discovery"));
+        UNUSED_RETURN_VALUE(otCoapMessageSetPayloadMarker(p_response));
 
         error = otMessageAppend(
             p_response, otThreadGetMeshLocalEid(thread_ot_instance_get()), sizeof(otIp6Address));
@@ -164,7 +204,7 @@ static otError thread_benchmark_peer_discovery_response_send(void               
         message_info.mPeerPort    = p_message_info->mPeerPort;
         message_info.mInterfaceId = OT_NETIF_INTERFACE_ID_THREAD;
 
-        error = otCoapSendResponse(p_context, p_response, &message_info);
+        error = otCoapSendResponse(p_instance, p_response, &message_info);
 
     } while (false);
 
@@ -177,12 +217,10 @@ static otError thread_benchmark_peer_discovery_response_send(void               
 }
 
 static void thread_benchmark_peer_discovery_response_handler(void                * p_context,
-                                                             otCoapHeader        * p_header,
                                                              otMessage           * p_message,
                                                              const otMessageInfo * p_message_info)
 {
     UNUSED_VARIABLE(p_context);
-    UNUSED_VARIABLE(p_header);
     UNUSED_VARIABLE(p_message_info);
 
     thread_benchmark_peer_entry_t peer;
@@ -197,7 +235,7 @@ static void thread_benchmark_peer_discovery_response_handler(void               
 
     NRF_LOG_INFO("Adding peer: %d", peer_number);
 
-    int bytes_read = otMessageRead(p_message,
+    uint16_t bytes_read = otMessageRead(p_message,
                                    otMessageGetOffset(p_message),
                                    &peer,
                                    num_of_bytes_to_read);
@@ -216,22 +254,19 @@ static void thread_benchmark_peer_discovery_response_handler(void               
 }
 
 static void thread_benchmark_peer_discovery_handler(void                * p_context,
-                                                    otCoapHeader        * p_header,
                                                     otMessage           * p_message,
                                                     const otMessageInfo * p_message_info)
 {
-    UNUSED_VARIABLE(p_header);
-
     // Information returning from the peer.
-    if (otCoapHeaderGetType(p_header) == OT_COAP_TYPE_NON_CONFIRMABLE)
+    if (otCoapMessageGetType(p_message) == OT_COAP_TYPE_NON_CONFIRMABLE)
     {
-        if (otCoapHeaderGetCode(p_header) == OT_COAP_CODE_PUT)
+        if (otCoapMessageGetCode(p_message) == OT_COAP_CODE_PUT)
         {
-            thread_benchmark_peer_discovery_response_handler(p_context, p_header, p_message, p_message_info);
+            thread_benchmark_peer_discovery_response_handler(p_context, p_message, p_message_info);
         }
 
         // Information request to be processed on peer.
-        if (otCoapHeaderGetCode(p_header) == OT_COAP_CODE_GET)
+        if (otCoapMessageGetCode(p_message) == OT_COAP_CODE_GET)
         {
             otError err = thread_benchmark_peer_discovery_response_send(p_context, p_message_info);
 
@@ -244,27 +279,26 @@ static void thread_benchmark_peer_discovery_handler(void                * p_cont
 }
 
 static otError thread_benchmark_ctrl_response_send(void                * p_context,
-                                                   otCoapHeader        * p_request_header,
+                                                   otMessage           * p_request_message,
                                                    const otMessageInfo * p_message_info,
                                                    benchmark_ctrl_t      cmd)
 {
     otError      error = OT_ERROR_NO_BUFS;
-    otCoapHeader header;
     otMessage  * p_response;
 
     do
     {
-        otCoapHeaderInit(&header, OT_COAP_TYPE_NON_CONFIRMABLE, OT_COAP_CODE_CONTENT);
-        otCoapHeaderSetToken(&header,
-                             otCoapHeaderGetToken(p_request_header),
-                             otCoapHeaderGetTokenLength(p_request_header));
-        UNUSED_RETURN_VALUE(otCoapHeaderSetPayloadMarker(&header));
-
-        p_response = otCoapNewMessage(thread_ot_instance_get(), &header);
+        p_response = otCoapNewMessage(thread_ot_instance_get(), NULL);
         if (p_response == NULL)
         {
             break;
         }
+
+        otCoapMessageInit(p_response, OT_COAP_TYPE_NON_CONFIRMABLE, OT_COAP_CODE_CONTENT);
+        otCoapMessageSetToken(p_response,
+                             otCoapMessageGetToken(p_request_message),
+                             otCoapMessageGetTokenLength(p_request_message));
+        UNUSED_RETURN_VALUE(otCoapMessageSetPayloadMarker(p_response));
 
         error = otMessageAppend(p_response, &cmd, sizeof(benchmark_ctrl_t));
         if (error != OT_ERROR_NONE)
@@ -296,34 +330,27 @@ static void frame_counters_calculate(void)
 }
 
 static otError thread_benchmark_results_response_send(void                * p_context,
-                                                      otCoapHeader        * p_request_header,
+                                                      otMessage           * p_request_message,
                                                       const otMessageInfo * p_message_info)
 {
     otError      error = OT_ERROR_NO_BUFS;
-    otCoapHeader header;
     otMessage  * p_response;
 
     do
     {
-        otCoapHeaderInit(&header, OT_COAP_TYPE_NON_CONFIRMABLE, OT_COAP_CODE_CONTENT);
-        otCoapHeaderSetToken(&header,
-                             otCoapHeaderGetToken(p_request_header),
-                             otCoapHeaderGetTokenLength(p_request_header));
-        UNUSED_RETURN_VALUE(otCoapHeaderSetPayloadMarker(&header));
-
-        p_response = otCoapNewMessage(thread_ot_instance_get(), &header);
+        p_response = otCoapNewMessage(thread_ot_instance_get(), NULL);
         if (p_response == NULL)
         {
             break;
         }
 
-        error = otMessageAppend(p_response, &m_local_result.rx_counters, sizeof(m_local_result.rx_counters));
-        if (error != OT_ERROR_NONE)
-        {
-            break;
-        }
+        otCoapMessageInit(p_response, OT_COAP_TYPE_NON_CONFIRMABLE, OT_COAP_CODE_CONTENT);
+        otCoapMessageSetToken(p_response,
+                             otCoapMessageGetToken(p_request_message),
+                             otCoapMessageGetTokenLength(p_request_message));
+        UNUSED_RETURN_VALUE(otCoapMessageSetPayloadMarker(p_response));
 
-        error = otMessageAppend(p_response, &m_local_result.cpu_utilization, sizeof(m_local_result.cpu_utilization));
+        error = otMessageAppend(p_response, &m_local_result, sizeof(m_local_result));
         if (error != OT_ERROR_NONE)
         {
             break;
@@ -369,21 +396,9 @@ static void thread_benchmark_test_stop_master(void)
         return;
     }
 
-    if (mp_test_configuration->peer_control)
-    {
-        error = (otError)benchmark_peer_results_request_send();
-        m_benchmark_evt.evt           = BENCHMARK_TEST_STOPPED;
-        m_benchmark_evt.context.error = error;
-    }
-    else
-    {
-        frame_counters_calculate();
-
-        m_benchmark_evt.evt                             = BENCHMARK_TEST_COMPLETED;
-        m_benchmark_evt.context.results.p_remote_result = NULL;
-        m_benchmark_evt.context.results.p_local_result  = &m_local_result;
-        m_benchmark_evt.context.results.p_local_status  = &m_test_status;
-    }
+    error = (otError)benchmark_peer_results_request_send();
+    m_benchmark_evt.evt           = BENCHMARK_TEST_STOPPED;
+    m_benchmark_evt.context.error = error;
 
     mp_callback(&m_benchmark_evt);
 }
@@ -392,6 +407,7 @@ static void thread_benchmark_test_start_slave(void)
 {
     NRF_LOG_INFO("Test start command received (slave)");
     result_clear();
+    m_test_status.reset_counters = true;
     m_start_time = otPlatAlarmMilliGetNow();
     UNUSED_RETURN_VALUE(cpu_utilization_start());
 }
@@ -403,32 +419,20 @@ static void thread_benchmark_test_stop_slave(void)
     UNUSED_RETURN_VALUE(cpu_utilization_stop());
 
     benchmark_test_duration_calculate();
-
-    if ((mp_test_configuration) && (mp_test_configuration->peer_control == false))
-    {
-        m_benchmark_evt.evt                             = BENCHMARK_TEST_COMPLETED;
-        m_benchmark_evt.context.results.p_remote_result = NULL;
-        m_benchmark_evt.context.results.p_local_result  = &m_local_result;
-        m_benchmark_evt.context.results.p_local_status  = &m_test_status;
-        mp_callback(&m_benchmark_evt);
-    }
-    else
-    {
-        m_local_result.cpu_utilization = cpu_utilization_get();
-    }
+    benchmark_mac_counters_update();
+    m_local_result.cpu_utilization = cpu_utilization_get();
 }
 
 static void thread_benchmark_ctrl_handler(void                * p_context,
-                                          otCoapHeader        * p_header,
                                           otMessage           * p_message,
                                           const otMessageInfo * p_message_info)
 {
     benchmark_ctrl_t cmd;
 
-    if ((otCoapHeaderGetType(p_header) == OT_COAP_TYPE_CONFIRMABLE) &&
-        (otCoapHeaderGetCode(p_header) == OT_COAP_CODE_GET))
+    if ((otCoapMessageGetType(p_message) == OT_COAP_TYPE_CONFIRMABLE) &&
+        (otCoapMessageGetCode(p_message) == OT_COAP_CODE_GET))
     {
-        int bytes_read = otMessageRead(p_message, otMessageGetOffset(p_message), &cmd, sizeof(benchmark_ctrl_t));
+        uint16_t bytes_read = otMessageRead(p_message, otMessageGetOffset(p_message), &cmd, sizeof(benchmark_ctrl_t));
 
         if (bytes_read != sizeof(benchmark_ctrl_t))
         {
@@ -439,12 +443,12 @@ static void thread_benchmark_ctrl_handler(void                * p_context,
         {
             case TEST_START_REQUEST:
                 thread_benchmark_test_start_slave();
-                UNUSED_RETURN_VALUE(thread_benchmark_ctrl_response_send(p_context, p_header, p_message_info, cmd));
+                UNUSED_RETURN_VALUE(thread_benchmark_ctrl_response_send(p_context, p_message, p_message_info, cmd));
                 break;
 
             case TEST_STOP_REQUEST:
                 thread_benchmark_test_stop_slave();
-                UNUSED_RETURN_VALUE(thread_benchmark_ctrl_response_send(p_context, p_header, p_message_info, cmd));
+                UNUSED_RETURN_VALUE(thread_benchmark_ctrl_response_send(p_context, p_message, p_message_info, cmd));
                 break;
 
             default:
@@ -455,20 +459,17 @@ static void thread_benchmark_ctrl_handler(void                * p_context,
 }
 
 static void thread_benchmark_results_handler(void                * p_context,
-                                             otCoapHeader        * p_header,
                                              otMessage           * p_message,
                                              const otMessageInfo * p_message_info)
 {
     UNUSED_VARIABLE(p_context);
-    UNUSED_VARIABLE(p_header);
-    UNUSED_VARIABLE(p_message);
     UNUSED_VARIABLE(p_message_info);
 
-    if ((otCoapHeaderGetType(p_header) == OT_COAP_TYPE_CONFIRMABLE) &&
-        (otCoapHeaderGetCode(p_header) == OT_COAP_CODE_GET))
+    if ((otCoapMessageGetType(p_message) == OT_COAP_TYPE_CONFIRMABLE) &&
+        (otCoapMessageGetCode(p_message) == OT_COAP_CODE_GET))
     {
         NRF_LOG_INFO("Results request received");
-        UNUSED_RETURN_VALUE(thread_benchmark_results_response_send(p_context, p_header, p_message_info));
+        UNUSED_RETURN_VALUE(thread_benchmark_results_response_send(p_context, p_message, p_message_info));
     }
 }
 
@@ -482,23 +483,22 @@ static thread_benchmark_resources_t m_thread_benchmark_resources = {
 static otError thread_benchmark_peer_discovery_request_send(otInstance * p_instance)
 {
     otError       error = OT_ERROR_NO_BUFS;
-    otCoapHeader  header;
     otMessage   * p_request;
     otMessageInfo message_info;
 
     do
     {
-        otCoapHeaderInit(&header, OT_COAP_TYPE_NON_CONFIRMABLE, OT_COAP_CODE_GET);
-        otCoapHeaderGenerateToken(&header, 2);
-
-        error = otCoapHeaderAppendUriPathOptions(&header, "discovery");
-        ASSERT(error == OT_ERROR_NONE);
-
-        p_request = otCoapNewMessage(p_instance, &header);
+        p_request = otCoapNewMessage(p_instance, NULL);
         if (p_request == NULL)
         {
             break;
         }
+
+        otCoapMessageInit(p_request, OT_COAP_TYPE_NON_CONFIRMABLE, OT_COAP_CODE_GET);
+        otCoapMessageGenerateToken(p_request, 2);
+
+        error = otCoapMessageAppendUriPathOptions(p_request, "discovery");
+        ASSERT(error == OT_ERROR_NONE);
 
         memset(&message_info, 0, sizeof(message_info));
         message_info.mInterfaceId = OT_NETIF_INTERFACE_ID_THREAD;
@@ -526,7 +526,6 @@ static otError thread_benchmark_peer_discovery_request_send(otInstance * p_insta
 }
 
 static void results_received(void                * p_context,
-                             otCoapHeader        * p_header,
                              otMessage           * p_message,
                              const otMessageInfo * p_message_info,
                              otError               error)
@@ -538,29 +537,18 @@ static void results_received(void                * p_context,
     int offset;
 
     // Response to the send results command.
-    if ((otCoapHeaderGetType(p_header) == OT_COAP_TYPE_NON_CONFIRMABLE &&
-        (otCoapHeaderGetCode(p_header) == OT_COAP_CODE_CONTENT)))
+    if ((otCoapMessageGetType(p_message) == OT_COAP_TYPE_NON_CONFIRMABLE &&
+        (otCoapMessageGetCode(p_message) == OT_COAP_CODE_CONTENT)))
     {
         NRF_LOG_INFO("Results received");
 
         offset = otMessageGetOffset(p_message);
 
-        int bytes_read = otMessageRead(p_message, offset, &m_remote_result.rx_counters, sizeof(m_remote_result.rx_counters));
+        uint16_t bytes_read = otMessageRead(p_message, offset, &m_remote_result, sizeof(m_remote_result));
 
-        if (bytes_read != sizeof(m_remote_result.rx_counters))
+        if (bytes_read != sizeof(m_remote_result))
         {
-            NRF_LOG_ERROR("Invalid rx_counters response received");
-        }
-        else
-        {
-            offset += bytes_read;
-        }
-
-        bytes_read = otMessageRead(p_message, offset, &m_remote_result.cpu_utilization, sizeof(m_remote_result.cpu_utilization));
-
-        if (bytes_read != sizeof(m_remote_result.cpu_utilization))
-        {
-            NRF_LOG_ERROR("Invalid cpu_utilization response received");
+            NRF_LOG_ERROR("Invalid results response received");
         }
 
         frame_counters_calculate();
@@ -577,24 +565,23 @@ static void results_received(void                * p_context,
 static otError thread_benchmark_peer_results_request_send(otInstance * p_instance)
 {
     otError       error = OT_ERROR_NO_BUFS;
-    otCoapHeader  header;
     otMessage   * p_request;
     otMessageInfo message_info;
     NRF_LOG_INFO("Sending test results request");
 
     do
     {
-        otCoapHeaderInit(&header, OT_COAP_TYPE_CONFIRMABLE, OT_COAP_CODE_GET);
-        otCoapHeaderGenerateToken(&header, 2);
-
-        error = otCoapHeaderAppendUriPathOptions(&header, "results");
-        ASSERT(error == OT_ERROR_NONE);
-
-        p_request = otCoapNewMessage(p_instance, &header);
+        p_request = otCoapNewMessage(p_instance, NULL);
         if (p_request == NULL)
         {
             break;
         }
+
+        otCoapMessageInit(p_request, OT_COAP_TYPE_CONFIRMABLE, OT_COAP_CODE_GET);
+        otCoapMessageGenerateToken(p_request, 2);
+
+        error = otCoapMessageAppendUriPathOptions(p_request, "results");
+        ASSERT(error == OT_ERROR_NONE);
 
         memset(&message_info, 0, sizeof(message_info));
         message_info.mInterfaceId = OT_NETIF_INTERFACE_ID_THREAD;
@@ -614,7 +601,6 @@ static otError thread_benchmark_peer_results_request_send(otInstance * p_instanc
 }
 
 static void command_response_received_handler(void                * p_context,
-                                              otCoapHeader        * p_header,
                                               otMessage           * p_message,
                                               const otMessageInfo * p_message_info,
                                               otError               error)
@@ -625,10 +611,10 @@ static void command_response_received_handler(void                * p_context,
     benchmark_ctrl_t cmd;
 
     // Response to the test start/stop command.
-    if (((otCoapHeaderGetType(p_header) == OT_COAP_TYPE_NON_CONFIRMABLE) &&
-        (otCoapHeaderGetCode(p_header) == OT_COAP_CODE_CONTENT)))
+    if (((otCoapMessageGetType(p_message) == OT_COAP_TYPE_NON_CONFIRMABLE) &&
+        (otCoapMessageGetCode(p_message) == OT_COAP_CODE_CONTENT)))
     {
-        int bytes_read = otMessageRead(p_message, otMessageGetOffset(p_message), &cmd, sizeof(benchmark_ctrl_t));
+        uint16_t bytes_read = otMessageRead(p_message, otMessageGetOffset(p_message), &cmd, sizeof(benchmark_ctrl_t));
 
         if (bytes_read != sizeof(benchmark_ctrl_t))
         {
@@ -656,26 +642,25 @@ static void command_response_received_handler(void                * p_context,
 static otError thread_benchmark_ctrl_request_send(otInstance * p_instance, benchmark_ctrl_t ctrl_cmd)
 {
     otError       error = OT_ERROR_NO_BUFS;
-    otCoapHeader  header;
     otMessage   * p_request;
     otMessageInfo message_info;
 
     do
     {
-        otCoapHeaderInit(&header, OT_COAP_TYPE_CONFIRMABLE, OT_COAP_CODE_GET);
-        otCoapHeaderGenerateToken(&header, 2);
-
-        error = otCoapHeaderAppendUriPathOptions(&header, "test_ctrl");
-        ASSERT(error == OT_ERROR_NONE);
-
-        error = otCoapHeaderSetPayloadMarker(&header);
-        ASSERT(error == OT_ERROR_NONE);
-
-        p_request = otCoapNewMessage(p_instance, &header);
+        p_request = otCoapNewMessage(p_instance, NULL);
         if (p_request == NULL)
         {
             break;
         }
+
+        otCoapMessageInit(p_request, OT_COAP_TYPE_CONFIRMABLE, OT_COAP_CODE_GET);
+        otCoapMessageGenerateToken(p_request, 2);
+
+        error = otCoapMessageAppendUriPathOptions(p_request, "test_ctrl");
+        ASSERT(error == OT_ERROR_NONE);
+
+        error = otCoapMessageSetPayloadMarker(p_request);
+        ASSERT(error == OT_ERROR_NONE);
 
         memset(&message_info, 0, sizeof(message_info));
         message_info.mInterfaceId = OT_NETIF_INTERFACE_ID_THREAD;
@@ -740,6 +725,8 @@ uint32_t benchmark_test_init(benchmark_configuration_t * p_configuration, benchm
     m_test_status.frame_number       = 1;
     m_test_status.packets_left_count = p_configuration->count;
 
+    benchmark_clear_latency(&m_test_status.latency);
+
     return OT_ERROR_NONE;
 }
 
@@ -776,24 +763,6 @@ uint32_t benchmark_test_start(void)
 
     memset(&m_benchmark_evt, 0, sizeof(benchmark_evt_t));
 
-    if (mp_test_configuration->role == BENCHMARK_ROLE_SLAVE)
-    {
-        if (mp_test_configuration->peer_control == false)
-        {
-            m_test_status.reset_counters = true;
-            thread_benchmark_test_start_slave();
-        }
-        return err_code;
-    }
-    m_test_status.reset_counters = false;
-
-    /* If peer control is disabled, do not send a request to start the test on the other side. */
-    if (!mp_test_configuration->peer_control)
-    {
-        thread_benchmark_test_start_master();
-        return err_code;
-    }
-
     err_code = (uint32_t)thread_benchmark_ctrl_request_send(thread_ot_instance_get(), TEST_START_REQUEST);
     return err_code;
 }
@@ -810,22 +779,8 @@ uint32_t benchmark_test_stop(void)
     m_test_status.test_in_progress = false;
 
     benchmark_test_duration_calculate();
-
-    if (mp_test_configuration->role == BENCHMARK_ROLE_SLAVE)
-    {
-        if (mp_test_configuration->peer_control == false)
-        {
-            thread_benchmark_test_stop_slave();
-        }
-        return err_code;
-    }
-
-    /* If peer control is disabled, do not send a request to start the test on the other side. */
-    if (!mp_test_configuration->peer_control)
-    {
-        thread_benchmark_test_stop_master();
-        return err_code;
-    }
+    benchmark_mac_counters_update();
+    m_test_status.reset_counters = false;
 
     err_code = (uint32_t)thread_benchmark_ctrl_request_send(thread_ot_instance_get(), TEST_STOP_REQUEST);
     return err_code;
@@ -882,19 +837,12 @@ void benchmark_process(void)
     else if(m_test_status.test_in_progress)
     {
         benchmark_test_duration_calculate();
+        benchmark_mac_counters_update();
         m_test_status.test_in_progress = false;
 
-        if (mp_test_configuration->peer_control)
-        {
-            NRF_LOG_INFO("All frames sent, sending test stop request to the peer");
-            uint32_t err_code = thread_benchmark_ctrl_request_send(thread_ot_instance_get(), TEST_STOP_REQUEST);
-            ASSERT(err_code == NRF_SUCCESS);
-        }
-        else
-        {
-            thread_benchmark_test_stop_master();
-        }
-
+        NRF_LOG_INFO("All frames sent, sending test stop request to the peer");
+        uint32_t err_code = thread_benchmark_ctrl_request_send(thread_ot_instance_get(), TEST_STOP_REQUEST);
+        ASSERT(err_code == NRF_SUCCESS);
     }
 }
 

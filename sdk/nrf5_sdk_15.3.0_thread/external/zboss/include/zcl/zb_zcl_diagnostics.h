@@ -86,7 +86,7 @@ typedef struct zb_zcl_diagnostics_data_s
   /*! @brief LastMessageLQI, HA spec 9.3.2.2.2. */
   zb_uint8_t lastMessageLQI;
   /*! @brief LastMessageRSSI, HA spec 9.3.2.2.2. */
-  zb_uint8_t lastMessageRSSI;
+  zb_int8_t lastMessageRSSI;
 } zb_zcl_diagnostics_data_t;
 
 
@@ -173,7 +173,7 @@ enum zb_zcl_diagnostics_attr_e
   ZB_ZCL_ATTR_DIAGNOSTICS_PACKET_BUFFER_ALLOCATE_FAILURES_ID = 0x0117,
   /** A counter that is incremented each time a unicast packet is relayed. */
   ZB_ZCL_ATTR_DIAGNOSTICS_RELAYED_UCAST_ID                   = 0x0118,
-  ZB_ZCL_ATTR_DIAGNOSTICS_PHYTO_MA_CQUEUELIMITREACHED_ID     = 0x0119,
+  ZB_ZCL_ATTR_DIAGNOSTICS_PHYTOMACQUEUELIMITREACHED_ID       = 0x0119,
   /** A counter that is incremented each time a packet was dropped due to a packet
    *  validation error. This could be due to length or other formatting problems
    *  in the packet. */
@@ -282,6 +282,7 @@ enum zb_zcl_diagnostics_attr_e
 /** @brief Default value for LastRSSI attribute */
 #define ZB_ZCL_DIAGNOSTICS_LAST_RSSI_DEFAULT_VALUE ((zb_int8_t)0)
 
+/** @cond internals_doc */
 /*! @internal @name Diagnostics cluster internals
     Internal structures for attribute representation in cluster definitions.
     @{
@@ -379,13 +380,17 @@ enum zb_zcl_diagnostics_attr_e
 #define ZB_SET_ATTR_DESCR_WITH_ZB_ZCL_ATTR_DIAGNOSTICS_LAST_RSSI_ID(data_ptr) \
 {                                                               \
   ZB_ZCL_ATTR_DIAGNOSTICS_LAST_RSSI_ID,                         \
-  ZB_ZCL_ATTR_TYPE_U8,                                          \
+  ZB_ZCL_ATTR_TYPE_S8,                                          \
   ZB_ZCL_ATTR_ACCESS_READ_ONLY,                                 \
   (zb_voidp_t) data_ptr                                         \
 }
 
-/** @internal @brief Declare attribute list for Diagnostics cluster - server side
-    @param attr_list - attribure list name
+/*! @} */ /* Diagnostics cluster internals */
+/*! @}
+ *  @endcond */ /* internals_doc */
+
+/** @brief Declare attribute list for Diagnostics cluster - server side
+    @param attr_list - attribute list name
 */
 #define ZB_ZCL_DECLARE_DIAGNOSTICS_ATTRIB_LIST(attr_list)                                         \
   ZB_ZCL_START_DECLARE_ATTRIB_LIST(attr_list)                                                     \
@@ -409,11 +414,10 @@ enum zb_zcl_diagnostics_attr_e
   ZB_ZCL_SET_ATTR_DESC(ZB_ZCL_ATTR_DIAGNOSTICS_LAST_RSSI_ID, &(diagnostics_data.lastMessageRSSI)) \
   ZB_ZCL_FINISH_DECLARE_ATTRIB_LIST
 
-/*! @} */ /* Diagnostics cluster internals */
-
 /*! @} */ /* Diagnostics cluster attributes */
 
 
+/** @cond internals_doc */
 /*! @brief Increment diagnostic attribute
     @param attr_id - attribute Id, see @ref zb_zcl_diagnostics_attr_e
 */
@@ -426,6 +430,8 @@ zb_void_t zb_zcl_diagnostics_inc(zb_uint16_t attr_id, zb_uint8_t value);
 #define ZB_ZCL_DIAGNOSTICS_INC(attr_id)
 #define ZB_ZCL_DIAGNOSTICS_SAVE(attr_id, value)
 #endif /* defined ZB_ZCL_SUPPORT_CLUSTER_DIAGNOSTICS && defined ZB_ENABLE_ZCL */
+/*! @}
+ *  @endcond */ /* internals_doc */
 
 /*! @} */ /* ZCL Diagnostics cluster definitions */
 

@@ -555,7 +555,15 @@ static inline void std_n(uint32_t           severity_mid,
     }
     if (m_log_data.autoflush)
     {
+#if NRF_LOG_NON_DEFFERED_CRITICAL_REGION_ENABLED
+        CRITICAL_REGION_ENTER();
+#endif // NRF_LOG_NON_DEFFERED_CRITICAL_REGION_ENABLED
+
         NRF_LOG_FLUSH();
+
+#if NRF_LOG_NON_DEFFERED_CRITICAL_REGION_ENABLED
+        CRITICAL_REGION_EXIT();
+#endif // NRF_LOG_NON_DEFFERED_CRITICAL_REGION_ENABLED
     }
 
 }
@@ -681,7 +689,15 @@ void nrf_log_frontend_hexdump(uint32_t           severity_mid,
 
     if (m_log_data.autoflush)
     {
+#if NRF_LOG_NON_DEFFERED_CRITICAL_REGION_ENABLED
+        CRITICAL_REGION_ENTER();
+#endif // NRF_LOG_NON_DEFFERED_CRITICAL_REGION_ENABLED
+
         NRF_LOG_FLUSH();
+
+#if NRF_LOG_NON_DEFFERED_CRITICAL_REGION_ENABLED
+        CRITICAL_REGION_EXIT();
+#endif // NRF_LOG_NON_DEFFERED_CRITICAL_REGION_ENABLED
     }
 }
 
@@ -1146,7 +1162,11 @@ static void log_status(nrf_cli_t const *         p_cli,
         nrf_log_severity_t module_compiled_lvl =
                               nrf_log_module_filter_get(backend_id, i, true, false);
         nrf_log_severity_t actual_compiled_lvl =
+#if NRF_LOG_DEFAULT_LEVEL > 0
                               MIN(module_compiled_lvl, (nrf_log_severity_t)NRF_LOG_DEFAULT_LEVEL);
+#else
+                              (nrf_log_severity_t)0;
+#endif
 
         nrf_cli_fprintf(p_cli, NRF_CLI_NORMAL, "%-40s | %-7s | %s%s\r\n",
                                   nrf_log_module_name_get(i, true),

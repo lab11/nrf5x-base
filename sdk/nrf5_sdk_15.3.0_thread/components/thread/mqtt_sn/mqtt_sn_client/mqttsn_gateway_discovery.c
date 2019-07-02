@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2017 - 2018, Nordic Semiconductor ASA
+ * Copyright (c) 2017 - 2019, Nordic Semiconductor ASA
  *
  * All rights reserved.
  *
@@ -72,7 +72,7 @@ uint32_t mqttsn_client_search_gateway(mqttsn_client_t * p_client, uint32_t timeo
         return NRF_ERROR_NULL;
     }
 
-    if (p_client->client_state == MQTTSN_CLIENT_UNINITIALIZED)
+    if (p_client->client_state != MQTTSN_CLIENT_DISCONNECTED)
     {
         return NRF_ERROR_FORBIDDEN;
     }
@@ -87,10 +87,10 @@ uint32_t mqttsn_client_search_gateway(mqttsn_client_t * p_client, uint32_t timeo
 
     m_timeout.rnd_jitter_timeout_reached = false;
     m_timeout.search_gw_timeout_reached  = false;
-    
+
     p_client->gateway_discovery.found   = false;
     p_client->gateway_discovery.pending = true;
-    p_client->gateway_discovery.search_gw_timeout = 
+    p_client->gateway_discovery.search_gw_timeout =
         mqttsn_platform_timer_set_in_ms(SEC_TO_MILLISEC(timeout_s));
 
     uint32_t err_code = mqttsn_client_timeout_schedule(p_client);

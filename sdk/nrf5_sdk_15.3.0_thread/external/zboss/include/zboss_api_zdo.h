@@ -52,7 +52,7 @@
  */
 typedef enum zb_zdp_status_e
 {
-  /** The requested operation or transmission was completed successfully */
+  /** The requested operation or transmission was completed successfully. */
   ZB_ZDP_STATUS_SUCCESS         = 0x00,
   /** The supplied request type was invalid. */
   ZB_ZDP_STATUS_INV_REQUESTTYPE = 0x80,
@@ -97,119 +97,388 @@ zb_zdp_status_t;
 /*! \addtogroup zb_comm_signals */
 /*! @{ */
 /**
-   Signals passed to zboss_signal_handler()
+ * The
+ * signals passed to zboss_signal_handler()
  */
 typedef enum zb_zdo_app_signal_type_e
 {
-  ZB_ZDO_SIGNAL_DEFAULT_START,  /*!< Default signal, for pre-R21 ZBOSS API
-                                 * compatibility.
-                                 *
-                                 * The signal has Code+statusonly. */
+  ZB_ZDO_SIGNAL_DEFAULT_START,  /*!< Obsolete signal, used for pre-R21 ZBOSS API
+                                 * compatibility. Not recommended to use. 
+                                 * @parblock
+                                 * When generated: 
+                                 *  - After the device has been started and the non-BDB comissioning 
+                                 * completed.
+                                 *  - In case of the comissioning error.
+                                 *                      
+                                 * Status codes: 
+                                 *  - RET_OK: Device has started and joined the network.
+                                 *  - RET_ERROR: An error of any type.
+                                 * 
+                                 * Signal parameters: 
+ 				 *  - none
+				   @endparblock */
   ZB_ZDO_SIGNAL_SKIP_STARTUP,   /*!< Notifies the application that ZBOSS framework (scheduler,
-                                 * buffer pool, etc.) started, but no join/rejoin/formation/BDB
-                                 * initialization is done yet.
-                                 *
-                                 * That signal is generated if application called
+                                 * buffer pool, etc.) has started, but no join/rejoin/formation/BDB
+                                 * initialization has been done yet.
+                                 * @parblock
+                                 * When generated: 
+                                 *  - When the application calls
                                  * zb_zdo_start_no_autostart() instead of
-                                 * zboss_start() before
-                                 * zboss_main_loop(). Useful, for instance,
-                                 * when some HW (like, sensor connected via UART
-                                 * etc) must be initialized before
-                                 * ZigBee commissioning, but having ZBOSS
-                                 * scheduler running.
-                                 *
-                                 * The signal has Code+statusonly.
-                                 *
+                                 * zboss_start() before the
+                                 * zboss_main_loop(). Used 
+                                 * when some hardware must be initialized before the
+                                 * ZigBee commissioning, but already has ZBOSS
+                                 * scheduler running. Example: sensor connected through UART.
+                                 * 
+                                 * Status codes:
+                                 *  - RET_OK: Only ZBOSS framework has been initialized.
+                                 *  - Does not return error status.
+                                 * 
+                                 * Signal parameters:
+ 				 *  - none
+                                 * 
                                  * @snippet sp_device.c signal_skip_startup
-                                 * */
-  ZB_ZDO_SIGNAL_DEVICE_ANNCE,   /*!< Inform App about receiving device_annce.
+                                   @endparblock */
+  ZB_ZDO_SIGNAL_DEVICE_ANNCE,   /*!< Notifies the application about the new device appearance.
+                                 * @parblock
+                                 * When generated: 
+                                 *  - Upon receiving the Device_annce command.
+                                 * 
+                                 * Status codes:
+                                 *  - RET_OK:  Device_annce command was received.
+                                 *  - Does not return error status.
                                  *
-                                 * The even has additional data of
-                                 * zb_zdo_signal_device_annce_params_t type.
+                                 * Signal parameters: 
+                                 * - @ref zb_zdo_signal_device_annce_params_t
                                  *
                                  * @snippet simple_gw.c signal_device_annce
-                                 */
-  ZB_ZDO_SIGNAL_LEAVE,          /*!< The device itself has left the network.
-                                 *
-                                 * The evemnt has an additional data of type
-                                 * zb_zdo_signal_leave_params_t.
+                                   @endparblock */
+  ZB_ZDO_SIGNAL_LEAVE,          /*!< Notifies the application that the device itself has left the network.
+                                 * @parblock
+                                 * When generated: 
+                                 *  - Upon sending the "Leave" command.
+                                 * 
+                                 * Status codes:
+                                 *  - RET_OK: Device has sent the "Leave" command. 
+                                 *  - Does not return error status.
+                                 * 
+                                 * Signal parameters: 
+                                 *  - @ref zb_zdo_signal_leave_params_t
                                  *
                                  * @snippet application/light_sample/light_control/light_control.c signal_leave
-                                 */
-  ZB_ZDO_SIGNAL_ERROR,          /*!< some mess in the buffer  */
-  ZB_BDB_SIGNAL_DEVICE_FIRST_START, /*!< Device started and commissioned first
-                                     * time after NVRAM erase.
-                                     *
-                                     * The signal has Code + Status only.
+                                   @endparblock */
+  ZB_ZDO_SIGNAL_ERROR,          /*!< Corrupted or incorrect signal information. 
+                                 * @parblock
+                                 * When generated:
+                                 *  - Incorrect buffer length detected by zb_get_app_signal (less then zb_zdo_app_signal_hdr_t)
+                                 * 
+                                 * Status codes: 
+                                 *  - none
+                                 * 
+                                 * Signal parameters: 
+                                 *  - none
+                                   @endparblock */
+  ZB_BDB_SIGNAL_DEVICE_FIRST_START, /*!< Device started for the first time after the NVRAM erase.
+                                     * @parblock
+                                     * When generated: 
+                                     *  - Upon completing the typical device startup (network formation 
+                                     * for ZC or rejoin/discovery/association for ZR and ZED). 
+                                     *  - This signal is exclusive to @ref ZB_BDB_SIGNAL_DEVICE_REBOOT
+                                     * Note: No @ref ZB_BDB_SIGNAL_STEERING or @ref ZB_BDB_SIGNAL_FORMATION signals will be generated.
+                                     * 
+                                     * Status codes: 
+                                     *  - RET_OK: Device started after the NVRAM erase
+                                     *  - RET_ERROR: An error of any type.
+                                     * 
+                                     * Signal parameters: 
+                                     *  - none
+                                     * 
                                      * @snippet application/onoff_server/on_off_switch_zed.c signal_first
-                                     */
-  ZB_BDB_SIGNAL_DEVICE_REBOOT,      /*!< BDB initialization completed after
-                                     * device reboot, use NVRAM contents during
-                                     * initialization. Device joined/rejoined
-                                     * and started.
+                                       @endparblock */
+  ZB_BDB_SIGNAL_DEVICE_REBOOT,      /*!< Device started using the NVRAM contents. 
+                                     * @parblock
+                                     * When generated: 
+                                     *  - Upon the device joining/rejoining Zigbee network using restored parrameters. 
+                                     *  - This signal is exclusive to @ref ZB_BDB_SIGNAL_DEVICE_FIRST_START
+                                     * Note: No @ref ZB_BDB_SIGNAL_STEERING or @ref ZB_BDB_SIGNAL_FORMATION signals will be generated.
+                                     * 
+                                     * Status codes: 
+                                     *  - RET_OK: Device started using configuration stored in NVRAM
+                                     *  - RET_ERROR: An error of any type.
+                                     * 
+                                     * Signal parameters: 
+                                     *  - none
                                      *
-                                     * The signal has Code + Status only.
                                      * @snippet application/onoff_server/on_off_switch_zed.c signal_reboot
-                                     */
-  ZB_BDB_SIGNAL_TOUCHLINK_NWK_STARTED, /*!<Inform the Touchlink initiator that the new
-                                     * Zigbee network created.
+                                       @endparblock */
+#if defined DOXYGEN
+/** @cond touchlink
+    @addtogroup touchlink
+    @{
+*/
+#endif
+  ZB_BDB_SIGNAL_TOUCHLINK_NWK_STARTED, /*!<Informs the Touchlink initiator about the new
+                                     * network has been created.
+                                     * @parblock
+                                     * When generated: 
+                                     *  - Upon generating the Network Start Response during the Touchlink comissioning procedure.
+                                     * 
+                                     * Status codes: 
+                                     *  - RET_OK: New Zigbee network created. 
+                                     *  - Does not return error status.
+                                     * 
+                                     * Signal parameters: 
+                                     *  - @ref zb_bdb_signal_touchlink_nwk_started_params_t
+                                     * 
                                      * @snippet light_controller_zed.c signal_touchlink_nwk_started
-                                     */
+                                       @endparblock */
   ZB_BDB_SIGNAL_TOUCHLINK_NWK_JOINED_ROUTER, /*!<Inform the Touchlink initiator that the new
                                      * router joined the network.
+                                     * @parblock
+                                     * When generated: 
+                                     *  - Upon receiving the Comissioning Network Join Router Response.
+                                     * 
+                                     * Status codes: 
+                                     *  - RET_OK: New router joined the network.
+                                     *  - Does not return error status.
+                                     * 
+                                     * Signal parameters: 
+                                     *  - @ref zb_bdb_signal_touchlink_nwk_started_params_t
+                                     * 
                                      * @snippet light_controller_zed.c signal_touchlink_nwk_joined_router
-                                     */
-  ZB_BDB_SIGNAL_TOUCHLINK,          /*!< Touchlink commissioning done.  */
-  ZB_BDB_SIGNAL_STEERING,           /*!< BDB steering completed.  */
-  ZB_BDB_SIGNAL_FORMATION,          /*!< BDB formation completed.  */
-  ZB_BDB_SIGNAL_FINDING_AND_BINDING_TARGET_FINISHED,     /*!< BDB finding and binding target completed.  */
-  ZB_BDB_SIGNAL_FINDING_AND_BINDING_INITIATOR_FINISHED,  /*!< BDB finding and binding initiator completed.  */
-  ZB_BDB_SIGNAL_TOUCHLINK_TARGET,   /*!< Touchlink Target started.  */
-  ZB_BDB_SIGNAL_TOUCHLINK_NWK,      /*!< Touchlink Target Network
-                                     * started.  */
-  ZB_NWK_SIGNAL_DEVICE_ASSOCIATED,  /*!< New device associated to ZigBee
-                                     * Coordinator or router. Note: that signal
-                                     * exists due to historical reasons. Its
-                                     * usage is not recommented. Base your
-                                     * logic on ZB_ZDO_SIGNAL_DEVICE_ANNCE
-                                     * instead. */
-  ZB_ZDO_SIGNAL_LEAVE_INDICATION,   /*!< NWK leave indication from the child
-                                     * received
-                                     *
-                                     * Has additional data of type
-                                     * zb_zdo_signal_leave_indication_params_t.
+                                       @endparblock */
+  ZB_BDB_SIGNAL_TOUCHLINK,          /*!< Touchlink commissioning done.  
+                                     * @parblock
+                                     * When generated: 
+                                     *  - Touchlink initiator device joined the network.
+                                     * 
+                                     * Status codes: 
+                                     *  - ZB_BDB_STATUS_SUCCESS: Comissioning successful.
+                                     *  - ZB_BDB_STATUS_NO_SCAN_RESPONSE:
+                                     *    1. No Touchlink commissioning cluster scan response inter-PAN commands
+                                     *    were received
+                                     *    2. No touchlink commissioning cluster scan response
+                                     *    inter-PAN commands were received with the inter-PAN transaction
+                                     *    identifier field equal to that used by the initiator in its scan request
+                                     *    command.
+                                     * 
+                                     * Signal parameters: 
+                                     *  - none
+                                       @endparblock */
+#if defined DOXYGEN
+/*! @} */
+/** @endcond */ /* touchlink */
+#endif
+  ZB_BDB_SIGNAL_STEERING,           /*!< BDB network steering completed (Network steering only).
+                                     * @parblock
+                                     * When generated: 
+                                     *  - Upon completing Network steering initiated by bdb_start_top_level_commissioning(ZB_BDB_NETWORK_STEERING).
+                                     * 
+                                     * Status codes: 
+                                     *  - RET_OK: Network steering completed.
+                                     *  - Does not return error status.
+                                     * 
+                                     * Signal parameters: 
+                                     *  - none
+                                       @endparblock */
+  ZB_BDB_SIGNAL_FORMATION,          /*!< BDB network formation completed (Network formation only).
+                                     * @parblock
+                                     * When generated: 
+                                     *  - Upon completing Network formation initiated by bdb_start_top_level_commissioning(ZB_BDB_NETWORK_FORMATION).
+                                     * 
+                                     * Status codes: 
+                                     *  - RET_OK: Network formation completed.
+                                     *  - Does not return error status.
+                                     * 
+                                     * Signal parameters: 
+                                     *  - none
+                                       @endparblock */
+  ZB_BDB_SIGNAL_FINDING_AND_BINDING_TARGET_FINISHED,     /*!< BDB finding and binding for a target endpoint completed.
+                                     * @parblock
+                                     * When generated: 
+                                     *  - F&B target timeout expires.
+                                     * 
+                                     * Status codes: 
+                                     *  - RET_OK: F&B completed successfully.
+                                     *  - RET_ERROR: An error of any type.
+                                     * 
+                                     * Signal parameters: 
+                                     *  - none
+                                       @endparblock */
+  ZB_BDB_SIGNAL_FINDING_AND_BINDING_INITIATOR_FINISHED,  /*!< BDB finding and binding for an initiator endpoint completed.
+                                     * @parblock
+                                     * When generated:
+                                     *  - F&B with a Target succeeded or F&B initiator timeout expired or cancelled.
+                                     * 
+                                     * Status codes: 
+                                     *  - @ref zb_zdo_fb_initiator_finished_status_e
+                                     * 
+                                     * Signal parameters: 
+                                     *  - @ref zb_zdo_signal_fb_initiator_finished_params_t
+                                       @endparblock */
+#if defined DOXYGEN
+/**
+   @cond touchlink
+
+   @addtogroup touchlink
+   @{
+*/
+#endif
+  ZB_BDB_SIGNAL_TOUCHLINK_TARGET,   /*!< Touchlink procedure started.
+                                     * @parblock
+                                     * When generated: 
+                                     *  - Touchlink procedure started on the Target device.
+                                     * 
+                                     * Status codes: 
+                                     *  - RET_OK: Touchlink started successfully.
+                                     *  - Does not return error status.
+                                     * 
+                                     * Signal parameters: 
+                                     *  - none
+                                       @endparblock */
+  ZB_BDB_SIGNAL_TOUCHLINK_NWK,      /*!< Touchlink Target network started (Target only).
+                                     * @parblock
+                                     * When generated: 
+                                     *  - Touchlink target initiated by bdb_touchlink_target_start().
+                                     * 
+                                     * Status codes: 
+                                     *  - RET_OK: Touchlink network started successfully.
+                                     *  - Does not return error status.
+                                     * 
+                                     * Signal parameters: 
+                                     *  - none
+                                       @endparblock */
+#if defined DOXYGEN
+/*! @} */
+/** @endcond */ /* touchlink */
+#endif
+  ZB_NWK_SIGNAL_DEVICE_ASSOCIATED,  /*!< Obsolete signal, used for pre-R21 ZBOSS API
+                                     * compatibility. Use ZB_ZDO_SIGNAL_DEVICE_ANNCE signal instead!
+                                     * @parblock
+                                     * When generated: 
+                                     *  - Indicates that there is a new device associated with ZigBee Coordinator or router. 
+                                     * 
+                                     * Status codes: 
+                                     *  - RET_OK: New device associated.
+                                     *  - Does not return error status.
+                                     * 
+                                     * Signal parameters: 
+                                     *  - @ref zb_nwk_signal_device_associated_params_t
+                                       @endparblock */
+  ZB_ZDO_SIGNAL_LEAVE_INDICATION,   /*!< Network leave indication.
+                                     * @parblock
+                                     * When generated: 
+                                     *  - The child device has left the network.
+                                     * 
+                                     * Status codes: 
+                                     *  - RET_OK: Leave command received from the child device.
+                                     *  - RET_ERROR: An error of any type.
+                                     * 
+                                     * Signal parameters: 
+                                     *  - @ref zb_zdo_signal_leave_indication_params_t
                                      *
                                      * @snippet simple_gw.c signal_leave_ind
-                                     **/
-
+                                       @endparblock */
 #if defined DOXYGEN && defined ZB_DOCUMENT_ZGP
 /**
    @addtogroup zgp_sink
    @{
 */
 #endif
-  /**
-     ZGP commissioning complete signal
+  ZB_ZGP_SIGNAL_COMMISSIONING,       /*!< ZGP commissioning complete signal.
+                                     * @parblock
+                                     * When generated: 
+                                     *  - GPCB left the commissioning mode.
+                                     * 
+                                     * Status codes: 
+                                     * - RET_OK: comissioning complete.
+                                     * - RET_ERROR: An error of any type.
+                                     * 
+                                     * Signal parameters: 
+                                     *  - @ref zb_zgp_signal_commissioning_params_t
+                                     * 
+                                     * @snippet zc_combo.c gcomm_complete
+                                       @endparblock */
 
-     Called when GPCB is leaving commissioning mode.
-     @see zb_zgp_signal_commissioning_params_t.
-
-     @snippet zc_combo.c gcomm_complete
-   */
-  ZB_ZGP_SIGNAL_COMMISSIONING,
 #if defined DOXYGEN && defined ZB_DOCUMENT_ZGP
 /*! @} */
 #endif
-
-  ZB_COMMON_SIGNAL_CAN_SLEEP,       /*!< Notifies application that MCU can go to sleep.
-                                     *
-                                     * Passed up with parameter @ref zb_zdo_signal_can_sleep_params_t
-                                     **/
-  ZB_ZDO_SIGNAL_PRODUCTION_CONFIG_READY, /*!< Notifies application that application specific part of
-                                          * production configuration can be applied
+  ZB_COMMON_SIGNAL_CAN_SLEEP,       /*!< Notifies the application that the MCU can sleep for the specified period of time.
+                                     * Note: Signal will not be generated if the sleep interval is less than sleep threshold @ref ZB_SCHED_SLEEP_THRESHOLD_MS.
+                                     * To change the sleep threshold see @ref zb_sleep_set_threshold. 
+                                     * @parblock
+                                     * When generated: 
+                                     *  - ZBOSS scheduler detects that the sleep mode can be enabled on the device.
+                                     * 
+                                     * Status codes: 
+                                     * - RET_OK: The sleep mode can be enabled on the device.
+                                     * - Does not return error status.
+                                     * 
+                                     * Signal parameters: 
+                                     *  - @ref zb_zdo_signal_can_sleep_params_t
+                                       @endparblock */
+  ZB_ZDO_SIGNAL_PRODUCTION_CONFIG_READY, /*!< Notifies the application that the application specific part of
+                                          * the production configuration was found and restored and provides 
+                                          * the application with this data. 
+                                          * @parblock
+                                          * When generated: 
+                                          *  - After restoring the production configuration.
+                                          * 
+                                          * Status codes: 
+                                          *  - RET_OK: The application specific part of the production configuration exists.
+                                          *  - RET_ERROR: An error of any type.
                                           *
-                                          * Passed up with application specific data from
-                                          * production configuration.
+                                          * Signal parameters: 
+                                          *  - Passed up with application specific data from production configuration.
+                                            @endparblock */
+  ZB_NWK_SIGNAL_NO_ACTIVE_LINKS_LEFT,    /*!< Notifies the application about the Neighbor Table expiration.
+                                          * It means that the neighbor devices did not send 
+                                          * the Link Status messages for @ref ZB_NWK_ROUTER_AGE_LIMIT * @ref ZB_NWK_LINK_STATUS_PERIOD seconds.
+                                          * @parblock
+                                          * When generated:
+                                          *  - All routes expired (usually when the link is down).
+                                          * 
+                                          * Status codes: 
+                                          *  - RET_OK: All routers expired.
+                                          *  - Does not return error status.
+                                          * 
+                                          * Signal parameters: 
+                                          *  - none
+                                            @endparblock */
+
+  ZB_ZDO_SIGNAL_DEVICE_UPDATE,           /*!< Notifies the Zigbee Trust center or parent router application about a new device
+                                          * joined, rejoined or left the network. 
+                                          *
+                                          * When generated:
+                                          *  - Standard device secured rejoin
+                                          *  - Standard device unsecured join
+                                          *  - Device left
+                                          *  - Standard device trust center rejoin
+                                          *
+                                          * Status codes: 
+                                          *  - RET_OK: Device information updated.
+                                          *  - Does not return error status.
+                                          *
+                                          * Signal parameters: 
+                                          *  - @ref zb_zdo_signal_device_update_params_t
+                                          */
+
+  ZB_ZDO_SIGNAL_DEVICE_AUTHORIZED,       /*!< Notifies the Zigbee Trust center application about a new device is authorized
+                                          * in the network. For Zigbee R21 devices it means that the TCKL exchange procedure 
+                                          * was finished, for the legacy devices it means that the Transport key was send to the device. 
+                                          *
+                                          * When generated:
+                                          *  - Authorization success
+                                          *  - Authorization failed
+                                          *  - Authorization timeout
+                                          *
+                                          * Status codes: 
+                                          *  - RET_OK: Device information updated.
+                                          *  - Does not return error status.
+                                          *
+                                          * Signal parameters: 
+                                          *  - @ref zb_zdo_signal_device_authorized_params_t
+                                          *
                                           */
   /* ****************** */
   ZB_ZDO_APP_SIGNAL_COUNT
@@ -230,7 +499,7 @@ typedef zb_zdo_app_signal_type_t zb_zdo_app_signal_t;
   simple_gw_dev_annce_cb(dev_annce_params->device_short_addr);
 @endcode
   */
-#define ZB_ZDO_SIGNAL_GET_PARAMS(sg_p, type) ((type *)(((zb_uint8_t *)sg_p) + sizeof(zb_zdo_app_signal_hdr_t)))
+#define ZB_ZDO_SIGNAL_GET_PARAMS(sg_p, type) ((type *)((void*)(((zb_uint8_t *)sg_p) + sizeof(zb_zdo_app_signal_hdr_t))))
 
 /**
    @brief Leave parameters
@@ -239,11 +508,7 @@ typedef zb_zdo_app_signal_type_t zb_zdo_app_signal_t;
   */
 typedef struct zb_zdo_signal_leave_params_s
 {
-  /**
-    Type of leave: ZB_NWK_LEAVE_TYPE_RESET or ZB_NWK_LEAVE_TYPE_REJOIN.
-    @see zb_nwk_leave_type_t
-    */
-  zb_uint8_t leave_type;
+  zb_nwk_leave_type_t leave_type; /** Leave type. @ref zb_nwk_leave_type_t */
 } zb_zdo_signal_leave_params_t;
 
 /**
@@ -301,6 +566,8 @@ typedef struct zb_zdo_signal_device_annce_params_s
   zb_uint16_t device_short_addr; /*!< address of device that recently joined to network */
 } zb_zdo_signal_device_annce_params_t;
 
+/** @cond touchlink */
+
 typedef struct zb_bdb_signal_touchlink_nwk_started_params_s
 {
   zb_ieee_addr_t device_ieee_addr; /*!< address of device that started the network */
@@ -315,6 +582,8 @@ typedef struct zb_bdb_signal_touchlink_nwk_joined_router_s
   zb_uint16_t profile_id;
 } zb_bdb_signal_touchlink_nwk_joined_router_t;
 
+/** @endcond */ /* touchlink */
+
 /**
    @brief Sleep signal parameters.
 
@@ -325,11 +594,133 @@ typedef struct zb_zdo_signal_can_sleep_params_s
   zb_uint32_t sleep_tmo; /*!< sleep duration in millisecionds */
 } zb_zdo_signal_can_sleep_params_t;
 
+/**
+ * @brief Status codes for F&B Initiator Finished signal
+ */
+typedef enum zb_zdo_fb_initiator_finished_status_e
+{
+  /*!< F&B with a Target on the Initiator side is success completed */
+  ZB_ZDO_FB_INITIATOR_STATUS_SUCCESS = 0,
+
+  /*!< F&B on the Initiator side is canceled */
+  ZB_ZDO_FB_INITIATOR_STATUS_CANCEL,
+
+  /*!< F&B on the Initiator side is finished by timeout */
+  ZB_ZDO_FB_INITIATOR_STATUS_ALARM,
+
+  /*!< F&B on the Initiator side is failure finished */
+  ZB_ZDO_FB_INITIATOR_STATUS_ERROR
+} zb_zdo_fb_initiator_finished_status_t;
+
+/**
+ * @brief F&B Initiator Finished signal parameters
+ */
+typedef struct zb_zdo_signal_fb_initiator_finished_params_s
+{
+  /*!< Status of the F&B procedure on the Initiator side */
+  zb_zdo_fb_initiator_finished_status_t status;
+} zb_zdo_signal_fb_initiator_finished_params_t;
+
+/**
+ * @brief Device Updated signal parameters
+ */
+typedef struct zb_zdo_signal_device_update_params_s
+{
+  /*!< Long Address of the updated device */
+  zb_ieee_addr_t long_addr;
+
+  /*!< Short Address of the updated device */
+  zb_uint16_t short_addr;
+
+  /*!< Indicates the updated status of the device
+   *
+   * 0x00 = Standard device secured rejoin
+   * 0x01 = Standard device unsecured join
+   * 0x02 = Device left
+   * 0x03 = Standard device trust center rejoin
+   * 0x04 – 0x07 = Reserved
+   *
+   * see r21 spec, 4.4.3.2 APSME-UPDATE-DEVICE.indication,
+   * Table 4.15 APSME-UPDATE-DEVICE.indication Parameters
+   */
+  zb_uint8_t status;
+} zb_zdo_signal_device_update_params_t;
+
+/**
+ * @brief Authorization types for
+ *        @ref ZB_ZDO_SIGNAL_DEVICE_AUTHORIZED
+ */
+/* TODO: add other types if need (SE CBKE, r23 DLK) */
+typedef enum zb_zdo_authorization_type_e
+{
+  /*!< Authorization type for legacy devices ( < r21) */
+  ZB_ZDO_AUTHORIZATION_TYPE_LEGACY,
+
+  /*!< Authorization type for r21 device through TCLK */
+  ZB_ZDO_AUTHORIZATION_TYPE_R21_TCLK
+}
+zb_zdo_authorization_type_t;
+
+/**
+ * @brief Authorization statuses for
+ *        ZB_ZDO_AUTHORIZATION_TYPE_LEGACY value
+ *        of @ref zb_zdo_authorization_type_t type
+ */
+typedef enum zb_zdo_legacy_device_authorization_status_e
+{
+  /*!< Authorization success */
+  ZB_ZDO_LEGACY_DEVICE_AUTHORIZATION_SUCCESS,
+
+  /*!< Authorization failed */
+  ZB_ZDO_LEGACY_DEVICE_AUTHORIZATION_FAILED
+}
+zb_zdo_legacy_device_authorization_status_t;
+
+/**
+ * @brief Authorization statuses for
+ *        ZB_ZDO_AUTHORIZATION_TYPE_R21_TCLK value
+ *        of @ref zb_zdo_authorization_type_t type
+ */
+typedef enum zb_zdo_tclk_authorization_status_e
+{
+  /*!< Authorization success */
+  ZB_ZDO_TCLK_AUTHORIZATION_SUCCESS,
+
+  /*!< Authorization timeout */
+  ZB_ZDO_TCLK_AUTHORIZATION_TIMEOUT,
+
+  /*!< Authorization failed */
+  ZB_ZDO_TCLK_AUTHORIZATION_FAILED
+}
+zb_zdo_tclk_authorization_status_t;
+
+/**
+ * @brief Device Authorized signal parameters
+ */
+typedef struct zb_zdo_signal_device_authorized_params_s
+{
+  /*!< Long Address of the updated device */
+  zb_ieee_addr_t long_addr;
+
+  /*!< Short Address of the updated device */
+  zb_uint16_t short_addr;
+
+  /*!< Type of the authorization procedure,
+   *   @ref zb_zdo_authorization_type_t
+   */
+  zb_uint8_t authorization_type;
+
+  /*!< Status of the authorization procedure
+   *   (depends on @ref zb_zdo_authorization_type_t)
+   */
+  zb_uint8_t authorization_status;
+} zb_zdo_signal_device_authorized_params_t;
+
 /** Application signal header */
 typedef struct zb_zdo_app_signal_hdr_s
 {
   /* 32 bit to have data section aligned well */
-  zb_uint32_t sig_type;            /** Application signal type, @see zb_zdo_app_signal_type_t */
+  zb_uint32_t sig_type;            /** Application signal type, @ref zb_zdo_app_signal_type_t */
 } zb_zdo_app_signal_hdr_t;
 /* Legacy API: zb_zdo_app_signal_hdr_t == zb_zdo_app_event_t */
 typedef zb_zdo_app_signal_hdr_t zb_zdo_app_event_t;
@@ -420,11 +811,17 @@ zb_void_t zb_zdo_get_diag_data(zb_uint16_t short_address, zb_uint8_t *lqi, zb_in
 /*! @{ */
 
 
-/**
-   2.4.3.1, 2.4.4.1
-*/
-#define ZB_ZDO_SINGLE_DEVICE_RESP   0 /*!< Single device response */
-#define ZB_ZDO_EXTENDED_DEVICE_RESP 1 /*!< Extended response */
+
+#define ZB_ZDO_SINGLE_DEVICE_RESP   0 /*!<  Request Type parameter value of @ref zb_zdo_nwk_addr_req_t and @ref zb_zdo_ieee_addr_req_t for receiving a Single device response used in the following commands accordingly: 
+                                       * - @ref zb_zdo_nwk_addr_req
+                                       * - @ref zb_zdo_ieee_addr_req
+                                       *   @see spec 2.4.3.1, 2.4.4.1
+                                       */
+#define ZB_ZDO_EXTENDED_DEVICE_RESP 1 /*!< Request Type parameter value of @ref zb_zdo_nwk_addr_req_t and @ref zb_zdo_ieee_addr_req_t for receiving an Extended device response used in the following commands accordingly: 
+                                       * - @ref zb_zdo_nwk_addr_req
+                                       * - @ref IEEE_addr_req
+                                       *   @see spec 2.4.3.1, 2.4.4.1
+                                       */
 
 /** @brief NWK_addr_req command primitive.  */
 typedef ZB_PACKED_PRE struct zb_zdo_nwk_addr_req_s
@@ -574,7 +971,7 @@ typedef ZB_PACKED_PRE struct zb_zdo_ieee_addr_req_s
                                   devices list  */
 } ZB_PACKED_STRUCT zb_zdo_ieee_addr_req_t;
 
-/** brief ZDO IEEE address response frame */
+/** @brief ZDO IEEE address response frame */
 typedef ZB_PACKED_PRE struct zb_zdo_ieee_addr_resp_s
 {
   zb_uint8_t tsn; /*!< ZDP transaction sequence number */
@@ -585,7 +982,7 @@ typedef ZB_PACKED_PRE struct zb_zdo_ieee_addr_resp_s
 ZB_PACKED_STRUCT
 zb_zdo_ieee_addr_resp_t;
 
-/** brief ZDO IEEE address response frame tail */
+/** @brief ZDO IEEE address response frame tail */
 typedef ZB_PACKED_PRE struct zb_zdo_ieee_addr_resp_ext_s
 {
   zb_uint8_t num_assoc_dev; /*!< Count of the ED List. */
@@ -593,7 +990,7 @@ typedef ZB_PACKED_PRE struct zb_zdo_ieee_addr_resp_ext_s
 ZB_PACKED_STRUCT
 zb_zdo_ieee_addr_resp_ext_t;
 
-/** brief ZDO IEEE address response frame tail */
+/** @brief ZDO IEEE address response frame tail */
 typedef ZB_PACKED_PRE struct zb_zdo_ieee_addr_resp_ext2_s
 {
   zb_uint8_t start_index; /*!< Starting index to begin reporting for the ED List.*/
@@ -604,7 +1001,7 @@ zb_zdo_ieee_addr_resp_ext2_t;
 /** @brief IEEE_addr_req primitive.
   *
   * @param param - index of buffer with primitive parameters \ref zb_zdo_ieee_addr_req_s.
-  * Parameters mut be put into buffer as data (allocated).
+  * Parameters must be put into the buffer as data (allocated).
   * @param cb    - user's function to call when got response from the remote.
   * @return        - ZDP transaction sequence number or 0xFF if operation cannot be
   *                performed now (nor enough memory, resources, etc.)
@@ -684,7 +1081,7 @@ typedef ZB_PACKED_PRE struct zb_zdo_node_desc_req_s
 typedef ZB_PACKED_PRE struct zb_zdo_desc_resp_hdr_s
 {
   zb_uint8_t      tsn; /*!< ZDP transaction sequence number */
-  zb_uint8_t      status;   /*!< The status of the Desc_req command. @see zb_zdp_status_t */
+  zb_uint8_t      status;   /*!< The status of the Desc_req command. @ref zb_zdp_status_t */
   zb_uint16_t     nwk_addr; /*!< NWK address for the request  */
 } ZB_PACKED_STRUCT
 zb_zdo_desc_resp_hdr_t;
@@ -701,7 +1098,7 @@ zb_zdo_node_desc_resp_t;
 typedef ZB_PACKED_PRE struct zb_zdo_simple_desc_resp_hdr_s
 {
   zb_uint8_t      tsn; /*!< ZDP transaction sequence number */
-  zb_uint8_t      status;   /*!< The status of the Desc_req command. @see zb_zdp_status_t */
+  zb_uint8_t      status;   /*!< The status of the Desc_req command. @ref zb_zdp_status_t */
   zb_uint16_t     nwk_addr; /*!< NWK address for the request  */
   zb_uint8_t      length;   /*!< Length of the simple descriptor */
 } ZB_PACKED_STRUCT
@@ -746,7 +1143,7 @@ zb_zdo_parent_annce_t;
 typedef ZB_PACKED_PRE struct zb_zdo_parent_annce_rsp_hdr_s
 {
   zb_uint8_t tsn; /*!< ZDP transaction sequence number */
-  zb_uint8_t      status;   /*!< The status of the Desc_req command. @see zb_zdp_status_t */
+  zb_uint8_t      status;   /*!< The status of the Desc_req command. @ref zb_zdp_status_t */
   zb_uint8_t      num_of_children;   /*!< Length of the simple descriptor */
 } ZB_PACKED_STRUCT
 zb_zdo_parent_annce_rsp_hdr_t;
@@ -1185,7 +1582,7 @@ zb_zdo_mgmt_lqi_resp_t;
    @param var - neighbor table record type_flags
    @param type - Zigbee device type value
 
-   @see @ref zb_zdo_neighbor_table_record_s
+   @ref zb_zdo_neighbor_table_record_s
   */
 #define ZB_ZDO_RECORD_SET_DEVICE_TYPE(var, type) ( var &= ~3, var |= type )
 /**
@@ -1193,7 +1590,7 @@ zb_zdo_mgmt_lqi_resp_t;
 
    @param var - neighbor table record type_flags
 
-   @see @ref zb_zdo_neighbor_table_record_s
+   @ref zb_zdo_neighbor_table_record_s
   */
 #define ZB_ZDO_RECORD_GET_DEVICE_TYPE(var) ( var & 3 )
 
@@ -1205,7 +1602,7 @@ zb_zdo_mgmt_lqi_resp_t;
    @param var - neighbor table record type_flags
    @param type - RxOnWhenIdle value
 
-   @see @ref zb_zdo_neighbor_table_record_s
+   @ref zb_zdo_neighbor_table_record_s
   */
 #define ZB_ZDO_RECORD_SET_RX_ON_WHEN_IDLE(var, type) ( var &= ~0xC, var |= (type << 2) )
 /**
@@ -1213,7 +1610,7 @@ zb_zdo_mgmt_lqi_resp_t;
 
    @param var - neighbor table record type_flags
 
-   @see @ref zb_zdo_neighbor_table_record_s
+   @ref zb_zdo_neighbor_table_record_s
   */
 #define ZB_ZDO_RECORD_GET_RX_ON_WHEN_IDLE(var) ( (var & 0xC) >> 2 )
 
@@ -1225,7 +1622,7 @@ zb_zdo_mgmt_lqi_resp_t;
    @param var - neighbor table record type_flags
    @param type - Zigbee relationship value
 
-   @see @ref zb_zdo_neighbor_table_record_s
+   @ref zb_zdo_neighbor_table_record_s
   */
 #define ZB_ZDO_RECORD_SET_RELATIONSHIP(var, type) ( var &= ~0x70, var |= (type << 4) )
 /**
@@ -1233,7 +1630,7 @@ zb_zdo_mgmt_lqi_resp_t;
 
    @param var - neighbor table record type_flags
 
-   @see @ref zb_zdo_neighbor_table_record_s
+   @ref zb_zdo_neighbor_table_record_s
   */
 #define ZB_ZDO_RECORD_GET_RELATIONSHIP(var) ( (var & 0x70) >> 4 )
 
@@ -1330,6 +1727,21 @@ zb_zdo_routing_table_record_t;
     @{
 */
 
+/** @brief The addressing mode for the destination address used in 
+  * @ref zb_zdo_binding_table_record_s, @ref zb_zdo_bind_req_param_s,
+  * @ref zb_zdo_bind_req_head_s command. This field can take one of 
+  * the non-reserved values from the list @ref zb_bind_dst_addr_mode_e. 
+  * Values 0x00, 0x02, 0x04-0xff are reserved 
+  * @see ZB Spec, subclause 2.4.3.2.2.
+  */
+typedef enum zb_bind_dst_addr_mode_e
+{
+  ZB_BIND_DST_ADDR_MODE_16_BIT_GROUP = 0x01,    /*!< 16-bit group address 
+                                                     for DstAddress and DstEndp not present */
+  ZB_BIND_DST_ADDR_MODE_64_BIT_EXTENDED = 0x03, /*!< 64-bit extended address 
+                                                     for DstAddress and DstEndp present */
+} zb_bind_dst_addr_mode_t;
+
 /** @brief Parameters for Mgmt_Bind_req.
   * @see ZB spec, subclause 2.4.3.3.4.
   */
@@ -1375,33 +1787,24 @@ zb_zdo_mgmt_bind_resp_t;
 typedef ZB_PACKED_PRE struct zb_zdo_binding_table_record_s
 {
   zb_ieee_addr_t src_address; /*!< The source IEEE address for the binding entry. */
-  zb_uint8_t src_endp;  /*!< The source endpoint for the binding entry. */
-  zb_uint16_t cluster_id;  /*!< The identifier of the cluster on the
-                             source device that is bound to the
-                             destination device. */
-  zb_uint8_t dst_addr_mode;  /*!< The addressing mode for the
-                               destination address used in this
-                               command. This field can take one of
-                               the non-reserved values from the
-                               following list:
-                               0x00 = reserved
-                               0x01 = 16-bit group address for
-                               DstAddress and DstEndp not present
-                               0x02 = reserved
-                               0x03 = 64-bit extended address for
-                               DstAddress and DstEndp present
-                               0x04 . 0xff = reserved*/
-  zb_addr_u dst_address;  /*!< The destination address for the
-                                 * binding entry.16 or 64 bit. As specified by the
-                                 * dst_addr_mode field.*/
-  zb_uint8_t dst_endp;  /*!< This field shall be present only if the
-                          DstAddrMode field has a value of
-                          0x03 and, if present, shall be the
-                          destination endpoint for the binding
-                          entry. */
+  zb_uint8_t src_endp;        /*!< The source endpoint for the binding entry. */
+  zb_uint16_t cluster_id;     /*!< The identifier of the cluster on the
+                                  source device that is bound to the
+                                  destination device. */
+  zb_uint8_t dst_addr_mode;   /*!< Destination address mode @ref zb_bind_dst_addr_mode_t */
+  zb_addr_u dst_address;      /*!< The destination address for the
+                                   * binding entry.16 or 64 bit. As specified by the
+                                   * dst_addr_mode field.*/
+  zb_uint8_t dst_endp;        /*!< This field shall be present only if the
+                                   DstAddrMode field has a value of
+                                   ZB_BIND_DST_ADDR_MODE_64_BIT_EXTENDED @ref zb_bind_dst_addr_mode_t 
+                                   and, if present, shall be the
+                                   destination endpoint for the binding
+                                   entry. */
 }
 ZB_PACKED_STRUCT
 zb_zdo_binding_table_record_t;
+
 
 /** @brief Sends Mgmt_Bind_req request.
   * @param param reference to the buffer to put request data to.
@@ -1427,30 +1830,20 @@ void zdo_mgmt_bind_resp(zb_uint8_t param);
   */
 typedef struct zb_zdo_bind_req_param_s
 {
-  zb_ieee_addr_t src_address; /*!< The IEEE address for the source. */
-  zb_uint8_t src_endp;  /*!< The source endpoint for the binding entry. */
-  zb_uint16_t cluster_id;  /*!< The identifier of the cluster on the
-                             source device that is bound to the destination. */
-  zb_uint8_t dst_addr_mode;  /*!< The addressing mode for the
-                               destination address used in this
-                               command. This field can take one of
-                               the non-reserved values from the
-                               following list:
-                               0x00 = reserved
-                               0x01 = 16-bit group address for
-                               DstAddress and DstEndp not present
-                               0x02 = reserved
-                               0x03 = 64-bit extended address for
-                               DstAddress and DstEndp present
-                               0x04 . 0xff = reserved*/
-  zb_addr_u dst_address;  /*!< The destination address for the
-                                 * binding entry. */
-  zb_uint8_t dst_endp;  /*!< This field shall be present only if the
-                          DstAddrMode field has a value of
-                          0x03 and, if present, shall be the
-                          destination endpoint for the binding
-                          entry. */
-  zb_uint16_t req_dst_addr; /*!< Destinition address of the request */
+  zb_ieee_addr_t src_address;  /*!< The IEEE address for the source. */
+  zb_uint8_t src_endp;         /*!< The source endpoint for the binding entry. */
+  zb_uint16_t cluster_id;      /*!< The identifier of the cluster on the
+                                    source device that is bound to the destination. */
+  zb_uint8_t dst_addr_mode;    /*!< Destination address mode @ref zb_bind_dst_addr_mode_t */
+  zb_addr_u dst_address;       /*!< The destination address for the
+                                   * binding entry. */
+  zb_uint8_t dst_endp;         /*!< This field shall be present only if the
+                                    DstAddrMode field has a value of
+                                    ZB_BIND_DST_ADDR_MODE_64_BIT_EXTENDED @ref zb_bind_dst_addr_mode_t 
+                                    and, if present, shall be the
+                                    destination endpoint for the binding
+                                    entry. */
+  zb_uint16_t req_dst_addr;    /*!< Destinition address of the request */
 }
 zb_zdo_bind_req_param_t;
 
@@ -1461,21 +1854,10 @@ zb_zdo_bind_req_param_t;
 typedef ZB_PACKED_PRE struct zb_zdo_bind_req_head_s
 {
   zb_ieee_addr_t src_address; /*!< The IEEE address for the source. */
-  zb_uint8_t src_endp;  /*!< The source endpoint for the binding entry. */
-  zb_uint16_t cluster_id;  /*!< The identifier of the cluster on the
-                             source device that is bound to the destination. */
-  zb_uint8_t dst_addr_mode;  /*!< The addressing mode for the
-                               destination address used in this
-                               command. This field can take one of
-                               the non-reserved values from the
-                               following list:
-                               0x00 = reserved
-                               0x01 = 16-bit group address for
-                               DstAddress and DstEndp not present
-                               0x02 = reserved
-                               0x03 = 64-bit extended address for
-                               DstAddress and DstEndp present
-                               0x04 . 0xff = reserved*/
+  zb_uint8_t src_endp;        /*!< The source endpoint for the binding entry. */
+  zb_uint16_t cluster_id;     /*!< The identifier of the cluster on the
+                                   source device that is bound to the destination. */
+  zb_uint8_t dst_addr_mode;   /*!< Destination address mode @ref zb_bind_dst_addr_mode_t */
 }
 ZB_PACKED_STRUCT
 zb_zdo_bind_req_head_t;
@@ -1830,7 +2212,7 @@ typedef ZB_PACKED_PRE struct zb_zdo_mgmt_permit_joining_req_param_s
 zb_zdo_mgmt_permit_joining_req_param_t;
 
 /**
-   sends 2.4~/Work/nordic/nordic_r21/devel/build/Nordic_nRF52840/code_drop.3.3.7 Mgmt_Permit_Joining_req
+   @brief sends 2.4.3.3.7 Mgmt_Permit_Joining_req
    @param param - index of buffer with request
    @param cb    - user's function to call when got response from the remote.
    @return        ZDP transaction sequence number or 0xFF if operation cannot be
@@ -1940,21 +2322,71 @@ zb_nlme_leave_indication_t;
 
 /*! @} */
 
+
 #ifndef ZB_LITE_COORDINATOR_ONLY_ROLE
-void zb_zdo_pim_turbo_poll_continuous_leave(zb_uint8_t param);
-void zb_zdo_pim_set_turbo_poll_max(zb_time_t turbo_poll_max_ms);
+
+/** @addtogroup zdo_poll_control
+    @{ */
+
+
+/** 
+ * @brief Toggle Turbo Poll feature.
+ * @param permit ZB_TRUE to enable, ZB_FALSE to disable Turbo Poll.
+*/
 void zb_zdo_pim_permit_turbo_poll(zb_uint8_t permit);
+
+/** 
+ * @brief Start Turbo Poll adaptive algorithm for the number of packets. 
+ * Turbo Poll will be disabled after receiving the specified number of packets
+ * or after the poll timeout will rise up to the Long Poll interval. 
+ * @param n_packets Number of packets.
+ */
+void zb_zdo_pim_start_turbo_poll_packets(zb_uint8_t n_packets);
+
+/** 
+ * @brief Start the Turbo Poll adaptive algorithm for the specified timeout.
+ * @param turbo_poll_timeout_ms Timeout in milliseconds.
+ */
 void zb_zdo_pim_start_turbo_poll_continuous(zb_time_t turbo_poll_timeout_ms);
+
+/** 
+ * @brief Stop the Turbo Poll adaptive algorithm initiated by @ref zb_zdo_pim_start_turbo_poll_continuous before the timeout expires. 
+ * Restores the Long Poll interval.
+ * @param param Not used, added for the correct scheduling of this function. Usually specified as zero.
+ */
+void zb_zdo_pim_turbo_poll_continuous_leave(zb_uint8_t param);
+
+/** 
+ * @brief Change the Long Poll interval.
+ * Notes: 
+ *  - A preferable way to change the Long Poll interval if the Poll Control cluster is not defined. 
+ * Else the Poll Control cluster API should be used to set the Long Poll Interval attribute.
+ *  - Long Poll interval configuration should be done after the join procedure because during join the Long Poll 
+ * interval will be set to the default value @ref ZB_PIM_DEFAULT_LONG_POLL_INTERVAL.
+ * @param ms New Long Poll interval in milliseconds.
+ */
+void zb_zdo_pim_set_long_poll_interval(zb_time_t ms);
+
+/** 
+ * @brief Get the Long Poll Interval.
+ * @return Long Poll interval in milliseconds.
+*/
+zb_time_t zb_zdo_pim_get_long_poll_interval_ms(void);
+
 #else
 #define zb_zdo_pim_turbo_poll_continuous_leave(param)
-#define zb_zdo_pim_set_turbo_poll_max(turbo_poll_max_ms)
 #define zb_zdo_pim_permit_turbo_poll(permit)
 #define zb_zdo_pim_start_turbo_poll_continuous(turbo_poll_timeout_ms)
+#define zb_zdo_pim_start_turbo_poll_packets(n_packets)
+#define zb_zdo_pim_set_long_poll_interval(ms)
+#define zb_zdo_pim_get_long_poll_interval_ms() 0
 #endif
 
-void zb_zdo_update_long_poll_int(zb_uint8_t param);
+/*! @} */
 
 #ifdef ZB_REJOIN_BACKOFF
+/** @addtogroup zdo_rejoin_backoff
+    @{ */
 
 /** Start rejoin backoff procedure.
   If the method is to be directly called from application, it is expected that MAC layer and PIB cache
@@ -1977,10 +2409,12 @@ zb_bool_t zb_zdo_rejoin_backoff_is_running(void);
 
 /** Clear rejoin backoff context, cancel scheduled function */
 zb_void_t zb_zdo_rejoin_backoff_cancel(void);
-
+/*! @} */
 #endif /* ZB_REJOIN_BACKOFF */
 
 #if defined ZB_ENABLE_ZLL
+/** @cond touchlink */
+
 /**
  *  @brief Set Touchlink Master key
  *  @param param [IN] - Touchlink Master key value
@@ -2016,6 +2450,106 @@ zb_void_t zb_zdo_touchlink_set_rssi_correction(zb_uint8_t rssi_correction);
  *  @return Current Touchlink RSSI correction value
  */
 zb_uint8_t zb_zdo_touchlink_get_rssi_correction(zb_void_t);
+
+/** @endcond */ /* touchlink */
 #endif /* ZB_ENABLE_ZLL */
+
+#ifdef ZB_DISTRIBUTED_SECURITY_ON
+/** @addtogroup zdo_distributed_security
+    @{ */
+/**
+ *  @brief Set custom distributed key
+ *
+ *  @param key_ptr - pointer to the key
+ */
+void zb_zdo_set_tc_standard_distributed_key(zb_uint8_t *key_ptr);
+
+#ifdef ZB_ROUTER_ROLE
+/**
+ *  @brief Allow to setup network as distributed when started
+ */
+void zb_zdo_setup_network_as_distributed(void);
+/*! @} */
+#endif /* ZB_ROUTER_ROLE */
+
+#endif /* ZB_DISTRIBUTED_SECURITY_ON */
+
+/*! \addtogroup af_api */
+/*! @{ */
+
+/** @brief Set up application callback to be called for APS data packets.
+ *
+ *  That API call may be useful for tests which uses custom profile id or which needs to send raw
+ *  data over APS.
+ *  @attention Function is called on receive of APS data frame BEFORE internal processing. Please
+ *  make sure that this callback does not handle packets on standard ZB profiles - this should be
+ *  done by the stack.
+ *
+ *  @param cb - callback to call when AF got APS packet. @ref zb_apsde_data_indication_t
+ *  @return status (see @ref zb_bool_t). ZB_TRUE means APS packet is processed by application (no
+ *  further actions will be done by stack), ZB_FALSE means that application did not process the
+ *  packet (stack will process it internally).
+ *  @b Example:
+ *  @code
+ *  void zboss_signal_handler(zb_uint8_t param)
+ *  {
+ *    zb_zdo_app_signal_hdr_t *sg_p = NULL;
+ *    zb_zdo_app_signal_type_t sig = zb_get_app_signal(param, &sg_p);
+ *
+ *    if (ZB_GET_APP_SIGNAL_STATUS(param) == 0)
+ *    {
+ *      switch(sig)
+ *      {
+ *        case ZB_ZDO_SIGNAL_DEFAULT_START:
+ *          TRACE_MSG(TRACE_APS1, "Device STARTED OK", (FMT__0));
+ *          zb_af_set_data_indication(data_indication);
+ *          break;
+ *        default:
+ *          TRACE_MSG(TRACE_APP1, "Unknown signal", (FMT__0));
+ *          break;
+ *      }
+ *      zb_free_buf(buf);
+ *    }
+ *  }
+ *
+ *  zb_uint8_t data_indication(zb_uint8_t param)
+ *  {
+ *    zb_ushort_t i;
+ *    zb_uint8_t *ptr;
+ *    zb_buf_t *asdu = (zb_buf_t *)ZB_BUF_FROM_REF(param);
+ *    zb_apsde_data_indication_t *ind = ZB_GET_BUF_PARAM(asdu, zb_apsde_data_indication_t);
+ *
+ *    if (ind->profileid == TEST_CUSTOM_PROFILE_ID)
+ *    {
+ *      ptr = ZB_APS_HDR_CUT(asdu);
+ *
+ *      TRACE_MSG(TRACE_APS3, "apsde_data_indication: packet %p len %hd status 0x%hx from %d",
+ *                (FMT__P_D_D_D, asdu, ZB_BUF_LEN(asdu), asdu->u.hdr.status, ind->src_addr));
+ *
+ *      for (i = 0 ; i < ZB_BUF_LEN(asdu) ; ++i)
+ *      {
+ *        TRACE_MSG(TRACE_APS3, "%x %c", (FMT__D_C, (int)ptr[i], ptr[i]));
+ *      }
+ *      zb_free_buf(apsdu);
+ *      return ZB_TRUE;
+ *    }
+ *    return ZB_FALSE;
+ *  }
+ *  @endcode
+ */
+void zb_af_set_data_indication(zb_device_handler_t cb);
+
+/**
+ *  @brief Perform "Reset with a Local Action" procedure (as described in BDB spec, chapter 9.5).
+ *  The device will perform the NLME leave and clean all ZigBee persistent data except the outgoing NWK
+ *  frame counter and application datasets (if any).
+ *  The reset can be performed at any time once the device is started (see @ref zboss_start).
+ *  After the reset, the application will receive the @ref ZB_ZDO_SIGNAL_LEAVE signal.
+ *
+ *  @param param - buffer reference (if 0, buffer will be allocated automatically)
+ */
+void zb_bdb_reset_via_local_action(zb_uint8_t param);
+
+/*! @} */
 
 #endif /*#ifndef ZB_ZBOSS_API_ZDO_H*/

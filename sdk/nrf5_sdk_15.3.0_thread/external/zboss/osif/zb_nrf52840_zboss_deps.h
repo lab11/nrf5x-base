@@ -36,7 +36,7 @@
  * CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR
  * TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF
  * THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- PURPOSE: ZBOSS support for nRF52840 SoC OSIF layer function prototypes.
+PURPOSE: Platform specific for NRF52840 SoC.
 */
 #ifdef __GNUC__
 /* Switch off warnings produced by Nordic headers */
@@ -52,3 +52,6 @@ zb_void_t zb_osif_clean_flash_op_progress(void);
 zb_bool_t zb_osif_flash_op_progress(void);
 zb_void_t zb_osif_zboss_timer_tick(void);
 zb_void_t zb_osif_flash_erase_finished(zb_uint8_t page);
+
+void zb_trace_flush(zb_uint_t size);
+void zb_trace_get_last_message(zb_uint8_t** ptr, zb_uint_t* size);

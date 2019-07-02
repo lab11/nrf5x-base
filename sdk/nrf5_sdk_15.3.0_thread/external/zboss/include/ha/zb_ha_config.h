@@ -48,31 +48,6 @@ PURPOSE: HA configuration
 
 /** @cond DOXYGEN_HA_SECTION */
 
-/*!
-    @defgroup ZB_HA_CLUSTERS_ADDS HA Extension clusters
-    @ingroup ha_api
-    @{
-    @defgroup ZB_ZCL_BASIC_HA_ADDS Basic cluster HA extension
-    @defgroup ZB_ZCL_IAS_ZONE_HA_ADDS IAS Zone HA extension
-    @defgroup ZB_ZCL_IDENTIFY_HA_ADDS Identify HA extension
-    @defgroup ZB_ZCL_POWER_CONFIG_HA_ADDS Power Configuration HA extension
-    @defgroup ZB_ZCL_REPORTING_HA_ADDS Reporting HA extension
-    @defgroup ZB_ZCL_THERMOSTAT_HA_ADDS Thermostat HA extension
-    @}
-*/
-
-/*
-  Important! Avoid any specific features control here.
-  For example, EZ-mode switch is related to a partiucular HA device
-  and is defined in zb_ha_device_config.h for those devices that need it.
-
-  In general, HA comfiguration key values (device support, etc.) should be defined in high-level
-  vendor config file, this file must be common for all vendors.
-
-#define xZB_HA_SUPPORT_EZ_MODE
-*/
-
-
 /* Specify a list of devices that should be supported */
 #define xZB_ALL_DEVICE_SUPPORT /* Attention! use this macro in testing purposes */
 

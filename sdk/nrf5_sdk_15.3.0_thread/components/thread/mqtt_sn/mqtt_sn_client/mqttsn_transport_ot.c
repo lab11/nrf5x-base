@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2017 - 2018, Nordic Semiconductor ASA
+ * Copyright (c) 2017 - 2019, Nordic Semiconductor ASA
  *
  * All rights reserved.
  *
@@ -141,7 +141,7 @@ uint32_t mqttsn_transport_write(mqttsn_client_t       * p_client,
 
     do
     {
-        p_msg = otUdpNewMessage(m_p_instance, true);
+        p_msg = otUdpNewMessage(m_p_instance, NULL);
         if (p_msg == NULL)
         {
             NRF_LOG_ERROR("Failed to allocate OT message\r\n");

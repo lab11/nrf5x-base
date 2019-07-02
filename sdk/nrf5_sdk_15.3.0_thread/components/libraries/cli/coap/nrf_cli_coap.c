@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2017 - 2018, Nordic Semiconductor ASA
+ * Copyright (c) 2017 - 2019, Nordic Semiconductor ASA
  *
  * All rights reserved.
  *
@@ -50,12 +50,10 @@
 #include <openthread/thread.h>
 
 static void nrf_cli_coap_cmd_request_handler(void                * p_context,
-                                             otCoapHeader        * p_header,
                                              otMessage           * p_message,
                                              const otMessageInfo * p_message_info);
 
 static void nrf_cli_coap_resp_request_handler(void                * p_context,
-                                              otCoapHeader        * p_header,
                                               otMessage           * p_message,
                                               const otMessageInfo * p_message_info);
 
@@ -69,15 +67,9 @@ static nrf_cli_coap_resources_t m_coap_resources = {
     .m_resp_resource = {"remote/resp", nrf_cli_coap_resp_request_handler, NULL, NULL}
 };
 
-static nrf_cli_coap_internal_t * mp_instances_head   = NULL;
-static const nrf_cli_t         * mp_response_cli     = NULL;
-static const otIp6Address        m_unspecified_ipv6 =
-{
-    .mFields =
-    {
-        .m8 = {0}
-    }
-};
+static nrf_cli_coap_internal_t * mp_instances_head            = NULL;
+static const nrf_cli_t         * mp_response_cli              = NULL;
+static bool                      m_coap_resources_initialized = false;
 
 static otInstance * ot_instance_get(const nrf_cli_coap_internal_t * p_internal)
 {
@@ -140,17 +132,18 @@ static nrf_cli_coap_internal_t * cli_instance_find_by_peer(const otIp6Address * 
 
 static nrf_cli_coap_internal_t * cli_instance_get_free(void)
 {
-    return cli_instance_find_by_peer(&m_unspecified_ipv6);
+    otIp6Address unspecified_address;
+    memset(&unspecified_address, 0, sizeof(unspecified_address));
+
+    return cli_instance_find_by_peer(&unspecified_address);
 }
 
 static void nrf_cli_coap_cmd_request_handler(void                * p_context,
-                                             otCoapHeader        * p_header,
                                              otMessage           * p_message,
                                              const otMessageInfo * p_message_info)
 {
     otCoapCode                response_code      = OT_COAP_CODE_VALID;
     otMessage               * p_response_message = NULL;
-    otCoapHeader              response_header;
     uint8_t                   buff[32];
     size_t                    read_len;
     uint16_t                  offset;
@@ -158,12 +151,12 @@ static void nrf_cli_coap_cmd_request_handler(void                * p_context,
 
     do
     {
-        if (otCoapHeaderGetType(p_header) != OT_COAP_TYPE_CONFIRMABLE)
+        if (otCoapMessageGetType(p_message) != OT_COAP_TYPE_CONFIRMABLE)
         {
             break;
         }
 
-        if (otCoapHeaderGetCode(p_header) != OT_COAP_CODE_PUT)
+        if (otCoapMessageGetCode(p_message) != OT_COAP_CODE_PUT)
         {
             break;
         }
@@ -206,17 +199,17 @@ static void nrf_cli_coap_cmd_request_handler(void                * p_context,
             }
         }
 
-        otCoapHeaderInit(&response_header, OT_COAP_TYPE_ACKNOWLEDGMENT, response_code);
-        otCoapHeaderSetMessageId(&response_header, otCoapHeaderGetMessageId(p_header));
-        otCoapHeaderSetToken(&response_header, otCoapHeaderGetToken(p_header), otCoapHeaderGetTokenLength(p_header));
-
-        p_response_message = otCoapNewMessage(ot_instance_get(p_instance), &response_header);
+        p_response_message = otCoapNewMessage(ot_instance_get(p_instance), NULL);
 
         if (p_response_message == NULL)
         {
             NRF_LOG_ERROR("No buffs for response message");
             break;
         }
+
+        otCoapMessageInit(p_response_message, OT_COAP_TYPE_ACKNOWLEDGMENT, response_code);
+        otCoapMessageSetMessageId(p_response_message, otCoapMessageGetMessageId(p_message));
+        otCoapMessageSetToken(p_response_message, otCoapMessageGetToken(p_message), otCoapMessageGetTokenLength(p_message));
 
         if (otCoapSendResponse(ot_instance_get(p_instance), p_response_message, p_message_info) != OT_ERROR_NONE)
         {
@@ -230,18 +223,16 @@ static void nrf_cli_coap_cmd_request_handler(void                * p_context,
             break;
         }
 
-        p_instance->p_cb->handler(NRF_CLI_TRANSPORT_EVT_RX_RDY, p_instance->p_cb->p_context);        
+        p_instance->p_cb->handler(NRF_CLI_TRANSPORT_EVT_RX_RDY, p_instance->p_cb->p_context);
     } while (false);
 }
 
 static void nrf_cli_coap_resp_request_handler(void                * p_context,
-                                              otCoapHeader        * p_header,
                                               otMessage           * p_message,
                                               const otMessageInfo * p_message_info)
 {
     otCoapCode                response_code = OT_COAP_CODE_VALID;
     otMessage               * p_response_message;
-    otCoapHeader              response_header;
     char                      buff[32];
     size_t                    read_len;
     uint16_t                  offset;
@@ -258,27 +249,27 @@ static void nrf_cli_coap_resp_request_handler(void                * p_context,
             break;
         }
 
-        if (otCoapHeaderGetType(p_header) != OT_COAP_TYPE_CONFIRMABLE)
+        if (otCoapMessageGetType(p_message) != OT_COAP_TYPE_CONFIRMABLE)
         {
             break;
         }
 
-        if (otCoapHeaderGetCode(p_header) != OT_COAP_CODE_PUT)
+        if (otCoapMessageGetCode(p_message) != OT_COAP_CODE_PUT)
         {
             break;
         }
-  
-        otCoapHeaderInit(&response_header, OT_COAP_TYPE_ACKNOWLEDGMENT, response_code);
-        otCoapHeaderSetMessageId(&response_header, otCoapHeaderGetMessageId(p_header));
-        otCoapHeaderSetToken(&response_header, otCoapHeaderGetToken(p_header), otCoapHeaderGetTokenLength(p_header));
 
-        p_response_message = otCoapNewMessage(ot_instance_get(p_instance), &response_header);
+        p_response_message = otCoapNewMessage(ot_instance_get(p_instance), NULL);
 
         if (p_response_message == NULL)
         {
             NRF_LOG_ERROR("No buffs for response message");
             break;
         }
+
+        otCoapMessageInit(p_response_message, OT_COAP_TYPE_ACKNOWLEDGMENT, response_code);
+        otCoapMessageSetMessageId(p_response_message, otCoapMessageGetMessageId(p_message));
+        otCoapMessageSetToken(p_response_message, otCoapMessageGetToken(p_message), otCoapMessageGetTokenLength(p_message));
 
         if (otCoapSendResponse(ot_instance_get(p_instance), p_response_message, p_message_info) != OT_ERROR_NONE)
         {
@@ -303,7 +294,7 @@ static void nrf_cli_coap_resp_request_handler(void                * p_context,
             {
                 read_len = otMessageRead(p_message, offset, buff, sizeof(buff) - 1);
 
-                if(!read_len)
+                if (!read_len)
                 {
                     break;
                 }
@@ -320,6 +311,23 @@ static void nrf_cli_coap_resp_request_handler(void                * p_context,
     } while (false);
 }
 
+static void cli_coap_resources_initialize(const nrf_cli_coap_internal_t * p_internal)
+{
+    if (!m_coap_resources_initialized)
+    {
+        m_coap_resources.m_cmd_resource.mContext  = ot_instance_get(p_internal);
+        m_coap_resources.m_resp_resource.mContext = ot_instance_get(p_internal);
+
+        otError error = otCoapAddResource(ot_instance_get(p_internal), &m_coap_resources.m_cmd_resource);
+        ASSERT(error == OT_ERROR_NONE);
+
+        error = otCoapAddResource(ot_instance_get(p_internal), &m_coap_resources.m_resp_resource);
+        ASSERT(error == OT_ERROR_NONE);
+
+        m_coap_resources_initialized = true;
+    }
+}
+
 static ret_code_t cli_coap_init(const nrf_cli_transport_t * p_transport,
                                 const void                * p_config,
                                 nrf_cli_transport_handler_t evt_handler,
@@ -332,14 +340,7 @@ static ret_code_t cli_coap_init(const nrf_cli_transport_t * p_transport,
     p_internal->p_cb->p_context     = p_context;
     p_internal->p_cb->p_ot_instance = (otInstance *)p_config;
 
-    m_coap_resources.m_cmd_resource.mContext  = ot_instance_get(p_internal);
-    m_coap_resources.m_resp_resource.mContext = ot_instance_get(p_internal);
-
-    otError error = otCoapAddResource(ot_instance_get(p_internal), &m_coap_resources.m_cmd_resource);
-    ASSERT(error == OT_ERROR_NONE);
-
-    error = otCoapAddResource(ot_instance_get(p_internal), &m_coap_resources.m_resp_resource);
-    ASSERT(error == OT_ERROR_NONE);
+    cli_coap_resources_initialize(p_internal);
 
     cli_instance_add(p_internal);
 
@@ -408,27 +409,29 @@ static void cli_coap_send_to_peer(const nrf_cli_coap_internal_t * p_internal,
     otError       error = OT_ERROR_NONE;
     otMessage   * p_message;
     otMessageInfo message_info;
-    otCoapHeader  header;
 
     do
     {
-        if (otIp6IsAddressEqual(&p_internal->p_cb->peer_address, &m_unspecified_ipv6))
+        if (otIp6IsAddressUnspecified(&p_internal->p_cb->peer_address))
         {
             break;
         }
 
-        otCoapHeaderInit(&header, OT_COAP_TYPE_CONFIRMABLE, OT_COAP_CODE_PUT);
-        otCoapHeaderGenerateToken(&header, 2);
-        UNUSED_VARIABLE(otCoapHeaderAppendUriPathOptions(&header, p_resource->mUriPath));
-        UNUSED_VARIABLE(otCoapHeaderSetPayloadMarker(&header));
-
-        p_message = otCoapNewMessage(ot_instance_get(p_internal), &header);
-
+        p_message = otCoapNewMessage(ot_instance_get(p_internal), NULL);
         if (p_message == NULL)
         {
             NRF_LOG_INFO("Failed to allocate message for CoAP Request");
             break;
         }
+
+        otCoapMessageInit(p_message, OT_COAP_TYPE_CONFIRMABLE, OT_COAP_CODE_PUT);
+        otCoapMessageGenerateToken(p_message, 2);
+
+        error = otCoapMessageAppendUriPathOptions(p_message, p_resource->mUriPath);
+        ASSERT(error == OT_ERROR_NONE);
+
+        error = otCoapMessageSetPayloadMarker(p_message);
+        ASSERT(error == OT_ERROR_NONE);
 
         error = otMessageAppend(p_message, p_data, length);
 

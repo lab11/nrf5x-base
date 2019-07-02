@@ -265,6 +265,22 @@ enum zb_zcl_door_lock_door_state_e
   ZB_ZCL_ATTR_DOOR_LOCK_DOOR_STATE_ERROR_UNSPECIFIED = 0x04
 };
 
+/** @brief Declare attribute list for DoorLock cluster
+    @param attr_list - attribute list name
+    @param lock_state
+    @param lock_type
+    @param actuator_enabled
+*/
+#define ZB_ZCL_DECLARE_DOOR_LOCK_ATTRIB_LIST(attr_list,                               \
+                                             lock_state,                              \
+                                             lock_type,                               \
+                                             actuator_enabled)                        \
+  ZB_ZCL_START_DECLARE_ATTRIB_LIST(attr_list)                                         \
+  ZB_ZCL_SET_ATTR_DESC(ZB_ZCL_ATTR_DOOR_LOCK_LOCK_STATE_ID, (lock_state))             \
+  ZB_ZCL_SET_ATTR_DESC(ZB_ZCL_ATTR_DOOR_LOCK_LOCK_TYPE_ID, (lock_type))               \
+  ZB_ZCL_SET_ATTR_DESC(ZB_ZCL_ATTR_DOOR_LOCK_ACTUATOR_ENABLED_ID, (actuator_enabled)) \
+  ZB_ZCL_FINISH_DECLARE_ATTRIB_LIST
+
 /*! @} */ /* DoorLock cluster attributes */
 
 /*! @name DoorLock cluster commands
@@ -397,6 +413,7 @@ enum zb_zcl_door_lock_cmd_resp_e
   ZB_ZCL_CMD_DOOR_LOCK_PROGRAMMING_EVENT_NOTIFICATION   = 0x21,
 };
 
+/** @cond internals_doc */
 /* Door lock cluster commands list : only for information - do not modify */
 #define ZB_ZCL_CLUSTER_ID_DOOR_LOCK_SERVER_ROLE_GENERATED_CMD_LIST                     \
                                                   ZB_ZCL_CMD_DOOR_LOCK_LOCK_DOOR_RES,  \
@@ -409,6 +426,8 @@ enum zb_zcl_door_lock_cmd_resp_e
                                                   ZB_ZCL_CMD_DOOR_LOCK_UNLOCK_DOOR
 
 #define ZB_ZCL_CLUSTER_ID_DOOR_LOCK_SERVER_ROLE_RECEIVED_CMD_LIST ZB_ZCL_CLUSTER_ID_DOOR_LOCK_CLIENT_ROLE_GENERATED_CMD_LIST
+/*! @}
+ *  @endcond */ /* internals_doc */
 
 /** @brief Default value for NumberOfLogRecordsSupported attribute */
 #define ZB_ZCL_DOOR_LOCK_NUMBER_OF_LOG_RECORDS_SUPPORTED_DEFAULT_VALUE ((zb_uint16_t)0)
@@ -714,25 +733,6 @@ typedef ZB_PACKED_PRE struct zb_zcl_door_lock_read_unlock_door_res_payload_s
     ZB_ZCL_ATTR_ACCESS_READ_ONLY,                                 \
     (zb_voidp_t) data_ptr                                         \
   }
-
-
-/** @internal @brief Declare attribute list for DoorLock cluster
-    @param attr_list - attribure list name
-    @param lock_state
-    @param lock_type
-    @param actuator_enabled
-*/
-#define ZB_ZCL_DECLARE_DOOR_LOCK_CLUSTER_ATTRIB_LIST(attr_list,          \
-                                                     lock_state,         \
-                                                     lock_type,          \
-                                                     actuator_enabled)   \
-  ZB_ZCL_START_DECLARE_ATTRIB_LIST(attr_list)                                         \
-  ZB_ZCL_SET_ATTR_DESC(ZB_ZCL_ATTR_DOOR_LOCK_LOCK_STATE_ID, (lock_state))             \
-  ZB_ZCL_SET_ATTR_DESC(ZB_ZCL_ATTR_DOOR_LOCK_LOCK_TYPE_ID, (lock_type))               \
-  ZB_ZCL_SET_ATTR_DESC(ZB_ZCL_ATTR_DOOR_LOCK_ACTUATOR_ENABLED_ID, (actuator_enabled)) \
-  ZB_ZCL_FINISH_DECLARE_ATTRIB_LIST
-
-
 
 /*! @internal @brief Number of attributes mandatory for reporting in Door Lock cluster */
 #define ZB_ZCL_DOOR_LOCK_REPORT_ATTR_COUNT  1

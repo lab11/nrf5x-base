@@ -6785,6 +6785,17 @@
 #define NRF_LOG_FILTERS_ENABLED 0
 #endif
 
+// <q> NRF_LOG_NON_DEFFERED_CRITICAL_REGION_ENABLED  - Enable use of critical region for non deffered mode when flushing logs.
+ 
+
+// <i> When enabled NRF_LOG_FLUSH is called from critical section when non deffered mode is used.
+// <i> Log output will never be corrupted as access to the log backend is exclusive
+// <i> but system will spend significant amount of time in critical section
+
+#ifndef NRF_LOG_NON_DEFFERED_CRITICAL_REGION_ENABLED
+#define NRF_LOG_NON_DEFFERED_CRITICAL_REGION_ENABLED 0
+#endif
+
 // <o> NRF_LOG_STR_PUSH_BUFFER_SIZE  - Size of the buffer dedicated for strings stored using @ref NRF_LOG_PUSH.
  
 // <16=> 16 
@@ -9494,6 +9505,76 @@
 
 #ifndef PM_LOG_DEBUG_COLOR
 #define PM_LOG_DEBUG_COLOR 0
+#endif
+
+// </e>
+
+// <e> ZIGBEE_CLI_CONFIG_LOG_ENABLED - Enables logging in the module.
+//==========================================================
+#ifndef ZIGBEE_CLI_CONFIG_LOG_ENABLED
+#define ZIGBEE_CLI_CONFIG_LOG_ENABLED 1
+#endif
+// <o> ZIGBEE_CLI_CONFIG_LOG_LEVEL  - Default Severity level
+ 
+// <0=> Off 
+// <1=> Error 
+// <2=> Warning 
+// <3=> Info 
+// <4=> Debug 
+
+#ifndef ZIGBEE_CLI_CONFIG_LOG_LEVEL
+#define ZIGBEE_CLI_CONFIG_LOG_LEVEL 3
+#endif
+
+// <o> ZIGBEE_CLI_CONFIG_LOG_INIT_FILTER_LEVEL  - Initial severity level if dynamic filtering is enabled
+ 
+// <0=> Off 
+// <1=> Error 
+// <2=> Warning 
+// <3=> Info 
+// <4=> Debug 
+
+#ifndef ZIGBEE_CLI_CONFIG_LOG_INIT_FILTER_LEVEL
+#define ZIGBEE_CLI_CONFIG_LOG_INIT_FILTER_LEVEL 3
+#endif
+
+// <o> ZIGBEE_CLI_CONFIG_INFO_COLOR  - ANSI escape code prefix.
+ 
+// <0=> Default 
+// <1=> Black 
+// <2=> Red 
+// <3=> Green 
+// <4=> Yellow 
+// <5=> Blue 
+// <6=> Magenta 
+// <7=> Cyan 
+// <8=> White 
+
+#ifndef ZIGBEE_CLI_CONFIG_INFO_COLOR
+#define ZIGBEE_CLI_CONFIG_INFO_COLOR 0
+#endif
+
+// <o> ZIGBEE_CLI_CONFIG_DEBUG_COLOR  - ANSI escape code prefix.
+ 
+// <0=> Default 
+// <1=> Black 
+// <2=> Red 
+// <3=> Green 
+// <4=> Yellow 
+// <5=> Blue 
+// <6=> Magenta 
+// <7=> Cyan 
+// <8=> White 
+
+#ifndef ZIGBEE_CLI_CONFIG_DEBUG_COLOR
+#define ZIGBEE_CLI_CONFIG_DEBUG_COLOR 0
+#endif
+
+// <o> ZIGBEE_CLI_ENDPOINT - Device endpoint on which the Zigbee ping specific communication will happen  <1-240> 
+
+
+#ifndef ZIGBEE_CLI_ENDPOINT
+#define ZIGBEE_CLI_ENDPOINT 64
 #endif
 
 // </e>

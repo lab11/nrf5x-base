@@ -46,9 +46,8 @@
 
 /**
  * @brief Set timeout time for ACK timeout feature.
- * 
- * @param[in]  time  Timeout time in us. Timeout is started at the beginning of frame
- *                   transmission (after transmission of PHR).
+ *
+ * @param[in]  time  Timeout time in us.
  *                   Default value is defined in nrf_802154_config.h.
  */
 void nrf_802154_ack_timeout_time_set(uint32_t time);
@@ -84,7 +83,6 @@ void nrf_802154_ack_timeout_transmitted_hook(const uint8_t * p_frame);
  */
 bool nrf_802154_ack_timeout_tx_failed_hook(const uint8_t * p_frame, nrf_802154_tx_error_t error);
 
-
 /**
  * @brief Handler of TX started event.
  *
@@ -95,6 +93,12 @@ bool nrf_802154_ack_timeout_tx_failed_hook(const uint8_t * p_frame, nrf_802154_t
  *                 internally.
  */
 bool nrf_802154_ack_timeout_tx_started_hook(const uint8_t * p_frame);
+
+/**
+ * @brief Handler of RX ACK started event.
+ *
+ */
+void nrf_802154_ack_timeout_rx_ack_started_hook(void);
 
 /**
  *@}

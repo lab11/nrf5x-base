@@ -212,15 +212,19 @@ typedef ZB_PACKED_PRE struct zb_zcl_scenes_fieldset_common_s
   ZB_ZCL_SET_ATTR_DESC(ZB_ZCL_ATTR_SCENES_NAME_SUPPORT_ID, (name_support))    \
   ZB_ZCL_FINISH_DECLARE_ATTRIB_LIST
 
+/** @cond internals_doc */
 /** @brief Removes All scenes corresponding to a group identifiers in a whole device.
     @param param - buffer to get data from.
     @param group_id - group identifier for which all scenes must be removed.
 */
 zb_void_t zb_zcl_scenes_remove_all_scenes_in_all_endpoints_by_group_id(zb_uint8_t param, zb_uint16_t group_id);
 zb_void_t zb_zcl_scenes_remove_all_scenes_in_all_endpoints(zb_uint8_t param);
+/*! @}
+ *  @endcond */ /* internals_doc */
 
 /*! @} */ /* Scenes cluster attributes */
 
+/** @cond internals_doc */
 /*! @name Scenes cluster internals
     Internal structures for Scenes cluster
     @internal
@@ -268,6 +272,8 @@ zb_void_t zb_zcl_scenes_remove_all_scenes_in_all_endpoints(zb_uint8_t param);
 }
 
 /*! @} */ /* Scenes cluster internals */
+/*! @}
+ *  @endcond */ /* internals_doc */
 
 /*! @name Scenes cluster commands
     @{
@@ -332,7 +338,7 @@ enum zb_zcl_scenes_cmd_resp_e
   ZB_ZCL_CMD_SCENES_COPY_SCENE_RESPONSE           = 0x42,
 };
 
-
+/** @cond internals_doc */
 /* Scenes cluster commands list : only for information - do not modify */
 #define ZB_ZCL_CLUSTER_ID_SCENES_SERVER_ROLE_GENERATED_CMD_LIST                    \
                                       ZB_ZCL_CMD_SCENES_ADD_SCENE_RESPONSE,        \
@@ -354,7 +360,8 @@ enum zb_zcl_scenes_cmd_resp_e
                                       ZB_ZCL_CMD_SCENES_GET_SCENE_MEMBERSHIP
 
 #define ZB_ZCL_CLUSTER_ID_SCENES_SERVER_ROLE_RECEIVED_CMD_LIST ZB_ZCL_CLUSTER_ID_SCENES_CLIENT_ROLE_GENERATED_CMD_LIST
-
+/*! @}
+ *  @endcond */ /* internals_doc */
 
 /**
  *  Inform User App about Scene cluster Add Scene command.
@@ -861,6 +868,12 @@ typedef ZB_PACKED_PRE struct zb_zcl_scenes_recall_scene_req_s
   zb_uint8_t scene_id;  /*!< Scene identifier */
 } ZB_PACKED_STRUCT zb_zcl_scenes_recall_scene_req_t;
 
+/*! @brief Recall scene command transition_time payload structure */
+typedef ZB_PACKED_PRE struct zb_zcl_scenes_recall_scene_transition_time_req_s
+{
+  zb_uint16_t transition_time; /*!< Scene group identifier */
+} ZB_PACKED_STRUCT zb_zcl_scenes_recall_scene_transition_time_req_t;
+
 /*! @brief Send Recall scene command
 
     The command can be sent to device or group of devices either
@@ -911,6 +924,33 @@ typedef ZB_PACKED_PRE struct zb_zcl_scenes_recall_scene_req_s
         callback);                                      \
   }
 
+/** @brief Move to Level payload length macro */
+#define ZB_ZCL_SCENES_RECALL_SCENE_REQ_TRANSITION_TIME_PAYLOAD_LEN \
+  sizeof(zb_zcl_scenes_recall_scene_transition_time_req_t)
+
+/** @internal Macro for getting Move to Color command */
+#define ZB_ZCL_SCENES_GET_RECALL_SCENE_CMD_TRANSITION_TIME(data_buf, req_transition_time, status)    \
+{                                                                                                    \
+  zb_zcl_scenes_recall_scene_transition_time_req_t *req_transition_time_ptr;                         \
+  (req_transition_time_ptr) = ZB_BUF_LEN(data_buf) >=                                                \
+    ZB_ZCL_SCENES_RECALL_SCENE_REQ_TRANSITION_TIME_PAYLOAD_LEN ?                                     \
+    (zb_zcl_scenes_recall_scene_transition_time_req_t*)ZB_BUF_BEGIN(data_buf) : NULL;                \
+  if (req_transition_time_ptr)                                                                       \
+  {                                                                                                  \
+    ZB_HTOLE16(&(req_transition_time).transition_time, &(req_transition_time_ptr->transition_time)); \
+    status = ZB_TRUE;                                                                                \
+    zb_buf_cut_left(data_buf, ZB_ZCL_SCENES_RECALL_SCENE_REQ_TRANSITION_TIME_PAYLOAD_LEN);           \
+  }                                                                                                  \
+  else                                                                                               \
+  {                                                                                                  \
+    status = ZB_FALSE;                                                                               \
+  }                                                                                                  \
+}
+
+/** @brief Move to Level payload length macro */
+#define ZB_ZCL_SCENES_RECALL_SCENE_REQ_PAYLOAD_LEN \
+  sizeof(zb_zcl_scenes_recall_scene_req_t)
+
 /** @brief Parse Recall Scene command
     @param buffer containing Store scene command payload
     @param cmd_struct_ptr - pointer to the request representation structure (of
@@ -919,21 +959,25 @@ typedef ZB_PACKED_PRE struct zb_zcl_scenes_recall_scene_req_s
     @attention The macro changes content of the buffer
 */
 #define ZB_ZCL_SCENES_GET_RECALL_SCENE_REQ(buffer, cmd_struct_ptr)        \
+{                                                                         \
+  zb_zcl_scenes_recall_scene_req_t *recall_scene_req_ptr;                 \
+  (recall_scene_req_ptr) = ZB_BUF_LEN(buffer) >=                          \
+    ZB_ZCL_SCENES_RECALL_SCENE_REQ_PAYLOAD_LEN ?                          \
+    (zb_zcl_scenes_recall_scene_req_t*)ZB_BUF_BEGIN(buffer) : NULL;       \
+  if (recall_scene_req_ptr)                                               \
   {                                                                       \
-    if (sizeof(zb_zcl_scenes_recall_scene_req_t) != ZB_BUF_LEN((buffer))) \
-    {                                                                     \
-      (cmd_struct_ptr) = NULL;                                            \
-    }                                                                     \
-    else                                                                  \
-    {                                                                     \
       ZB_ZCL_HTOLE16_INPLACE(ZB_BUF_BEGIN((buffer)));                     \
       (cmd_struct_ptr) =                                                  \
         (zb_zcl_scenes_recall_scene_req_t*)ZB_BUF_BEGIN(buffer);          \
       ZB_BUF_CUT_LEFT2(                                                   \
           (buffer),                                                       \
           sizeof(zb_zcl_scenes_recall_scene_req_t));                      \
-    }                                                                     \
-  }
+  }                                                                       \
+  else                                                                    \
+  {                                                                       \
+    cmd_struct_ptr = NULL;                                                \
+  }                                                                       \
+}
 
 /*! @brief Get scene membership command payload structure */
 typedef ZB_PACKED_PRE struct zb_zcl_scenes_get_scene_membership_req_s
@@ -1647,7 +1691,7 @@ typedef ZB_PACKED_PRE struct zb_zcl_scenes_get_scene_membership_res_s
 
 zb_uint8_t zb_zcl_scenes_process_store_scene(zb_uint8_t param, zb_zcl_scenes_store_scene_req_t* req, const zb_zcl_parsed_hdr_t *cmd_info);
 
-zb_void_t zb_zcl_scenes_process_recall_scene(zb_uint8_t param, zb_zcl_scenes_recall_scene_req_t* req, const zb_zcl_parsed_hdr_t *cmd_info);
+zb_uint8_t zb_zcl_scenes_process_recall_scene(zb_uint8_t param, zb_zcl_scenes_recall_scene_req_t* req, const zb_zcl_parsed_hdr_t *cmd_info);
 
 zb_uint8_t zb_zcl_scenes_process_remove_all_scenes(zb_uint8_t param, zb_zcl_scenes_remove_all_scenes_req_t* req, const zb_zcl_parsed_hdr_t *cmd_info);
 

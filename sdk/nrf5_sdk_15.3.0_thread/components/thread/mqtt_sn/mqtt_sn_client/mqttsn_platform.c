@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2017 - 2018, Nordic Semiconductor ASA
+ * Copyright (c) 2017 - 2019, Nordic Semiconductor ASA
  *
  * All rights reserved.
  *
@@ -41,7 +41,7 @@
 #include "app_timer.h"
 #include "mqttsn_platform.h"
 #include "mqttsn_packet_internal.h"
-#include "openthread/platform/random.h"
+#include "openthread/random_noncrypto.h"
 #include "openthread/platform/alarm-milli.h"
 
 /* Available timer is 32-bit. */
@@ -54,7 +54,7 @@ typedef app_timer_event_t mqttsn_timer_event_t;
 static void timer_timeout_handler(void * p_context)
 {
     mqttsn_client_t * p_client = (mqttsn_client_t *)p_context;
-    mqttsn_client_timeout_handle(p_client);    
+    mqttsn_client_timeout_handle(p_client);
 }
 
 uint32_t mqttsn_platform_init()
@@ -75,7 +75,7 @@ uint32_t mqttsn_platform_timer_start(mqttsn_client_t * p_client, uint32_t timeou
     {
         timeout_ticks = APP_TIMER_MIN_TIMEOUT_TICKS;
     }
-    
+
     return app_timer_start(m_timer_id, timeout_ticks, p_client);
 }
 
@@ -106,5 +106,5 @@ uint32_t mqttsn_platform_timer_set_in_ms(uint32_t timeout_ms)
 
 uint16_t mqttsn_platform_rand(uint16_t max_val)
 {
-    return otPlatRandomGet() % max_val;
+    return otRandomNonCryptoGetUint16() % max_val;
 }

@@ -86,27 +86,35 @@ extern "C" {
 /**@brief Types of BSP initialization.
  */
 
-#define ADVERTISING_LED_ON_INTERVAL            200
-#define ADVERTISING_LED_OFF_INTERVAL           1800
+#define ADVERTISING_LED_ON_INTERVAL               200
+#define ADVERTISING_LED_OFF_INTERVAL              1800
 
-#define ADVERTISING_DIRECTED_LED_ON_INTERVAL   200
-#define ADVERTISING_DIRECTED_LED_OFF_INTERVAL  200
+#define ADVERTISING_DIRECTED_LED_ON_INTERVAL      200
+#define ADVERTISING_DIRECTED_LED_OFF_INTERVAL     200
 
-#define ADVERTISING_WHITELIST_LED_ON_INTERVAL  200
-#define ADVERTISING_WHITELIST_LED_OFF_INTERVAL 800
+#define ADVERTISING_WHITELIST_LED_ON_INTERVAL     200
+#define ADVERTISING_WHITELIST_LED_OFF_INTERVAL    800
 
-#define ADVERTISING_SLOW_LED_ON_INTERVAL       400
-#define ADVERTISING_SLOW_LED_OFF_INTERVAL      4000
+#define ADVERTISING_SLOW_LED_ON_INTERVAL          400
+#define ADVERTISING_SLOW_LED_OFF_INTERVAL         4000
 
-#define BONDING_INTERVAL                       100
+#define BONDING_INTERVAL                          100
 
-#define SENT_OK_INTERVAL                       100
-#define SEND_ERROR_INTERVAL                    500
+#define SENT_OK_INTERVAL                          100
+#define SEND_ERROR_INTERVAL                       500
 
-#define RCV_OK_INTERVAL                        100
-#define RCV_ERROR_INTERVAL                     500
+#define RCV_OK_INTERVAL                           100
+#define RCV_ERROR_INTERVAL                        500
 
-#define ALERT_INTERVAL                         200
+#define ALERT_INTERVAL                            200
+
+#define THREAD_NOT_COMMISSIONED_LED_ON_INTERVAL   200
+#define THREAD_NOT_COMMISSIONED_LED_OFF_INTERVAL  800
+
+#define THREAD_COMMISSIONING_IN_PROGRESS_INTERVAL 100
+
+#define THREAD_PING_INTERVAL                      200
+#define THREAD_PING_NUM_TOGGLES                   8
 
 #define BSP_LED_INDICATE_SENT_OK               BSP_BOARD_LED_1
 #define BSP_LED_INDICATE_SEND_ERROR            BSP_BOARD_LED_1
@@ -125,6 +133,9 @@ extern "C" {
 #define BSP_LED_INDICATE_USER_LED4            BSP_BOARD_LED_3
 
 #define BSP_LED_ALERT                         BSP_BOARD_LED_2
+
+#define BSP_LED_THREAD_CONNECTION             BSP_BOARD_LED_0
+#define BSP_LED_THREAD_COMMISSIONING          BSP_BOARD_LED_1
 
 #ifdef __cplusplus
 }

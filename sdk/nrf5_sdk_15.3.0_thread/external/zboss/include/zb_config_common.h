@@ -94,6 +94,8 @@ shall have a value of 5A 69 67 42 65 65 41 6C 6C 69 61 6E 63 65 30 39
  */
 #define ZB_DISTRIBUTED_GLOBAL_KEY {0xd0, 0xd1, 0xd2, 0xd3, 0xd4, 0xd5, 0xd6, 0xd7, 0xd8, 0xd9, 0xda, 0xdb, 0xdc, 0xdd, 0xde, 0xdf};
 
+/** @cond touchlink */
+
 /**
 6.3.4 Touchlink preconfigured link key
 
@@ -112,6 +114,8 @@ key. They use same algorithm.
 
  */
 #define ZB_TOUCHLINK_PRECONFIGURED_KEY {0xc0, 0xc1, 0xc2, 0xc3, 0xc4, 0xc5, 0xc6, 0xc7, 0xc8, 0xc9, 0xca, 0xcb, 0xcc, 0xcd, 0xce, 0xcf};
+
+/** @endcond */ /* touchlink */
 
 /* BDB does not mention using of Development ZLL key, so skip it. */
 
@@ -437,7 +441,7 @@ transmission of a route request command
 frame is retried.
 
  */
-#define ZB_MWK_INITIAL_RREQ_RETRIES 3
+#define ZB_NWK_INITIAL_RREQ_RETRIES 3
 /**
    nwkcRREQRetries
 
@@ -727,7 +731,7 @@ Workaroud for secure rejoin
 /* Number of packets with "no ack" status before removing unreachable device from nbt. */
 #define ZB_ZDO_NEIGHBOR_FAILURE_PKT_THRESHOLD 5
 /* Timeout before removing unreachable device from nbt. */
-#define ZB_ZDO_NEIGHBOR_UNREACHABLE_TIMEOUT (ZB_TIME_ONE_SECOND * 60)
+#define ZB_ZDO_NEIGHBOR_UNREACHABLE_TIMEOUT 60 /* 60 seconds */
 
 /**
    Integer value representing the number of scan attempts to make before the NWK layer decides
@@ -866,7 +870,7 @@ The CCA detection time shall be equal to 8 symbol periods.
 #define ZB_CHANNEL_FREE_ED_VALUE 0x60  /* TODO: check it */
 #define ZB_FAILS_PERCENTAGE   4  /* use it as divider, 25% */
 
-#define ZB_MAC_QUEUE_SIZE 4
+#define ZB_MAC_QUEUE_SIZE 5
 
 /**
 The maximum time, in
@@ -958,6 +962,7 @@ request command frame.
 #define ZB_STACK_SPEC_VERSION 21
 
 
+/** @cond touchlink */
 /* Table 2 Constants used by nodes supporting touchlink */
 #define ZB_BDBC_TL_INTER_PANTRANS_ID_LIFETIME ZB_MILLISECONDS_TO_BEACON_INTERVAL(8000)
 #define ZB_BDBC_TL_MIN_STARTUP_DELAY_TIME     ZB_MILLISECONDS_TO_BEACON_INTERVAL(2000)
@@ -968,6 +973,7 @@ request command frame.
 /* used for an extended touchlink scan after the bdbcTLPrimaryChannelSet
  * channels have been scanned. */
 #define ZB_BDBC_TL_SECONDARY_CHANNEL_SET      (0x07fff800 ^ ZB_BDBC_TL_PRIMARY_CHANNEL_SET)
+/** @endcond */ /* touchlink */
 
 
 /* Green Power */

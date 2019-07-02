@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2018, Nordic Semiconductor ASA
+ * Copyright (c) 2018 - 2019, Nordic Semiconductor ASA
  *
  * All rights reserved.
  *
@@ -109,9 +109,72 @@ static void cmd_zb_fem(nrf_cli_t const * p_cli, size_t argc, char **argv)
 #endif
 }
 
+/**@brief Function to set the 802.15.4 channel directly.
+ *
+ * @code
+ * radio channel set <n>
+ * @endcode
+ *
+ * The <n> has to be between 11 and 26 included, since these channels are supported by the driver.
+ *
+ * @note This function sets the channel directly at runtime, contrary to the `bdb channel` function,
+ *       which defines the channels allowed for the Zigbee network formation.
+ */
+static void cmd_zb_channel_set(nrf_cli_t const * p_cli, size_t argc, char **argv)
+{
+    if (nrf_cli_help_requested(p_cli))
+    {
+        nrf_cli_help_print(p_cli, NULL, 0);
+        return;
+    }
+
+    if (argc == 2)
+    {
+        uint8_t channel;
+        if (!sscan_uint8(argv[1], &channel))
+        {
+            print_error(p_cli, "Invalid channel");
+        }
+        else if ((channel < 11) || (channel > 26))
+        {
+            print_error(p_cli, "Only channels from 11 to 26 are supported");
+        }
+        else
+        {
+            nrf_802154_channel_set(channel);
+            print_done(p_cli, ZB_TRUE);
+        }
+    }
+    else
+    {
+        print_error(p_cli, "Wrong number of arguments");
+    }
+}
+
+/**@brief Function to get the current 802.15.4 channel.
+ *
+ * @code
+ * radio channel get
+ * @endcode
+ * 
+ */
+static void cmd_zb_channel_get(nrf_cli_t const * p_cli, size_t argc, char **argv)
+{
+    nrf_cli_fprintf(p_cli, NRF_CLI_NORMAL, "Current operating channel: %d", nrf_802154_channel_get());
+    print_done(p_cli, ZB_TRUE);
+}
+
+NRF_CLI_CREATE_STATIC_SUBCMD_SET(m_sub_channel)
+{
+    NRF_CLI_CMD(set, NULL, "set 802.15.4 channel", cmd_zb_channel_set),
+    NRF_CLI_CMD(get, NULL, "get 802.15.4 channel", cmd_zb_channel_get),
+    NRF_CLI_SUBCMD_SET_END
+};
+
 NRF_CLI_CREATE_STATIC_SUBCMD_SET(m_sub_fem)
 {
     NRF_CLI_CMD(fem, NULL, "front-end module", cmd_zb_fem),
+    NRF_CLI_CMD(channel, &m_sub_channel, "get/set channel", NULL),
     NRF_CLI_SUBCMD_SET_END
 };
 NRF_CLI_CMD_REGISTER(radio, &m_sub_fem, "Radio manipulation", NULL);

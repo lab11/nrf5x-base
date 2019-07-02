@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2017 - 2018, Nordic Semiconductor ASA
+ * Copyright (c) 2017 - 2019, Nordic Semiconductor ASA
  *
  * All rights reserved.
  *
@@ -71,7 +71,7 @@
 #include "coap_block.h"
 #include "coap_option.h"
 #include "background_dfu_block.h"
-#include "openthread/platform/random.h"
+#include "openthread/random_noncrypto.h"
 
 #define NRF_LOG_LEVEL 4
 #define NRF_LOG_MODULE_NAME COAP_DFU
@@ -138,6 +138,7 @@ static coap_dfu_context_t       m_coap_dfu_ctx;
 /** @brief Request delay timer. */
 APP_TIMER_DEF(m_send_timer);
 APP_TIMER_DEF(m_reset_timer);
+APP_TIMER_DEF(m_coap_delayed_error_handling_timer);
 
 static void reset_application(void)
 {
@@ -602,7 +603,6 @@ static coap_message_t * diagnostic_response_create(coap_msg_type_t         type,
                           &p_request->remote);
 }
 
-
 /**@brief A function for sending CoAP messages.
  *
  * @param[inout] p_request A pointer to CoAP message which should be sent.
@@ -615,6 +615,12 @@ static void coap_dfu_message_send(coap_message_t * p_message)
 
     if (coap_message_send(&handle, p_message) != NRF_SUCCESS)
     {
+        // Notify application about internal error.
+        if (m_coap_dfu_ctx.handler)
+        {
+            app_timer_start(m_coap_delayed_error_handling_timer, APP_TIMER_TICKS(1000*COAP_MAX_TRANSMISSION_SPAN), NULL);
+        }
+
         NRF_LOG_ERROR("Failed to send CoAP message");
     }
 
@@ -989,6 +995,17 @@ static void delayed_reset_handler(void * p_context)
     reset_application();
 }
 
+/**@brief Handle events from m_coap_delayed_error_handling_timer.
+ */
+static void coap_delayed_error_handler(void * p_context)
+{
+    UNUSED_VARIABLE(p_context);
+
+    NRF_LOG_INFO("Handling delayed dfu error handling");
+
+    background_dfu_handle_event(&m_dfu_ctx, BACKGROUND_DFU_EVENT_TRANSFER_ERROR);
+}
+
 /***************************************************************************************************
  * @section Private API
  **************************************************************************************************/
@@ -1118,7 +1135,7 @@ static uint32_t coap_protocol_init(const void * p_context)
 
     m_coap_message_id = background_dfu_random();
 
-    err_code = coap_init(otPlatRandomGet(), &transport_params);
+    err_code = coap_init(otRandomNonCryptoGetUint32(), &transport_params);
 
     if (err_code == NRF_SUCCESS)
     {
@@ -1170,7 +1187,7 @@ void background_dfu_transport_block_request_send(background_dfu_context_t       
 
 uint32_t background_dfu_random(void)
 {
-    return otPlatRandomGet();
+    return otRandomNonCryptoGetUint32();
 }
 
 void background_dfu_transport_state_update(background_dfu_context_t * p_dfu_ctx)
@@ -1248,7 +1265,6 @@ void coap_dfu_diagnostic_get(struct background_dfu_diagnostic *p_diag)
     {
         memcpy(p_diag, &m_dfu_ctx.dfu_diag, sizeof(background_dfu_diagnostic_t));
         p_diag->state = m_dfu_ctx.dfu_state;
-        p_diag->block_num = m_dfu_ctx.block_num;
     }
 }
 
@@ -1303,6 +1319,7 @@ uint32_t coap_dfu_init(const void * p_context)
 
         app_timer_create(&m_send_timer, APP_TIMER_MODE_SINGLE_SHOT, delayed_send_handler);
         app_timer_create(&m_reset_timer, APP_TIMER_MODE_SINGLE_SHOT, delayed_reset_handler);
+        app_timer_create(&m_coap_delayed_error_handling_timer, APP_TIMER_MODE_SINGLE_SHOT, coap_delayed_error_handler);
 
         APP_SCHED_INIT(SCHED_EVENT_DATA_SIZE, SCHED_QUEUE_SIZE);
     } while (0);

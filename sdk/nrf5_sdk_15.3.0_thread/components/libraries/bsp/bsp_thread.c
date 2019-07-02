@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2017 - 2018, Nordic Semiconductor ASA
+ * Copyright (c) 2017 - 2019, Nordic Semiconductor ASA
  *
  * All rights reserved.
  *
@@ -56,18 +56,20 @@
 #include "app_timer.h"
 #endif
 
+#if (LEDS_NUMBER > 0) && !(defined BSP_SIMPLE) && (!defined(OPENTHREAD_RADIO))
+
 static bsp_indication_thread_t        m_connection_state;
 static bsp_indication_commissioning_t m_commissioning_state;
 static uint8_t                        m_indicating_ping;
 
-#if (LEDS_NUMBER > 0) && !(defined BSP_SIMPLE)
 APP_TIMER_DEF(m_commissioning_led_timer_id);
 APP_TIMER_DEF(m_ping_led_timer_id);
 
 static otIcmp6Handler m_icmp6_handler;
-#endif // LEDS_NUMBER > 0 && !(defined BSP_SIMPLE)
 
-#if LEDS_NUMBER > 0 && !(defined BSP_SIMPLE)
+#endif // LEDS_NUMBER > 0 && !(defined BSP_SIMPLE) && (!defined(OPENTHREAD_RADIO))
+
+#if LEDS_NUMBER > 0 && !(defined BSP_SIMPLE) && (!defined(OPENTHREAD_RADIO))
 
 /**@brief       Configure leds to indicate required commissioning state.
  * @param[in]   indicate   State to be indicated.
@@ -194,7 +196,10 @@ static void icmp_receive_callback(void                * p_context,
         UNUSED_VARIABLE(bsp_thread_ping_indication_set());
     }
 }
-#endif // LEDS_NUMBER > 0 && !(defined BSP_SIMPLE)
+
+#endif // LEDS_NUMBER > 0 && !(defined BSP_SIMPLE) && (!defined(OPENTHREAD_RADIO))
+
+#if (LEDS_NUMBER > 0) && !(defined BSP_SIMPLE) && (!defined(OPENTHREAD_RADIO))
 
 /**@brief Set Thread connection LED according to current connection state.
  */
@@ -231,6 +236,7 @@ static void state_changed_callback(uint32_t flags, void * p_context)
     }
 }
 
+#endif // LEDS_NUMBER > 0 && !(defined BSP_SIMPLE) && (!defined(OPENTHREAD_RADIO))
 
 ret_code_t bsp_thread_init(otInstance * p_instance)
 {
@@ -238,10 +244,11 @@ ret_code_t bsp_thread_init(otInstance * p_instance)
 
     ASSERT(p_instance);
 
+#if (LEDS_NUMBER > 0) && !(defined BSP_SIMPLE) && (!defined(OPENTHREAD_RADIO))
+
     m_connection_state    = BSP_INDICATE_THREAD_DISABLED;
     m_commissioning_state = BSP_INDICATE_COMMISSIONING_NONE;
 
-#if (LEDS_NUMBER > 0) && !(defined BSP_SIMPLE)
     otError error;
 
     memset(&m_icmp6_handler, 0, sizeof(m_icmp6_handler));
@@ -263,14 +270,16 @@ ret_code_t bsp_thread_init(otInstance * p_instance)
 
     error = otIcmp6RegisterHandler(p_instance, &m_icmp6_handler);
     ASSERT((error == OT_ERROR_NONE) || (error == OT_ERROR_ALREADY));
-#endif // LEDS_NUMBER > 0 && !(defined BSP_SIMPLE)
+
+#endif // LEDS_NUMBER > 0 && !(defined BSP_SIMPLE) && (!defined(OPENTHREAD_RADIO))
 
     return err_code;
 }
 
 void bsp_thread_deinit(otInstance * p_instance)
 {
-#if (LEDS_NUMBER > 0) && !(defined BSP_SIMPLE)
+#if (LEDS_NUMBER > 0) && !(defined BSP_SIMPLE) && (!defined(OPENTHREAD_RADIO))
+
     UNUSED_VARIABLE(app_timer_stop(m_commissioning_led_timer_id));
     UNUSED_VARIABLE(app_timer_stop(m_ping_led_timer_id));
 
@@ -278,14 +287,19 @@ void bsp_thread_deinit(otInstance * p_instance)
     bsp_board_led_off(BSP_LED_THREAD_COMMISSIONING);
 
     otRemoveStateChangeCallback(p_instance, state_changed_callback, p_instance);
-#endif // LEDS_NUMBER > 0 && !(defined BSP_SIMPLE)
+
+#endif // LEDS_NUMBER > 0 && !(defined BSP_SIMPLE) && (!defined(OPENTHREAD_RADIO))
 
     UNUSED_VARIABLE(bsp_thread_indication_set(BSP_INDICATE_THREAD_DISABLED));
 }
 
 ret_code_t bsp_thread_indication_set(bsp_indication_thread_t indicate)
 {
+#if (LEDS_NUMBER > 0) && !(defined BSP_SIMPLE) && (!defined(OPENTHREAD_RADIO))
+
     m_connection_state = indicate;
+
+#endif // LEDS_NUMBER > 0 && !(defined BSP_SIMPLE) && (!defined(OPENTHREAD_RADIO))
 
     return bsp_indication_set((bsp_indication_t) indicate);
 }
@@ -294,11 +308,12 @@ ret_code_t bsp_thread_commissioning_indication_set(bsp_indication_commissioning_
 {
     uint32_t err_code = NRF_SUCCESS;
 
-    m_commissioning_state = indicate;
+#if (LEDS_NUMBER > 0) && !(defined BSP_SIMPLE) && (!defined(OPENTHREAD_RADIO))
 
-#if (LEDS_NUMBER > 0) && !(defined BSP_SIMPLE)
+    m_commissioning_state = indicate;
     err_code = bsp_commissioning_led_indication(indicate);
-#endif // LEDS_NUMBER > 0 && !(defined BSP_SIMPLE)
+
+#endif // LEDS_NUMBER > 0 && !(defined BSP_SIMPLE) && (!defined(OPENTHREAD_RADIO))
 
     return err_code;
 }
@@ -307,11 +322,12 @@ ret_code_t bsp_thread_ping_indication_set(void)
 {
     uint32_t err_code = NRF_SUCCESS;
 
-    m_indicating_ping = THREAD_PING_NUM_TOGGLES;
+#if (LEDS_NUMBER > 0) && !(defined BSP_SIMPLE) && (!defined(OPENTHREAD_RADIO))
 
-#if (LEDS_NUMBER > 0) && !(defined BSP_SIMPLE)
+    m_indicating_ping = THREAD_PING_NUM_TOGGLES;
     err_code = bsp_ping_led_indication();
-#endif // LEDS_NUMBER > 0 && !(defined BSP_SIMPLE)
+
+#endif // LEDS_NUMBER > 0 && !(defined BSP_SIMPLE) && (!defined(OPENTHREAD_RADIO))
 
     return err_code;
 }

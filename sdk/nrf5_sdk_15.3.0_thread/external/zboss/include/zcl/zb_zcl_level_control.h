@@ -114,7 +114,17 @@ enum zb_zcl_level_control_attr_e
   ZB_ZCL_ATTR_LEVEL_CONTROL_START_UP_CURRENT_LEVEL_ID = 0x4000,
 
   /** @internal Special Move Variables attribute */
-  ZB_ZCL_ATTR_LEVEL_CONTROL_MOVE_STATUS_ID            = 0xffff
+  ZB_ZCL_ATTR_LEVEL_CONTROL_MOVE_STATUS_ID            = 0xefff
+};
+
+/**
+ * @brief Level control Options attribute, ZCL spec 3.10.2.2.8
+ */
+enum zb_zcl_level_control_options_e
+{
+  /** @brief ExecuteIfOff bit */
+  ZB_ZCL_LEVEL_CONTROL_OPTIONS_EXECUTE_IF_OFF    = 0,
+  ZB_ZCL_LEVEL_CONTROL_OPTIONS_RESERVED          = 1,
 };
 
 /** @brief Current Level attribute minimum value */
@@ -166,10 +176,50 @@ enum zb_zcl_level_control_attr_e
 
 //#define ZB_ZCL_LEVEL_CONTROL_TRANSITION_TIME_ERROR 20
 
+/** @cond internals_doc */
 #define ZB_ZCL_LEVEL_CONTROL_RATE_AS_FAST_AS_ABLE 0xff
+/*! @}
+ *  @endcond */ /* internals_doc */
 
+/*!
+  @brief Declare attribute list for Level Control cluster
+  @param attr_list - attribute list name
+  @param current_level - pointer to variable to store current_level attribute value
+  @param remaining_time - pointer to variable to store remaining_time attribute value
+*/
+#define ZB_ZCL_DECLARE_LEVEL_CONTROL_ATTRIB_LIST(attr_list, current_level, remaining_time)  \
+  zb_zcl_level_control_move_status_t move_status_data_ctx## _attr_list;                     \
+  ZB_ZCL_START_DECLARE_ATTRIB_LIST(attr_list)                                               \
+  ZB_ZCL_SET_ATTR_DESC(ZB_ZCL_ATTR_LEVEL_CONTROL_CURRENT_LEVEL_ID, (current_level))         \
+  ZB_ZCL_SET_ATTR_DESC(ZB_ZCL_ATTR_LEVEL_CONTROL_REMAINING_TIME_ID, (remaining_time))       \
+  ZB_ZCL_SET_ATTR_DESC(ZB_ZCL_ATTR_LEVEL_CONTROL_MOVE_STATUS_ID,                            \
+                       (&(move_status_data_ctx## _attr_list)))                              \
+  ZB_ZCL_FINISH_DECLARE_ATTRIB_LIST
+
+    
+/*!
+  @brief Declare attribute list for Level Control cluster
+  @param attr_list - attribute list name
+  @param current_level - pointer to variable to store current_level attribute value
+  @param remaining_time - pointer to variable to store remaining_time attribute value
+  @param options - pointer to variable to store options attribute value
+  @param start_up_current_level - pointer to variable to store start_up_current_level attribute value
+*/
+#define ZB_ZCL_DECLARE_LEVEL_CONTROL_ATTRIB_LIST_EXT(attr_list, current_level, remaining_time,        \
+                                                 start_up_current_level, options)                     \
+  zb_zcl_level_control_move_status_t move_status_data_ctx## _attr_list;                               \
+  ZB_ZCL_START_DECLARE_ATTRIB_LIST(attr_list)                                                         \
+  ZB_ZCL_SET_ATTR_DESC(ZB_ZCL_ATTR_LEVEL_CONTROL_CURRENT_LEVEL_ID, (current_level))                   \
+  ZB_ZCL_SET_ATTR_DESC(ZB_ZCL_ATTR_LEVEL_CONTROL_REMAINING_TIME_ID, (remaining_time))                 \
+  ZB_ZCL_SET_ATTR_DESC(ZB_ZCL_ATTR_LEVEL_CONTROL_OPTIONS_ID, (options))                               \
+  ZB_ZCL_SET_ATTR_DESC(ZB_ZCL_ATTR_LEVEL_CONTROL_START_UP_CURRENT_LEVEL_ID, (start_up_current_level)) \
+  ZB_ZCL_SET_ATTR_DESC(ZB_ZCL_ATTR_LEVEL_CONTROL_MOVE_STATUS_ID,                                      \
+                       (&(move_status_data_ctx## _attr_list)))                                        \
+  ZB_ZCL_FINISH_DECLARE_ATTRIB_LIST
+    
 /*! @} */ /* Level Control cluster attributes */
 
+/** @cond internals_doc */
 /*! @name Level Control cluster internals
     Internal structures for Level Control cluster
     @internal
@@ -192,14 +242,29 @@ enum zb_zcl_level_control_attr_e
   (zb_voidp_t) data_ptr                                                             \
 }
 
+#define ZB_SET_ATTR_DESCR_WITH_ZB_ZCL_ATTR_LEVEL_CONTROL_OPTIONS_ID(data_ptr)      \
+{                                                                                  \
+  ZB_ZCL_ATTR_LEVEL_CONTROL_OPTIONS_ID,                                            \
+  ZB_ZCL_ATTR_TYPE_8BITMAP,                                                        \
+  ZB_ZCL_ATTR_ACCESS_READ_WRITE,                                                   \
+  (zb_voidp_t) data_ptr                                                            \
+}
+
 #define ZB_SET_ATTR_DESCR_WITH_ZB_ZCL_ATTR_LEVEL_CONTROL_MOVE_STATUS_ID(data_ptr) \
 {                                                                                 \
   ZB_ZCL_ATTR_LEVEL_CONTROL_MOVE_STATUS_ID,                                       \
   ZB_ZCL_ATTR_TYPE_NULL,                                                          \
-  ZB_ZCL_ATTR_ACCESS_READ_ONLY,                                                   \
+  ZB_ZCL_ATTR_ACCESS_INTERNAL,                                                    \
   (zb_voidp_t) data_ptr                                                           \
 }
 
+#define ZB_SET_ATTR_DESCR_WITH_ZB_ZCL_ATTR_LEVEL_CONTROL_START_UP_CURRENT_LEVEL_ID(data_ptr) \
+{                                                                                            \
+  ZB_ZCL_ATTR_LEVEL_CONTROL_START_UP_CURRENT_LEVEL_ID,                                       \
+  ZB_ZCL_ATTR_TYPE_U8,                                                                       \
+  ZB_ZCL_ATTR_ACCESS_READ_WRITE,                                                             \
+  (zb_voidp_t) data_ptr                                                                      \
+}
 /** @internal Structure of addr variables for Move commands
  */
 typedef struct zb_zcl_level_control_move_addr_s
@@ -225,87 +290,28 @@ typedef struct zb_zcl_level_control_move_variables_s
   zb_bool_t is_onoff;
   /** @brief Address for response sending */
   zb_zcl_level_control_move_addr_t addr;
-  /** brief Start time for set Remaining Time attribute */
+  /** @brief Start time for set Remaining Time attribute */
   zb_uint16_t start_time;
-
-//TODO: ifndef for debug only, need to remove
-#ifdef OBSOLETE
-  /* { OBSOLETE */
-  /** @brief Time to next sheduled alarm */
-  zb_uint16_t one_transition_time;
-  /** @brief Move difference for one alarm */
-  zb_uint8_t step;
-  /** @brief Direction: ZB_TRUE - decrement level, ZB_FALSE - increment value */
-  zb_bool_t direction_decrement;
-  /** @brief Number of steps */
-  zb_uint8_t step_number;
-  /** @brief Step which from need to increment level (backward) */
-  zb_uint8_t incr_level;
-  /** @brief Step which from need to increment time (backward) */
-  zb_uint8_t incr_time;
-  /** @brief End time */
-  zb_uint16_t end_time;
-  /** @brief Allowable error (for time) in 1/10 of seconds */
-  zb_uint16_t err;
-  /** @brief Transition Time for all move */
-  zb_uint16_t transition_time;
-  /* OBSOLETE } */
-#endif
 } zb_zcl_level_control_move_variables_t;
-
-
-typedef void (ZB_CODE * zb_zcl_level_control_handler_t)(zb_uint8_t ep, zb_uint8_t new_level);
 
 /** @internal Structure of Move Status attribute for Move alarm
  */
 typedef struct zb_zcl_level_control_move_status_s
 {
-//TODO: ifndef for debug only, need to remove
-#ifdef OBSOLETE
-  /** @brief Processing flag: ZB_TRUE - Move in progress, ZB_FALSE - not */
-  zb_bool_t processing;
-#endif
-//TODO: level_control_handler needed for compilation only
-  /** @brief Pointer to device handler */
-  zb_zcl_level_control_handler_t level_control_handler;
-  /** @brief Buffer id for Move Command */
+  zb_zcl_level_control_move_variables_t move_var;
   zb_uint8_t buf_id;
-//TODO: scene flags?
-//TODO: need to discuss
 } ZB_PACKED_STRUCT zb_zcl_level_control_move_status_t;
-
-
-/*!
-  Declare attribute list for Level Control cluster
-  @param attr_list - attribure list name
-  @param current_level - pointer to variable to store current_level attribute value
-  @param remaining_time - pointer to variable to store remaining_time attribute value
-*/
-#define ZB_ZCL_DECLARE_LEVEL_CONTROL_ATTRIB_LIST(attr_list, current_level, remaining_time)  \
-  zb_zcl_level_control_move_status_t move_status_data_ctx## _attr_list;                     \
-  ZB_ZCL_START_DECLARE_ATTRIB_LIST(attr_list)                                               \
-  ZB_ZCL_SET_ATTR_DESC(ZB_ZCL_ATTR_LEVEL_CONTROL_CURRENT_LEVEL_ID, (current_level))         \
-  ZB_ZCL_SET_ATTR_DESC(ZB_ZCL_ATTR_LEVEL_CONTROL_REMAINING_TIME_ID, (remaining_time))       \
-  ZB_ZCL_SET_ATTR_DESC(ZB_ZCL_ATTR_LEVEL_CONTROL_MOVE_STATUS_ID,                            \
-                       (&(move_status_data_ctx## _attr_list)))                              \
-  ZB_ZCL_FINISH_DECLARE_ATTRIB_LIST
 
 /*! Number of attributes mandatory for reporting in Level Control cluster */
 #define ZB_ZCL_LEVEL_CONTROL_REPORT_ATTR_COUNT 1
 
 /*! @} */ /* Level Control cluster internals */
+/*! @}
+ *  @endcond */ /* internals_doc */
 
 /*! @name Level Control cluster commands
     @{
 */
-
-/* Oct 16, 2012 CR:MINOR It would be better to group types and definitions related to a command (or
- * a request-response pair) with
- *    "/ ** @name <Readable command name> @{ * /
- *    <definitions
- *    / ** @} * /"
- * Doxygen tags.
- CR:FIXED*/
 
 /*! @brief Level control cluster command identifiers
     @see ZCL spec, subclause 3.10.2.3
@@ -338,7 +344,7 @@ enum zb_zcl_level_control_cmd_e
   ZB_ZCL_CMD_LEVEL_CONTROL_MOVE_TO_CLOSEST_FREQUENCY = 0x08,
 };
 
-
+/** @cond internals_doc */
 /* LEVEL control cluster commands list : only for information - do not modify */
 #define ZB_ZCL_CLUSTER_ID_LEVEL_SERVER_ROLE_GENERATED_CMD_LIST
 
@@ -355,10 +361,46 @@ enum zb_zcl_level_control_cmd_e
                                       ZB_ZCL_CMD_LEVEL_CONTROL_STOP_WITH_ON_OFF
 
 #define ZB_ZCL_CLUSTER_ID_LEVEL_SERVER_ROLE_RECEIVED_CMD_LIST ZB_ZCL_CLUSTER_ID_LEVEL_CLIENT_ROLE_GENERATED_CMD_LIST
+/*! @}
+ *  @endcond */ /* internals_doc */
 
 /************************** Level Control cluster command definitions ****************************/
 
 /* command request structure */
+
+/*! @brief Structured representsation of Level Control command payload (optional part)
+    @see ZCL spec, subclause 3.10.2.3.1.1*/
+typedef ZB_PACKED_PRE struct zb_zcl_level_control_req_options_s
+{
+  /** OptionsMask field */
+  zb_uint8_t options_mask;
+  /** OptionsOverride field */
+  zb_uint8_t options_override;
+} ZB_PACKED_STRUCT zb_zcl_level_control_req_options_t;
+
+/** @brief Move to Level payload length macro */
+#define ZB_ZCL_LEVEL_CONTROL_REQ_OPTIONS_PAYLOAD_LEN \
+  sizeof(zb_zcl_level_control_req_options_t)
+
+/** @internal Macro for getting Move to Level command */
+#define ZB_ZCL_LEVEL_CONTROL_GET_CMD_OPTIONS(data_buf, req_options, status) \
+{                                                                       \
+  zb_zcl_level_control_req_options_t *req_options_ptr;                  \
+  (req_options_ptr) = ZB_BUF_LEN(data_buf) >=                           \
+    ZB_ZCL_LEVEL_CONTROL_REQ_OPTIONS_PAYLOAD_LEN ?                      \
+    (zb_zcl_level_control_req_options_t*)ZB_BUF_BEGIN(data_buf) : NULL; \
+  if (req_options_ptr)                                                  \
+  {                                                                     \
+    req_options.options_mask = req_options_ptr->options_mask;           \
+    req_options.options_override = req_options_ptr->options_override;   \
+    status = ZB_TRUE;                                                   \
+    zb_buf_cut_left(data_buf, sizeof(zb_zcl_level_control_req_options_t)); \
+  }                                                                     \
+  else                                                                  \
+  {                                                                     \
+    status = ZB_FALSE;                                                  \
+  }                                                                     \
+}
 
 /*! @brief Structured representsation of MOVE_TO_LEVEL command payload
     @see ZCL spec, subclause 3.10.2.3.1.1*/
@@ -378,18 +420,18 @@ typedef ZB_PACKED_PRE struct zb_zcl_level_control_move_to_level_req_s
 #define ZB_ZCL_LEVEL_CONTROL_SEND_MOVE_TO_LEVEL_CMD(buffer, addr, dst_addr_mode,           \
   dst_ep, ep, prfl_id, def_resp, cb, level, transition_time, cmd_id)                       \
 {                                                                                          \
-  zb_uint8_t* ptr = ZB_ZCL_START_PACKET_REQ(buffer)                                           \
-  ZB_ZCL_CONSTRUCT_SPECIFIC_COMMAND_REQ_FRAME_CONTROL(ptr, (def_resp))                    \
-  ZB_ZCL_CONSTRUCT_COMMAND_HEADER_REQ(ptr, ZB_ZCL_GET_SEQ_NUM(), (cmd_id));                    \
+  zb_uint8_t* ptr = ZB_ZCL_START_PACKET_REQ(buffer)                                        \
+  ZB_ZCL_CONSTRUCT_SPECIFIC_COMMAND_REQ_FRAME_CONTROL(ptr, (def_resp))                     \
+  ZB_ZCL_CONSTRUCT_COMMAND_HEADER_REQ(ptr, ZB_ZCL_GET_SEQ_NUM(), (cmd_id));                \
   ZB_ZCL_PACKET_PUT_DATA8(ptr, (level));                                                   \
   ZB_ZCL_PACKET_PUT_DATA16_VAL(ptr, (transition_time));                                    \
-  ZB_ZCL_FINISH_PACKET((buffer), ptr)                                                     \
+  ZB_ZCL_FINISH_PACKET((buffer), ptr)                                                      \
   ZB_ZCL_SEND_COMMAND_SHORT(                                                               \
    buffer, addr, dst_addr_mode, dst_ep, ep, prfl_id, ZB_ZCL_CLUSTER_ID_LEVEL_CONTROL, cb); \
 }
 
 /** @internal Macro for getting Move to Level command */
-#define ZB_ZCL_LEVEL_CONTROL_GET_MOVE_TO_LEVEL_CMD(data_buf, move_to_level_req, status)          \
+#define ZB_ZCL_LEVEL_CONTROL_GET_MOVE_TO_LEVEL_CMD(data_buf, move_to_level_req, status) \
 {                                                                                                \
   zb_zcl_level_control_move_to_level_req_t *move_to_level_req_ptr;                               \
   (move_to_level_req_ptr) = ZB_BUF_LEN(data_buf) >=                                              \
@@ -400,16 +442,13 @@ typedef ZB_PACKED_PRE struct zb_zcl_level_control_move_to_level_req_s
     ZB_HTOLE16(&(move_to_level_req).transition_time, &(move_to_level_req_ptr->transition_time)); \
     move_to_level_req.level = move_to_level_req_ptr->level;                                      \
     status = ZB_TRUE;                                                                            \
+    zb_buf_cut_left(data_buf, sizeof(zb_zcl_level_control_move_to_level_req_t));                 \
   }                                                                                              \
   else                                                                                           \
   {                                                                                              \
     status = ZB_FALSE;                                                                           \
   }                                                                                              \
 }
-
-/* Oct 16, 2012 CR:MINOR Is there any notice on spec subclause defining the command?
-   CR: No, there is only Payload format and Effect on receipt */
-
 
 /*! @brief Send Move to Level command
     @param buffer - to put packet to
@@ -540,6 +579,7 @@ typedef ZB_PACKED_PRE struct zb_zcl_level_control_move_req_s
   if (move_req_ptr)                                                                    \
   {                                                                                    \
     ZB_MEMCPY(&(move_req), move_req_ptr, sizeof(zb_zcl_level_control_move_req_t));     \
+    zb_buf_cut_left(data_buf, sizeof(zb_zcl_level_control_move_req_t));                \
     status = ZB_TRUE;                                                                  \
   }                                                                                    \
   else                                                                                 \
@@ -691,13 +731,14 @@ typedef ZB_PACKED_PRE struct zb_zcl_level_control_step_req_s
 #define ZB_ZCL_LEVEL_CONTROL_GET_STEP_CMD(data_buf, step_req, status)                  \
 {                                                                                      \
   zb_zcl_level_control_step_req_t *step_req_ptr;                                       \
-  (step_req_ptr) = ZB_BUF_LEN(data_buf) == ZB_ZCL_LEVEL_CONTROL_STEP_REQ_PAYLOAD_LEN ? \
+  (step_req_ptr) = ZB_BUF_LEN(data_buf) >= ZB_ZCL_LEVEL_CONTROL_STEP_REQ_PAYLOAD_LEN ? \
     (zb_zcl_level_control_step_req_t*)ZB_BUF_BEGIN(data_buf) : NULL;                   \
   if (step_req_ptr)                                                                    \
   {                                                                                    \
     step_req.step_mode = step_req_ptr->step_mode;                                      \
     step_req.step_size = step_req_ptr->step_size;                                      \
     ZB_HTOLE16(&(step_req).transition_time, &step_req_ptr->transition_time);           \
+    zb_buf_cut_left(data_buf, sizeof(zb_zcl_level_control_step_req_t));                \
     status = ZB_TRUE;                                                                  \
   }                                                                                    \
   else                                                                                 \
@@ -851,58 +892,13 @@ typedef ZB_PACKED_PRE struct zb_zcl_level_control_step_req_s
   buffer, addr, dst_addr_mode, dst_ep, ep, prfl_id, def_resp, cb)                            \
   ZB_ZCL_LEVEL_CONTROL_SEND_STOP_REQ(buffer, addr, dst_addr_mode, dst_ep, ep, prfl_id, def_resp, cb)
 
-/*! @internal Setting current level value macro:
-    @param ep - endpoint where setting
-    @param value - new level value
-*/
-#define ZB_ZCL_LEVEL_CONTROL_SET_LEVEL_VALUE(ep, value)            \
-{                                                                  \
-  zb_uint8_t val = (value);                                        \
-  ZB_ZCL_SET_ATTRIBUTE((ep),                                       \
-                       ZB_ZCL_CLUSTER_ID_LEVEL_CONTROL,            \
-                       ZB_ZCL_CLUSTER_SERVER_ROLE,                 \
-                       ZB_ZCL_ATTR_LEVEL_CONTROL_CURRENT_LEVEL_ID, \
-                       &val,                                       \
-                       ZB_FALSE);                                  \
-}
-
-/*! @internal Setting On/Off value macro:
-    @param ep - endpoint where setting
-    @param on_off_value - on/off value
-*/
-#define ZB_ZCL_LEVEL_CONTROL_SET_ON_OFF_VALUE(ep, on_off_value)    \
-{                                                                  \
-  zb_uint8_t val = (on_off_value);                                 \
-  ZB_ZCL_SET_ATTRIBUTE((ep),                                       \
-                       ZB_ZCL_CLUSTER_ID_ON_OFF,                   \
-                       ZB_ZCL_CLUSTER_SERVER_ROLE,                 \
-                       ZB_ZCL_ATTR_ON_OFF_ON_OFF_ID,               \
-                       &val,                                       \
-                       ZB_FALSE);                                  \
-}
-
-//ZB_ZCL_LEVEL_CONTROL_SET_HANDLER is obsolete
-/*! @internal Setting device handler macro:
-    @param ep - endpoint where setting
-    @param handler - pointer to device handler
-*/
-#define ZB_ZCL_LEVEL_CONTROL_SET_HANDLER(ep, handler)                            \
-{                                                                                \
-  zb_zcl_attr_t* move_status_desc;                                               \
-  zb_zcl_level_control_move_status_t* move_status;                               \
-                                                                                 \
-  move_status_desc = zb_zcl_get_attr_desc_a((ep),                                \
-    ZB_ZCL_CLUSTER_ID_LEVEL_CONTROL,                                             \
-    ZB_ZCL_ATTR_LEVEL_CONTROL_MOVE_STATUS_ID);                                   \
-  ZB_ASSERT(move_status_desc != NULL);                                           \
-  move_status = (zb_zcl_level_control_move_status_t*)move_status_desc->data_p;   \
-  move_status->level_control_handler = (handler);                                \
-}
-
+/** @cond internals_doc */
 typedef struct zb_zcl_level_control_set_value_param_s
 {
   zb_uint8_t new_value;
 } zb_zcl_level_control_set_value_param_t;
+/*! @}
+ *  @endcond */ /* internals_doc */
 
   /* definition to parse request */
 

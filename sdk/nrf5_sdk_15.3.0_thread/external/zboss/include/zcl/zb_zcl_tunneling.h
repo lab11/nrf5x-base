@@ -41,7 +41,6 @@ PURPOSE: ZBOSS specific Tunneling cluster, purpose: general data tunneling.
 #ifndef ZB_ZCL_TUNNELING_H
 #define ZB_ZCL_TUNNELING_H 1
 
-#define ZB_ZCL_TUNNELING_MAX_INCOMING_TRANSFER_SIZE 20
 #define ZB_ZCL_TUNNELING_SRV_TABLE_SIZE 10
 
 #include "zcl/zb_zcl_common.h"
@@ -103,17 +102,17 @@ enum zb_zcl_tunneling_attr_e
   (zb_voidp_t) data_ptr                                                                \
 }
 
-/** @def ZB_ZCL_DECLARE_TUNNELING_ATTR_LIST_FULL(attr_list, close_tunnel_timeout)
+/** @endcond */ /* internals_doc */
+
+/** @def ZB_ZCL_DECLARE_TUNNELING_ATTRIB_LIST(attr_list, close_tunnel_timeout)
   * @brief Declare attribute list for Tunnelling cluster
   * @param[in] attr_list - attribute list name
   * @param[in] close_tunnel_timeout - pointer to variable to store On/Tunnelling attribute value
   */
-#define ZB_ZCL_DECLARE_TUNNELING_ATTR_LIST_FULL(attr_list, close_tunnel_timeout)                 \
+#define ZB_ZCL_DECLARE_TUNNELING_ATTRIB_LIST(attr_list, close_tunnel_timeout)                 \
   ZB_ZCL_START_DECLARE_ATTRIB_LIST(attr_list)                                                 \
   ZB_ZCL_SET_ATTR_DESC(ZB_ZCL_ATTR_TUNNELING_CLOSE_TUNNEL_TIMEOUT_ID, (close_tunnel_timeout)) \
   ZB_ZCL_FINISH_DECLARE_ATTRIB_LIST
-
-/** @endcond */ /* internals_doc */
 
 /**
  *  @brief Tunneling cluster attributes
@@ -132,7 +131,7 @@ typedef struct zb_zcl_tunneling_attrs_s
  *  @param[in]  attrs - pointer to @ref zb_zcl_tunneling_attrs_s structure
  */
 #define ZB_ZCL_DECLARE_TUNNELING_ATTR_LIST(attr_list, attrs) \
-  ZB_ZCL_DECLARE_TUNNELING_ATTR_LIST_FULL(attr_list, &attrs.close_tunnel_timeout )
+  ZB_ZCL_DECLARE_TUNNELING_ATTRIB_LIST(attr_list, &attrs.close_tunnel_timeout )
 
 /** @cond internals_doc */
 
@@ -259,6 +258,7 @@ enum zb_zcl_tunneling_srv_cmd_e
                                                                           */
 };
 
+/** @cond internals_doc */
 /* TUNNELING cluster commands list : only for information - do not modify */
 #define ZB_ZCL_CLUSTER_ID_TUNNELING_SERVER_ROLE_GENERATED_CMD_LIST                      \
                                       ZB_ZCL_TUNNELING_SRV_CMD_REQUEST_TUNNEL_RESPONSE, \
@@ -274,6 +274,8 @@ enum zb_zcl_tunneling_srv_cmd_e
                                       ZB_ZCL_TUNNELING_CLI_CMD_CLOSE_TUNNEL
 
 #define ZB_ZCL_CLUSTER_ID_TUNNELING_SERVER_ROLE_RECEIVED_CMD_LIST ZB_ZCL_CLUSTER_ID_TUNNELING_CLIENT_ROLE_GENERATED_CMD_LIST
+/*! @}
+ *  @endcond */ /* internals_doc */
 
 /** @brief @e TunnelStatus parameter values.
  *  @see SE spec, Table D-127
@@ -392,7 +394,7 @@ typedef ZB_PACKED_PRE struct zb_zcl_tunneling_request_tunnel_s
 } ZB_PACKED_STRUCT zb_zcl_tunneling_request_tunnel_t;
 
 
-zb_ret_t zb_zcl_tunneling_set_max_incoming_to_cli_transfer_size(zb_uint16_t transfer_size);
+void zb_zcl_tunneling_set_max_incoming_to_cli_transfer_size(zb_uint16_t transfer_size);
 
 
 /** @def ZB_ZCL_TUNNELING_SEND_REQUEST_TUNNEL
@@ -410,19 +412,16 @@ zb_ret_t zb_zcl_tunneling_set_max_incoming_to_cli_transfer_size(zb_uint16_t tran
  *  @param _manufacturer_code - @ref zb_zcl_tunneling_request_tunnel_t::manufacturer_code value
  *  @param _flow_control_support - @ref zb_zcl_tunneling_request_tunnel_t::flow_control_support value
  *  @param _max_incoming_transfer_size - @ref zb_zcl_tunneling_request_tunnel_t::max_incoming_transfer_size value
- *  @param _send_status - Command sending status.
  *  @par Usage
  *  @n Example of sending @ref ZB_ZCL_TUNNELING_CLI_CMD_REQUEST_TUNNEL "RequestTunnel" command
  */
 #define ZB_ZCL_TUNNELING_SEND_REQUEST_TUNNEL(                                     \
     _param, _addr, _dst_addr_mode, _dst_ep, _ep, _prfl_id, _def_resp, _cb,        \
     _protocol_id, _manufacturer_code, _flow_control_support,                      \
-    _max_incoming_transfer_size, _send_status)                                    \
+    _max_incoming_transfer_size)                                                  \
 {                                                                                 \
-  (_send_status) =                                                                \
-    zb_zcl_tunneling_set_max_incoming_to_cli_transfer_size(                       \
-      _max_incoming_transfer_size);                                               \
-  if ((_send_status) == RET_OK)                                                   \
+  zb_zcl_tunneling_set_max_incoming_to_cli_transfer_size(                         \
+    _max_incoming_transfer_size);                                                 \
   {                                                                               \
     zb_buf_t *_buffer = ZB_BUF_FROM_REF(_param);                                  \
     zb_uint8_t* __ptr = zb_zcl_start_command_header(_buffer,                      \

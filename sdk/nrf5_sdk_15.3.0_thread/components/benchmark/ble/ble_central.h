@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2018, Nordic Semiconductor ASA
+ * Copyright (c) 2018 - 2019, Nordic Semiconductor ASA
  *
  * All rights reserved.
  *
@@ -44,42 +44,90 @@
 #include "ble_gap.h"
 #include "ble.h"
 
+#define BDADDR_STRING_SIZE 13                              /**< Required string size to fit BLE address. */
+#define MAX_SCAN_RESULTS   64                              /**< Maximum number of scan results. */
+
+
+typedef struct
+{
+    uint16_t       m_conn_handle;
+    uint16_t       m_conn_cur_interval;
+    bool           m_used;
+    bool           m_conn_param_update_requested;
+    uint8_t        m_phy_mode;
+    ble_gap_addr_t m_addr;
+} peer_t;
+
+typedef struct
+{
+    ble_gap_addr_t m_addrs[MAX_SCAN_RESULTS];
+    uint8_t        m_addr_count;
+} scan_results_t;
+
+/**@brief Function for converting an array Bluetooth Device Address representation to a string.
+ *
+ * @param[out]  p_addr_string   Pointer to an address string.
+ * @param[in]   p_gap_addr      Pointer to a GAP address structure.
+ * @param[in]   addr_string_len Length of the string buffer.
+ */
+void address_to_string_convert(char * p_addr_string, const ble_gap_addr_t * p_gap_addr, uint8_t addr_string_len);
+
+/**@brief Function for converting a string Bluetooth Device Address representation to an array.
+ *
+ * @param[out]   p_gap_addr      Pointer to a GAP address structure.
+ * @param[in]    p_addr_string   Pointer to an address string.
+ */
+void string_to_address_convert(ble_gap_addr_t * p_gap_addr, const char * p_addr_string);
+
+/**@brief Function for converting the physical layer mode identifier to its string representation.
+ *
+ * @param[in]   phy_mode         Physical layer mode. Set this to either BLE_GAP_PHY_1MBPS or BLE_GAP_PHY_2MBPS.
+ * 
+ * @retval 1Mbps String representation of the physical layer mode, when 1Mbps.
+ * @retval 2Mbps String representation of the physical layer mode, when 2Mbps.
+ * @retval Unknown Physical layer mode is not recognized.
+ */
+const char * phy_mode_to_string_convert(uint8_t phy_mode);
+
 /**@brief Get Bluetooth Device Address of a device in a printable form.
  *
  * @param[out]  p_bdaddr    Pointer to an address string.
  */
 void ble_connection_bdaddr_get(char * p_bdaddr, uint8_t bdaddr_len);
 
-/**@brief Get current connection handle.
+/**@brief Find connected peer by its Bluetooth Device Address.
  *
- * @returns Connection handle.
+ * @param[in] p_addr    Pointer to Bluetooth Device Address.
+ *
+ * @returns Peer with given Bluetooth Device Address or NULL if peer is not found.
  */
-uint16_t ble_connection_handle_get(void);
+peer_t * ble_conn_find_by_addr(const ble_gap_addr_t * p_addr);
 
-/**@brief Set a connection handle.
+/**@brief Get number of connected peers.
  *
- * @param[in] conn_handle   Connection handle.
+ * @returns Number of connected peers.
  */
-void ble_connection_handle_set(uint16_t conn_handle);
+size_t ble_conn_count(void);
 
-/**@brief Get current connection state.
+/**@brief Get peer with given index.
  *
- * @retval true    If device is currently connected on Bluetooth.
- * @retval false   If device is not currently connected on Bluetooth.
+ * @param[in] idx    Peer index.
+ *
+ * @returns Pointer to the peer with given index or NULL if index is higher than number of connected peers.
  */
-bool ble_connection_is_established(void);
+peer_t * ble_conn_get(size_t idx);
+
+/**@brief Get last requested connection interval.
+ *
+ * @returns Last requested connection interval.
+ */
+uint32_t ble_connection_interval_get(void);
 
 /**@brief Application callback for handling BLE events.
  *
  * @param[in] p_evt   Bluetooth stack event.
  */
 void ble_connection_evt_handle(const ble_evt_t * p_evt);
-
-/**@brief Get current connection interval.
- *
- * @returns Current connection interval in milliseconds.
- */
-uint16_t ble_connection_interval_get(void);
 
 /**@brief Set connection interval.
  *
@@ -98,25 +146,25 @@ bool ble_connection_is_central(void);
  *
  * @returns Current scan interval in ms.
  */
-uint32_t ble_connection_scan_interval_get(void);
+uint32_t ble_scan_interval_get(void);
 
 /**@brief Set scan interval.
  *
  * @param[in] interval_ms   Scan interval in ms.
  */
-void ble_connection_scan_interval_set(uint32_t interval_ms);
+void ble_scan_interval_set(uint32_t interval_ms);
 
 /**@brief Get current scan window.
  *
  * @returns Current scan window in ms.
  */
-uint32_t ble_connection_scan_window_get(void);
+uint32_t ble_scan_window_get(void);
 
 /**@brief Set scan window.
  *
  * @param[in] window_ms   Scan window in ms.
  */
-void ble_connection_scan_window_set(uint32_t window_ms);
+void ble_scan_window_set(uint32_t window_ms);
 
 /**@brief Get current slave latency.
  *
@@ -130,11 +178,34 @@ uint32_t ble_connection_slave_latency_get(void);
  */
 void ble_connection_slave_latency_set(uint32_t slave_latency);
 
+/**@brief Set the speed mode for the physical layer for the given connection.
+ *
+ * @param[in] p_addr_string   Pointer to the string representation of the address of the peer device.
+ * @param[in] phy_mode        Physical layer mode. Set this to either BLE_GAP_PHY_1MBPS or BLE_GAP_PHY_2MBPS.
+ *
+ * @returns True, if correct peer address was passed as the argument.
+ */
+bool ble_conn_phy_mode_set(const char * p_addr_string, uint8_t phy_mode);
+
+/**@brief Get the BLE connection event length extension mode.
+ *
+ * @returns True, if connection event length extension is enabled. False otherwise.
+ */
+bool ble_connection_event_length_extension_get(void);
+
+/**@brief Set the BLE connection event length extension mode.
+ *
+ * @param[in] evt_ext_enable   Connection event length extension toggle. Pass true to enable or false to disable.
+ * 
+ * @returns True, if setting the BLE connection event length extension mode is successful. False otherwise.
+ */
+bool ble_connection_event_length_extension_set(bool evt_ext_enable);
+
 /**@brief Connect to a specified Bluetooth address.
  *
  * @note  If called when there already is a connection established, this function has no effect.
  *
- * @param[in] p_addr_string   Pointer to a string representation of peer device's address.
+ * @param[in] p_addr_string   Pointer to the string representation of the address of the peer device.
  */
 void ble_connection_start(const char * p_addr_string);
 
@@ -142,6 +213,26 @@ void ble_connection_start(const char * p_addr_string);
  *
  * @note  If called when there is no connection established, this function has no effect.
  */
-void ble_connection_stop(void);
+void ble_connection_stop(const char * p_addr_string);
+
+/**@brief Get Bluetooth scan state.
+ *
+ * @return True, if Bluetooth scan is currently in progress.
+ */
+bool ble_scan_enabled_get(void);
+
+/**@brief Start Bluetooth scan.
+ *
+ * @note  If called when scan is in progress, this function has no effect.
+ */
+void ble_scan_start(void);
+
+/**@brief Stop Bluetooth scan and return scan results.
+ *
+ * @note  If called when scan is not in progress, this function returns addresses collected during last scan.
+ *
+ * @return Returns structure containing Bluetooth addresses collected during scan.
+ */
+scan_results_t * ble_scan_stop(void);
 
 #endif // BLE_CONNECTOR_H
