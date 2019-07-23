@@ -1,0 +1,13 @@
+// Pin definitions for nRF52 development kit (PCA10040)
+
+#pragma once
+
+#include "nrf_gpio.h"
+
+#define NRF52840_THREAD_LED1 NRF_GPIO_PIN_MAP(0,4)
+#define NRF52840_THREAD_LED2 NRF_GPIO_PIN_MAP(0,5)
+#define NRF52840_THREAD_LED3 NRF_GPIO_PIN_MAP(0,6)
+
+#define NRF52840_THREAD_UART_TXD NRF_GPIO_PIN_MAP(0,27)
+#define NRF52840_THREAD_UART_RXD NRF_GPIO_PIN_MAP(0,26)
+

@@ -1,7 +1,16 @@
 #pragma once
 
+#include <stdbool.h>
+#include <stdint.h>
+
+#include <openthread/thread.h>
+#include <openthread/platform/openthread-system.h>
+#include <openthread/ip6.h>
+#include <openthread/tasklet.h>
+
 typedef struct {
   uint8_t   channel;
+  int8_t    tx_power;
   uint16_t  panid;
   bool      sed; // sleepy end device
   uint32_t  poll_period;

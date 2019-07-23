@@ -1,32 +1,16 @@
+#include "nrf.h"
 #include "nrf_log.h"
 #include "nrf_timer.h"
-
-#include <openthread/openthread.h>
-#include <openthread/platform/platform.h>
 
 #include "simple_thread.h"
 
 static otInstance * m_ot_instance;
-static otNetifAddress m_slaac_addresses[6];               /**< Buffer containing addresses resolved by SLAAC */
 
 void __attribute__((weak)) thread_state_changed_callback(uint32_t flags, void * p_context)
 {
     NRF_LOG_INFO("State changed! Flags: 0x%08lx Current role: %d\r\n",
                  flags, otThreadGetDeviceRole(p_context));
 
-    if (flags & OT_CHANGED_THREAD_NETDATA)
-    {
-        /**
-         * Whenever Thread Network Data is changed, it is necessary to check if generation of global
-         * addresses is needed. This operation is performed internally by the OpenThread CLI module.
-         * To lower power consumption, the examples that implement Thread Sleepy End Device role
-         * don't use the OpenThread CLI module. Therefore otIp6SlaacUpdate util is used to create
-         * IPv6 addresses.
-         */
-         otIp6SlaacUpdate(m_ot_instance, m_slaac_addresses,
-                          sizeof(m_slaac_addresses) / sizeof(m_slaac_addresses[0]),
-                          otIp6CreateRandomIid, NULL);
-    }
 }
 
 
@@ -37,7 +21,7 @@ void __attribute__((weak)) thread_init(const thread_config_t* config)
 {
     otError error;
 
-    PlatformInit(0, NULL);
+    otSysInit(0, NULL);
 
     m_ot_instance = otInstanceInitSingle();
     ASSERT(m_ot_instance != NULL);
@@ -53,6 +37,12 @@ void __attribute__((weak)) thread_init(const thread_config_t* config)
         ASSERT(error == OT_ERROR_NONE);
         NRF_LOG_INFO("Thread Channel: %d", otLinkGetChannel(m_ot_instance));
 
+        error = otPlatRadioSetTransmitPower(m_ot_instance, config->tx_power);
+        ASSERT(error == OT_ERROR_NONE);
+        int8_t tx_power_set;
+        otPlatRadioGetTransmitPower(m_ot_instance, &tx_power_set);
+        NRF_LOG_INFO("TX Power: %d dBm", tx_power_set);
+
         error = otLinkSetPanId(m_ot_instance, config->panid);
         ASSERT(error == OT_ERROR_NONE);
         NRF_LOG_INFO("Thread PANID: 0x%lx", (uint32_t)otLinkGetPanId(m_ot_instance));
@@ -60,6 +50,7 @@ void __attribute__((weak)) thread_init(const thread_config_t* config)
 
     otLinkModeConfig mode;
     memset(&mode, 0, sizeof(mode));
+
     if (config->sed) {
       // sleepy end device
       mode.mSecureDataRequests = true;
@@ -67,7 +58,7 @@ void __attribute__((weak)) thread_init(const thread_config_t* config)
       otLinkSetPollPeriod(m_ot_instance, config->poll_period);
     }
     else {
-      // regular end device
+      // regular device
       mode.mRxOnWhenIdle       = true;
       mode.mSecureDataRequests = true;
       mode.mDeviceType         = true;
@@ -77,7 +68,9 @@ void __attribute__((weak)) thread_init(const thread_config_t* config)
     error = otThreadSetLinkMode(m_ot_instance, mode);
     ASSERT(error == OT_ERROR_NONE);
 
-    otThreadSetChildTimeout(m_ot_instance, config->child_period);
+    if (config->child_period != 0) {
+        otThreadSetChildTimeout(m_ot_instance, config->child_period);
+    }
 
     error = otIp6SetEnabled(m_ot_instance, true);
     ASSERT(error == OT_ERROR_NONE);
@@ -109,6 +102,11 @@ void fix_errata_78_in_nrf_802154(void)
     {
         nrf_timer_task_trigger(NRF_TIMER1, NRF_TIMER_TASK_SHUTDOWN);
     }
+    #if (__FPU_USED == 1)
+    __set_FPSCR(__get_FPSCR() & ~(0x0000009F));
+    (void) __get_FPSCR();
+    NVIC_ClearPendingIRQ(FPU_IRQn);
+    #endif
 }
 
 void __attribute__((weak)) thread_sleep(void)
@@ -133,7 +131,7 @@ void __attribute__((weak)) thread_process(void)
 {
     ASSERT(m_ot_instance != NULL);
     otTaskletsProcess(m_ot_instance);
-    PlatformProcessDrivers(m_ot_instance);
+    otSysProcessDrivers(m_ot_instance);
 }
 
 otInstance * thread_get_instance(void) {

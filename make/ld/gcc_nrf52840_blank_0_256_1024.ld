@@ -119,7 +119,7 @@ SECTIONS
 
 SECTIONS
 {
-    __stop_ot_flash_data = (ORIGIN(FLASH) + LENGTH(FLASH));
+    __stop_ot_flash_data = (ORIGIN(FLASH) + LENGTH(FLASH) - FLASH_PAGE_SIZE);
     __start_ot_flash_data = (__stop_ot_flash_data - (FLASH_PAGE_SIZE * FLASH_DATA_PAGES_USED));
 
     /* Assure that code does not overlap flash data area.*/

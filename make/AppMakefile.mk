@@ -13,6 +13,7 @@ all:
 OUTPUT_NAME ?= $(addsuffix _sdk$(SDK_VERSION)_$(SOFTDEVICE_MODEL), $(PROJECT_NAME))
 HEX = $(BUILDDIR)$(OUTPUT_NAME).hex
 DEBUG_HEX = $(BUILDDIR)$(OUTPUT_NAME).hex-debug
+FIRST_DFU_HEX = $(BUILDDIR)$(OUTPUT_NAME)_first_dfu.hex
 ELF = $(BUILDDIR)$(OUTPUT_NAME).elf
 DEBUG_ELF = $(BUILDDIR)$(OUTPUT_NAME).elf-debug
 BIN = $(BUILDDIR)$(OUTPUT_NAME).bin
@@ -30,7 +31,7 @@ include $(NRF_BASE_DIR)/make/Configuration.mk
 include $(NRF_BASE_DIR)/make/Includes.mk
 
 # JTAG flashing configuration and rules
-include $(NRF_BASE_DIR)/make/Jtag.mk
+include $(NRF_BASE_DIR)/make/Program.mk
 
 
 # ---- Rules for building apps

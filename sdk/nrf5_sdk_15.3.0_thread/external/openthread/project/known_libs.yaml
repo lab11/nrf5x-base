@@ -1,0 +1,73 @@
+libmbedcrypto:
+  target_dir: mbedcrypto/cc310
+  src_path: build/{target_name}/third_party/mbedtls
+libmbedcrypto-threadsafe:
+  target_dir: mbedcrypto/threadsafe
+  src_path: build/{target_name}/third_party/mbedtls
+libopenthread-cli-ftd:
+  target_dir: openthread_cli/ftd
+  src_path: build/{target_name}/src/cli
+libopenthread-cli-mtd:
+  target_dir: openthread_cli/mtd
+  src_path: build/{target_name}/src/cli
+libopenthread-diag:
+  target_dir: openthread_diag
+  src_path: build/{target_name}/src/diag
+libopenthread-ftd:
+  target_dir: openthread/ftd
+  src_path: build/{target_name}/src/core
+libopenthread-mtd:
+  target_dir: openthread/mtd
+  src_path: build/{target_name}/src/core
+libopenthread-ncp-ftd:
+  target_dir: openthread_ncp/ftd/uart
+  src_path: build/{target_name}/src/ncp
+libopenthread-ncp-ftd-spi:
+  target_dir: openthread_ncp/ftd/spi
+  src_path: build/{target_name}/src/ncp
+libopenthread-ncp-mtd:
+  target_dir: openthread_ncp/mtd/uart
+  src_path: build/{target_name}/src/ncp
+libopenthread-ncp-mtd-spi:
+  target_dir: openthread_ncp/mtd/spi
+  src_path: build/{target_name}/src/ncp
+libopenthread-{target_name}-sdk:
+  target_dir: openthread_{target_name}/sdk/uart
+  src_path: build/{target_name}/examples/platforms/{target_name}
+libopenthread-{target_name}-sdk-usb:
+  target_dir: openthread_{target_name}/sdk/usb
+  src_path: build/{target_name}/examples/platforms/{target_name}
+libopenthread-{target_name}-sdk-spi:
+  target_dir: openthread_{target_name}/sdk/spi
+  src_path: build/{target_name}/examples/platforms/{target_name}
+libopenthread-{target_name}-softdevice-sdk:
+  target_dir: openthread_{target_name}/softdevice/uart
+  src_path: build/{target_name}/examples/platforms/{target_name}
+libopenthread-{target_name}-softdevice-sdk-usb:
+  target_dir: openthread_{target_name}/softdevice/usb
+  src_path: build/{target_name}/examples/platforms/{target_name}
+libopenthread-{target_name}-softdevice-sdk-spi:
+  target_dir: openthread_{target_name}/softdevice/spi
+  src_path: build/{target_name}/examples/platforms/{target_name}
+libopenthread-platform-utils:
+  target_dir: openthread_platform_utils
+  src_path: build/{target_name}/examples/platforms/utils
+libnordicsemi-{target_name}-radio-driver:
+  target_dir: nordicsemi_{target_name}/driver
+  src_path: build/{target_name}/third_party/NordicSemiconductor
+libnordicsemi-{target_name}-radio-driver-softdevice:
+  target_dir: nordicsemi_{target_name}/driver-softdevice
+  src_path: build/{target_name}/third_party/NordicSemiconductor
+libopenthread-radio:
+  target_dir: openthread/radio
+  src_path: build/{target_name}/src/core
+libopenthread-ncp-radio:
+  target_dir: openthread_ncp/radio/uart
+  src_path: build/{target_name}/src/ncp
+libopenthread-ncp-radio-spi:
+  target_dir: openthread_ncp/radio/spi
+  src_path: build/{target_name}/src/ncp
+
+libjlinkrtt:
+libnordicsemi-{target_name}-sdk:
+libopenthread-{target_name}:

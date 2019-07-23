@@ -30,6 +30,10 @@ RANLIB := $(TOOLCHAIN)-ranlib
 READELF := $(TOOLCHAIN)-readelf
 SIZE := $(TOOLCHAIN)-size
 
+# Git version
+GIT_VERSION := $(shell git describe --abbrev=4 --always --tags)
+BARE_VERSION := $(lastword $(subst v, , $(firstword $(subst -, ,$(GIT_VERSION)))))
+
 # Pretty-printing rules
 # If environment variable V is non-empty, be verbose
 ifneq ($(V),)
@@ -71,33 +75,44 @@ ifdef NRF_IC
     RAM_KB ?= 64
     FLASH_KB ?= 512
     FULL_IC = nrf52832_xxaa
-    CONFIGURATION_VARS += NRF52 ID_FLASH_LOCATION=0x7FFF8
-    ID_FLASH_LOCATION=0x7FFF8
+    CONFIGURATION_VARS += NRF52 ID_FLASH_LOCATION=0x77FF8
+    ID_FLASH_LOCATION=0x77FF8
   else ifeq ($(NRF_IC), nrf52840)
     NRF_MODEL = nrf52
     SOFTDEVICE_MODEL ?= s140
     RAM_KB ?= 256
     FLASH_KB ?= 1024
     FULL_IC = nrf52840_xxaa
-    CONFIGURATION_VARS += ID_FLASH_LOCATION=0xFFFF8
-    ID_FLASH_LOCATION=0xFFFF8
+    CONFIGURATION_VARS += ID_FLASH_LOCATION=0xF7FF8
+    ID_FLASH_LOCATION=0xF7FF8
   endif
 else
   $(error NRF_IC unspecified. Add it to app Makefile!)
 endif
 FULL_IC_UPPER = $(shell echo $(FULL_IC) | tr a-z A-Z)
+NRF_IC_UPPER = $(shell echo $(NRF_IC) | tr a-z A-Z)
 CONFIGURATION_VARS += $(FULL_IC_UPPER)
+
+ifdef BOARD
+  ifeq ($(BOARD), pca10059)
+    CONFIGURATION_VARS += BOARD_PCA10059
+  endif
+endif
 
 # Default SDK and softdevice versions
 SDK_VERSION ?= 15
 ifeq ($(SDK_VERSION), 15)
   ifeq ($(SOFTDEVICE_MODEL), s132)
-    SOFTDEVICE_VERSION = 6.0.0
+    SOFTDEVICE_VERSION = 6.1.1
   else ifeq ($(SOFTDEVICE_MODEL), s140)
-    SOFTDEVICE_VERSION = 6.0.0
+    SOFTDEVICE_VERSION = 6.1.1
   else ifeq ($(SOFTDEVICE_MODEL), blank)
     SOFTDEVICE_VERSION = 0
     USE_BLE = 0 # can't have BLE without a softdevice
+    # if we want to use the MBR to manage a bootloader without a softdevice:
+    ifeq ($(USE_MBR), 1)
+      MBR_VERSION = 2.4.1
+    endif
   endif
 endif
 CONFIGURATION_VARS += SDK_VERSION_$(SDK_VERSION)
@@ -120,6 +135,7 @@ USE_ESB ?= 0
 space :=
 space +=
 $(info BUILD OPTIONS:)
+$(info $(space) Version     $(GIT_VERSION))
 $(info $(space) Chip        $(NRF_IC))
 $(info $(space) RAM         $(RAM_KB) kB)
 $(info $(space) FLASH       $(FLASH_KB) kB)
@@ -166,18 +182,24 @@ override CFLAGS += \
     $(CPUFLAGS)\
     -Wall\
     -Wextra\
+    -Wno-date-time\
     -Wno-unused-parameter\
     -Werror=return-type\
     -Wno-expansion-to-defined\
     $(CONFIGURATION_DEFINES)\
     $(SDK_DEFINES)\
+    -DGIT_VERSION=\"$(GIT_VERSION)\"\
     -DCONFIG_GPIO_AS_PINRESET\
     -s\
     -ffunction-sections\
     -fdata-sections\
+    -fno-strict-aliasing\
+    -fno-builtin\
+    -fshort-enums\
     $(HEADER_INCLUDES)\
     -MD\
     -fomit-frame-pointer\
+    #-flto\
     #-D$(FULL_IC_UPPER)\
     #-DSDK_VERSION_$(SDK_VERSION)\
     #-DSOFTDEVICE_$(SOFTDEVICE_MODEL)\

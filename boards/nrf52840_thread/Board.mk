@@ -16,7 +16,7 @@ BOARD_AS = $(notdir $(wildcard $(BOARD_DIR)/./*.s))
 
 # Board-specific configurations
 BOARD = PCA10040
-USE_BLE = 1
+USE_BLE = 0
 
 # Additional #define's to be added to code by the compiler
 BOARD_VARS = \
@@ -47,6 +47,7 @@ BOARD_SOURCES += \
 	nrf_log_str_formatter.c\
 	nrf_pwr_mgmt.c\
 	nrf_memobj.c\
+	nrf_ringbuf.c\
 	nrf_section_iter.c\
 	nrf_sdh.c\
 	nrf_strerror.c\
@@ -64,7 +65,8 @@ BOARD_SOURCES += \
 	SEGGER_RTT_printf.c\
 	simple_thread.c\
 	thread_coap.c\
-	ntp.c\
+	thread_dns.c\
+	thread_ntp.c\
 
 endif
 

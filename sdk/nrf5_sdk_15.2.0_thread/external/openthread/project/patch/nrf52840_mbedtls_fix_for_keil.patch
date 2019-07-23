@@ -1,0 +1,12 @@
+diff --git a/third_party/NordicSemiconductor/libraries/crypto/nrf52840-mbedtls-config.h b/third_party/NordicSemiconductor/libraries/crypto/nrf52840-mbedtls-config.h
+index 59754489..0c31754f 100644
+--- a/third_party/NordicSemiconductor/libraries/crypto/nrf52840-mbedtls-config.h
++++ b/third_party/NordicSemiconductor/libraries/crypto/nrf52840-mbedtls-config.h
+@@ -33,6 +33,7 @@
+ #endif // DISABLE_CC310
+ 
+ #define MBEDTLS_ECDH_C
++#define MBEDTLS_ECDSA_H
+ 
+ #if defined(__ICCARM__)
+     _Pragma("diag_suppress=Pe549")

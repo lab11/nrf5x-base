@@ -29,9 +29,9 @@ ifneq (,$(filter $(NRF_IC),nrf52832 nrf52840))
 
     # Set the path
     ifeq ($(USE_THREAD), 1)
-      SDK_ROOT = $(NRF_BASE_DIR)/sdk/nrf5_sdk_15.0.0_thread/
+      SDK_ROOT = $(NRF_BASE_DIR)/sdk/nrf5_sdk_15.3.0_thread/
     else
-      SDK_ROOT = $(NRF_BASE_DIR)/sdk/nrf5_sdk_15.0.0/
+      SDK_ROOT = $(NRF_BASE_DIR)/sdk/nrf5_sdk_15.3.0/
     endif
 
     # default files for ICs
@@ -45,7 +45,7 @@ ifneq (,$(filter $(NRF_IC),nrf52832 nrf52840))
 
     # default C files necessary for any application
     #XXX: are there other C files that I can include here?
-    SDK_SOURCES += app_error.c
+    #SDK_SOURCES += app_error.c
     SDK_SOURCES += app_error_weak.c
 
     # To make SEGGER RTT retarget to printf correctly, you need to get around
@@ -56,7 +56,9 @@ ifneq (,$(filter $(NRF_IC),nrf52832 nrf52840))
     SDK_LINKER_PATHS += $(SDK_ROOT)modules/nrfx/mdk/
 
     # Path for default sdk_config.h
-    SDK_HEADER_PATHS += $(NRF_BASE_DIR)/make/config/$(NRF_IC)/config/
+    SDK_CONFIG_DEFAULT ?= $(NRF_BASE_DIR)/make/config/$(NRF_IC)/config/
+    SDK_HEADER_PATHS += $(SDK_CONFIG_DEFAULT)
+    #SDK_HEADER_PATHS += $(NRF_BASE_DIR)/make/config/$(NRF_IC)/config/
 
     # Need to add the paths for all the directories in the SDK.
     # Note that we do not use * because some folders have conflicting files.
@@ -72,6 +74,13 @@ ifneq (,$(filter $(NRF_IC),nrf52832 nrf52840))
     SDK_HEADER_PATHS += $(SDK_ROOT)components/libraries/balloc/
     SDK_HEADER_PATHS += $(SDK_ROOT)components/libraries/block_dev/
     SDK_HEADER_PATHS += $(SDK_ROOT)components/libraries/bootloader/
+    SDK_HEADER_PATHS += $(SDK_ROOT)components/libraries/bootloader/dfu/
+    SDK_HEADER_PATHS += $(SDK_ROOT)components/iot/background_dfu/
+    SDK_HEADER_PATHS += $(SDK_ROOT)components/iot/background_dfu/transport/
+    SDK_HEADER_PATHS += $(SDK_ROOT)components/iot/background_dfu/transport/coap/
+    SDK_HEADER_PATHS += $(SDK_ROOT)components/iot/coap/
+    SDK_HEADER_PATHS += $(SDK_ROOT)components/iot/common/
+    SDK_HEADER_PATHS += $(wildcard $(SDK_ROOT)components/libraries/log/src/)
     SDK_HEADER_PATHS += $(SDK_ROOT)components/libraries/bsp/
     SDK_HEADER_PATHS += $(SDK_ROOT)components/libraries/button/
     SDK_HEADER_PATHS += $(SDK_ROOT)components/libraries/cli/
@@ -82,14 +91,15 @@ ifneq (,$(filter $(NRF_IC),nrf52832 nrf52840))
     SDK_HEADER_PATHS += $(SDK_ROOT)components/libraries/csense_drv/
     SDK_HEADER_PATHS += $(SDK_ROOT)components/libraries/delay/
     SDK_HEADER_PATHS += $(SDK_ROOT)components/libraries/ecc/
-    SDK_HEADER_PATHS += $(SDK_ROOT)components/libraries/experimental_libuarte/
-    SDK_HEADER_PATHS += $(SDK_ROOT)components/libraries/experimental_log/
-    SDK_HEADER_PATHS += $(SDK_ROOT)components/libraries/experimental_memobj/
-    SDK_HEADER_PATHS += $(SDK_ROOT)components/libraries/experimental_mpu/
-    SDK_HEADER_PATHS += $(SDK_ROOT)components/libraries/experimental_ringbuf/
+    SDK_HEADER_PATHS += $(SDK_ROOT)components/libraries/libuarte/
+    SDK_HEADER_PATHS += $(SDK_ROOT)components/libraries//log/
+    SDK_HEADER_PATHS += $(SDK_ROOT)components/libraries/memobj/
+    SDK_HEADER_PATHS += $(SDK_ROOT)components/libraries/mpu/
+    SDK_HEADER_PATHS += $(SDK_ROOT)components/libraries/ringbuf/
+    SDK_HEADER_PATHS += $(SDK_ROOT)external/nano-pb/
     SDK_HEADER_PATHS += $(SDK_ROOT)components/libraries/experimental_section_vars/
-    SDK_HEADER_PATHS += $(SDK_ROOT)components/libraries/experimental_stack_guard/
-    SDK_HEADER_PATHS += $(SDK_ROOT)components/libraries/experimental_task_manager/
+    SDK_HEADER_PATHS += $(SDK_ROOT)components/libraries/stack_guard/
+    SDK_HEADER_PATHS += $(SDK_ROOT)components/libraries/task_manager/
     SDK_HEADER_PATHS += $(SDK_ROOT)components/libraries/fds/
     SDK_HEADER_PATHS += $(SDK_ROOT)components/libraries/fifo/
     SDK_HEADER_PATHS += $(SDK_ROOT)components/libraries/fstorage/
@@ -109,7 +119,7 @@ ifneq (,$(filter $(NRF_IC),nrf52832 nrf52840))
     SDK_HEADER_PATHS += $(SDK_ROOT)components/libraries/sdcard/
     SDK_HEADER_PATHS += $(SDK_ROOT)components/libraries/sensorsim/
     SDK_HEADER_PATHS += $(SDK_ROOT)components/libraries/serial/
-    #SDK_HEADER_PATHS += $(SDK_ROOT)components/libraries/sha256/  # <-- Conflicts with mbedtls
+    SDK_HEADER_PATHS += $(SDK_ROOT)components/libraries/sha256/  # <-- Conflicts with mbedtls
     SDK_HEADER_PATHS += $(SDK_ROOT)components/libraries/simple_timer/
     SDK_HEADER_PATHS += $(SDK_ROOT)components/libraries/slip/
     SDK_HEADER_PATHS += $(SDK_ROOT)components/libraries/sortlist/
@@ -122,8 +132,13 @@ ifneq (,$(filter $(NRF_IC),nrf52832 nrf52840))
     SDK_HEADER_PATHS += $(SDK_ROOT)components/libraries/twi_sensor/
     SDK_HEADER_PATHS += $(SDK_ROOT)components/libraries/uart/
     SDK_HEADER_PATHS += $(SDK_ROOT)components/libraries/usbd/
+    SDK_HEADER_PATHS += $(SDK_ROOT)components/drivers_nrf/usbd/
+    SDK_HEADER_PATHS += $(SDK_ROOT)components/libraries/usbd/class/nrf_dfu_trigger/
     SDK_HEADER_PATHS += $(SDK_ROOT)components/libraries/util/
-    SDK_HEADER_PATHS += $(wildcard $(SDK_ROOT)components/libraries/experimental_log/src/)
+    SDK_HEADER_PATHS += $(SDK_ROOT)components/boards/
+    SDK_HEADER_PATHS += $(wildcard $(SDK_ROOT)components/libraries/log/src/)
+    SDK_HEADER_PATHS += $(SDK_ROOT)components/libraries/crypto/backend/cc310/
+    SDK_HEADER_PATHS += $(SDK_ROOT)components/libraries/crypto/backend/cc310_bl/
     SDK_HEADER_PATHS += $(wildcard $(SDK_ROOT)components/libraries/crypto/backend/*/)
     SDK_HEADER_PATHS += $(wildcard $(SDK_ROOT)components/drivers_nrf/adc/)
     SDK_HEADER_PATHS += $(wildcard $(SDK_ROOT)components/drivers_nrf/ble_flash/)
@@ -159,8 +174,9 @@ ifneq (,$(filter $(NRF_IC),nrf52832 nrf52840))
     SDK_HEADER_PATHS += $(SDK_ROOT)components/toolchain/cmsis/include/
     SDK_HEADER_PATHS += $(SDK_ROOT)components/softdevice/common/
     SDK_HEADER_PATHS += $(SDK_ROOT)external/cifra_AES128-EAX/
-    SDK_HEADER_PATHS += $(SDK_ROOT)external/mbedtls/library/
-    SDK_HEADER_PATHS += $(SDK_ROOT)external/nrf_tls/mbedtls/nrf_crypto/config/
+    #SDK_HEADER_PATHS += $(SDK_ROOT)external/mbedtls/library/
+    SDK_HEADER_PATHS += $(SDK_ROOT)external/nrf_tls/
+    #SDK_HEADER_PATHS += $(SDK_ROOT)external/nrf_tls/mbedtls/nrf_crypto/config/
 
     SDK_SOURCE_PATHS += $(SDK_ROOT)components/
     SDK_SOURCE_PATHS += $(SDK_ROOT)modules/nrfx/
@@ -177,6 +193,11 @@ ifneq (,$(filter $(NRF_IC),nrf52832 nrf52840))
     SDK_SOURCE_PATHS += $(SDK_ROOT)components/libraries/balloc/
     SDK_SOURCE_PATHS += $(SDK_ROOT)components/libraries/block_dev/
     SDK_SOURCE_PATHS += $(SDK_ROOT)components/libraries/bootloader/
+    SDK_SOURCE_PATHS += $(SDK_ROOT)components/libraries/bootloader/dfu/
+    SDK_SOURCE_PATHS += $(SDK_ROOT)components/iot/background_dfu/
+    SDK_SOURCE_PATHS += $(SDK_ROOT)components/iot/background_dfu/transport/coap/
+    SDK_SOURCE_PATHS += $(SDK_ROOT)components/iot/coap/
+    SDK_SOURCE_PATHS += $(SDK_ROOT)components/iot/common/
     SDK_SOURCE_PATHS += $(SDK_ROOT)components/libraries/bsp/
     SDK_SOURCE_PATHS += $(SDK_ROOT)components/libraries/button/
     SDK_SOURCE_PATHS += $(SDK_ROOT)components/libraries/cli/
@@ -187,14 +208,15 @@ ifneq (,$(filter $(NRF_IC),nrf52832 nrf52840))
     SDK_SOURCE_PATHS += $(SDK_ROOT)components/libraries/csense_drv/
     SDK_SOURCE_PATHS += $(SDK_ROOT)components/libraries/delay/
     SDK_SOURCE_PATHS += $(SDK_ROOT)components/libraries/ecc/
-    SDK_SOURCE_PATHS += $(SDK_ROOT)components/libraries/experimental_libuarte/
-    SDK_SOURCE_PATHS += $(SDK_ROOT)components/libraries/experimental_log/
-    SDK_SOURCE_PATHS += $(SDK_ROOT)components/libraries/experimental_memobj/
-    SDK_SOURCE_PATHS += $(SDK_ROOT)components/libraries/experimental_mpu/
-    SDK_SOURCE_PATHS += $(SDK_ROOT)components/libraries/experimental_ringbuf/
+    SDK_SOURCE_PATHS += $(SDK_ROOT)components/libraries/libuarte/
+    SDK_SOURCE_PATHS += $(SDK_ROOT)components/libraries/log/
+    SDK_SOURCE_PATHS += $(SDK_ROOT)components/libraries/memobj/
+    SDK_SOURCE_PATHS += $(SDK_ROOT)components/libraries/mpu/
+    SDK_SOURCE_PATHS += $(SDK_ROOT)components/libraries/ringbuf/
+    SDK_SOURCE_PATHS += $(SDK_ROOT)external/nano-pb/
     SDK_SOURCE_PATHS += $(SDK_ROOT)components/libraries/experimental_section_vars/
-    SDK_SOURCE_PATHS += $(SDK_ROOT)components/libraries/experimental_stack_guard/
-    SDK_SOURCE_PATHS += $(SDK_ROOT)components/libraries/experimental_task_manager/
+    SDK_SOURCE_PATHS += $(SDK_ROOT)components/libraries/stack_guard/
+    SDK_SOURCE_PATHS += $(SDK_ROOT)components/libraries/task_manager/
     SDK_SOURCE_PATHS += $(SDK_ROOT)components/libraries/fds/
     SDK_SOURCE_PATHS += $(SDK_ROOT)components/libraries/fifo/
     SDK_SOURCE_PATHS += $(SDK_ROOT)components/libraries/fstorage/
@@ -214,7 +236,7 @@ ifneq (,$(filter $(NRF_IC),nrf52832 nrf52840))
     SDK_SOURCE_PATHS += $(SDK_ROOT)components/libraries/sdcard/
     SDK_SOURCE_PATHS += $(SDK_ROOT)components/libraries/sensorsim/
     SDK_SOURCE_PATHS += $(SDK_ROOT)components/libraries/serial/
-    #SDK_SOURCE_PATHS += $(SDK_ROOT)components/libraries/sha256/  # <-- Conflicts with mbedtls
+    SDK_SOURCE_PATHS += $(SDK_ROOT)components/libraries/sha256/  # <-- Conflicts with mbedtls
     SDK_SOURCE_PATHS += $(SDK_ROOT)components/libraries/simple_timer/
     SDK_SOURCE_PATHS += $(SDK_ROOT)components/libraries/slip/
     SDK_SOURCE_PATHS += $(SDK_ROOT)components/libraries/sortlist/
@@ -227,9 +249,12 @@ ifneq (,$(filter $(NRF_IC),nrf52832 nrf52840))
     SDK_SOURCE_PATHS += $(SDK_ROOT)components/libraries/twi_sensor/
     SDK_SOURCE_PATHS += $(SDK_ROOT)components/libraries/uart/
     SDK_SOURCE_PATHS += $(SDK_ROOT)components/libraries/usbd/
+    SDK_SOURCE_PATHS += $(SDK_ROOT)components/drivers_nrf/usbd/
+    SDK_SOURCE_PATHS += $(SDK_ROOT)components/libraries/usbd/class/nrf_dfu_trigger/
     SDK_SOURCE_PATHS += $(SDK_ROOT)components/libraries/util/
-    SDK_SOURCE_PATHS += $(wildcard $(SDK_ROOT)components/libraries/experimental_log/src/)
-    SDK_SOURCE_PATHS += $(wildcard $(SDK_ROOT)components/libraries/crypto/backend/*/)
+    SDK_SOURCE_PATHS += $(wildcard $(SDK_ROOT)components/libraries/log/src/)
+    SDK_SOURCE_PATHS += $(SDK_ROOT)components/libraries/crypto/backend/cc310/
+    SDK_SOURCE_PATHS += $(SDK_ROOT)components/libraries/crypto/backend/cc310_bl/
     SDK_SOURCE_PATHS += $(wildcard $(SDK_ROOT)components/drivers_nrf/*/)
     SDK_SOURCE_PATHS += $(wildcard $(SDK_ROOT)components/drivers_ext/*/)
     SDK_SOURCE_PATHS += $(SDK_ROOT)components/toolchain/gcc/
@@ -237,7 +262,7 @@ ifneq (,$(filter $(NRF_IC),nrf52832 nrf52840))
     SDK_SOURCE_PATHS += $(SDK_ROOT)external/fprintf/
     SDK_SOURCE_PATHS += $(SDK_ROOT)external/segger_rtt/
     SDK_SOURCE_PATHS += $(SDK_ROOT)external/cifra_AES128-EAX/
-    SDK_SOURCE_PATHS += $(SDK_ROOT)external/mbedtls/library/
+    #SDK_SOURCE_PATHS += $(SDK_ROOT)external/mbedtls/library/
 
     ifdef SERIALIZATION_MODE
       SDK_HEADER_PATHS += $(wildcard $(SDK_ROOT)components/serialization/*/)
@@ -296,6 +321,7 @@ ifneq (,$(filter $(NRF_IC),nrf52832 nrf52840))
       endif
     else
       SDK_HEADER_PATHS += $(wildcard $(SDK_ROOT)components/drivers_nrf/nrf_soc_nosd/)
+      SDK_HEADER_PATHS += $(SDK_ROOT)components/softdevice/mbr/$(NRF_IC)/headers
     endif
 
     ifeq ($(USE_ANT),1)
@@ -323,16 +349,19 @@ ifneq (,$(filter $(NRF_IC),nrf52832 nrf52840))
 
     ifeq ($(USE_THREAD),1)
       ifdef THREAD_FTD
-        THREAD_LIB_FILES += $(SDK_ROOT)external/openthread/lib/gcc/libopenthread-ftd.a
+        THREAD_LIB_FILES += $(SDK_ROOT)external/openthread/lib/nrf52840/gcc/libopenthread-ftd.a
       else
-        THREAD_LIB_FILES += $(SDK_ROOT)external/openthread/lib/gcc/libopenthread-mtd.a
+        THREAD_LIB_FILES += $(SDK_ROOT)external/openthread/lib/nrf52840/gcc/libopenthread-mtd.a
       endif
 
-      THREAD_LIB_FILES += $(SDK_ROOT)external/openthread/lib/gcc/libopenthread-platform-utils.a
-      THREAD_LIB_FILES += $(SDK_ROOT)external/openthread/lib/gcc/libopenthread-nrf52840-sdk.a
-      THREAD_LIB_FILES += $(SDK_ROOT)external/openthread/lib/gcc/libopenthread-diag.a
-      THREAD_LIB_FILES += $(SDK_ROOT)external/openthread/lib/gcc/libmbedcrypto.a
-      THREAD_LIB_FILES += $(SDK_ROOT)external/nrf_cc310/lib/libnrf_cc310_0.9.9.a
+      THREAD_LIB_FILES += $(SDK_ROOT)external/openthread/lib/nrf52840/gcc/libopenthread-platform-utils.a
+      THREAD_LIB_FILES += $(SDK_ROOT)external/openthread/lib/nrf52840/gcc/libopenthread-nrf52840-sdk.a
+      THREAD_LIB_FILES += $(SDK_ROOT)external/openthread/lib/nrf52840/gcc/libopenthread-diag.a
+      THREAD_LIB_FILES += $(SDK_ROOT)external/openthread/lib/nrf52840/gcc/libopenthread-radio.a
+      THREAD_LIB_FILES += $(SDK_ROOT)external/openthread/lib/nrf52840/gcc/libnordicsemi-nrf52840-radio-driver.a
+      THREAD_LIB_FILES += $(SDK_ROOT)external/openthread/lib/nrf52840/gcc/libmbedcrypto.a
+      THREAD_LIB_FILES += $(SDK_ROOT)external/nrf_cc310/lib/libnrf_cc310_0.9.10.a
+      THREAD_LIB_FILES += $(SDK_ROOT)external/nrf_cc310_bl/lib/libnrf_cc310_bl_0.9.10.a
       LIBS += $(THREAD_LIB_FILES)
 
       SDK_HEADER_PATHS += $(SDK_ROOT)external/openthread/include/
@@ -347,7 +376,8 @@ endif # nrf52
 # ---- Create variables for Configuration use
 
 # Location of softdevice
-SOFTDEVICE_PATH ?= $(SDK_ROOT)/components/softdevice/$(SOFTDEVICE_MODEL)/hex/$(SOFTDEVICE_MODEL)_nrf52_$(SOFTDEVICE_VERSION)_softdevice.hex
+SOFTDEVICE_PATH ?= $(SDK_ROOT)components/softdevice/$(SOFTDEVICE_MODEL)/hex/$(SOFTDEVICE_MODEL)_nrf52_$(SOFTDEVICE_VERSION)_softdevice.hex
+MBR_PATH ?= $(SDK_ROOT)components/softdevice/mbr/$(NRF_IC)/hex/mbr_$(NRF_MODEL)_$(MBR_VERSION)_mbr.hex
 
 # Flags for compiler
 HEADER_INCLUDES = $(addprefix -I,$(SDK_HEADER_PATHS)) $(addprefix -I,$(REPO_HEADER_PATHS)) $(addprefix -I,$(BOARD_HEADER_PATHS)) $(addprefix -I,$(APP_HEADER_PATHS))
