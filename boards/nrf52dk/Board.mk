@@ -40,6 +40,7 @@ BOARD_SOURCES += \
 	nrf_atomic.c\
 	nrf_balloc.c\
 	nrf_ble_gatt.c\
+	nrf_ble_qwr.c\
 	nrf_drv_twi.c\
 	nrf_drv_uart.c\
 	nrf_fprintf.c\
@@ -56,6 +57,7 @@ BOARD_SOURCES += \
 	nrf_ringbuf.c\
 	nrf_section_iter.c\
 	nrf_sdh.c\
+	nrf_sdh_ble.c\
 	nrf_sdh_ble.c\
 	nrf_serial.c\
 	nrf_strerror.c\

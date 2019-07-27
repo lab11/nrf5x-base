@@ -690,42 +690,6 @@ void __attribute__((weak)) advertising_init(void) {
     APP_ERROR_CHECK(err_code);
 
     ble_advertising_conn_cfg_tag_set(&m_advertising, APP_BLE_CONN_CFG_TAG);
-
-    /*
-    ret_code_t             err_code;
-    ble_advertising_init_t init;
-
-    memset(&init, 0, sizeof(init));
-
-    // General Advertisement settings
-
-    // Add device name in advertisements
-    init.advdata.name_type               = BLE_ADVDATA_FULL_NAME;
-
-    // Set Advertisement setting
-    init.advdata.include_appearance      = false;
-    init.advdata.flags                   = BLE_GAP_ADV_FLAGS_LE_ONLY_GENERAL_DISC_MODE;
-    //init.advdata.uuids_complete.uuid_cnt = sizeof(m_adv_uuids) / sizeof(m_adv_uuids[0]);
-    //init.advdata.uuids_complete.p_uuids  = m_adv_uuids;
-
-    // Configure advertisements
-    init.config.ble_adv_fast_enabled  = true;
-    init.config.ble_adv_fast_interval = ble_config->adv_interval;
-    init.config.ble_adv_fast_timeout  = 0; // Never time out
-    init.config.ble_adv_whitelist_enabled = false; // equivalent with BLE_GAP_ADV_FP_ANY
-
-    // Define Event handler
-    init.evt_handler = on_adv_evt;
-
-    err_code = ble_advertising_init(&m_advertising, &init);
-    APP_ERROR_CHECK(err_code);
-
-    ble_advertising_conn_cfg_tag_set(&m_advertising, APP_BLE_CONN_CFG_TAG);
-
-    // Full strength signal, 0 dBm
-    err_code = sd_ble_gap_tx_power_set(BLE_GAP_TX_POWER_ROLE_ADV, m_advertising.adv_handle, 0);
-    APP_ERROR_CHECK(err_code);
-    */
 }
 
 void __attribute__((weak)) conn_params_init(void) {
@@ -901,10 +865,15 @@ simple_ble_app_t* simple_ble_init(const simple_ble_config_t* conf) {
 
     // Setup BLE and services
     ble_stack_init();
+    printf("ble stack setup\n");
     gap_params_init();
+    printf("gap setup\n");
     gatt_init();
+    printf("gatt setup\n");
     advertising_init();
+    printf("advertising setup\n");
     services_init();
+    printf("services setup\n");
 
     // Create device information service
 #if defined(HW_REVISION) || defined(FW_REVISION)
@@ -1328,10 +1297,12 @@ void simple_ble_es_adv(const char* url_str, const ble_advdata_t* scan_rsp_data) 
     advdata.uuids_complete       = PHYSWEB_SERVICE_LIST;
 
     // Set advertisement data
+    m_advertising.adv_data.adv_data.len = BLE_GAP_ADV_SET_DATA_SIZE_MAX;
     err_code = ble_advdata_encode(&advdata, m_advertising.adv_data.adv_data.p_data, &m_advertising.adv_data.adv_data.len);
     APP_ERROR_CHECK(err_code);
 
     // Set scan response data
+    m_advertising.adv_data.scan_rsp_data.len = BLE_GAP_ADV_SET_DATA_SIZE_MAX;
     err_code = ble_advdata_encode(scan_rsp_data, m_advertising.adv_data.scan_rsp_data.p_data, &m_advertising.adv_data.scan_rsp_data.len);
     APP_ERROR_CHECK(err_code);
 
