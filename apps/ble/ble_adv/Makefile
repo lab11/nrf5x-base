@@ -11,7 +11,7 @@ APP_SOURCE_PATHS += .
 APP_SOURCES = $(notdir $(wildcard ./*.c))
 
 # Include board Makefile (if any)
-NRF_BASE_DIR ?= ../../
+NRF_BASE_DIR ?= ../../../
 include $(NRF_BASE_DIR)/boards/nrf52dk/Board.mk
 
 # Include main Makefile
