@@ -23,9 +23,9 @@
 #endif
 
 // ***** Board Specific Configuration *****
-#include "nrf52840_thread.h"
+#include "nrf52840dk.h"
 #define LED_COUNT 4
-static const uint8_t LEDS[LED_COUNT] = {NRF52840_THREAD_LED1, NRF52840_THREAD_LED2, NRF52840_THREAD_LED3};
+static const uint8_t LEDS[LED_COUNT] = {LED1,LED2,LED3,LED4};
 // ****************************************
 
 // app error handler. Overwrites weak definition in app_error_weak.c

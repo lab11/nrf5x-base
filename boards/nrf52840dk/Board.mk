@@ -15,7 +15,7 @@ BOARD_SOURCES = $(notdir $(wildcard $(BOARD_DIR)/./*.c))
 BOARD_AS = $(notdir $(wildcard $(BOARD_DIR)/./*.s))
 
 # Board-specific configurations
-BOARD = PCA10040
+BOARD = PCA10056
 USE_BLE = 0
 
 # Additional #define's to be added to code by the compiler
