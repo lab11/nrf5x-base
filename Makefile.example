@@ -1,22 +1,18 @@
 PROJECT_NAME = $(shell basename "$(realpath ./)")
 
-APPLICATION_SRCS = $(notdir $(wildcard ./*.c))
-APPLICATION_SRCS += app_timer.c
-APPLICATION_SRCS += app_error.c
-APPLICATION_SRCS += app_error_weak.c
-APPLICATION_SRCS += nrf_sdh.c
-APPLICATION_SRCS += nrf_section_iter.c
-APPLICATION_SRCS += nrf_sdh_ble.c
-APPLICATION_SRCS += app_util_platform.c
-
-NRF_MODEL = nrf52
-
+# Configurations
+NRF_IC = nrf52832
 SDK_VERSION = 15
-SOFTDEVICE_MODEL = s140
+SOFTDEVICE_MODEL = s132
 
-NRF_BASE_PATH ?= ../..
+# Source and header files
+APP_HEADER_PATHS += .
+APP_SOURCE_PATHS += .
+APP_SOURCES = $(notdir $(wildcard ./*.c))
 
-LIBRARY_PATHS += .  ../../include
-SOURCE_PATHS += ../../src
+# Include board Makefile (if any)
+NRF_BASE_DIR ?= ../../../
+include $(NRF_BASE_DIR)/boards/nrf52dk/Board.mk
 
-include $(NRF_BASE_PATH)/make/Makefile
+# Include main Makefile
+include $(NRF_BASE_DIR)/make/AppMakefile.mk

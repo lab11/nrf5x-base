@@ -1,15 +1,19 @@
 Nordic nRF5x Support Files
 ==========================
 
-This repository is a starting point and shared code for Nordic nRF5x BLE platforms. This repo is
+This repository is a starting point and shared code for Nordic nRF52x BLE/Thread platforms. This repo is
 a collection of libraries, SDKs, Softdevices, and Makefiles to be included
 within other projects using the Nordic platfroms. Pull requests welcome.
 
-The currently supported SDK versions are: 9.0.0, 10.0.0, 11.0.0, 12.2.0, 14.1.0.
+The currently supported SDK versions are: 15.0.0, 15.2.0, 15.3.0, as well as the SDK for Thread and Zigbee v3.0.0
 
 The currently supported Softdevice versions are:
-s130_2.0.1, s140_6.0.0
+s132_6.1.1, s140_6.1.1
 
+Support for nRF51x devices are deprecated and not maintained. The old version
+of this repository with support for nRF51x devices can be found in the
+[`legacy-nrf51x`](https://github.com/lab11/nrf5x-base/tree/legacy-nrf51x)
+branch.
 
 Usage
 -----
@@ -119,10 +123,10 @@ BLE Tools for Other Platforms
 -----------------
 
 When developing a BLE application, several tools exist to make your life easier.
-The easiest option, if you have access to an android phone, is [nRF Master Control Panel](https://play.google.com/store/apps/details?id=no.nordicsemi.android.mcp&hl=en).
-On iOS, [LightBlue Explorer](https://itunes.apple.com/us/app/lightblue-explorer-bluetooth/id557428110?mt=8)
-has similar or better functionality. Alternatively,
-[noble](https://github.com/sandeepmistry/noble) is a NodeJS library for interacting with BLE that can run from
+The easiest option is nRF Connect: [for Android](https://play.google.com/store/apps/details?id=no.nordicsemi.android.mcp&hl=en_US)
+and for [iOS](https://apps.apple.com/us/app/nrf-connect/id1054362403)
+Alternatively,
+[noble](https://github.com/abandonware/noble) is a NodeJS library for interacting with BLE that can run from
 a Linux or Mac computer.
 
 License
