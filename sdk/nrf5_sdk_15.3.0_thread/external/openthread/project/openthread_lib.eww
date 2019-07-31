@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
+
+<workspace>  <project>
+    <path>$WS_DIR$\lib\mbedcrypto\cc310\iar\openthread_lib_libmbedcrypto.ewp</path>
+  </project>  <project>
+    <path>$WS_DIR$\lib\openthread\mtd\iar\openthread_lib_libopenthread_mtd.ewp</path>
+  </project>  <project>
+    <path>$WS_DIR$\lib\openthread\ftd\iar\openthread_lib_libopenthread_ftd.ewp</path>
+  </project>  <project>
+    <path>$WS_DIR$\lib\openthread_diag\iar\openthread_lib_libopenthread_diag.ewp</path>
+  </project>  <project>
+    <path>$WS_DIR$\lib\openthread_cli\mtd\iar\openthread_lib_libopenthread_cli_mtd.ewp</path>
+  </project>  <project>
+    <path>$WS_DIR$\lib\openthread_cli\ftd\iar\openthread_lib_libopenthread_cli_ftd.ewp</path>
+  </project>  <project>
+    <path>$WS_DIR$\lib\mbedcrypto\software\iar\openthread_lib_libmbedcrypto_software.ewp</path>
+  </project>  <project>
+    <path>$WS_DIR$\lib\openthread_ncp\ftd\uart\iar\openthread_lib_libopenthread_ncp_ftd.ewp</path>
+  </project>  <project>
+    <path>$WS_DIR$\lib\openthread_ncp\mtd\uart\iar\openthread_lib_libopenthread_ncp_mtd.ewp</path>
+  </project>  <project>
+    <path>$WS_DIR$\lib\openthread_ncp\mtd\spi\iar\openthread_lib_libopenthread_ncp_mtd_spi.ewp</path>
+  </project>  <project>
+    <path>$WS_DIR$\lib\openthread_ncp\ftd\spi\iar\openthread_lib_libopenthread_ncp_ftd_spi.ewp</path>
+  </project>  <project>
+    <path>$WS_DIR$\lib\openthread_platform_utils\iar\openthread_lib_libopenthread_platform_utils.ewp</path>
+  </project>  <project>
+    <path>$WS_DIR$\lib\openthread_nrf52840\sdk\uart\iar\openthread_lib_libopenthread_nrf52840_sdk.ewp</path>
+  </project>  <project>
+    <path>$WS_DIR$\lib\openthread_nrf52840\sdk\usb\iar\openthread_lib_libopenthread_nrf52840_sdk_usb.ewp</path>
+  </project>  <project>
+    <path>$WS_DIR$\lib\openthread_nrf52840\softdevice\uart\iar\openthread_lib_libopenthread_nrf52840_softdevice_sdk.ewp</path>
+  </project>  <project>
+    <path>$WS_DIR$\lib\openthread_nrf52840\softdevice\usb\iar\openthread_lib_libopenthread_nrf52840_softdevice_sdk_usb.ewp</path>
+  </project>  <batchBuild/>
+</workspace>

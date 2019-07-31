@@ -1,15 +1,19 @@
 Nordic nRF5x Support Files
 ==========================
 
-This repository is a starting point and shared code for Nordic nRF5x BLE platforms. This repo is
+This repository is a starting point and shared code for Nordic nRF52x BLE/Thread platforms. This repo is
 a collection of libraries, SDKs, Softdevices, and Makefiles to be included
 within other projects using the Nordic platfroms. Pull requests welcome.
 
-The currently supported SDK versions are: 9.0.0, 10.0.0, 11.0.0, 12.2.0.
+The currently supported SDK versions are: 15.0.0, 15.2.0, 15.3.0, as well as the SDK for Thread and Zigbee v3.0.0
 
 The currently supported Softdevice versions are:
-s110_7.3.0, s110_8.0.0, s120_2.1.0, s130_1.0.0, s130_2.0.0, s130_2.0.1.
+s132_6.1.1, s140_6.1.1
 
+Support for nRF51x devices are deprecated and not maintained. The old version
+of this repository with support for nRF51x devices can be found in the
+[`legacy-nrf51x`](https://github.com/lab11/nrf5x-base/tree/legacy-nrf51x)
+branch.
 
 Usage
 -----
@@ -25,34 +29,23 @@ a Makefile that looks like this:
 ```make
 PROJECT_NAME = $(shell basename "$(realpath ./)")
 
-APPLICATION_SRCS = $(notdir $(wildcard ./*.c))
-# Various C libraries that need to be included
-APPLICATION_SRCS += softdevice_handler.c
-APPLICATION_SRCS += ble_advdata.c
-APPLICATION_SRCS += ble_conn_params.c
-APPLICATION_SRCS += app_timer.c
-APPLICATION_SRCS += ble_srv_common.c
-APPLICATION_SRCS += app_util_platform.c
-APPLICATION_SRCS += nrf_drv_common.c
-APPLICATION_SRCS += nrf_delay.c
-APPLICATION_SRCS += led.c
-APPLICATION_SRCS += simple_ble.c
-APPLICATION_SRCS += simple_adv.c
-# Add other libraries here!
+# Configurations
+NRF_IC = nrf52832
+SDK_VERSION = 15
+SOFTDEVICE_MODEL = s132
 
-# platform-level headers and source files
-LIBRARY_PATHS += ../../include
-SOURCE_PATHS += ../../src
+# Source and header files
+APP_HEADER_PATHS += .
+APP_SOURCE_PATHS += .
+APP_SOURCES = $(notdir $(wildcard ./*.c))
 
-# Set the softdevice needed for the application
-SOFTDEVICE_MODEL = s110
+# Include board Makefile (if any)
+#include $(NRF_BASE_DIR)/boards/<BOARD_NAME_HERE>
 
-# Include the main Makefile
-NRF_BASE_PATH ?= ../../nrf5x-base
-include $(NRF_BASE_PATH)/make/Makefile
+# Include main Makefile
+NRF_BASE_DIR ?= ../../
+include $(NRF_BASE_DIR)/make/AppMakefile.mk
 ```
-An example Makefile is included in this repo as Makefile.example. Copy to your
-own application directory and modify as desired.
 
 Generally, the expected directory structure for your project is:
 ```
@@ -74,29 +67,10 @@ This repo has several example and test applications. See the
 [apps](https://github.com/lab11/nrf5x-base/tree/master/apps)
 folder.
 
-Supported Features
---------------
+Flash an Application
+--------------------
 
-There are libraries for many common BLE functions in this repo:
-
-- `simple_ble`: Quick interface to most common BLE functions
-  - BLE Advertisements
-    - Device name only
-    - Manufacturer data
-    - Eddystone
-    - Rotating multiple advertisements
-  - BLE Services
-- SQL style database ([LittleD](https://github.com/graemedouglas/LittleD))
-- [RTT Debugging](https://www.segger.com/pr-j-link-real-time.html)
-- Nordic [BLE Serialization](http://infocenter.nordicsemi.com/index.jsp?topic=%2Fcom.nordic.infocenter.sdk51.v10.0.0%2Fble_serialization_s110_events.html)
-- Nordic DFU over-the-air reprogramming.
-
-
-
-Program a nRF51822
-------------------
-
-To flash an application to a nRF51822 BLE chip, there is some setup
+To flash an application, there is some setup
 you must do.
 
 1. Install the [`arm-none-eabi-gcc`](https://launchpad.net/gcc-arm-embedded) compiler.
@@ -107,17 +81,21 @@ you must do.
         sudo apt-get update
         sudo apt-get install gcc-arm-embedded
 
-2. Install the JLink [software](https://www.segger.com/jlink-software.html)
+2. Install Nordic's [command line
+   tools](https://www.nordicsemi.com/DocLib/Content/User_Guides/nrf5x_cltools/latest/UG/cltools/nrf5x_installation)
+   `mergehex` and `nrfjprog`. Ensure these tools are extracted and added to your path.
+
+3. Install the JLink [software](https://www.segger.com/jlink-software.html)
 for your platform. You want the "Software and documentation pack".
 
-3. Acquire a [JLink JTAG programmer](https://www.segger.com/jlink-general-info.html).
+4. Acquire a [JLink JTAG programmer](https://www.segger.com/jlink-general-info.html).
 The "EDU" edition works fine.
 
-4. Program an app! With the JLink box attached to the target board:
+5. Program an app! With the JLink box attached to the target board:
 
         make flash
 
-    will write the app and softdevice to the nRF51822. You can erase
+    will write the app and softdevice to the device. You can erase
     a chip with:
 
         make erase-all
@@ -129,8 +107,8 @@ The "EDU" edition works fine.
     instead of the way-too-large ARM JTAG header. We use [our own](https://github.com/lab11/jtag-tagconnect)
     adapter, but Segger also makes [one](https://www.segger.com/jlink-6-pin-needle-adapter.html).
 
-5. Upon inital programming, the nRF will enter debug mode, which will prevent the nRF from sleeping and 
-   prevent the reset line from working. To fix this, either perform a powerdown/powerup or download nrfjprog from 
+5. Upon inital programming of an NRF51822, the nRF will enter debug mode, which will prevent the nRF from sleeping and
+   prevent the reset line from working. To fix this, either perform a powerdown/powerup or download nrfjprog from
    (https://www.nordicsemi.com/eng/Products/Bluetooth-low-energy/nRF51822) and run nrfjprog --pinreset
 
 Git Submodules
@@ -145,21 +123,11 @@ BLE Tools for Other Platforms
 -----------------
 
 When developing a BLE application, several tools exist to make your life easier.
-The easiest option, if you have access to an android phone, is [nRF Master Control Panel](https://play.google.com/store/apps/details?id=no.nordicsemi.android.mcp&hl=en).
-On iOS, [LightBlue Explorer](https://itunes.apple.com/us/app/lightblue-explorer-bluetooth/id557428110?mt=8)
-has similar or better functionality. Alternatively,
-[noble](https://github.com/sandeepmistry/noble) is a NodeJS library for interacting with BLE that can run from
+The easiest option is nRF Connect: [for Android](https://play.google.com/store/apps/details?id=no.nordicsemi.android.mcp&hl=en_US)
+and for [iOS](https://apps.apple.com/us/app/nrf-connect/id1054362403)
+Alternatively,
+[noble](https://github.com/abandonware/noble) is a NodeJS library for interacting with BLE that can run from
 a Linux or Mac computer.
-
-Example Platforms Using nRF5x-base
-----------------------------------
-
-- [Squall](https://github.com/helena-project/squall)
-- [BLEES](https://github.com/lab11/blees)
-- [Nucleum](https://github.com/lab11/nucleum)
-- [PolyPoint](https://github.com/lab11/polypoint)
-- [PowerBlade](https://github.com/lab11/powerblade)
-
 
 License
 -------

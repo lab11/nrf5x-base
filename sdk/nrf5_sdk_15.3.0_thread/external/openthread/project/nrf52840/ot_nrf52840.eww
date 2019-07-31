@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
+
+<workspace>  <project>
+    <path>$WS_DIR$\mbedcrypto\cc310\iar\ot_nrf52840_libmbedcrypto_nrf52840.ewp</path>
+  </project>  <project>
+    <path>$WS_DIR$\openthread\mtd\iar\ot_nrf52840_libopenthread_mtd_nrf52840.ewp</path>
+  </project>  <project>
+    <path>$WS_DIR$\openthread\ftd\iar\ot_nrf52840_libopenthread_ftd_nrf52840.ewp</path>
+  </project>  <project>
+    <path>$WS_DIR$\openthread_diag\iar\ot_nrf52840_libopenthread_diag_nrf52840.ewp</path>
+  </project>  <project>
+    <path>$WS_DIR$\openthread\radio\iar\ot_nrf52840_libopenthread_radio_nrf52840.ewp</path>
+  </project>  <project>
+    <path>$WS_DIR$\openthread_cli\ftd\iar\ot_nrf52840_libopenthread_cli_ftd_nrf52840.ewp</path>
+  </project>  <project>
+    <path>$WS_DIR$\openthread_cli\mtd\iar\ot_nrf52840_libopenthread_cli_mtd_nrf52840.ewp</path>
+  </project>  <project>
+    <path>$WS_DIR$\openthread_ncp\mtd\uart\iar\ot_nrf52840_libopenthread_ncp_mtd_nrf52840.ewp</path>
+  </project>  <project>
+    <path>$WS_DIR$\openthread_ncp\ftd\uart\iar\ot_nrf52840_libopenthread_ncp_ftd_nrf52840.ewp</path>
+  </project>  <project>
+    <path>$WS_DIR$\openthread_nrf52840\sdk\uart\iar\ot_nrf52840_libopenthread_nrf52840_sdk.ewp</path>
+  </project>  <project>
+    <path>$WS_DIR$\mbedcrypto\threadsafe\iar\ot_nrf52840_libmbedcrypto_threadsafe_nrf52840.ewp</path>
+  </project>  <project>
+    <path>$WS_DIR$\openthread_ncp\mtd\spi\iar\ot_nrf52840_libopenthread_ncp_mtd_spi_nrf52840.ewp</path>
+  </project>  <project>
+    <path>$WS_DIR$\openthread_ncp\ftd\spi\iar\ot_nrf52840_libopenthread_ncp_ftd_spi_nrf52840.ewp</path>
+  </project>  <project>
+    <path>$WS_DIR$\openthread_nrf52840\sdk\spi\iar\ot_nrf52840_libopenthread_nrf52840_sdk_spi.ewp</path>
+  </project>  <project>
+    <path>$WS_DIR$\openthread_nrf52840\sdk\usb\iar\ot_nrf52840_libopenthread_nrf52840_sdk_usb.ewp</path>
+  </project>  <project>
+    <path>$WS_DIR$\openthread_ncp\radio\uart\iar\ot_nrf52840_libopenthread_ncp_radio_nrf52840.ewp</path>
+  </project>  <project>
+    <path>$WS_DIR$\openthread_ncp\radio\spi\iar\ot_nrf52840_libopenthread_ncp_radio_spi_nrf52840.ewp</path>
+  </project>  <project>
+    <path>$WS_DIR$\nordicsemi_nrf52840\driver\iar\ot_nrf52840_libnordicsemi_nrf52840_radio_driver.ewp</path>
+  </project>  <project>
+    <path>$WS_DIR$\openthread_platform_utils\iar\ot_nrf52840_libopenthread_platform_utils_nrf52840.ewp</path>
+  </project>  <project>
+    <path>$WS_DIR$\openthread_nrf52840\softdevice\uart\iar\ot_nrf52840_libopenthread_nrf52840_softdevice_sdk.ewp</path>
+  </project>  <project>
+    <path>$WS_DIR$\openthread_nrf52840\softdevice\spi\iar\ot_nrf52840_libopenthread_nrf52840_softdevice_sdk_spi.ewp</path>
+  </project>  <project>
+    <path>$WS_DIR$\openthread_nrf52840\softdevice\usb\iar\ot_nrf52840_libopenthread_nrf52840_softdevice_sdk_usb.ewp</path>
+  </project>  <project>
+    <path>$WS_DIR$\nordicsemi_nrf52840\driver-softdevice\iar\ot_nrf52840_libnordicsemi_nrf52840_radio_driver_softdevice.ewp</path>
+  </project>  <batchBuild/>
+</workspace>

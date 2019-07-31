@@ -1,0 +1,373 @@
+<!DOCTYPE html>
+<html class="no-js">
+    <head>
+        <meta charset="utf-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <title>nRF Radio 802.15.4 event debugger</title>
+        <link rel="Shortcut icon" href="http://www.nordicsemi.com/extension/nordic/design/bootnordic/images/favicon.ico" type="image/x-icon" />
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.7/css/bootstrap.min.css">
+    </head>
+    <body>
+
+        <div class="container">
+
+            <h3 class="text-center">Sequence diagram generator for <span class="label label-info">nrf_802154</span></h3>
+
+            <div class="form-group">
+            <label for="gdb-command">GDB command:</label>
+            <p id="gdb-command">set print elements 0<br>set print repeats unlimited<br>set pagination off<br>set height unlimited<br><br>p/z nrf_802154_debug_log_buffer<br>p nrf_802154_debug_log_ptr</p>
+            </div>
+
+            <form id="draw-form">
+            <div class="form-group">
+            <label for="debug-str">GDB Log:</label>
+            <textarea class="form-control" rows="20" id="debug-str"></textarea>
+            </div>
+
+            <div class="form-group">
+            <label for="debug-ptr">Index pointer:</label>
+            <input type="text" class="form-control" id="debug-ptr">
+            </div>
+
+            <div class="col-xs-12 text-center">
+            <button type="button" class="btn btn-success" id="draw">Generate sequence diagram</button>
+            </div>
+            </form>
+
+            <br /><br /><br />
+
+            <div id="loading" style="display: none">
+                <div class="alert alert-success">Loading SVG..</div>
+            </div>
+            <div id="diagram" style="text-align: center">
+            </div>
+        </div>
+
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/raphael/2.2.7/raphael.min.js"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/snap.svg/0.5.1/snap.svg-min.js"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/underscore.js/1.8.3/underscore-min.js"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/js-sequence-diagrams/1.0.6/sequence-diagram-min.js"></script>
+
+        <script type="text/javascript">
+        /**
+         * Simple inline JSON event decoder.
+         */
+
+        /************************************************************
+         * Events
+         ************************************************************/
+
+        var events = [
+            {
+                id :  "TRACE_ENTER",
+                val:  0x0001,
+                draw: function(from, to, text, param)
+                {
+                    if (from != to)
+                    {
+                        return from + "->" + to + ": " + text;
+                    }
+                    else
+                    {
+                        return "Note over " + from + ": Enter " + text;
+                    }
+
+                }
+            },
+            {
+                id :  "TRACE_EXIT",
+                val:  0x0002,
+                draw: function(from, to, text, param)
+                {
+                    if (from != to)
+                    {
+                        return to + "-->" + from + ": " + text;
+                    }
+                    else
+                    {
+                        return "Note over " + from + ": Exit " + text;
+                    }
+                }
+            },
+            {
+                id :  "SET_STATE",
+                val:  0x0005,
+                draw: function(from, to, text, param)
+                {
+                    var ret = "Note over DRIVER: ";
+
+                    switch (param)
+                    {
+                        case 0:
+                            ret += "RADIO_STATE_SLEEP";
+                        break;
+                        case 1:
+                            ret += "RADIO_STATE_FALLING_ASLEEP";
+                        break;
+                        case 2:
+                            ret += "RADIO_STATE_RX";
+                        break;
+                        case 3:
+                            ret += "RADIO_STATE_TX_ACK";
+                        break;
+                        case 4:
+                            ret += "RADIO_STATE_CCA_TX";
+                        break;
+                        case 5:
+                            ret += "RADIO_STATE_TX";
+                        break;
+                        case 6:
+                            ret += "RADIO_STATE_RX_ACK";
+                        break;
+                        case 7:
+                            ret += "RADIO_STATE_ED";
+                        break;
+                        case 8:
+                            ret += "RADIO_STATE_CCA";
+                        break;
+                        case 9:
+                            ret += "RADIO_STATE_CONTINUOUS_CARRIER";
+                        break;
+                        default:
+                            console.log("state = " + param);
+                            break;
+                    }
+
+                    return ret;
+                }
+            },
+            {
+                id :  "RADIO_RESET",
+                val:  0x0006,
+                draw: function(from, to, text, param)
+                {
+                    return "Note over DRIVER: Reset";
+                }
+            },
+            {
+                id :  "TIMESLOT_REQUEST",
+                val:  0x0007,
+                draw: function(from, to, text, param)
+                {
+                    return "Note over RAAL: Timeslot Request (" +  param + "us)";
+                }
+            },
+            {
+                id :  "TIMESLOT_REQUEST_RESULT",
+                val:  0x0008,
+                draw: function(from, to, text, param)
+                {
+                    return "Note over RAAL: Timeslot Request Result (" +  param + ")";
+                }
+            },
+        ];
+
+        var functions = [
+            {id: "SLEEP", val: 0x0001, from: "APP", to: "DRIVER", text: "nrf_802154_sleep()"},
+            {id: "RECEIVE", val: 0x0002, from: "APP", to: "DRIVER", text: "nrf_802154_receive()"},
+            {id: "TRANSMIT", val: 0x0003, from: "APP", to: "DRIVER", text: "nrf_802154_transmit()"},
+            {id: "ENERGY_DETECTION", val: 0x0004, from: "APP", to: "DRIVER", text: "nrf_802154_energy_detection()"},
+            {id: "BUFFER_FREE", val: 0x0005, from: "APP", to: "DRIVER", text: "nrf_802154_buffer_free()"},
+            {id: "CCA", val: 0x0006, from: "APP", to: "DRIVER", text: "nrf_802154_cca()"},
+            {id: "CONTINUOUS_CARRIER", val: 0x0007, from: "APP", to: "DRIVER", text: "nrf_802154_continuous_carrier()"},
+            {id: "CSMA_CA", val: 0x0008, from: "APP", to: "DRIVER", text: "nrf_802154_transmit_csma_ca()"},
+            {id: "TRANSMIT_AT", val: 0x0009, from: "APP", to: "DRIVER", text: "nrf_802154_transmit_transmit_at()"},
+
+            {id: "RADIO_IRQ", val: 0x0100, from: "RAAL", to: "DRIVER", text: "RADIO_IRQHandler()"},
+            {id: "EVENT_FRAMESTART", val: 0x0101, from: "DRIVER", to: "DRIVER", text: "EVENT_FRAMESTART"},
+            {id: "EVENT_BCMATCH", val: 0x0102, from: "DRIVER", to: "DRIVER", text: "EVENT_BCMATCH "},
+            {id: "EVENT_END", val: 0x0103, from: "DRIVER", to: "DRIVER", text: "EVENT_END"},
+            {id: "EVENT_DISABLED", val: 0x0104, from: "DRIVER", to: "DRIVER", text: "EVENT_DISABLED"},
+            {id: "EVENT_READY", val: 0x0105, from: "DRIVER", to: "DRIVER", text: "EVENT_READY"},
+            {id: "EVENT_CCAIDLE", val: 0x0106, from: "DRIVER", to: "DRIVER", text: "EVENT_CCAIDLE"},
+            {id: "EVENT_CCABUSY", val: 0x0107, from: "DRIVER", to: "DRIVER", text: "EVENT_CCABUSY"},
+            {id: "EVENT_EDEND", val: 0x0108, from: "DRIVER", to: "DRIVER", text: "EVENT_EDEND"},
+            {id: "EVENT_PHYEND", val: 0x0109, from: "DRIVER", to: "DRIVER", text: "EVENT_PHYEND"},
+            {id: "EVENT_CRCOK", val: 0x010A, from: "DRIVER", to: "DRIVER", text: "EVENT_CRCOK"},
+            {id: "EVENT_CRCERROR", val: 0x010B, from: "DRIVER", to: "DRIVER", text: "EVENT_CRCERROR"},
+
+            {id: "AUTO_ACK_ABORT", val: 0x0201, from: "DRIVER", to: "DRIVER", text: "AUTO ACK ABORT"},
+            {id: "TIMESLOT_STARTED", val: 0x0202, from: "RSCH", to: "DRIVER", text: "nrf_rsch_timeslot_started()"},
+            {id: "TIMESLOT_ENDED", val: 0x0203, from: "RSCH", to: "DRIVER", text: "nrf_rsch_timeslot_ended()"},
+            {id: "CRIT_SECT_ENTER", val: 0x0204, from: "DRIVER", to: "DRIVER", text: "CRITICAL_SECTION_ENTER"},
+            {id: "CRIT_SECT_EXIT", val: 0x0205, from: "DRIVER", to: "DRIVER", text: "CRITICAL_SECTION_EXIT"},
+
+            {id: "RAAL_CRITICAL_SECTION_ENTER", val: 0x0301, from: "RSCH", to: "RAAL", text: "nrf_raal_criticial_section_enter()"},
+            {id: "RAAL_CRITICAL_SECTION_EXIT", val: 0x0302, from: "RSCH", to: "RAAL", text: "nrf_raal_criticial_section_exit()"},
+            {id: "RAAL_CONTINUOUS_ENTER", val: 0x0303, from: "RSCH", to: "RAAL", text: "nrf_raal_continuous_enter()"},
+            {id: "RAAL_CONTINUOUS_EXIT", val: 0x0304, from: "RSCH", to: "RAAL", text: "nrf_raal_continuous_exit()"},
+
+            {id: "TIMESLOT_SIGNAL", val: 0x0400, from: "SOFTDEVICE", to: "RAAL", text: "signal_handler()"},
+            {id: "TIMESLOT_STARTED", val: 0x0401, from: "RAAL", to: "RAAL", text: "EVENT_STARTED"},
+            {id: "TIMESLOT_MARGIN", val: 0x0402, from: "RAAL", to: "RAAL", text: "EVENT_MARGIN"},
+            {id: "TIMESLOT_EXTEND", val: 0x0403, from: "RAAL", to: "RAAL", text: "EVENT_EXTEND"},
+            {id: "TIMESLOT_ENDED", val: 0x0404, from: "RAAL", to: "RAAL", text: "EVENT_ENDED"},
+            {id: "TIMESLOT_RADIO", val: 0x0405, from: "RAAL", to: "RAAL", text: "EVENT_RADIO"},
+            {id: "TIMESLOT_EXTEND_SUCCESS", val: 0x0406, from: "RAAL", to: "RAAL", text: "EVENT_EXTEND_SUCCESS"},
+            {id: "TIMESLOT_EXTEND_FAIL", val: 0x0407, from: "RAAL", to: "RAAL", text: "EVENT_EXTEND_FAIL"},
+            {id: "TIMESLOT_EVT_BLOCKED", val: 0x0408, from: "RAAL", to: "RAAL", text: "EVENT_BLOCKED"},
+            {id: "TIMESLOT_SESSION_IDLE", val: 0x0409, from: "RAAL", to: "RAAL", text: "EVENT_SESSION_IDLE"},
+            {id: "EVENT_HFCLK_READY", val: 0x040A, from: "RAAL", to: "RAAL", text: "EVENT_HFCLK_READY"},
+
+            {id: "RSCH_CONTINUOUS_ENTER", val: 0x040B, from: "DRIVER", to: "RSCH", text: "nrf_rsch_continuous_enter()"},
+            {id: "RSCH_CONTINUOUS_EXIT", val: 0x040C, from: "DRIVER", to: "RSCH", text: "nrf_rsch_continuous_exit()"},
+            {id: "RSCH_CRITICAL_SECTION_ENTER", val: 0x040D, from: "DRIVER", to: "RSCH", text: "nrf_rsch_critical_section_enter()"},
+            {id: "RSCH_CRITICAL_SECTION_EXIT", val: 0x040E, from: "DRIVER", to: "RSCH", text: "nrf_rsch_critical_section_exit()"},
+            {id: "RSCH_TIMESLOT_STARTED", val: 0x040F, from: "RAAL", to: "RSCH", text: "nrf_raal_timeslot_started()"},
+            {id: "RSCH_TIMESLOT_ENDED", val: 0x0410, from: "RAAL", to: "RSCH", text: "nrf_raal_timeslot_ended()"},
+            {id: "RSCH_PEND_GRANTED", val: 0x0411, from: "RSCH", to: "RSCH", text: "nrf_802154_rsch_pend_granted()"},
+            {id: "RSCH_PEND_REVOKED", val: 0x0412, from: "RSCH", to: "RSCH", text: "nrf_802154_rsch_pend_revoked()"},
+            {id: "RSCH_NOTIFY_GRANTED", val: 0x0413, from: "RSCH", to: "RSCH", text: "nrf_802154_rsch_notify_granted()"},
+            {id: "RSCH_NOTIFY_REVOKED", val: 0x0414, from: "RSCH", to: "RSCH", text: "nrf_802154_rsch_notify_revoked()"},
+            {id: "RSCH_NOTIFY_IF_PENDING", val: 0x0415, from: "RSCH", to: "RSCH", text: "nrf_802154_rsch_notify_if_pending()"},
+            {id: "RSCH_DELAYED_TIMESLOT_REQ", val: 0x0416, from: "DRIVER", to: "RSCH", text: "nrf_802154_rsch_delayed_timeslot_request()"},
+            {id: "RSCH_TIMER_DELAYED_PREC", val: 0x0417, from: "TSCH", to: "RSCH", text: "delayed_timeslot_prec_request()"},
+            {id: "RSCH_TIMER_DELAYED_START", val: 0x0418, from: "TSCH", to: "RSCH", text: "delayed_timeslot_start()"},
+
+            {id: "CSMA_ABORT", val: 0x0500, from: "DRIVER", to: "CSMACA", text: "nrf_802154_csma_ca_abort()"},
+            {id: "CSMA_TX_FAILED", val: 0x0501, from: "DRIVER", to: "CSMACA", text: "nrf_802154_csma_ca_tx_failed_hook()"},
+            {id: "CSMA_TX_STARTED", val: 0x0502, from: "DRIVER", to: "CSMACA", text: "nrf_802154_csma_ca_tx_started_hook()"},
+            {id: "CSMA_CHANNEL_BUSY", val: 0x0503, from: "CSMACA", to: "CSMACA", text: "channel_busy()"},
+            {id: "CSMA_FRAME_TRANSMIT", val: 0x0504, from: "CSMACA", to: "CSMACA", text: "frame_transmit()"},
+
+            {id: "TSCH_ADD", val: 0x0600, from: "TSCH", to: "TSCH", text: "nrf_802154_timer_sched_add()"},
+            {id: "TSCH_FIRED", val: 0x0601, from: "TSCH", to: "TSCH", text: "nrf_802154_lp_timer_fired()"},
+        ];
+
+        var debugDecoder = function(debug_json, debug_ptr)
+        {
+            // Diagram sequence input syntax.
+            this.input = "";
+
+            // Transform GDB input to JSON compatible object.
+            debug_json = debug_json.substring(debug_json.indexOf("{"));
+            debug_json = debug_json.replace(/0x[0-9a-fA-F]{8}/g, function myFunction(x){return '"' + x + '"'});
+            debug_json = debug_json.replace('{', '[');
+            debug_json = debug_json.replace('}', ']');
+
+            this.json = jQuery.parseJSON(debug_json);
+            this.ptr  = debug_ptr;
+        }
+
+        debugDecoder.prototype.addLine = function(line)
+        {
+            this.input += line + "\n";
+        }
+
+        debugDecoder.prototype.getFunctionIndex = function(val)
+        {
+            for (var i = 0; i < functions.length; i++)
+            {
+                if (functions[i].val == val)
+                {
+                    return i;
+                }
+            }
+
+            return -1;
+        }
+
+        debugDecoder.prototype.getEventIndex = function(val)
+        {
+            for (var i = 0; i < events.length; i++)
+            {
+                if (events[i].val == val)
+                {
+                    return i;
+                }
+            }
+
+            return -1;
+        }
+
+        debugDecoder.prototype.parseEvents = function()
+        {
+            var last_element = this.ptr ? this.ptr : this.json.length - 1;
+            i = parseInt(this.ptr);
+
+            do
+            {
+                var hexValue = parseInt(this.json[i]);
+
+                if (hexValue == 0)
+                {
+                    i = (i + 1) % this.json.length;
+                    continue;
+                }
+
+                var event    = hexValue & 0xffff;
+                var func     = hexValue >> 16;
+
+                var event_id = this.getEventIndex(event);
+                var func_id  = this.getFunctionIndex(func);
+
+                if (event_id != -1)
+                {
+                    if (func_id != -1)
+                    {
+                        this.addLine(events[event_id].draw(
+                            functions[func_id].from,
+                            functions[func_id].to,
+                            functions[func_id].text,
+                            func
+                        ));
+                    }
+                    else
+                    {
+                        this.addLine(events[event_id].draw(0, 0, 0, func));
+                    }
+                }
+                else
+                {
+                    console.log('Cannot parse - ' + this.json[i]);
+                }
+
+                if (++i == this.json.length)
+                {
+                    i = 0;
+                }
+             } while (i != last_element)
+
+        }
+
+        debugDecoder.prototype.draw = function()
+        {
+            this.addLine("Participant APP");
+            this.addLine("Participant CSMACA");
+            this.addLine("Participant TSCH");
+            this.addLine("Participant DRIVER");
+            this.addLine("Participant RSCH")
+            this.addLine("Participant RAAL");
+            this.addLine("Participant SOFTDEVICE");
+
+            this.parseEvents();
+
+            var d = Diagram.parse(this.input);
+            d.drawSVG('diagram', {theme: 'simple'});
+        }
+
+        function draw()
+        {
+            $('#diagram svg').remove();
+            $('#loading').show();
+
+            setTimeout(function(){
+                var debug_str = $('#debug-str').val();
+                var debug_ptr = $('#debug-ptr').val();
+
+                var decoder = new debugDecoder(debug_str, debug_ptr);
+                decoder.draw();
+
+                $('#loading').hide();
+            }, 100);
+
+            return false;
+        };
+
+        $('#draw').click(draw);
+        $('#draw-form').submit(draw);
+        </script>
+    </body>
+</html>

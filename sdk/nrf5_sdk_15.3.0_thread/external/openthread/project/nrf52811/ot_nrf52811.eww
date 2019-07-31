@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
+
+<workspace>  <project>
+    <path>$WS_DIR$\mbedcrypto\cc310\iar\ot_nrf52811_libmbedcrypto_nrf52811.ewp</path>
+  </project>  <project>
+    <path>$WS_DIR$\openthread\mtd\iar\ot_nrf52811_libopenthread_mtd_nrf52811.ewp</path>
+  </project>  <project>
+    <path>$WS_DIR$\openthread_diag\iar\ot_nrf52811_libopenthread_diag_nrf52811.ewp</path>
+  </project>  <project>
+    <path>$WS_DIR$\openthread\radio\iar\ot_nrf52811_libopenthread_radio_nrf52811.ewp</path>
+  </project>  <project>
+    <path>$WS_DIR$\openthread_cli\mtd\iar\ot_nrf52811_libopenthread_cli_mtd_nrf52811.ewp</path>
+  </project>  <project>
+    <path>$WS_DIR$\openthread_nrf52811\sdk\uart\iar\ot_nrf52811_libopenthread_nrf52811_sdk.ewp</path>
+  </project>  <project>
+    <path>$WS_DIR$\openthread_nrf52811\sdk\spi\iar\ot_nrf52811_libopenthread_nrf52811_sdk_spi.ewp</path>
+  </project>  <project>
+    <path>$WS_DIR$\openthread_ncp\radio\uart\iar\ot_nrf52811_libopenthread_ncp_radio_nrf52811.ewp</path>
+  </project>  <project>
+    <path>$WS_DIR$\openthread_ncp\radio\spi\iar\ot_nrf52811_libopenthread_ncp_radio_spi_nrf52811.ewp</path>
+  </project>  <project>
+    <path>$WS_DIR$\nordicsemi_nrf52811\driver\iar\ot_nrf52811_libnordicsemi_nrf52811_radio_driver.ewp</path>
+  </project>  <project>
+    <path>$WS_DIR$\openthread_platform_utils\iar\ot_nrf52811_libopenthread_platform_utils_nrf52811.ewp</path>
+  </project>  <batchBuild/>
+</workspace>

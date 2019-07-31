@@ -1,9 +1,11 @@
 #ifndef SIMPLE_LOGGER_H
 #define SIMPLE_LOGGER_H
 
+#include <stdint.h>
+
 //////////////USAGE GUIDE////////////
-//	//REQUIRES: simple_ble, simple_timer
-//	//USES: one simple timer
+//	//REQUIRES: -
+//	//USES: -
 //
 //	//In initialization
 //	//permissions
@@ -42,9 +44,11 @@ enum {
 uint8_t simple_logger_init(const char *filename, const char *permissions);
 uint8_t simple_logger_ready(void);
 void simple_logger_update();
+uint8_t simple_logger_power_on();
 uint8_t simple_logger_log(const char *format, ...)
 		__attribute__ ((format (printf, 1, 2)));
 uint8_t simple_logger_log_header(const char *format, ...)
 		__attribute__ ((format (printf, 1, 2)));
+uint8_t simple_logger_read(uint8_t* buf, uint8_t buf_len);
 
 #endif

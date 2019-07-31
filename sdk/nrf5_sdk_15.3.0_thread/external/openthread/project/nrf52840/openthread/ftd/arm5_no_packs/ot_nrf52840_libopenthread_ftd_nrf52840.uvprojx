@@ -1,0 +1,795 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no" ?>
+<Project xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="project_projx.xsd">
+
+  <SchemaVersion>2.1</SchemaVersion>
+
+  <Header>### uVision Project, (C) Keil Software</Header>
+
+  <Targets>    <Target>
+      <TargetName>libopenthread_ftd_nrf52840</TargetName>
+      <ToolsetNumber>0x4</ToolsetNumber>
+      <ToolsetName>ARM-ADS</ToolsetName>
+      <TargetOption>
+        <TargetCommonOption>          <Device>nRF52840_xxAA</Device>
+          <Vendor>Nordic Semiconductor</Vendor>
+          <PackID>..</PackID>
+          <PackURL></PackURL>          <Cpu></Cpu>
+          <FlashUtilSpec></FlashUtilSpec>
+          <StartupFile></StartupFile>
+          <FlashDriverDll></FlashDriverDll>
+          <DeviceId>0</DeviceId>
+          <RegisterFile>$$Device:nRF52832_xxAA$Device\Include\nrf.h</RegisterFile>
+          <MemoryEnv></MemoryEnv>
+          <Cmp></Cmp>
+          <Asm></Asm>
+          <Linker></Linker>
+          <OHString></OHString>
+          <InfinionOptionDll></InfinionOptionDll>
+          <SLE66CMisc></SLE66CMisc>
+          <SLE66AMisc></SLE66AMisc>
+          <SLE66LinkerMisc></SLE66LinkerMisc>
+          <SFDFile></SFDFile>
+          <bCustSvd>0</bCustSvd>
+          <UseEnv>0</UseEnv>
+          <BinPath></BinPath>
+          <IncludePath></IncludePath>
+          <LibPath></LibPath>
+          <RegisterFilePath></RegisterFilePath>
+          <DBRegisterFilePath></DBRegisterFilePath>
+          <TargetStatus>
+            <Error>0</Error>
+            <ExitCodeStop>0</ExitCodeStop>
+            <ButtonStop>0</ButtonStop>
+            <NotGenerated>0</NotGenerated>
+            <InvalidFlash>1</InvalidFlash>
+          </TargetStatus>
+          <OutputDirectory>.\_build\</OutputDirectory>
+          <OutputName>libopenthread-ftd-nrf52840</OutputName>
+          <CreateExecutable>0</CreateExecutable>
+          <CreateLib>1</CreateLib>
+          <CreateHexFile>0</CreateHexFile>
+          <DebugInformation>0</DebugInformation>
+          <BrowseInformation>1</BrowseInformation>
+          <ListingPath>.\_build\</ListingPath>
+          <HexFormatSelection>1</HexFormatSelection>
+          <Merge32K>0</Merge32K>
+          <CreateBatchFile>0</CreateBatchFile>
+          <BeforeCompile>
+            <RunUserProg1>0</RunUserProg1>
+            <RunUserProg2>0</RunUserProg2>
+            <UserProg1Name></UserProg1Name>
+            <UserProg2Name></UserProg2Name>
+            <UserProg1Dos16Mode>0</UserProg1Dos16Mode>
+            <UserProg2Dos16Mode>0</UserProg2Dos16Mode>
+            <nStopU1X>0</nStopU1X>
+            <nStopU2X>0</nStopU2X>
+          </BeforeCompile>
+          <BeforeMake>
+            <RunUserProg1>0</RunUserProg1>
+            <RunUserProg2>0</RunUserProg2>
+            <UserProg1Name></UserProg1Name>
+            <UserProg2Name></UserProg2Name>
+            <UserProg1Dos16Mode>0</UserProg1Dos16Mode>
+            <UserProg2Dos16Mode>0</UserProg2Dos16Mode>
+            <nStopB1X>0</nStopB1X>
+            <nStopB2X>0</nStopB2X>
+          </BeforeMake>
+          <AfterMake>
+            <RunUserProg1>0</RunUserProg1>
+            <RunUserProg2>0</RunUserProg2>
+            <UserProg1Name></UserProg1Name>
+            <UserProg2Name></UserProg2Name>
+            <UserProg1Dos16Mode>0</UserProg1Dos16Mode>
+            <UserProg2Dos16Mode>0</UserProg2Dos16Mode>
+            <nStopA1X>0</nStopA1X>
+            <nStopA2X>0</nStopA2X>
+          </AfterMake>
+          <SelectedForBatchBuild>0</SelectedForBatchBuild>
+          <SVCSIdString></SVCSIdString>
+        </TargetCommonOption>
+        <CommonProperty>
+          <UseCPPCompiler>0</UseCPPCompiler>
+          <RVCTCodeConst>0</RVCTCodeConst>
+          <RVCTZI>0</RVCTZI>
+          <RVCTOtherData>0</RVCTOtherData>
+          <ModuleSelection>0</ModuleSelection>
+          <IncludeInBuild>1</IncludeInBuild>
+          <AlwaysBuild>0</AlwaysBuild>
+          <GenerateAssemblyFile>0</GenerateAssemblyFile>
+          <AssembleAssemblyFile>0</AssembleAssemblyFile>
+          <PublicsOnly>0</PublicsOnly>
+          <StopOnExitCode>3</StopOnExitCode>
+          <CustomArgument></CustomArgument>
+          <IncludeLibraryModules></IncludeLibraryModules>
+          <ComprImg>1</ComprImg>
+        </CommonProperty>
+        <DllOption>
+          <SimDllName></SimDllName>
+          <SimDllArguments></SimDllArguments>
+          <SimDlgDll></SimDlgDll>
+          <SimDlgDllArguments></SimDlgDllArguments>
+          <TargetDllName></TargetDllName>
+          <TargetDllArguments></TargetDllArguments>
+          <TargetDlgDll></TargetDlgDll>
+          <TargetDlgDllArguments></TargetDlgDllArguments>
+        </DllOption>
+        <DebugOption>
+          <OPTHX>
+            <HexSelection>1</HexSelection>
+            <HexRangeLowAddress>0</HexRangeLowAddress>
+            <HexRangeHighAddress>0</HexRangeHighAddress>
+            <HexOffset>0</HexOffset>
+            <Oh166RecLen>16</Oh166RecLen>
+          </OPTHX>
+          <Simulator>
+            <UseSimulator>0</UseSimulator>
+            <LoadApplicationAtStartup>1</LoadApplicationAtStartup>
+            <RunToMain>1</RunToMain>
+            <RestoreBreakpoints>1</RestoreBreakpoints>
+            <RestoreWatchpoints>1</RestoreWatchpoints>
+            <RestoreMemoryDisplay>1</RestoreMemoryDisplay>
+            <RestoreFunctions>1</RestoreFunctions>
+            <RestoreToolbox>1</RestoreToolbox>
+            <LimitSpeedToRealTime>0</LimitSpeedToRealTime>
+            <RestoreSysVw>1</RestoreSysVw>
+          </Simulator>
+          <Target>
+            <UseTarget>0</UseTarget>
+            <LoadApplicationAtStartup>1</LoadApplicationAtStartup>
+            <RunToMain>1</RunToMain>
+            <RestoreBreakpoints>1</RestoreBreakpoints>
+            <RestoreWatchpoints>1</RestoreWatchpoints>
+            <RestoreMemoryDisplay>1</RestoreMemoryDisplay>
+            <RestoreFunctions>0</RestoreFunctions>
+            <RestoreToolbox>1</RestoreToolbox>
+            <RestoreTracepoints>0</RestoreTracepoints>
+            <RestoreSysVw>1</RestoreSysVw>            <UsePdscDebugDescription>1</UsePdscDebugDescription>          </Target>
+          <RunDebugAfterBuild>0</RunDebugAfterBuild>
+          <TargetSelection>-1</TargetSelection>
+          <SimDlls>
+            <CpuDll></CpuDll>
+            <CpuDllArguments></CpuDllArguments>
+            <PeripheralDll></PeripheralDll>
+            <PeripheralDllArguments></PeripheralDllArguments>
+            <InitializationFile></InitializationFile>
+          </SimDlls>
+          <TargetDlls>
+            <CpuDll></CpuDll>
+            <CpuDllArguments></CpuDllArguments>
+            <PeripheralDll></PeripheralDll>
+            <PeripheralDllArguments></PeripheralDllArguments>
+            <InitializationFile></InitializationFile>
+            <Driver>Segger\JL2CM3.dll</Driver>
+          </TargetDlls>
+        </DebugOption>
+        <Utilities>
+          <Flash1>
+            <UseTargetDll>1</UseTargetDll>
+            <UseExternalTool>0</UseExternalTool>
+            <RunIndependent>0</RunIndependent>
+            <UpdateFlashBeforeDebugging>1</UpdateFlashBeforeDebugging>
+            <Capability>1</Capability>
+            <DriverSelection>4099</DriverSelection>
+          </Flash1>
+          <bUseTDR>1</bUseTDR>
+          <Flash2>Segger\JL2CM3.dll</Flash2>
+          <Flash3></Flash3>
+          <Flash4></Flash4>
+        </Utilities>
+        <TargetArmAds>
+          <ArmAdsMisc>
+            <GenerateListings>0</GenerateListings>
+            <asHll>1</asHll>
+            <asAsm>1</asAsm>
+            <asMacX>1</asMacX>
+            <asSyms>1</asSyms>
+            <asFals>1</asFals>
+            <asDbgD>1</asDbgD>
+            <asForm>1</asForm>
+            <ldLst>0</ldLst>
+            <ldmm>1</ldmm>
+            <ldXref>1</ldXref>
+            <BigEnd>0</BigEnd>
+            <AdsALst>1</AdsALst>
+            <AdsACrf>1</AdsACrf>
+            <AdsANop>0</AdsANop>
+            <AdsANot>0</AdsANot>
+            <AdsLLst>1</AdsLLst>
+            <AdsLmap>1</AdsLmap>
+            <AdsLcgr>1</AdsLcgr>
+            <AdsLsym>1</AdsLsym>
+            <AdsLszi>1</AdsLszi>
+            <AdsLtoi>1</AdsLtoi>
+            <AdsLsun>1</AdsLsun>
+            <AdsLven>1</AdsLven>
+            <AdsLsxf>1</AdsLsxf>
+            <RvctClst>0</RvctClst>
+            <GenPPlst>0</GenPPlst>
+            <AdsCpuType>"Cortex-M4"</AdsCpuType>
+            <RvctDeviceName></RvctDeviceName>
+            <mOS>0</mOS>
+            <uocRom>0</uocRom>
+            <uocRam>0</uocRam>
+            <hadIROM>1</hadIROM>
+            <hadIRAM>1</hadIRAM>
+            <hadXRAM>0</hadXRAM>
+            <uocXRam>0</uocXRam>
+            <RvdsVP></RvdsVP>
+            <hadIRAM2>0</hadIRAM2>
+            <hadIROM2>0</hadIROM2>
+            <StupSel>8</StupSel>
+            <useUlib>1</useUlib>
+            <EndSel>0</EndSel>
+            <uLtcg>0</uLtcg>
+            <nSecure>0</nSecure>
+            <RoSelD>3</RoSelD>
+            <RwSelD>3</RwSelD>
+            <CodeSel>0</CodeSel>
+            <OptFeed>0</OptFeed>
+            <NoZi1>0</NoZi1>
+            <NoZi2>0</NoZi2>
+            <NoZi3>0</NoZi3>
+            <NoZi4>0</NoZi4>
+            <NoZi5>0</NoZi5>
+            <Ro1Chk>0</Ro1Chk>
+            <Ro2Chk>0</Ro2Chk>
+            <Ro3Chk>0</Ro3Chk>
+            <Ir1Chk>1</Ir1Chk>
+            <Ir2Chk>0</Ir2Chk>
+            <Ra1Chk>0</Ra1Chk>
+            <Ra2Chk>0</Ra2Chk>
+            <Ra3Chk>0</Ra3Chk>
+            <Im1Chk>1</Im1Chk>
+            <Im2Chk>0</Im2Chk>
+            <OnChipMemories>
+              <Ocm1>
+                <Type>0</Type>
+                <StartAddress>0x0</StartAddress>
+                <Size>0x0</Size>
+              </Ocm1>
+              <Ocm2>
+                <Type>0</Type>
+                <StartAddress>0x0</StartAddress>
+                <Size>0x0</Size>
+              </Ocm2>
+              <Ocm3>
+                <Type>0</Type>
+                <StartAddress>0x0</StartAddress>
+                <Size>0x0</Size>
+              </Ocm3>
+              <Ocm4>
+                <Type>0</Type>
+                <StartAddress>0x0</StartAddress>
+                <Size>0x0</Size>
+              </Ocm4>
+              <Ocm5>
+                <Type>0</Type>
+                <StartAddress>0x0</StartAddress>
+                <Size>0x0</Size>
+              </Ocm5>
+              <Ocm6>
+                <Type>0</Type>
+                <StartAddress>0x0</StartAddress>
+                <Size>0x0</Size>
+              </Ocm6>
+              <IRAM>
+                <Type>0</Type>
+                <StartAddress>0x0</StartAddress>
+                <Size>0x0</Size>
+              </IRAM>
+              <IROM>
+                <Type>1</Type>
+                <StartAddress>0x0</StartAddress>
+                <Size>0x0</Size>
+              </IROM>
+              <XRAM>
+                <Type>0</Type>
+                <StartAddress>0x0</StartAddress>
+                <Size>0x0</Size>
+              </XRAM>
+              <OCR_RVCT1>
+                <Type>1</Type>
+                <StartAddress>0x0</StartAddress>
+                <Size>0x0</Size>
+              </OCR_RVCT1>
+              <OCR_RVCT2>
+                <Type>1</Type>
+                <StartAddress>0x0</StartAddress>
+                <Size>0x0</Size>
+              </OCR_RVCT2>
+              <OCR_RVCT3>
+                <Type>1</Type>
+                <StartAddress>0x0</StartAddress>
+                <Size>0x0</Size>
+              </OCR_RVCT3>
+              <OCR_RVCT4>
+                <Type>1</Type>
+                <StartAddress>0x0</StartAddress>
+                <Size>0x0</Size>
+              </OCR_RVCT4>
+              <OCR_RVCT5>
+                <Type>1</Type>
+                <StartAddress>0x0</StartAddress>
+                <Size>0x0</Size>
+              </OCR_RVCT5>
+              <OCR_RVCT6>
+                <Type>0</Type>
+                <StartAddress>0x0</StartAddress>
+                <Size>0x0</Size>
+              </OCR_RVCT6>
+              <OCR_RVCT7>
+                <Type>0</Type>
+                <StartAddress>0x0</StartAddress>
+                <Size>0x0</Size>
+              </OCR_RVCT7>
+              <OCR_RVCT8>
+                <Type>0</Type>
+                <StartAddress>0x0</StartAddress>
+                <Size>0x0</Size>
+              </OCR_RVCT8>
+              <OCR_RVCT9>
+                <Type>0</Type>
+                <StartAddress>0x0</StartAddress>
+                <Size>0x0</Size>
+              </OCR_RVCT9>
+              <OCR_RVCT10>
+                <Type>0</Type>
+                <StartAddress>0x0</StartAddress>
+                <Size>0x0</Size>
+              </OCR_RVCT10>
+            </OnChipMemories>
+            <RvctStartVector></RvctStartVector>
+          </ArmAdsMisc>
+          <Cads>
+            <interw>1</interw>
+            <Optim>s</Optim>
+            <oTime>0</oTime>
+            <SplitLS>0</SplitLS>
+            <OneElfS>1</OneElfS>
+            <Strict>0</Strict>
+            <EnumInt>0</EnumInt>
+            <PlainCh>0</PlainCh>
+            <Ropi>0</Ropi>
+            <Rwpi>0</Rwpi>
+            <wLevel>0</wLevel>
+            <uThumb>0</uThumb>
+            <uSurpInc>0</uSurpInc>
+            <uC99>1</uC99>
+            <useXO>0</useXO>
+            <v6Lang>0</v6Lang>
+            <v6LangP>0</v6LangP>
+            <vShortEn>0</vShortEn>
+            <vShortWch>0</vShortWch>
+            <VariousControls>
+              <MiscControls>--reduce_paths</MiscControls>
+              <Define> FLOAT_ABI_HARD HAVE_CONFIG_H MBEDTLS_CONFIG_FILE=\"mbedtls-config.h\" MBEDTLS_USER_CONFIG_FILE=\"nrf52840-mbedtls-config.h\" NRF52840_XXAA OPENTHREAD_CONFIG_ENABLE_SLAAC=1 OPENTHREAD_CONFIG_LOG_OUTPUT=OPENTHREAD_CONFIG_LOG_OUTPUT_PLATFORM_DEFINED OPENTHREAD_FTD=1 OPENTHREAD_PROJECT_CORE_CONFIG_FILE=\"openthread-core-nrf52840-config.h\" UART_AS_SERIAL_TRANSPORT=1 _BSD_SOURCE=1 _DEFAULT_SOURCE=1 __HEAP_SIZE=4096 __STACK_SIZE=4096</Define>
+              <Undefine></Undefine>
+              <IncludePath>..\..\..\config;..\..\..;..\..\..\..\openthread\examples\platforms\nrf52840;..\..\..\..\openthread\include;..\..\..\..\openthread\src\core;..\..\..\..\openthread\third_party\NordicSemiconductor\cmsis;..\..\..\..\openthread\third_party\NordicSemiconductor\libraries\crypto;..\..\..\..\openthread\third_party\NordicSemiconductor\libraries\nrf_cc310\include;..\..\..\..\openthread\third_party\NordicSemiconductor\nrfx\mdk;..\..\..\..\openthread\third_party\mbedtls;..\..\..\..\openthread\third_party\mbedtls\repo\include;..\..\..\..\openthread\third_party\mbedtls\repo\include\mbedtls</IncludePath>
+            </VariousControls>
+          </Cads>
+          <Aads>
+            <interw>1</interw>
+            <Ropi>0</Ropi>
+            <Rwpi>0</Rwpi>
+            <thumb>0</thumb>
+            <SplitLS>0</SplitLS>
+            <SwStkChk>0</SwStkChk>
+            <NoWarn>0</NoWarn>
+            <uSurpInc>0</uSurpInc>
+            <useXO>0</useXO>
+            <VariousControls>
+              <MiscControls> --cpreproc_opts=-DFLOAT_ABI_HARD,-DHAVE_CONFIG_H,-DMBEDTLS_CONFIG_FILE=\"mbedtls-config.h\",-DMBEDTLS_USER_CONFIG_FILE=\"nrf52840-mbedtls-config.h\",-DNRF52840_XXAA,-DOPENTHREAD_CONFIG_ENABLE_SLAAC=1,-DOPENTHREAD_CONFIG_LOG_OUTPUT=OPENTHREAD_CONFIG_LOG_OUTPUT_PLATFORM_DEFINED,-DOPENTHREAD_FTD=1,-DOPENTHREAD_PROJECT_CORE_CONFIG_FILE=\"openthread-core-nrf52840-config.h\",-DUART_AS_SERIAL_TRANSPORT=1,-D_BSD_SOURCE=1,-D_DEFAULT_SOURCE=1,-D__HEAP_SIZE=4096,-D__STACK_SIZE=4096</MiscControls>
+              <Define> FLOAT_ABI_HARD HAVE_CONFIG_H MBEDTLS_CONFIG_FILE=\"mbedtls-config.h\" MBEDTLS_USER_CONFIG_FILE=\"nrf52840-mbedtls-config.h\" NRF52840_XXAA OPENTHREAD_CONFIG_ENABLE_SLAAC=1 OPENTHREAD_CONFIG_LOG_OUTPUT=OPENTHREAD_CONFIG_LOG_OUTPUT_PLATFORM_DEFINED OPENTHREAD_FTD=1 OPENTHREAD_PROJECT_CORE_CONFIG_FILE=\"openthread-core-nrf52840-config.h\" UART_AS_SERIAL_TRANSPORT=1 _BSD_SOURCE=1 _DEFAULT_SOURCE=1 __HEAP_SIZE=4096 __STACK_SIZE=4096</Define>
+              <Undefine></Undefine>
+              <IncludePath>..\..\..\config;..\..\..;..\..\..\..\openthread\examples\platforms\nrf52840;..\..\..\..\openthread\include;..\..\..\..\openthread\src\core;..\..\..\..\openthread\third_party\NordicSemiconductor\cmsis;..\..\..\..\openthread\third_party\NordicSemiconductor\libraries\crypto;..\..\..\..\openthread\third_party\NordicSemiconductor\libraries\nrf_cc310\include;..\..\..\..\openthread\third_party\NordicSemiconductor\nrfx\mdk;..\..\..\..\openthread\third_party\mbedtls;..\..\..\..\openthread\third_party\mbedtls\repo\include;..\..\..\..\openthread\third_party\mbedtls\repo\include\mbedtls</IncludePath>
+            </VariousControls>
+          </Aads>
+          <LDads>
+            <umfTarg>1</umfTarg>
+            <Ropi>0</Ropi>
+            <Rwpi>0</Rwpi>
+            <noStLib>0</noStLib>
+            <RepFail>1</RepFail>
+            <useFile>0</useFile>
+            <TextAddressRange>0x00000000</TextAddressRange>
+            <DataAddressRange>0x20000000</DataAddressRange>
+            <pXoBase></pXoBase>
+            <ScatterFile></ScatterFile>
+            <IncludeLibs></IncludeLibs>
+            <IncludeLibsPath></IncludeLibsPath>
+            <Misc>--diag_suppress 6330</Misc>
+            <LinkerInputFile></LinkerInputFile>
+            <DisabledWarnings></DisabledWarnings>
+          </LDads>
+        </TargetArmAds>
+      </TargetOption>
+      <Groups>        <Group>
+          <GroupName>openthread</GroupName>
+          <Files>            <File>
+              <FileName>address_resolver.cpp</FileName>
+              <FileType>8</FileType>
+              <FilePath>..\..\..\..\openthread\src\core\thread\address_resolver.cpp</FilePath>            </File>            <File>
+              <FileName>aes_ccm.cpp</FileName>
+              <FileType>8</FileType>
+              <FilePath>..\..\..\..\openthread\src\core\crypto\aes_ccm.cpp</FilePath>            </File>            <File>
+              <FileName>aes_ecb.cpp</FileName>
+              <FileType>8</FileType>
+              <FilePath>..\..\..\..\openthread\src\core\crypto\aes_ecb.cpp</FilePath>            </File>            <File>
+              <FileName>announce_begin_client.cpp</FileName>
+              <FileType>8</FileType>
+              <FilePath>..\..\..\..\openthread\src\core\meshcop\announce_begin_client.cpp</FilePath>            </File>            <File>
+              <FileName>announce_begin_server.cpp</FileName>
+              <FileType>8</FileType>
+              <FilePath>..\..\..\..\openthread\src\core\thread\announce_begin_server.cpp</FilePath>            </File>            <File>
+              <FileName>announce_sender.cpp</FileName>
+              <FileType>8</FileType>
+              <FilePath>..\..\..\..\openthread\src\core\thread\announce_sender.cpp</FilePath>            </File>            <File>
+              <FileName>border_agent.cpp</FileName>
+              <FileType>8</FileType>
+              <FilePath>..\..\..\..\openthread\src\core\meshcop\border_agent.cpp</FilePath>            </File>            <File>
+              <FileName>border_router_api.cpp</FileName>
+              <FileType>8</FileType>
+              <FilePath>..\..\..\..\openthread\src\core\api\border_router_api.cpp</FilePath>            </File>            <File>
+              <FileName>channel_manager.cpp</FileName>
+              <FileType>8</FileType>
+              <FilePath>..\..\..\..\openthread\src\core\utils\channel_manager.cpp</FilePath>            </File>            <File>
+              <FileName>channel_manager_api.cpp</FileName>
+              <FileType>8</FileType>
+              <FilePath>..\..\..\..\openthread\src\core\api\channel_manager_api.cpp</FilePath>            </File>            <File>
+              <FileName>channel_mask.cpp</FileName>
+              <FileType>8</FileType>
+              <FilePath>..\..\..\..\openthread\src\core\mac\channel_mask.cpp</FilePath>            </File>            <File>
+              <FileName>channel_monitor.cpp</FileName>
+              <FileType>8</FileType>
+              <FilePath>..\..\..\..\openthread\src\core\utils\channel_monitor.cpp</FilePath>            </File>            <File>
+              <FileName>channel_monitor_api.cpp</FileName>
+              <FileType>8</FileType>
+              <FilePath>..\..\..\..\openthread\src\core\api\channel_monitor_api.cpp</FilePath>            </File>            <File>
+              <FileName>child_supervision.cpp</FileName>
+              <FileType>8</FileType>
+              <FilePath>..\..\..\..\openthread\src\core\utils\child_supervision.cpp</FilePath>            </File>            <File>
+              <FileName>child_supervision_api.cpp</FileName>
+              <FileType>8</FileType>
+              <FilePath>..\..\..\..\openthread\src\core\api\child_supervision_api.cpp</FilePath>            </File>            <File>
+              <FileName>child_table.cpp</FileName>
+              <FileType>8</FileType>
+              <FilePath>..\..\..\..\openthread\src\core\thread\child_table.cpp</FilePath>            </File>            <File>
+              <FileName>coap.cpp</FileName>
+              <FileType>8</FileType>
+              <FilePath>..\..\..\..\openthread\src\core\coap\coap.cpp</FilePath>            </File>            <File>
+              <FileName>coap_api.cpp</FileName>
+              <FileType>8</FileType>
+              <FilePath>..\..\..\..\openthread\src\core\api\coap_api.cpp</FilePath>            </File>            <File>
+              <FileName>coap_message.cpp</FileName>
+              <FileType>8</FileType>
+              <FilePath>..\..\..\..\openthread\src\core\coap\coap_message.cpp</FilePath>            </File>            <File>
+              <FileName>coap_secure.cpp</FileName>
+              <FileType>8</FileType>
+              <FilePath>..\..\..\..\openthread\src\core\coap\coap_secure.cpp</FilePath>            </File>            <File>
+              <FileName>coap_secure_api.cpp</FileName>
+              <FileType>8</FileType>
+              <FilePath>..\..\..\..\openthread\src\core\api\coap_secure_api.cpp</FilePath>            </File>            <File>
+              <FileName>commissioner.cpp</FileName>
+              <FileType>8</FileType>
+              <FilePath>..\..\..\..\openthread\src\core\meshcop\commissioner.cpp</FilePath>            </File>            <File>
+              <FileName>commissioner_api.cpp</FileName>
+              <FileType>8</FileType>
+              <FilePath>..\..\..\..\openthread\src\core\api\commissioner_api.cpp</FilePath>            </File>            <File>
+              <FileName>crc16.cpp</FileName>
+              <FileType>8</FileType>
+              <FilePath>..\..\..\..\openthread\src\core\common\crc16.cpp</FilePath>            </File>            <File>
+              <FileName>crypto_api.cpp</FileName>
+              <FileType>8</FileType>
+              <FilePath>..\..\..\..\openthread\src\core\api\crypto_api.cpp</FilePath>            </File>            <File>
+              <FileName>data_poll_manager.cpp</FileName>
+              <FileType>8</FileType>
+              <FilePath>..\..\..\..\openthread\src\core\thread\data_poll_manager.cpp</FilePath>            </File>            <File>
+              <FileName>dataset.cpp</FileName>
+              <FileType>8</FileType>
+              <FilePath>..\..\..\..\openthread\src\core\meshcop\dataset.cpp</FilePath>            </File>            <File>
+              <FileName>dataset_api.cpp</FileName>
+              <FileType>8</FileType>
+              <FilePath>..\..\..\..\openthread\src\core\api\dataset_api.cpp</FilePath>            </File>            <File>
+              <FileName>dataset_ftd_api.cpp</FileName>
+              <FileType>8</FileType>
+              <FilePath>..\..\..\..\openthread\src\core\api\dataset_ftd_api.cpp</FilePath>            </File>            <File>
+              <FileName>dataset_local.cpp</FileName>
+              <FileType>8</FileType>
+              <FilePath>..\..\..\..\openthread\src\core\meshcop\dataset_local.cpp</FilePath>            </File>            <File>
+              <FileName>dataset_manager.cpp</FileName>
+              <FileType>8</FileType>
+              <FilePath>..\..\..\..\openthread\src\core\meshcop\dataset_manager.cpp</FilePath>            </File>            <File>
+              <FileName>dataset_manager_ftd.cpp</FileName>
+              <FileType>8</FileType>
+              <FilePath>..\..\..\..\openthread\src\core\meshcop\dataset_manager_ftd.cpp</FilePath>            </File>            <File>
+              <FileName>dhcp6_client.cpp</FileName>
+              <FileType>8</FileType>
+              <FilePath>..\..\..\..\openthread\src\core\net\dhcp6_client.cpp</FilePath>            </File>            <File>
+              <FileName>dhcp6_server.cpp</FileName>
+              <FileType>8</FileType>
+              <FilePath>..\..\..\..\openthread\src\core\net\dhcp6_server.cpp</FilePath>            </File>            <File>
+              <FileName>dns_api.cpp</FileName>
+              <FileType>8</FileType>
+              <FilePath>..\..\..\..\openthread\src\core\api\dns_api.cpp</FilePath>            </File>            <File>
+              <FileName>dns_client.cpp</FileName>
+              <FileType>8</FileType>
+              <FilePath>..\..\..\..\openthread\src\core\net\dns_client.cpp</FilePath>            </File>            <File>
+              <FileName>dtls.cpp</FileName>
+              <FileType>8</FileType>
+              <FilePath>..\..\..\..\openthread\src\core\meshcop\dtls.cpp</FilePath>            </File>            <File>
+              <FileName>ecdsa.cpp</FileName>
+              <FileType>8</FileType>
+              <FilePath>..\..\..\..\openthread\src\core\crypto\ecdsa.cpp</FilePath>            </File>            <File>
+              <FileName>energy_scan_client.cpp</FileName>
+              <FileType>8</FileType>
+              <FilePath>..\..\..\..\openthread\src\core\meshcop\energy_scan_client.cpp</FilePath>            </File>            <File>
+              <FileName>energy_scan_server.cpp</FileName>
+              <FileType>8</FileType>
+              <FilePath>..\..\..\..\openthread\src\core\thread\energy_scan_server.cpp</FilePath>            </File>            <File>
+              <FileName>entropy.cpp</FileName>
+              <FileType>8</FileType>
+              <FilePath>..\..\..\..\openthread\src\core\common\entropy.cpp</FilePath>            </File>            <File>
+              <FileName>entropy_api.cpp</FileName>
+              <FileType>8</FileType>
+              <FilePath>..\..\..\..\openthread\src\core\api\entropy_api.cpp</FilePath>            </File>            <File>
+              <FileName>heap.cpp</FileName>
+              <FileType>8</FileType>
+              <FilePath>..\..\..\..\openthread\src\core\utils\heap.cpp</FilePath>            </File>            <File>
+              <FileName>hmac_sha256.cpp</FileName>
+              <FileType>8</FileType>
+              <FilePath>..\..\..\..\openthread\src\core\crypto\hmac_sha256.cpp</FilePath>            </File>            <File>
+              <FileName>icmp6.cpp</FileName>
+              <FileType>8</FileType>
+              <FilePath>..\..\..\..\openthread\src\core\net\icmp6.cpp</FilePath>            </File>            <File>
+              <FileName>icmp6_api.cpp</FileName>
+              <FileType>8</FileType>
+              <FilePath>..\..\..\..\openthread\src\core\api\icmp6_api.cpp</FilePath>            </File>            <File>
+              <FileName>instance.cpp</FileName>
+              <FileType>8</FileType>
+              <FilePath>..\..\..\..\openthread\src\core\common\instance.cpp</FilePath>            </File>            <File>
+              <FileName>instance_api.cpp</FileName>
+              <FileType>8</FileType>
+              <FilePath>..\..\..\..\openthread\src\core\api\instance_api.cpp</FilePath>            </File>            <File>
+              <FileName>ip6.cpp</FileName>
+              <FileType>8</FileType>
+              <FilePath>..\..\..\..\openthread\src\core\net\ip6.cpp</FilePath>            </File>            <File>
+              <FileName>ip6_address.cpp</FileName>
+              <FileType>8</FileType>
+              <FilePath>..\..\..\..\openthread\src\core\net\ip6_address.cpp</FilePath>            </File>            <File>
+              <FileName>ip6_api.cpp</FileName>
+              <FileType>8</FileType>
+              <FilePath>..\..\..\..\openthread\src\core\api\ip6_api.cpp</FilePath>            </File>            <File>
+              <FileName>ip6_filter.cpp</FileName>
+              <FileType>8</FileType>
+              <FilePath>..\..\..\..\openthread\src\core\net\ip6_filter.cpp</FilePath>            </File>            <File>
+              <FileName>ip6_headers.cpp</FileName>
+              <FileType>8</FileType>
+              <FilePath>..\..\..\..\openthread\src\core\net\ip6_headers.cpp</FilePath>            </File>            <File>
+              <FileName>ip6_mpl.cpp</FileName>
+              <FileType>8</FileType>
+              <FilePath>..\..\..\..\openthread\src\core\net\ip6_mpl.cpp</FilePath>            </File>            <File>
+              <FileName>ip6_routes.cpp</FileName>
+              <FileType>8</FileType>
+              <FilePath>..\..\..\..\openthread\src\core\net\ip6_routes.cpp</FilePath>            </File>            <File>
+              <FileName>jam_detection_api.cpp</FileName>
+              <FileType>8</FileType>
+              <FilePath>..\..\..\..\openthread\src\core\api\jam_detection_api.cpp</FilePath>            </File>            <File>
+              <FileName>jam_detector.cpp</FileName>
+              <FileType>8</FileType>
+              <FilePath>..\..\..\..\openthread\src\core\utils\jam_detector.cpp</FilePath>            </File>            <File>
+              <FileName>joiner.cpp</FileName>
+              <FileType>8</FileType>
+              <FilePath>..\..\..\..\openthread\src\core\meshcop\joiner.cpp</FilePath>            </File>            <File>
+              <FileName>joiner_api.cpp</FileName>
+              <FileType>8</FileType>
+              <FilePath>..\..\..\..\openthread\src\core\api\joiner_api.cpp</FilePath>            </File>            <File>
+              <FileName>joiner_router.cpp</FileName>
+              <FileType>8</FileType>
+              <FilePath>..\..\..\..\openthread\src\core\meshcop\joiner_router.cpp</FilePath>            </File>            <File>
+              <FileName>key_manager.cpp</FileName>
+              <FileType>8</FileType>
+              <FilePath>..\..\..\..\openthread\src\core\thread\key_manager.cpp</FilePath>            </File>            <File>
+              <FileName>leader.cpp</FileName>
+              <FileType>8</FileType>
+              <FilePath>..\..\..\..\openthread\src\core\meshcop\leader.cpp</FilePath>            </File>            <File>
+              <FileName>link_api.cpp</FileName>
+              <FileType>8</FileType>
+              <FilePath>..\..\..\..\openthread\src\core\api\link_api.cpp</FilePath>            </File>            <File>
+              <FileName>link_quality.cpp</FileName>
+              <FileType>8</FileType>
+              <FilePath>..\..\..\..\openthread\src\core\thread\link_quality.cpp</FilePath>            </File>            <File>
+              <FileName>link_raw.cpp</FileName>
+              <FileType>8</FileType>
+              <FilePath>..\..\..\..\openthread\src\core\mac\link_raw.cpp</FilePath>            </File>            <File>
+              <FileName>link_raw_api.cpp</FileName>
+              <FileType>8</FileType>
+              <FilePath>..\..\..\..\openthread\src\core\api\link_raw_api.cpp</FilePath>            </File>            <File>
+              <FileName>logging.cpp</FileName>
+              <FileType>8</FileType>
+              <FilePath>..\..\..\..\openthread\src\core\common\logging.cpp</FilePath>            </File>            <File>
+              <FileName>logging_api.cpp</FileName>
+              <FileType>8</FileType>
+              <FilePath>..\..\..\..\openthread\src\core\api\logging_api.cpp</FilePath>            </File>            <File>
+              <FileName>lowpan.cpp</FileName>
+              <FileType>8</FileType>
+              <FilePath>..\..\..\..\openthread\src\core\thread\lowpan.cpp</FilePath>            </File>            <File>
+              <FileName>mac.cpp</FileName>
+              <FileType>8</FileType>
+              <FilePath>..\..\..\..\openthread\src\core\mac\mac.cpp</FilePath>            </File>            <File>
+              <FileName>mac_filter.cpp</FileName>
+              <FileType>8</FileType>
+              <FilePath>..\..\..\..\openthread\src\core\mac\mac_filter.cpp</FilePath>            </File>            <File>
+              <FileName>mac_frame.cpp</FileName>
+              <FileType>8</FileType>
+              <FilePath>..\..\..\..\openthread\src\core\mac\mac_frame.cpp</FilePath>            </File>            <File>
+              <FileName>mbedtls.cpp</FileName>
+              <FileType>8</FileType>
+              <FilePath>..\..\..\..\openthread\src\core\crypto\mbedtls.cpp</FilePath>            </File>            <File>
+              <FileName>mesh_forwarder.cpp</FileName>
+              <FileType>8</FileType>
+              <FilePath>..\..\..\..\openthread\src\core\thread\mesh_forwarder.cpp</FilePath>            </File>            <File>
+              <FileName>mesh_forwarder_ftd.cpp</FileName>
+              <FileType>8</FileType>
+              <FilePath>..\..\..\..\openthread\src\core\thread\mesh_forwarder_ftd.cpp</FilePath>            </File>            <File>
+              <FileName>mesh_forwarder_mtd.cpp</FileName>
+              <FileType>8</FileType>
+              <FilePath>..\..\..\..\openthread\src\core\thread\mesh_forwarder_mtd.cpp</FilePath>            </File>            <File>
+              <FileName>meshcop.cpp</FileName>
+              <FileType>8</FileType>
+              <FilePath>..\..\..\..\openthread\src\core\meshcop\meshcop.cpp</FilePath>            </File>            <File>
+              <FileName>meshcop_tlvs.cpp</FileName>
+              <FileType>8</FileType>
+              <FilePath>..\..\..\..\openthread\src\core\meshcop\meshcop_tlvs.cpp</FilePath>            </File>            <File>
+              <FileName>message.cpp</FileName>
+              <FileType>8</FileType>
+              <FilePath>..\..\..\..\openthread\src\core\common\message.cpp</FilePath>            </File>            <File>
+              <FileName>message_api.cpp</FileName>
+              <FileType>8</FileType>
+              <FilePath>..\..\..\..\openthread\src\core\api\message_api.cpp</FilePath>            </File>            <File>
+              <FileName>missing_strlcat.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\..\..\..\openthread\src\core\utils\missing_strlcat.c</FilePath>            </File>            <File>
+              <FileName>missing_strlcpy.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\..\..\..\openthread\src\core\utils\missing_strlcpy.c</FilePath>            </File>            <File>
+              <FileName>missing_strnlen.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\..\..\..\openthread\src\core\utils\missing_strnlen.c</FilePath>            </File>            <File>
+              <FileName>mle.cpp</FileName>
+              <FileType>8</FileType>
+              <FilePath>..\..\..\..\openthread\src\core\thread\mle.cpp</FilePath>            </File>            <File>
+              <FileName>mle_router.cpp</FileName>
+              <FileType>8</FileType>
+              <FilePath>..\..\..\..\openthread\src\core\thread\mle_router.cpp</FilePath>            </File>            <File>
+              <FileName>netdata_api.cpp</FileName>
+              <FileType>8</FileType>
+              <FilePath>..\..\..\..\openthread\src\core\api\netdata_api.cpp</FilePath>            </File>            <File>
+              <FileName>netif.cpp</FileName>
+              <FileType>8</FileType>
+              <FilePath>..\..\..\..\openthread\src\core\net\netif.cpp</FilePath>            </File>            <File>
+              <FileName>network_data.cpp</FileName>
+              <FileType>8</FileType>
+              <FilePath>..\..\..\..\openthread\src\core\thread\network_data.cpp</FilePath>            </File>            <File>
+              <FileName>network_data_leader.cpp</FileName>
+              <FileType>8</FileType>
+              <FilePath>..\..\..\..\openthread\src\core\thread\network_data_leader.cpp</FilePath>            </File>            <File>
+              <FileName>network_data_leader_ftd.cpp</FileName>
+              <FileType>8</FileType>
+              <FilePath>..\..\..\..\openthread\src\core\thread\network_data_leader_ftd.cpp</FilePath>            </File>            <File>
+              <FileName>network_data_local.cpp</FileName>
+              <FileType>8</FileType>
+              <FilePath>..\..\..\..\openthread\src\core\thread\network_data_local.cpp</FilePath>            </File>            <File>
+              <FileName>network_diagnostic.cpp</FileName>
+              <FileType>8</FileType>
+              <FilePath>..\..\..\..\openthread\src\core\thread\network_diagnostic.cpp</FilePath>            </File>            <File>
+              <FileName>network_time_api.cpp</FileName>
+              <FileType>8</FileType>
+              <FilePath>..\..\..\..\openthread\src\core\api\network_time_api.cpp</FilePath>            </File>            <File>
+              <FileName>notifier.cpp</FileName>
+              <FileType>8</FileType>
+              <FilePath>..\..\..\..\openthread\src\core\common\notifier.cpp</FilePath>            </File>            <File>
+              <FileName>panid_query_client.cpp</FileName>
+              <FileType>8</FileType>
+              <FilePath>..\..\..\..\openthread\src\core\meshcop\panid_query_client.cpp</FilePath>            </File>            <File>
+              <FileName>panid_query_server.cpp</FileName>
+              <FileType>8</FileType>
+              <FilePath>..\..\..\..\openthread\src\core\thread\panid_query_server.cpp</FilePath>            </File>            <File>
+              <FileName>parse_cmdline.cpp</FileName>
+              <FileType>8</FileType>
+              <FilePath>..\..\..\..\openthread\src\core\utils\parse_cmdline.cpp</FilePath>            </File>            <File>
+              <FileName>pbkdf2_cmac.cpp</FileName>
+              <FileType>8</FileType>
+              <FilePath>..\..\..\..\openthread\src\core\crypto\pbkdf2_cmac.cpp</FilePath>            </File>            <File>
+              <FileName>radio_weak.cpp</FileName>
+              <FileType>8</FileType>
+              <FilePath>..\..\..\..\openthread\src\core\phy\radio_weak.cpp</FilePath>            </File>            <File>
+              <FileName>random_crypto.cpp</FileName>
+              <FileType>8</FileType>
+              <FilePath>..\..\..\..\openthread\src\core\common\random_crypto.cpp</FilePath>            </File>            <File>
+              <FileName>random_crypto_api.cpp</FileName>
+              <FileType>8</FileType>
+              <FilePath>..\..\..\..\openthread\src\core\api\random_crypto_api.cpp</FilePath>            </File>            <File>
+              <FileName>random_manager.cpp</FileName>
+              <FileType>8</FileType>
+              <FilePath>..\..\..\..\openthread\src\core\common\random_manager.cpp</FilePath>            </File>            <File>
+              <FileName>random_noncrypto.cpp</FileName>
+              <FileType>8</FileType>
+              <FilePath>..\..\..\..\openthread\src\core\common\random_noncrypto.cpp</FilePath>            </File>            <File>
+              <FileName>random_noncrypto_api.cpp</FileName>
+              <FileType>8</FileType>
+              <FilePath>..\..\..\..\openthread\src\core\api\random_noncrypto_api.cpp</FilePath>            </File>            <File>
+              <FileName>router_table.cpp</FileName>
+              <FileType>8</FileType>
+              <FilePath>..\..\..\..\openthread\src\core\thread\router_table.cpp</FilePath>            </File>            <File>
+              <FileName>server_api.cpp</FileName>
+              <FileType>8</FileType>
+              <FilePath>..\..\..\..\openthread\src\core\api\server_api.cpp</FilePath>            </File>            <File>
+              <FileName>settings.cpp</FileName>
+              <FileType>8</FileType>
+              <FilePath>..\..\..\..\openthread\src\core\common\settings.cpp</FilePath>            </File>            <File>
+              <FileName>sha256.cpp</FileName>
+              <FileType>8</FileType>
+              <FilePath>..\..\..\..\openthread\src\core\crypto\sha256.cpp</FilePath>            </File>            <File>
+              <FileName>slaac_address.cpp</FileName>
+              <FileType>8</FileType>
+              <FilePath>..\..\..\..\openthread\src\core\utils\slaac_address.cpp</FilePath>            </File>            <File>
+              <FileName>sntp_api.cpp</FileName>
+              <FileType>8</FileType>
+              <FilePath>..\..\..\..\openthread\src\core\api\sntp_api.cpp</FilePath>            </File>            <File>
+              <FileName>sntp_client.cpp</FileName>
+              <FileType>8</FileType>
+              <FilePath>..\..\..\..\openthread\src\core\net\sntp_client.cpp</FilePath>            </File>            <File>
+              <FileName>src_match_controller.cpp</FileName>
+              <FileType>8</FileType>
+              <FilePath>..\..\..\..\openthread\src\core\thread\src_match_controller.cpp</FilePath>            </File>            <File>
+              <FileName>string.cpp</FileName>
+              <FileType>8</FileType>
+              <FilePath>..\..\..\..\openthread\src\core\common\string.cpp</FilePath>            </File>            <File>
+              <FileName>sub_mac.cpp</FileName>
+              <FileType>8</FileType>
+              <FilePath>..\..\..\..\openthread\src\core\mac\sub_mac.cpp</FilePath>            </File>            <File>
+              <FileName>sub_mac_callbacks.cpp</FileName>
+              <FileType>8</FileType>
+              <FilePath>..\..\..\..\openthread\src\core\mac\sub_mac_callbacks.cpp</FilePath>            </File>            <File>
+              <FileName>tasklet.cpp</FileName>
+              <FileType>8</FileType>
+              <FilePath>..\..\..\..\openthread\src\core\common\tasklet.cpp</FilePath>            </File>            <File>
+              <FileName>tasklet_api.cpp</FileName>
+              <FileType>8</FileType>
+              <FilePath>..\..\..\..\openthread\src\core\api\tasklet_api.cpp</FilePath>            </File>            <File>
+              <FileName>thread_api.cpp</FileName>
+              <FileType>8</FileType>
+              <FilePath>..\..\..\..\openthread\src\core\api\thread_api.cpp</FilePath>            </File>            <File>
+              <FileName>thread_ftd_api.cpp</FileName>
+              <FileType>8</FileType>
+              <FilePath>..\..\..\..\openthread\src\core\api\thread_ftd_api.cpp</FilePath>            </File>            <File>
+              <FileName>thread_netif.cpp</FileName>
+              <FileType>8</FileType>
+              <FilePath>..\..\..\..\openthread\src\core\thread\thread_netif.cpp</FilePath>            </File>            <File>
+              <FileName>time_sync_service.cpp</FileName>
+              <FileType>8</FileType>
+              <FilePath>..\..\..\..\openthread\src\core\thread\time_sync_service.cpp</FilePath>            </File>            <File>
+              <FileName>timer.cpp</FileName>
+              <FileType>8</FileType>
+              <FilePath>..\..\..\..\openthread\src\core\common\timer.cpp</FilePath>            </File>            <File>
+              <FileName>timestamp.cpp</FileName>
+              <FileType>8</FileType>
+              <FilePath>..\..\..\..\openthread\src\core\meshcop\timestamp.cpp</FilePath>            </File>            <File>
+              <FileName>tlvs.cpp</FileName>
+              <FileType>8</FileType>
+              <FilePath>..\..\..\..\openthread\src\core\common\tlvs.cpp</FilePath>            </File>            <File>
+              <FileName>topology.cpp</FileName>
+              <FileType>8</FileType>
+              <FilePath>..\..\..\..\openthread\src\core\thread\topology.cpp</FilePath>            </File>            <File>
+              <FileName>trickle_timer.cpp</FileName>
+              <FileType>8</FileType>
+              <FilePath>..\..\..\..\openthread\src\core\common\trickle_timer.cpp</FilePath>            </File>            <File>
+              <FileName>udp6.cpp</FileName>
+              <FileType>8</FileType>
+              <FilePath>..\..\..\..\openthread\src\core\net\udp6.cpp</FilePath>            </File>            <File>
+              <FileName>udp_api.cpp</FileName>
+              <FileType>8</FileType>
+              <FilePath>..\..\..\..\openthread\src\core\api\udp_api.cpp</FilePath>            </File>          </Files>
+        </Group>      </Groups>
+    </Target>  </Targets>
+</Project>
