@@ -10,6 +10,9 @@ APPLICATION_SRCS += ble_srv_common.c
 APPLICATION_SRCS += app_util_platform.c
 APPLICATION_SRCS += nrf_drv_common.c
 APPLICATION_SRCS += nrf_delay.c
+APPLICATION_SRCS += nrf_log.c
+APPLICATION_SRCS += SEGGER_RTT.c
+APPLICATION_SRCS += SEGGER_RTT_printf.c
 APPLICATION_SRCS += led.c
 
 APPLICATION_SRCS += simple_ble.c
@@ -23,6 +26,11 @@ RAM_KB = 16
 
 LIBRARY_PATHS += . ../../include
 SOURCE_PATHS += ../../src
+
+CFLAGS = -Os
+CFLAGS += -DNRF_LOG_USES_RTT=1
+
+# LDFLAGS += --specs=nano.specs
 
 NRF_BASE_PATH ?= ../..
 include $(NRF_BASE_PATH)/make/Makefile

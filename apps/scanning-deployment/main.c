@@ -9,6 +9,7 @@
 #include "nordic_common.h"
 #include "softdevice_handler.h"
 #include "ble_debug_assert_handler.h"
+#include "nrf_log.h"
 #include "led.h"
 
 #include "simple_ble.h"
@@ -126,6 +127,15 @@ void ble_after_adv_event (void) {
 
 void ble_error (uint32_t err_code) {
     led_on(LED_PIN);
+    NRF_LOG_PRINTF("ERROR 0x%X\n", err_code);
+}
+
+void ble_evt_adv_report (ble_evt_t* p_ble_evt) {
+    led_toggle(LED_PIN);
+
+    ble_gap_evt_adv_report_t* report = &p_ble_evt->evt.gap_evt.params.adv_report;
+    uint8_t* addr = report->peer_addr.addr;
+    NRF_LOG_PRINTF("Addr: %0X%0X%0X%0X%0X%0X - %s - %d bytes\n", addr[5], addr[4], addr[3], addr[2], addr[1], addr[0], (report->scan_rsp)?"RSP":"ADV", report->dlen);
 }
 
 void advertising_start(void) {
@@ -134,16 +144,26 @@ void advertising_start(void) {
 
 int main (void) {
 
+    // Setup LED
+    led_init(LED_PIN);
+    led_off(LED_PIN);
+
+    // RTT code
+    log_rtt_init();
+
     // Setup BLE
     simple_ble_init(&ble_config);
-
-    led_init(LED_PIN);
 
     // Setup timer to change parameters
     //timer_begin();
 
     // Start advertising with initial parameters
     advertise_with_next_parameter_set(true);
+
+    // Begin scanning
+    simple_ble_scan_start();
+
+    NRF_LOG_PRINTF("App Configured!\n");
 
     while (1) {
         power_manage();

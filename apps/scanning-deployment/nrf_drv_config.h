@@ -13,6 +13,8 @@
 #ifndef NRF_DRV_CONFIG_H
 #define NRF_DRV_CONFIG_H
 
+#define NRF_LOG_USES_RTT 1
+
 /**
  * Provide a non-zero value here in applications that need to use several
  * peripherals with the same ID that are sharing certain resources
