@@ -22,6 +22,11 @@
 #include "app_timer.h"
 #include "softdevice_handler.h"
 #include "nrf_sdm.h"
+#include "nrf_soc.h"
+
+#ifdef SDK_VERSION_11
+#include "nrf_nvic.h"
+#endif
 
 // device firmware update code
 #ifdef ENABLE_DFU
