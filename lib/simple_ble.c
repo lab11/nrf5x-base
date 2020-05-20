@@ -472,6 +472,10 @@ void __attribute__((weak)) ble_stack_init (void) {
     //Check the ram settings against the used number of links
     CHECK_RAM_START_ADDR(CENTRAL_LINK_COUNT, PERIPHERAL_LINK_COUNT);
 
+    // create radio notifications to get advertising events
+    //err_code = radio_notification_init();
+    //APP_ERROR_CHECK(err_code);
+
     // Enable BLE stack.
     err_code = softdevice_enable(&ble_enable_params);
     APP_ERROR_CHECK(err_code);
@@ -1005,8 +1009,8 @@ static const ble_gap_scan_params_t m_scan_param = {
     .active = 0,                   // Active scanning not set.
     .selective = 0,                // Selective scanning not set.
     .p_whitelist = NULL,           // No whitelist provided.
-    .interval = 0x00A0,
-    .window = 0x0050,
+    .interval = 0x0640,
+    .window = 0x0640,
     .timeout = 0x0000              // No timeout.
 };
 

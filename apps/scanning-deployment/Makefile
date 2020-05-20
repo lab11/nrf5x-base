@@ -30,7 +30,7 @@ SOURCE_PATHS += ../../src
 CFLAGS = -Os
 CFLAGS += -DNRF_LOG_USES_RTT=1
 
-# LDFLAGS += --specs=nano.specs
+LDFLAGS += --specs=nano.specs
 
 NRF_BASE_PATH ?= ../..
 include $(NRF_BASE_PATH)/make/Makefile

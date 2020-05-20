@@ -15,8 +15,12 @@
 #include "simple_ble.h"
 #include "simple_adv.h"
 
+#define LED_PIN 13
+
 // function prototypes
+static void timer_handler(void*);
 static void advertise_with_next_parameter_set(bool);
+static void ble_adv_update(void);
 
 // Intervals for advertising and connections
 static simple_ble_config_t ble_config = {
@@ -29,6 +33,31 @@ static simple_ble_config_t ble_config = {
 };
 
 static uint16_t advertising_interval = 0;
+static uint32_t adv_count = 0;
+
+// Timer data structure
+APP_TIMER_DEF(parameter_timer);
+
+// Timer initialization
+static void timer_begin (void) {
+    uint32_t err_code;
+
+    // Initialize timer module (settings copied from blink app)
+    APP_TIMER_INIT(0, 4, false);
+
+    // Create a timer
+    err_code = app_timer_create(&parameter_timer, APP_TIMER_MODE_REPEATED, timer_handler);
+    APP_ERROR_CHECK(err_code);
+
+    // Start the timer
+    const int timer_interval_ms = 1*1000; // Max is 512 seconds
+    err_code = app_timer_start(parameter_timer, APP_TIMER_TICKS(timer_interval_ms, 0), NULL);
+    APP_ERROR_CHECK(err_code);
+}
+
+static void timer_handler(void* _unused) {
+    ble_adv_update();
+}
 
 // Select a payload size and advertising interval, and begin advertisement
 static void advertise_with_next_parameter_set (bool init) {
@@ -54,7 +83,8 @@ static void advertise_with_next_parameter_set (bool init) {
         // advertising interval
         //advertising_interval = interval_list[interval_list_index];
         //advertising_interval = 533; // 333.125 ms
-        advertising_interval = 180; // 112.5 ms
+        //advertising_interval = 180; // 112.5 ms
+        advertising_interval = 1592; // 995 ms
         adv_parameters.interval = advertising_interval;
 
         err_code = sd_ble_gap_adv_start(&adv_parameters);
@@ -69,19 +99,26 @@ static void advertise_with_next_parameter_set (bool init) {
         // TODO: allow a variable payload length
 
         if (init) {
-            ble_after_adv_event();
+            //ble_after_adv_event();
+            ble_adv_update();
         }
     }
 }
 
-#define LED_PIN 13
-
 // After a BLE advertisement event callback
-void ble_after_adv_event (void) {
+//void ble_after_adv_event (void) {
+
+// Trigger update on timer instead of radio hardware.
+// It seems to be impossible to tell if radio hardware had a state change due
+// to scanning or advertising. Normal hardware would base advertisement
+// updates on timers anyways.
+// What we lose here is a true counter value that changes with each packet
+// rather than with each data.
+static void ble_adv_update (void) {
     static uint32_t counter = 0;
 
     static uint8_t advdata[31] = {
-        0x1a,                         // 26 bytes after this one
+        0x1e,                         // 30 bytes after this one
         0xff,                         // manufacturer-specific data
         0x65, 0x78, 0x33, 0x2c,       // ex3,
         0x61, 0x69, 0x2c,             // ai, (advertisement interval)
@@ -113,8 +150,18 @@ void ble_after_adv_event (void) {
     advdata[15] = (counter      ) & 0xFF;
     counter++;
 
+    advdata[21] = (0 >> 8) & 0xFF;
+    advdata[20] = (0     ) & 0xFF;
+
+    NRF_LOG_PRINTF("ADV COUNT: %d\n", adv_count);
+    advdata[29] = (adv_count >> 24) & 0xFF;
+    advdata[28] = (adv_count >> 16) & 0xFF;
+    advdata[27] = (adv_count >>  8) & 0xFF;
+    advdata[26] = (adv_count      ) & 0xFF;
+    adv_count = 0;
+
     // Pass encoded advertising data and/or scan response data to the stack.
-    uint32_t err_code = sd_ble_gap_adv_data_set(advdata, 27, srdata, 0);
+    uint32_t err_code = sd_ble_gap_adv_data_set(advdata, 31, srdata, 0);
     APP_ERROR_CHECK(err_code);
 
     led_toggle(LED_PIN);
@@ -132,6 +179,7 @@ void ble_error (uint32_t err_code) {
 
 void ble_evt_adv_report (ble_evt_t* p_ble_evt) {
     led_toggle(LED_PIN);
+    adv_count++;
 
     ble_gap_evt_adv_report_t* report = &p_ble_evt->evt.gap_evt.params.adv_report;
     uint8_t* addr = report->peer_addr.addr;
@@ -155,7 +203,7 @@ int main (void) {
     simple_ble_init(&ble_config);
 
     // Setup timer to change parameters
-    //timer_begin();
+    timer_begin();
 
     // Start advertising with initial parameters
     advertise_with_next_parameter_set(true);
