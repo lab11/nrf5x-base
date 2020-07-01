@@ -1009,8 +1009,8 @@ static const ble_gap_scan_params_t m_scan_param = {
     .active = 0,                   // Active scanning not set.
     .selective = 0,                // Selective scanning not set.
     .p_whitelist = NULL,           // No whitelist provided.
-    .interval = 0x0640,
-    .window = 0x0640,
+    .interval = 0x0c80,            // 2 seconds per channel
+    .window = 0x0c80,              // Full 2-second window
     .timeout = 0x0000              // No timeout.
 };
 
