@@ -45,6 +45,7 @@ static uint32_t data_in_epoch = 0;
 static uint16_t packet_in_data = 0;
 static uint32_t tx_estimate = 0;
 
+static uint8_t minutes_in_epoch = 10;
 static uint16_t packets_per_data = 1;
 static bool start_new_epoch = false;
 
@@ -132,10 +133,11 @@ void ble_after_adv_event (void) {
         advdata[26] = (tx_estimate      ) & 0xFF;
 
         // Pass encoded advertising data and/or scan response data to the stack.
-        uint32_t err_code = sd_ble_gap_adv_data_set(advdata, 27, srdata, 0);
+        uint32_t err_code = sd_ble_gap_adv_data_set(advdata, 31, srdata, 0);
         APP_ERROR_CHECK(err_code);
 
         // check if we should roll to next cycle
+        NRF_LOG_PRINTF("Epoch %d Data %d Packet %d\n", epoch, data_in_epoch, packet_in_data);
         packet_in_data++;
         if (packet_in_data >= packets_per_data) {
             packet_in_data = 0;
@@ -178,8 +180,9 @@ static void ble_new_epoch (void) {
     simple_ble_scan_start();
 }
 
-void ble_error (uint32_t err_code) {
+void ble_error (uint32_t error_code) {
     led_on(LED_PIN);
+    NRF_LOG_PRINTF("ERROR 0x%X\n", error_code);
 }
 
 void ble_evt_adv_report (ble_evt_t* p_ble_evt) {
@@ -219,8 +222,10 @@ static void epoch_timer_handler (void* _unused) {
 
     // track time that has passed
     minutes++;
-    if (minutes >= 10) {
+    NRF_LOG_PRINTF("Minute\n");
+    if (minutes >= minutes_in_epoch) {
         minutes = 0;
+        NRF_LOG_PRINTF("New epoch\n");
         start_new_epoch = true;
     }
 }

@@ -473,8 +473,8 @@ void __attribute__((weak)) ble_stack_init (void) {
     CHECK_RAM_START_ADDR(CENTRAL_LINK_COUNT, PERIPHERAL_LINK_COUNT);
 
     // create radio notifications to get advertising events
-    //err_code = radio_notification_init();
-    //APP_ERROR_CHECK(err_code);
+    err_code = radio_notification_init();
+    APP_ERROR_CHECK(err_code);
 
     // Enable BLE stack.
     err_code = softdevice_enable(&ble_enable_params);
