@@ -222,7 +222,7 @@ static void epoch_timer_handler (void* _unused) {
 
     // track time that has passed
     minutes++;
-    NRF_LOG_PRINTF("Minute\n");
+    NRF_LOG_PRINTF("Minute %d\n", minutes);
     if (minutes >= minutes_in_epoch) {
         minutes = 0;
         NRF_LOG_PRINTF("New epoch\n");
