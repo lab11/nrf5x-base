@@ -240,13 +240,14 @@ static void scan_timer_handler (void* _unused) {
 
     // update packets_per_data as necessary
     const uint32_t gateway_loss = 78800;
-    uint64_t prr = ((prr_product)*(1000000-gateway_loss))/1000000; // account for expected loss at gateway
+    uint64_t orig_prr = ((prr_product)*(1000000-gateway_loss))/1000000; // account for expected loss at gateway
+    uint64_t prr = orig_prr;
     uint8_t adv_reliable_count = 1;
-    NRF_LOG_PRINTF("Adv count: %d. Prr: %u.\n", adv_count, (uint32_t)prr_product, adv_reliable_count);
+    NRF_LOG_PRINTF("Adv count: %d. Prr: %u (w/o gateway).\n", adv_count, (uint32_t)prr_product);
     NRF_LOG_PRINTF("\tCount: %d Expected PRR: %u\n", adv_reliable_count, (uint32_t)prr);
     while (prr < 990000 && adv_reliable_count < 10) {
         adv_reliable_count++;
-        prr = 1000000 - (((1000000-prr)*(1000000-prr))/1000000);
+        prr = 1000000 - (((1000000-prr)*(1000000-orig_prr))/1000000);
         NRF_LOG_PRINTF("\tCount: %d Expected PRR: %u\n", adv_reliable_count, (uint32_t)prr);
     }
     NRF_LOG_PRINTF("\tI should send %d packets.\n", adv_reliable_count);
