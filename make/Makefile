@@ -231,7 +231,11 @@ BOOTLOADER_REGION_START = $(addprefix 0x, $(shell echo "obase=16; (${FLASH_KB}-1
 BOOTLOADER_SETTINGS_ADDRESS = $(addprefix 0x, $(shell echo "obase=16; (${FLASH_KB}-2)*1024" | bc))
 
 # Need some common options for interacting with the chip over JTAG
+ifeq ($(NRF_IC), nrf52832)
+JLINK_OPTIONS = -device nrf52 -if swd -speed 1000
+else
 JLINK_OPTIONS = -device $(NRF_IC) -if swd -speed 1000
+endif
 
 # If not set in app makefile, lets optimize for size
 CFLAGS += -Os
@@ -262,7 +266,7 @@ SOURCE_PATHS += $(BASE_DIR)/services/
 SOURCE_PATHS += $(BASE_DIR)/startup/
 
 # Add paths for each SDK version
-ifeq ($(NRF_MODEL), nrf51)
+ifeq ($(NRF_MODEL), $(filter $(NRF_MODEL),nrf51 nrf52))
 ifeq ($(SDK_VERSION), 12)
 
 	# Set the path
@@ -801,7 +805,13 @@ VPATH = $(SOURCE_PATHS)
 
 OUTPUT_PATH ?= _build/
 
-CPUFLAGS = -mthumb -mcpu=cortex-m0 -march=armv6-m
+ifneq (,$(filter $(NRF_IC),nrf52832 nrf52833 nrf52840))
+	#CPUFLAGS = -mthumb -mabi=aapcs -mcpu=cortex-m4 -march=armv7e-m -mfloat-abi=soft -mfpu=fpv4-sp-d16
+	CPUFLAGS = -mthumb -mcpu=cortex-m4 -march=armv7e-m 
+else
+	CPUFLAGS = -mthumb -mcpu=cortex-m0 -march=armv6-m
+endif
+
 CFLAGS += -std=gnu99 -c $(CPUFLAGS) -Wall -Wextra -Wno-unused-parameter -Werror=return-type -D$(DEVICE) -D$(BOARD) -D$(NRF_IC_UPPER) -DSDK_VERSION_$(SDK_VERSION) -DSOFTDEVICE_$(SOFTDEVICE_MODEL)
 CFLAGS += -s -ffunction-sections -fdata-sections
 CFLAGS += -D$(shell echo $(SOFTDEVICE_MODEL) | tr a-z A-Z)
