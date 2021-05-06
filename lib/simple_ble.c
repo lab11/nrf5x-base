@@ -54,7 +54,7 @@ ble_gap_adv_params_t m_adv_params;
 ble_gap_sec_params_t m_sec_params = {
     SEC_PARAM_BOND,
     SEC_PARAM_MITM,
-#ifdef SOFTDEVICE_s130
+#if defined(SOFTDEVICE_s130) || defined(SOFTDEVICE_s132)
     SEC_PARAM_LESC,
     SEC_PARAM_KEYPRESS,
 #endif
@@ -62,7 +62,7 @@ ble_gap_sec_params_t m_sec_params = {
     SEC_PARAM_OOB,
     SEC_PARAM_MIN_KEY_SIZE,
     SEC_PARAM_MAX_KEY_SIZE,
-#ifdef SOFTDEVICE_s130
+#if defined(SOFTDEVICE_s130) || defined(SOFTDEVICE_s132)
     {0, 0, 0, 0},
     {0, 0, 0, 0}
 #endif
@@ -121,7 +121,7 @@ void __attribute__((weak)) ble_evt_adv_report(ble_evt_t* p_ble_evt);
 void __attribute__((weak)) ble_error(uint32_t error_code);
 
 
-#ifndef SOFTDEVICE_s130 // This function is called app_error_fault_handler in the SDK 11
+#if !defined(SOFTDEVICE_s130) && !defined(SOFTDEVICE_s132) // This function is called app_error_fault_handler in the SDK 11
 void app_error_handler(uint32_t error_code, uint32_t line_num, const uint8_t * p_file_name) {
 #else
 void __attribute__((weak)) app_error_fault_handler(uint32_t error_code, __attribute__ ((unused)) uint32_t line_num, __attribute__ ((unused)) uint32_t info) {
@@ -293,7 +293,7 @@ static void on_ble_evt(ble_evt_t * p_ble_evt) {
         case BLE_GAP_EVT_ADV_REPORT:
             {
 #ifdef ENABLE_DFU
-#ifdef SOFTDEVICE_s130
+#if defined(SOFTDEVICE_s130) || defined(SOFTDEVICE_s132)
               // check if DFU advertisement
               uint8_t data[31];
               int len = parse_adata(p_ble_evt, 0xFF, data);
@@ -389,7 +389,7 @@ void __attribute__((weak)) ble_address_set (void) {
 void __attribute__((weak)) ble_stack_init (void) {
     uint32_t err_code;
 
-#ifdef SOFTDEVICE_s130
+#if defined(SOFTDEVICE_s130) || defined(SOFTDEVICE_s132)
     // Softdevice 130 2.0.0 changes how the softdevice init procedure works.
     nrf_clock_lf_cfg_t clock_lf_cfg = {
         .source        = NRF_CLOCK_LF_SRC_RC,
@@ -554,7 +554,7 @@ void __attribute__((weak)) initialize_app_timer (void) {
  ******************************************************************************/
 void __attribute__((weak)) advertising_start(void) {
     uint32_t err_code = sd_ble_gap_adv_start(&m_adv_params);
-#ifdef SOFTDEVICE_s130
+#if defined(SOFTDEVICE_s130) || defined(SOFTDEVICE_s132)
     if (err_code == NRF_ERROR_CONN_COUNT) {
         // ignore Connection Count problems. Connectable advertising seems to work just fine
         return;
@@ -918,7 +918,7 @@ uint32_t simple_ble_stack_char_set (simple_ble_char_t* char_handle, uint16_t len
     return sd_ble_gatts_value_set(app.conn_handle, char_handle->char_handle.value_handle, &value);
 }
 
-#ifdef SOFTDEVICE_s130
+#if defined(SOFTDEVICE_s130) || defined(SOFTDEVICE_s132)
 static const ble_gap_scan_params_t m_scan_param = {
     .active = 0,                   // Active scanning not set.
     .selective = 0,                // Selective scanning not set.
