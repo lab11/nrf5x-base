@@ -21,6 +21,8 @@ JLINK = -JLinkExe $(JLINK_OPTIONS) $(JLINKEXE_OPTION)
 JLINKGDBSERVER = JLinkGDBServer $(JLINK_OPTIONS) $(JLINKGDBSERVER_OPTION)
 JLINKRTTCLIENT = JLinkRTTClient $(JLINK_OPTIONS) $(JLINKRTTCLIENT_OPTION)
 
+OPENOCD = openocd -f interface/stlink-v2.cfg -f target/nrf51.cfg # FIXME nrf51
+
 SOFTDEVICE_OUTPUT = $(OUTPUT_PATH)$(notdir $(SOFTDEVICE))
 
 clean: clean-bootloader
@@ -32,12 +34,17 @@ clean: clean-bootloader
 clean-bootloader:
 	rm -rf $(BASE_DIR)/dfu/_build
 
-ifndef ENABLE_WIRELESS_DFU
-flash: all flash.jlink test-softdevice
-	$(JLINK) $(OUTPUT_PATH)flash.jlink
+ifeq ($(PROGRAMMER),stlinkv2)
+    # TODO: DFU support, test-softdevice
+    flash: all flash.stlinkv2
 else
-flash: all flash.jlink test-softdevice flash-bootloader
-	$(JLINK) $(OUTPUT_PATH)flash.jlink
+    ifndef ENABLE_WIRELESS_DFU
+    flash: all flash.jlink test-softdevice
+	    $(JLINK) $(OUTPUT_PATH)flash.jlink
+    else
+    flash: all flash.jlink test-softdevice flash-bootloader
+	    $(JLINK) $(OUTPUT_PATH)flash.jlink
+    endif
 endif
 
 
@@ -63,11 +70,20 @@ ifdef ID
 endif
 	printf "loadfile $(HEX) \nr\ng\nexit\n" >> $(OUTPUT_PATH)flash.jlink
 
+flash.stlinkv2:
+	$(MAKE_BUILD_FOLDER)
+	$(OPENOCD) -c 'program $(HEX) verify reset exit'
 
-test-softdevice: test-softdevice.jlink
 ifndef SOFTDEVICE
+define softdevice-defined=
 	$(error "You need to set the SOFTDEVICE command-line parameter to a path (without spaces) to the softdevice hex-file")
+endef
+else
+define softdevice-defined=
+endef
 endif
+
+test-softdevice: test-softdevice.jlink $(softdevice-defined)
 
 ifneq ($(SOFTDEVICE_MODEL),blank)
 	$(MAKE_BUILD_FOLDER)
@@ -87,18 +103,23 @@ test-softdevice.jlink:
 	$(MAKE_BUILD_FOLDER)
 	printf "r\nsavebin $(SOFTDEVICE_TEST_FLASH) $(SOFTDEVICE_TEST_ADDR) $(SOFTDEVICE_TEST_LEN)\nexit\n" > $(OUTPUT_PATH)test-softdevice.jlink
 
-flash-softdevice: erase-all flash-softdevice.jlink
-ifndef SOFTDEVICE
-	$(error "You need to set the SOFTDEVICE command-line parameter to a path (without spaces) to the softdevice hex-file")
-endif
+ifeq ($(PROGRAMMER),stlinkv2)
+flash-softdevice: erase-all $(softdevice-defined) flash-softdevice.stlinkv2
+else
+flash-softdevice: erase-all $(softdevice-defined) flash-softdevice.jlink
 	$(MAKE_BUILD_FOLDER)
 	$(OBJCOPY) -Iihex -Obinary $(SOFTDEVICE) $(SOFTDEVICE_OUTPUT:.hex=.bin)
 	$(JLINK) $(OUTPUT_PATH)flash-softdevice.jlink
+endif
 
 flash-softdevice.jlink:
 	# Write to NVMC to enable write. Write mainpart, write UICR. Assumes device is erased.
 	$(MAKE_BUILD_FOLDER)
 	printf "w4 4001e504 1\nloadbin \"$(SOFTDEVICE_OUTPUT:.hex=.bin)\" 0\nr\ng\nexit\n" > $(OUTPUT_PATH)flash-softdevice.jlink
+
+flash-softdevice.stlinkv2:
+	$(MAKE_BUILD_FOLDER)
+	$(OPENOCD) -c 'program $(SOFTDEVICE) verify reset exit'
 
 flash-bootloader: bootloader flash-bootloader.jlink test-softdevice
 	$(JLINK) $(OUTPUT_PATH)flash-bootloader.jlink
@@ -131,38 +152,67 @@ pin-reset: pin-reset.jlink
 	$(MAKE_BUILD_FOLDER)
 	$(JLINK) $(OUTPUT_PATH)pin-reset.jlink
 
+ifeq ($(PROGRAMMER),stlinkv2)
+reset: reset.stlinkv2
+else
 reset: reset.jlink
 	$(MAKE_BUILD_FOLDER)
 	$(JLINK) $(OUTPUT_PATH)reset.jlink
+endif
 
 reset.jlink:
 	$(MAKE_BUILD_FOLDER)
 	printf "r\ng\nexit\n" > $(OUTPUT_PATH)reset.jlink
 
+reset.stlinkv2:
+	$(MAKE_BUILD_FOLDER)
+	$(OPENOCD) -c init -c 'reset' -c shutdown
+
+ifeq ($(PROGRAMMER),stlinkv2)
+erase-all: erase-all.stlinkv2
+else
 erase-all: erase-all.jlink
 	$(MAKE_BUILD_FOLDER)
 	$(JLINK) $(OUTPUT_PATH)erase-all.jlink
+endif
 
 erase-all.jlink:
 	# Write to NVMC to enable erase, do erase all, wait for completion. reset
 	$(MAKE_BUILD_FOLDER)
 	printf "w4 4001e504 2\nw4 4001e50c 1\nsleep 100\nr\nexit\n" > $(OUTPUT_PATH)erase-all.jlink
 
+erase-all.stlinkv2:
+	$(MAKE_BUILD_FOLDER)
+	$(OPENOCD) -c init -c 'reset halt' -c 'nrf51 mass_erase' -c 'reset' -c shutdown
+
 from-scratch: all flash.jlink flash-softdevice
 	$(MAKE_BUILD_FOLDER)
 	$(JLINK) $(OUTPUT_PATH)flash.jlink
 
-startdebug: debug-gdbinit
+ifeq ($(PROGRAMMER),stlinkv2)
+startdebug: startdebug.stlinkv2
+else
+startdebug: startdebug.jlink
+endif
+
+startdebug.jlink: debug-gdbinit.jlink
 	$(TERMINAL) "$(JLINKGDBSERVER) -port $(GDB_PORT_NUMBER)"
 	sleep 1
 	$(TERMINAL) "$(GDB) $(ELF)"
+
+startdebug.stlinkv2: debug-gdbinit.stlinkv2
+	$(GDB) $(ELF)
 
 startrtt:
 	$(TERMINAL) "JLinkExe -device nrf51822 -if swd -speed 1000 -AutoConnect 1"
 	sleep 1
 	$(TERMINAL) "$(JLINKRTTCLIENT)"
 
-debug-gdbinit:
+debug-gdbinit.jlink:
 	printf "target remote localhost:$(GDB_PORT_NUMBER)\nload\nmon reset\nbreak main\n" > .gdbinit
+
+debug-gdbinit.stlinkv2:
+	printf "target remote | $(OPENOCD) -c 'gdb_port pipe; log_output openocd.log'" > .gdbinit
+
 
 .PHONY: flash flash-softdevice erase-all startdebug test-softdevice flash.jlink
